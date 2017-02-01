@@ -1,0 +1,14 @@
+# Site Settings
+title: openMHA
+email: hendrik.kayser@uol.de
+description: >
+  Open tools for hearing aid development.
+baseurl: ""
+url: "localhost:4000"
+github_username:  hoertech
+# Build Settings
+sass:
+  sass_dir: _sass
+include: ['_pages']
+kramdown:
+  input: GFM

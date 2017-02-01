@@ -1,0 +1,30 @@
+<header>
+	<a class="header" href="{{ site.url }}"><img src={{"/images/wave.png" | prepend: site.baseurl }} alt="wave"class="logo_header_left"></a>
+	<h1><a class="header" href="{{ site.url }}">{{ site.title }}</a></h1>	
+	<a class="header" href="{{ site.url }}"><img src={{"/images/logo_openMHA.png" | prepend: site.baseurl }} alt="openMHA logo"class="logo_header_right"></a>
+</header>
+ 
+<aside>
+	<div class="container">
+		<nav>
+			<ul class="nav">
+				<li class="wave"><a class="wave" href="{{ "/news" | prepend: site.baseurl }}">News</a></li>
+				{% for page in site.pages %} 
+					{% if page.title %}
+						{% if page.menu == 'main' %}
+							<li class="wave"><a class="wave" href="{{ page.url | prepend: site.baseurl }}">{{page.title }}</a></li>
+						{% endif %} 
+					{% endif %} 
+				{% endfor %}
+				<li class="logo"><a class="logo" href="{{"http://www.batandcat.com"}}"><img src={{"/images/logo_BatAndCat.png" | prepend: site.baseurl }} alt="Bat and Cat logo"class="logo"></a></li>
+				<li class="logo"><a class="logo" href="{{"http://www.hoertech.de"}}"><img src={{"/images/logo_hoertech.png" | prepend: site.baseurl }} alt="HoerTech logo"class="logo"></a></li>
+				<li class="logo"><a class="logo" href="{{"http://www.uol.de"}}"><img src={{"/images/logo_uol.png" | prepend: site.baseurl }} alt="UOL logo"class="logo"></a></li>
+			</ul>
+			</li>
+			</ul>
+		</nav>
+	</div>
+</aside>
+
+
+ 
