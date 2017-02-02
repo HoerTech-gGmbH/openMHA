@@ -12,3 +12,5 @@ sass:
 include: ['_pages']
 kramdown:
   input: GFM
+
+theme: jekyll-theme-slate
