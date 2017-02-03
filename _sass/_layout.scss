@@ -17,7 +17,7 @@ h3 {
 }
 h1 {
 	color: $main;
-	font-size: calc(.5em + 6vmin);
+	font-size: calc(.2em + 6vmin);
 	a,
 	a:visited {
 		text-decoration: none;
@@ -95,12 +95,12 @@ img.logo_header_left{
 	margin-left: 13.5vmin;
 	margin-right: -.5vmin;
 	vertical-align: middle;
-	height: calc(10px + 5vmin);
+	height: calc(1px + 5vmin);
 }
 img.logo_header_right{
 	margin-left: 5vmin;
 	vertical-align: middle;
-	height: calc(10px + 8vmin);
+	height: calc(1px + 8vmin);
 }
 ul {
 	list-style: none;
