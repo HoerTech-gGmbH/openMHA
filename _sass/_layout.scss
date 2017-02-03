@@ -17,7 +17,7 @@ h3 {
 }
 h1 {
 	color: $main;
-	font-size: 6vmin;
+	font-size: calc(.5em + 6vmin);
 	a,
 	a:visited {
 		text-decoration: none;
@@ -87,18 +87,19 @@ table {
 }
 img.logo{
 	vertical-align: middle;
-	height: 40px;
+	min-height: 40px;
+	max-height: 40px;
 }
 img.logo_header_left{
 	margin-left: 13.5vmin;
 	margin-right: -.5vmin;
 	vertical-align: middle;
-	height: 6vmin;
+	height: calc(10px + 5vmin);
 }
 img.logo_header_right{
 	margin-left: 5vmin;
 	vertical-align: middle;
-	height: 10vmin;
+	height: calc(10px + 8vmin);
 }
 ul {
 	list-style: none;
