@@ -1,3 +1,4 @@
 _site
 .sass-cache
 jekyllInfo.txt
+_config.yml.rej
