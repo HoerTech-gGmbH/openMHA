@@ -9,7 +9,7 @@ body {
 h1,
 h2,
 h3 {
-	font-weight: 600;
+	font-weight: 400;
 	color: $heading-font-color;
 	font-family: $heading-font;
 	line-height: 1.5;
@@ -17,7 +17,7 @@ h3 {
 }
 h1 {
 	color: $main;
-	font-size: 6vh;
+	font-size: 6vmin;
 	a,
 	a:visited {
 		text-decoration: none;
@@ -58,7 +58,7 @@ header {
 	padding: 0px 15px;
 	text-align: center;
 	margin: 0px 0 0;
-	height: calc(10px + 12vh);
+	height: calc(10px + 10vmin);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -90,15 +90,15 @@ img.logo{
 	height: 40px;
 }
 img.logo_header_left{
-	margin-left: 13.5vh;
-	margin-right: -.5vh;
+	margin-left: 13.5vmin;
+	margin-right: -.5vmin;
 	vertical-align: middle;
-	height: 6vh;
+	height: 6vmin;
 }
 img.logo_header_right{
-	margin-left: 5vh;
+	margin-left: 5vmin;
 	vertical-align: middle;
-	height: 10vh;
+	height: 10vmin;
 }
 ul {
 	list-style: none;
