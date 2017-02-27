@@ -89,10 +89,28 @@ d) prerelease_allplugins.cfg
 	Implementation of the full hearing aid processing chain combining all 
 	plugins mentioned above. 
 
-Together with these configuration files we provide also audio data from a 
-binaural four-channel hearing aid setup. 
-
 For example, we can start the example d) above by the following command: 
 
 mha ?read:configuration/prerelease_allplugins.cfg cmd=start cmd=quit 
 
+Together with these configuration files we provide also example audio data from 
+a binaural four-channel hearing aid setup in an anechoic environment:
+
+- 1speaker_diffNoise_<2ch,4ch,binaural>.wav
+	A female speaker positioned 20 degree to the right of the front in a 
+	spatially diffuse noise field.
+- 2speaker_<2ch,4ch,binaural>.wav
+	A female speaker positioned as above and a male speaker left behind the 
+	head, 135 degree to the left.
+- 2speaker_diffNoise_<2ch,4ch,binaural>.wav
+	Both speakers in a spatially diffuse noise. 
+	
+The '2ch' versions are suitable input for the 'dynamiccompression' and the
+'coherence' configurations, whereas the '4ch' versions can be used for the 'adm'
+and the 'allplugins' configurations. (The four-channel input is reduced to two
+channels by the adm processing.)
+
+You can find the setting for the input audio files at the end in each 
+configuration file - feel free to use your own audio examples. Note that for the 
+adm a correct setting of the microphone distances is required for a successful
+application of the algorithm.
