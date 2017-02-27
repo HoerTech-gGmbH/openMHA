@@ -1,0 +1,18 @@
+/* rconfig.c -- this file contains all the real-complex codelets
+                the system knows about */
+
+#include "fftw-int.h"
+#include "rfftw.h"
+
+#define NOTW_CODELET(x) \
+	 &fftw_real2hc_##x##_desc
+#define NOTWI_CODELET(x) \
+	 &fftw_hc2real_##x##_desc
+
+#define TWIDDLE_CODELET(x) \
+	 &fftw_hc2hc_forward_##x##_desc
+#define TWIDDLEI_CODELET(x) \
+	 &fftw_hc2hc_backward_##x##_desc
+
+/* automatically-generated list of codelets */
+

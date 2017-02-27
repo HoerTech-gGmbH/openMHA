@@ -1,0 +1,675 @@
+Info file: fftw-faq.info,    -*-Text-*-
+produced by bfnnconv.pl from the Bizarre Format With No Name.
+
+START-INFO-DIR-ENTRY
+* FFTW FAQ: (fftw-faq). FFTW Frequently Asked Questions with Answers.
+END-INFO-DIR-ENTRY
+
+
+File: $prefix.info, Node: Top, Next: Question 1.1, Up: (dir)
+
+            FFTW FREQUENTLY ASKED QUESTIONS WITH ANSWERS
+                            24 Mar 2003
+			     Matteo Frigo
+			   Steven G. Johnson
+			    <fftw@fftw.org>
+
+This is the list of Frequently Asked Questions about FFTW, a collection of
+fast C routines for computing the Discrete Fourier Transform in one or
+more dimensions.
+
+Index
+
+* Menu:
+* Section 1::       Introduction and General Information
+* Section 2::       Installing FFTW
+* Section 3::       Using FFTW
+* Section 4::       Internals of FFTW
+* Section 5::       Known bugs
+
+Section 1, Introduction and General Information
+* Question 1.1::    What is FFTW?
+* Question 1.2::    How do I obtain FFTW?
+* Question 1.3::    Is FFTW free software?
+* Question 1.4::    What is this about non-free licenses?
+
+Section 2, Installing FFTW
+* Question 2.1::    Which systems does FFTW run on?
+* Question 2.2::    Does FFTW run on DOS/Windows?
+* Question 2.3::    My compiler has trouble with FFTW.
+* Question 2.4::    FFTW does not compile on Solaris, complaining about
+                    const.
+* Question 2.5::    Which language is FFTW written in?
+* Question 2.6::    Can I call FFTW from FORTRAN?
+* Question 2.7::    Can I call FFTW from C++?
+* Question 2.8::    Why isn't FFTW written in FORTRAN/C++?
+* Question 2.9::    How do I compile FFTW to run in single precision?
+
+Section 3, Using FFTW
+* Question 3.1::    FFTW seems really slow.
+* Question 3.2::    FFTW slows down after repeated calls.
+* Question 3.3::    An FFTW routine is crashing when I call it.
+* Question 3.4::    My Fortran program crashes when calling FFTW.
+* Question 3.5::    FFTW gives results different from my old FFT.
+* Question 3.6::    Your in-place transform gives incorrect results.
+* Question 3.7::    Can I save FFTW's plans?
+* Question 3.8::    Why does your inverse transform return a scaled
+                    result?
+* Question 3.9::    How can I make FFTW put the origin (zero frequency) at
+                    the center of its output?
+* Question 3.10::   How do I FFT an image/audio file in *foobar* format?
+* Question 3.11::   My program does not link (on Unix).
+* Question 3.12::   My program crashes, complaining about stack space.
+
+Section 4, Internals of FFTW
+* Question 4.1::    How does FFTW work?
+* Question 4.2::    Why is FFTW so fast?
+* Question 4.3::    What is this wisdom thing?
+* Question 4.4::    Why do you use wisdom? I just wanted to save a plan.
+
+Section 5, Known bugs
+* Question 5.1::    FFTW 1.1 crashes in rfftwnd on Linux.
+* Question 5.2::    The MPI transforms in FFTW 1.2 give incorrect
+                    results/leak memory.
+* Question 5.3::    The test programs in FFTW 1.2.1 fail when I change
+                    FFTW to use single precision.
+* Question 5.4::    The test program in FFTW 1.2.1 fails for n > 46340.
+* Question 5.5::    The threaded code fails on Linux Redhat 5.0
+* Question 5.6::    FFTW 2.0's rfftwnd fails for rank > 1 transforms with
+                    a final dimension >= 65536.
+* Question 5.7::    FFTW 2.0's complex transforms give the wrong results
+                    with prime factors 17 to 97.
+* Question 5.8::    FFTW 2.1.1's MPI test programs crash with MPICH.
+* Question 5.9::    FFTW 2.1.2's multi-threaded transforms don't work on
+                    AIX.
+* Question 5.10::   FFTW 2.1.2's complex transforms give incorrect results
+                    for large prime sizes.
+* Question 5.11::   FFTW 2.1.3 crashes on AIX
+
+
+
+File: fftw-faq.info, Node: Section 1, Next: Section 2, Previous: Top, Up: Top
+
+Introduction and General Information
+
+* Menu:
+* Question 1.1::    What is FFTW?
+* Question 1.2::    How do I obtain FFTW?
+* Question 1.3::    Is FFTW free software?
+* Question 1.4::    What is this about non-free licenses?
+
+
+
+File: fftw-faq.info, Node: Question 1.1, Next: Question 1.2, Previous: Top, Up: Section 1
+
+Question 1.1.  What is FFTW?
+
+FFTW is a free collection of fast C routines for computing the Discrete
+Fourier Transform in one or more dimensions.  It includes complex, real,
+and parallel transforms, and can handle arbitrary array sizes efficiently.
+FFTW is typically faster than other publically-available FFT
+implementations, and is even competitive with vendor-tuned libraries.
+(See our web page for extensive benchmarks.) To achieve this performance,
+FFTW uses novel code-generation and runtime self-optimization techniques
+(along with many other tricks).
+
+
+File: fftw-faq.info, Node: Question 1.2, Next: Question 1.3, Previous: Question 1.1, Up: Section 1
+
+Question 1.2.  How do I obtain FFTW?
+
+FFTW can be found at the FFTW web page.  You can also retrieve it from
+ftp.fftw.org in /pub/fftw.
+
+
+File: fftw-faq.info, Node: Question 1.3, Next: Question 1.4, Previous: Question 1.2, Up: Section 1
+
+Question 1.3.  Is FFTW free software?
+
+Starting with version 1.3, FFTW is Free Software in the technical sense
+defined by the Free Software Foundation (see Categories of Free and
+Non-Free Software), and is distributed under the terms of the GNU General
+Public License.  Previous versions of FFTW were distributed without fee
+for noncommercial use, but were not technically ``free.''
+
+Non-free licenses for FFTW are also available that permit different terms
+of use than the GPL.
+
+
+File: fftw-faq.info, Node: Question 1.4, Next: Question 2.1, Previous: Question 1.3, Up: Section 1
+
+Question 1.4.  What is this about non-free licenses?
+
+The non-free licenses are for companies that wish to use FFTW in their
+products but are unwilling to release their software under the GPL (which
+would require them to release source code and allow free redistribution).
+Such users can purchase an unlimited-use license from MIT.  Contact us for
+more details.
+
+We could instead have released FFTW under the LGPL, or even disallowed
+non-Free usage.  Suffice it to say, however, that MIT owns the copyright
+to FFTW and they only let us GPL it because we convinced them that it
+would neither affect their licensing revenue nor irritate existing
+licensees.
+
+
+File: fftw-faq.info, Node: Section 2, Next: Section 3, Previous: Section 1, Up: Top
+
+Installing FFTW
+
+* Menu:
+* Question 2.1::    Which systems does FFTW run on?
+* Question 2.2::    Does FFTW run on DOS/Windows?
+* Question 2.3::    My compiler has trouble with FFTW.
+* Question 2.4::    FFTW does not compile on Solaris, complaining about
+                    const.
+* Question 2.5::    Which language is FFTW written in?
+* Question 2.6::    Can I call FFTW from FORTRAN?
+* Question 2.7::    Can I call FFTW from C++?
+* Question 2.8::    Why isn't FFTW written in FORTRAN/C++?
+* Question 2.9::    How do I compile FFTW to run in single precision?
+
+
+
+File: fftw-faq.info, Node: Question 2.1, Next: Question 2.2, Previous: Question 1.4, Up: Section 2
+
+Question 2.1.  Which systems does FFTW run on?
+
+FFTW is written in ANSI C, and should work on any system with a decent C
+compiler.  (See also *Note Question 2.2:: `Does FFTW run on DOS/Windows?'
+and  *Note Question 2.3:: `My compiler has trouble with FFTW.'.)
+
+
+File: fftw-faq.info, Node: Question 2.2, Next: Question 2.3, Previous: Question 2.1, Up: Section 2
+
+Question 2.2.  Does FFTW run on DOS/Windows?
+
+It should.  FFTW was not developed on DOS or Windows, but the source code
+is straight ANSI C.  Some users have reported using FFTW on DOS/Windows
+using various compilers.  See also the FFTW Windows installation notes and
+*Note Question 2.3:: `My compiler has trouble with FFTW.'
+
+
+File: fftw-faq.info, Node: Question 2.3, Next: Question 2.4, Previous: Question 2.2, Up: Section 2
+
+Question 2.3.  My compiler has trouble with FFTW.
+
+Complain fiercely to the vendor of the compiler.
+
+FFTW is a heavily-optimized piece of software that is likely to push
+compilers to their limits.  We had no problems with, for example, gcc
+2.7.2, egcs 1.1.x, Sun's SC4.0, and IBM's XLC.  Users have also reported
+successful compilations of FFTW using Borland's C/C++ compilers on
+Windows.
+
+The Portland Group PGCC compiler, version 4.0 for Linux/x86, reportedly
+produces incorrect code for FFTW 2.1.3.
+
+Visual C++ 4.0 crashes when compiling FFTW 1.2 with all optimizations
+turned on.  Visual C++ 5.0 reportedly produces incorrect code for the real
+transforms in FFTW 2.x when the option "Maximize speed" is set.  We are
+told that Service Pack 3 fixes the bug.
+
+Metrowerks CodeWarrior Pro 4 reportedly generates incorrect code for the
+PowerPC when compiling FFTW at optimization level 4.  Supposedly, this bug
+is fixed in CW Pro 5 with all the latest updates applied.  (No problems
+were reported for previous versions.)
+
+Various problems have also been observed with SGI's MIPSpro compilers,
+versions 7.2.0 and 7.2.1 (you may have to lower the optimization level for
+some files to get them to compile); the bug seems to be fixed in version
+7.3.  The test program in earlier versions of FFTW had problems with the
+-xO5 option in Sun's SC4.0 C compiler.  egcs 1.0.2 produced incorrect code
+for FFTW on the PowerPC (corrected in egcs 1.1).
+
+The DEC C compiler, V5.8-009 on Digital UNIX V4.0 (Rev. 1091) is known to
+have bugs with its EV6 tuning.  Specifically, compiling FFTW with -arch
+host (the default) or -arch ev6 on an Alpha EV6 can cause FFTW (e.g.
+fftw_test -s 256) to crash.
+
+
+File: fftw-faq.info, Node: Question 2.4, Next: Question 2.5, Previous: Question 2.3, Up: Section 2
+
+Question 2.4.  FFTW does not compile on Solaris, complaining about const.
+
+We know that at least on Solaris 2.5.x with Sun's compilers 4.2 you might
+get error messages from make such as
+
+"./fftw.h", line 88: warning: const is a keyword in ANSI C
+
+This is the case when the configure script reports that const does not
+work:
+
+checking for working const... (cached) no
+
+You should be aware that Solaris comes with two compilers, namely,
+/opt/SUNWspro/SC4.2/bin/cc and /usr/ucb/cc.  The latter compiler is
+non-ANSI.  Indeed, it is a perverse shell script that calls the real
+compiler in non-ANSI mode.  In order to compile FFTW, change your path so
+that the right cc is used.
+
+To know whether your compiler is the right one,  type cc -V.  If the
+compiler prints ``ucbcc'', as in
+
+ucbcc: WorkShop Compilers 4.2 30 Oct 1996 C 4.2
+
+then the compiler is wrong.  The right message is something like
+
+cc: WorkShop Compilers 4.2 30 Oct 1996 C 4.2
+
+
+File: fftw-faq.info, Node: Question 2.5, Next: Question 2.6, Previous: Question 2.4, Up: Section 2
+
+Question 2.5.  Which language is FFTW written in?
+
+FFTW is written in ANSI C.  Most of the code, however, was automatically
+generated by a program called genfft, written in the Objective Caml
+dialect of ML.  You do not need to know ML or to have an Objective Caml
+compiler in order to use FFTW.
+
+genfft is provided with the FFTW sources, which means that you can play
+with the code generator if you want.  In this case, you need a working
+Objective Caml system.  Objective Caml is available from ftp.inria.fr in
+the directory /lang/caml-light.
+
+
+File: fftw-faq.info, Node: Question 2.6, Next: Question 2.7, Previous: Question 2.5, Up: Section 2
+
+Question 2.6.  Can I call FFTW from FORTRAN?
+
+Yes, but not directly.  The main problem is that Fortran cannot pass
+parameters by value.  However, FFTW can be called indirectly from Fortran
+through the use of special C "wrapper" routines.  Appropriate wrapper
+code, documented in the FFTW manual, is included with FFTW (versions 1.3
+and higher).
+
+By default, FFTW configures its wrapper routines to work with the first
+compiler it finds, e.g. g77.  To configure for a different, incompatible
+Fortran compiler foobar, use ./configure F77=foobar when installing FFTW.
+
+
+File: fftw-faq.info, Node: Question 2.7, Next: Question 2.8, Previous: Question 2.6, Up: Section 2
+
+Question 2.7.  Can I call FFTW from C++?
+
+Most definitely.  FFTW should compile and run under any C++ compiler.
+
+
+File: fftw-faq.info, Node: Question 2.8, Next: Question 2.9, Previous: Question 2.7, Up: Section 2
+
+Question 2.8.  Why isn't FFTW written in FORTRAN/C++?
+
+Because we don't like those languages, and neither approaches the
+portability of C.
+
+
+File: fftw-faq.info, Node: Question 2.9, Next: Question 3.1, Previous: Question 2.8, Up: Section 2
+
+Question 2.9.  How do I compile FFTW to run in single precision?
+
+On a Unix system: configure --enable-float.  On a non-Unix system: edit
+fftw/fftw.h to #define the symbol FFTW_ENABLE_FLOAT.  In both cases, you
+must then recompile FFTW.
+
+
+File: fftw-faq.info, Node: Section 3, Next: Section 4, Previous: Section 2, Up: Top
+
+Using FFTW
+
+* Menu:
+* Question 3.1::    FFTW seems really slow.
+* Question 3.2::    FFTW slows down after repeated calls.
+* Question 3.3::    An FFTW routine is crashing when I call it.
+* Question 3.4::    My Fortran program crashes when calling FFTW.
+* Question 3.5::    FFTW gives results different from my old FFT.
+* Question 3.6::    Your in-place transform gives incorrect results.
+* Question 3.7::    Can I save FFTW's plans?
+* Question 3.8::    Why does your inverse transform return a scaled
+                    result?
+* Question 3.9::    How can I make FFTW put the origin (zero frequency) at
+                    the center of its output?
+* Question 3.10::   How do I FFT an image/audio file in *foobar* format?
+* Question 3.11::   My program does not link (on Unix).
+* Question 3.12::   My program crashes, complaining about stack space.
+
+
+
+File: fftw-faq.info, Node: Question 3.1, Next: Question 3.2, Previous: Question 2.9, Up: Section 3
+
+Question 3.1.  FFTW seems really slow.
+
+You are probably recreating the plan before every transform, rather than
+creating it once and reusing it for all transforms of the same size.  FFTW
+is designed to be used in the following way:
+
+* First, you create a plan.  This will take several seconds.
+* Then, you reuse the plan many times to perform FFTs.  These are fast.
+If you don't need to compute many transforms and the time for the planner
+is significant, you have two options.  First, you can use the
+FFTW_ESTIMATE option in the planner, which uses heuristics instead of
+runtime measurements and produces a good plan in a short time.  Second,
+you can use the wisdom feature to precompute the plan; see *Note Question
+3.7:: `Can I save FFTW's plans?'
+
+
+File: fftw-faq.info, Node: Question 3.2, Next: Question 3.3, Previous: Question 3.1, Up: Section 3
+
+Question 3.2.  FFTW slows down after repeated calls.
+
+Probably, NaNs or similar are creeping into your data, and the slowdown is
+due to the resulting floating-point exceptions.  For example, be aware
+that repeatedly FFTing the same array is a diverging process (because FFTW
+computes the unnormalized transform).
+
+
+File: fftw-faq.info, Node: Question 3.3, Next: Question 3.4, Previous: Question 3.2, Up: Section 3
+
+Question 3.3.  An FFTW routine is crashing when I call it.
+
+You almost certainly have a bug in your code.  For example, you could be
+passing invalid arguments (such as wrongly-sized arrays) to FFTW, or you
+could simply have memory corruption elsewhere in your program that causes
+random crashes later on.  Learn to debug, and don't complain to us unless
+you can come up with a minimal program (preferably under 30 lines) that
+illustrates the problem.
+
+
+File: fftw-faq.info, Node: Question 3.4, Next: Question 3.5, Previous: Question 3.3, Up: Section 3
+
+Question 3.4.  My Fortran program crashes when calling FFTW.
+
+As described in the manual, on 64-bit machines you must store the plans in
+variables large enough to hold a pointer, for example integer*8.
+
+
+File: fftw-faq.info, Node: Question 3.5, Next: Question 3.6, Previous: Question 3.4, Up: Section 3
+
+Question 3.5.  FFTW gives results different from my old FFT.
+
+People follow many different conventions for the DFT, and you should be
+sure to know the ones that we use (described in the FFTW manual).  In
+particular, you should be aware that the FFTW_FORWARD/FFTW_BACKWARD
+directions correspond to signs of -1/+1 in the exponent of the DFT
+definition.  (*Numerical Recipes* uses the opposite convention.)
+
+You should also know that we compute an unnormalized transform.  In
+contrast, Matlab is an example of program that computes a normalized
+transform.  See *Note Question 3.8:: `Why does your inverse transform
+return a scaled result?'.
+
+Finally, note that floating-point arithmetic is not exact, so different
+FFT algorithms will give slightly different results (on the order of the
+numerical accuracy; typically a fractional difference of 1e-15 or so).
+
+
+File: fftw-faq.info, Node: Question 3.6, Next: Question 3.7, Previous: Question 3.5, Up: Section 3
+
+Question 3.6.  Your in-place transform gives incorrect results.
+
+As described in the FFTW manual, the output array argument has a special
+meaning for FFTW_INPLACE transforms; you should not pass the input array
+for this argument.
+
+
+File: fftw-faq.info, Node: Question 3.7, Next: Question 3.8, Previous: Question 3.6, Up: Section 3
+
+Question 3.7.  Can I save FFTW's plans?
+
+Yes. Starting with version 1.2, FFTW provides the  wisdom mechanism for
+saving plans.  See *Note Question 4.3:: `What is this wisdom thing?' and
+the FFTW manual.
+
+
+File: fftw-faq.info, Node: Question 3.8, Next: Question 3.9, Previous: Question 3.7, Up: Section 3
+
+Question 3.8.  Why does your inverse transform return a scaled result?
+
+Computing the forward transform followed by the backward transform (or
+vice versa) yields the original array scaled by the size of the array.
+(For multi-dimensional transforms, the size of the array is the product of
+the dimensions.)  We could, instead, have chosen a normalization that
+would have returned the unscaled array. Or, to accomodate the many
+conventions in this matter, the transform routines could have accepted a
+"scale factor" parameter. We did not do this, however, for two reasons.
+First, we didn't want to sacrifice performance in the common case where
+the scale factor is 1. Second, in real applications the FFT is followed or
+preceded by some computation on the data, into which the scale factor can
+typically be absorbed at little or no cost.
+
+
+File: fftw-faq.info, Node: Question 3.9, Next: Question 3.10, Previous: Question 3.8, Up: Section 3
+
+Question 3.9.  How can I make FFTW put the origin (zero frequency) at the center of its output?
+
+For human viewing of a spectrum, it is often convenient to put the origin
+in frequency space at the center of the output array, rather than in the
+zero-th element (the default in FFTW).  If all of the dimensions of your
+array are even, you can accomplish this by simply multiplying each element
+of the input array by (-1)^(i + j + ...), where i, j, etcetera are the
+indices of the element.  (This trick is a general property of the DFT, and
+is not specific to FFTW.)
+
+
+File: fftw-faq.info, Node: Question 3.10, Next: Question 3.11, Previous: Question 3.9, Up: Section 3
+
+Question 3.10.  How do I FFT an image/audio file in *foobar* format?
+
+FFTW performs an FFT on an array of floating-point values.  You can
+certainly use it to compute the transform of an image or audio stream, but
+you are responsible for figuring out your data format and converting it to
+the form FFTW requires.
+
+
+File: fftw-faq.info, Node: Question 3.11, Next: Question 3.12, Previous: Question 3.10, Up: Section 3
+
+Question 3.11.  My program does not link (on Unix).
+
+Please use the exact order in which libraries are specified by the FFTW
+manual (e.g. -lrfftw -lfftw -lm).  Also, note that the libraries must be
+listed after your program sources/objects.  (The general rule is that if
+*A* uses *B*, then *A* must be listed before *B* in the link command.).
+For example, switching the order to -lfftw -lrfftw -lm will fail.
+
+
+File: fftw-faq.info, Node: Question 3.12, Next: Question 4.1, Previous: Question 3.11, Up: Section 3
+
+Question 3.12.  My program crashes, complaining about stack space.
+
+You cannot declare large arrays statically; you should use malloc (or
+equivalent) to allocate the arrays you want to transform if they are
+larger than a few hundred elements.
+
+
+File: fftw-faq.info, Node: Section 4, Next: Section 5, Previous: Section 3, Up: Top
+
+Internals of FFTW
+
+* Menu:
+* Question 4.1::    How does FFTW work?
+* Question 4.2::    Why is FFTW so fast?
+* Question 4.3::    What is this wisdom thing?
+* Question 4.4::    Why do you use wisdom? I just wanted to save a plan.
+
+
+
+File: fftw-faq.info, Node: Question 4.1, Next: Question 4.2, Previous: Question 3.12, Up: Section 4
+
+Question 4.1.  How does FFTW work?
+
+The innovation (if it can be so called) in FFTW consists in having an
+interpreter execute the transform.  The program for the interpreter (the
+*plan*) is computed at runtime according to the characteristics of your
+machine/compiler.  This peculiar software architecture allows FFTW to
+adapt itself to almost any machine.
+
+For more details, see the paper "The Fastest Fourier Transform in the
+West", by M. Frigo and S. G. Johnson, available at the FFTW web page.  See
+also "FFTW: An Adaptive Software Architecture for the FFT", in ICASSP '98.
+
+
+File: fftw-faq.info, Node: Question 4.2, Next: Question 4.3, Previous: Question 4.1, Up: Section 4
+
+Question 4.2.  Why is FFTW so fast?
+
+This is a complex question, and there is no simple answer.  In fact, the
+authors do not fully know the answer, either.  In addition to many small
+performance hacks throughout FFTW, there are three general reasons for
+FFTW's speed.
+
+* 	FFTW uses an internal interpreter to adapt itself to a machine.  See
+  *Note Question 4.1:: `How does FFTW work?'.
+* 	FFTW uses a code generator to produce highly-optimized routines for
+  computing small transforms.
+* 	FFTW uses explicit divide-and-conquer to take advantage of the memory
+hierarchy.  For more details on these three topics, see the paper "The
+Fastest Fourier Transform in the West", by M. Frigo and S. G. Johnson,
+available at the FFTW web page.
+
+
+File: fftw-faq.info, Node: Question 4.3, Next: Question 4.4, Previous: Question 4.2, Up: Section 4
+
+Question 4.3.  What is this wisdom thing?
+
+wisdom is the name of the mechanism that FFTW uses to save and restore
+plans.  Rather than just saving plans, FFTW remembers what it learns about
+your machine, and becomes wiser and wiser as time passes by.  You can save
+wisdom for later use.
+
+
+File: fftw-faq.info, Node: Question 4.4, Next: Question 5.1, Previous: Question 4.3, Up: Section 4
+
+Question 4.4.  Why do you use wisdom? I just wanted to save a plan.
+
+wisdom could be implemented with less effort than a general plan-saving
+mechanism would have required.  In addition, wisdom provides additional
+benefits.  For example, if you are planning transforms of size 1024, and
+later you want a transform of size 2048, most of the calculations of the
+1024 case can be reused.
+
+In short, wisdom does more things with less effort, and seemed like The
+Right Thing to do.
+
+
+File: fftw-faq.info, Node: Section 5, Previous: Section 4, Up: Top
+
+Known bugs
+
+* Menu:
+* Question 5.1::    FFTW 1.1 crashes in rfftwnd on Linux.
+* Question 5.2::    The MPI transforms in FFTW 1.2 give incorrect
+                    results/leak memory.
+* Question 5.3::    The test programs in FFTW 1.2.1 fail when I change
+                    FFTW to use single precision.
+* Question 5.4::    The test program in FFTW 1.2.1 fails for n > 46340.
+* Question 5.5::    The threaded code fails on Linux Redhat 5.0
+* Question 5.6::    FFTW 2.0's rfftwnd fails for rank > 1 transforms with
+                    a final dimension >= 65536.
+* Question 5.7::    FFTW 2.0's complex transforms give the wrong results
+                    with prime factors 17 to 97.
+* Question 5.8::    FFTW 2.1.1's MPI test programs crash with MPICH.
+* Question 5.9::    FFTW 2.1.2's multi-threaded transforms don't work on
+                    AIX.
+* Question 5.10::   FFTW 2.1.2's complex transforms give incorrect results
+                    for large prime sizes.
+* Question 5.11::   FFTW 2.1.3 crashes on AIX
+
+
+
+File: fftw-faq.info, Node: Question 5.1, Next: Question 5.2, Previous: Question 4.4, Up: Section 5
+
+Question 5.1.  FFTW 1.1 crashes in rfftwnd on Linux.
+
+This bug was fixed in FFTW 1.2.  There was a bug in rfftwnd causing an
+incorrect amount of memory to be allocated.  The bug showed up in Linux
+with libc-5.3.12 (and nowhere else that we know of).
+
+
+File: fftw-faq.info, Node: Question 5.2, Next: Question 5.3, Previous: Question 5.1, Up: Section 5
+
+Question 5.2.  The MPI transforms in FFTW 1.2 give incorrect results/leak memory.
+
+These bugs were corrected in FFTW 1.2.1.  The MPI transforms (really, just
+the transpose routines) in FFTW 1.2 had bugs that could cause errors in
+some situations.
+
+
+File: fftw-faq.info, Node: Question 5.3, Next: Question 5.4, Previous: Question 5.2, Up: Section 5
+
+Question 5.3.  The test programs in FFTW 1.2.1 fail when I change FFTW to use single precision.
+
+This bug was fixed in FFTW 1.3.  (Older versions of FFTW did work in
+single precision, but the test programs didn't--the error tolerances in
+the tests were set for double precision.)
+
+
+File: fftw-faq.info, Node: Question 5.4, Next: Question 5.5, Previous: Question 5.3, Up: Section 5
+
+Question 5.4.  The test program in FFTW 1.2.1 fails for n > 46340.
+
+This bug was fixed in FFTW 1.3.  FFTW 1.2.1 produced the right answer, but
+the test program was wrong.  For large n, n*n in the naive transform that
+we used for comparison overflows 32 bit integer precision, breaking the
+test.
+
+
+File: fftw-faq.info, Node: Question 5.5, Next: Question 5.6, Previous: Question 5.4, Up: Section 5
+
+Question 5.5.  The threaded code fails on Linux Redhat 5.0
+
+We had problems with glibc-2.0.5.  The code should work with glibc-2.0.7.
+
+
+File: fftw-faq.info, Node: Question 5.6, Next: Question 5.7, Previous: Question 5.5, Up: Section 5
+
+Question 5.6.  FFTW 2.0's rfftwnd fails for rank > 1 transforms with a final dimension >= 65536.
+
+This bug was fixed in FFTW 2.0.1.  (There was a 32-bit integer overflow
+due to a poorly-parenthesized expression.)
+
+
+File: fftw-faq.info, Node: Question 5.7, Next: Question 5.8, Previous: Question 5.6, Up: Section 5
+
+Question 5.7.  FFTW 2.0's complex transforms give the wrong results with prime factors 17 to 97.
+
+There was a bug in the complex transforms that could cause incorrect
+results under (hopefully rare) circumstances for lengths with
+intermediate-size prime factors (17-97).  This bug was fixed in FFTW
+2.1.1.
+
+
+File: fftw-faq.info, Node: Question 5.8, Next: Question 5.9, Previous: Question 5.7, Up: Section 5
+
+Question 5.8.  FFTW 2.1.1's MPI test programs crash with MPICH.
+
+This bug was fixed in FFTW 2.1.2.  The 2.1/2.1.1 MPI test programs crashed
+when using the MPICH implementation of MPI with the ch_p4 device (TCP/IP);
+the transforms themselves worked fine.
+
+
+File: fftw-faq.info, Node: Question 5.9, Next: Question 5.10, Previous: Question 5.8, Up: Section 5
+
+Question 5.9.  FFTW 2.1.2's multi-threaded transforms don't work on AIX.
+
+This bug was fixed in FFTW 2.1.3.  The multi-threaded transforms in
+previous versions didn't work with AIX's pthreads implementation, which
+idiosyncratically creates threads in detached (non-joinable) mode by
+default.
+
+
+File: fftw-faq.info, Node: Question 5.10, Next: Question 5.11, Previous: Question 5.9, Up: Section 5
+
+Question 5.10.  FFTW 2.1.2's complex transforms give incorrect results for large prime sizes.
+
+This bug was fixed in FFTW 2.1.3.  FFTW's complex-transform algorithm for
+prime sizes (in versions 2.0 to 2.1.2) had an integer overflow problem
+that caused incorrect results for many primes greater than 32768 (on
+32-bit machines).  (Sizes without large prime factors are not affected.)
+
+
+File: fftw-faq.info, Node: Question 5.11, Previous: Question 5.10, Up: Section 5
+
+Question 5.11.  FFTW 2.1.3 crashes on AIX
+
+The FFTW 2.1.3 configure script picked incorrect compiler flags for the
+xlc compiler on newer IBM processors.  This is fixed in FFTW 2.1.4.
+

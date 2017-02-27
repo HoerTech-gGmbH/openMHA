@@ -1,0 +1,46 @@
+S 0 Index
+S 1 Introduction and General Information
+Q whatisfftw 1.1 What is FFTW?
+Q whereisfftw 1.2 How do I obtain FFTW?
+Q isfftwfree 1.3 Is FFTW free software?
+Q nonfree 1.4 What is this about non-free licenses?
+S 2 Installing FFTW
+Q systems 2.1 Which systems does FFTW run on?
+Q runOnDOS 2.2 Does FFTW run on DOS/Windows?
+Q compilerCrashes 2.3 My compiler has trouble with FFTW.
+Q solarisSucks 2.4 FFTW does not compile on Solaris, complaining about \courier{const\}.
+Q languages 2.5 Which language is FFTW written in?
+Q fortran 2.6 Can I call FFTW from FORTRAN?
+Q cplusplus 2.7 Can I call FFTW from C++?
+Q whynotfortran 2.8 Why isn't FFTW written in FORTRAN/C++?
+Q singleprec 2.9 How do I compile FFTW to run in single precision?
+S 3 Using FFTW
+Q slow 3.1 FFTW seems really slow.
+Q slows 3.2 FFTW slows down after repeated calls.
+Q segfault 3.3 An FFTW routine is crashing when I call it.
+Q fortran64 3.4 My Fortran program crashes when calling FFTW.
+Q conventions 3.5 FFTW gives results different from my old FFT.
+Q inplace 3.6 Your in-place transform gives incorrect results.
+Q savePlans 3.7 Can I save FFTW's plans?
+Q whyscaled 3.8 Why does your inverse transform return a scaled result?
+Q centerorigin 3.9 How can I make FFTW put the origin (zero frequency) at the center of its output?
+Q imageaudio 3.10 How do I FFT an image/audio file in \italic{foobar\} format?
+Q linkfails 3.11 My program does not link (on Unix).
+Q nostack 3.12 My program crashes, complaining about stack space.
+S 4 Internals of FFTW
+Q howworks 4.1 How does FFTW work?
+Q whyfast 4.2 Why is FFTW so fast?
+Q wisdom 4.3 What is this \courier{wisdom\} thing?
+Q whywisdom 4.4 Why do you use \courier{wisdom\}? I just wanted to save a plan.
+S 5 Known bugs
+Q rfftwndbug 5.1 FFTW 1.1 crashes in rfftwnd on Linux.
+Q fftwmpibug 5.2 The MPI transforms in FFTW 1.2 give incorrect results/leak memory.
+Q testsingbug 5.3 The test programs in FFTW 1.2.1 fail when I change FFTW to use single precision.
+Q teststoobig 5.4 The test program in FFTW 1.2.1 fails for n > 46340.
+Q linuxthreads 5.5 The threaded code fails on Linux Redhat 5.0
+Q bigrfftwnd 5.6 FFTW 2.0's rfftwnd fails for rank > 1 transforms with a final dimension >= 65536.
+Q primebug 5.7 FFTW 2.0's complex transforms give the wrong results with prime factors 17 to 97.
+Q mpichbug 5.8 FFTW 2.1.1's MPI test programs crash with MPICH.
+Q aixthreadbug 5.9 FFTW 2.1.2's multi-threaded transforms don't work on AIX.
+Q bigprimebug 5.10 FFTW 2.1.2's complex transforms give incorrect results for large prime sizes.
+Q aixflags 5.11 FFTW 2.1.3 crashes on AIX

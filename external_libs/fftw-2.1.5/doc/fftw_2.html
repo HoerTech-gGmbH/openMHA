@@ -1,0 +1,1171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<!-- This HTML file has been created by texi2html 1.52
+     from fftw.texi on 24 March 2003 -->
+
+<TITLE>FFTW - Tutorial</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+Go to the <A HREF="fftw_1.html">first</A>, <A HREF="fftw_1.html">previous</A>, <A HREF="fftw_3.html">next</A>, <A HREF="fftw_10.html">last</A> section, <A HREF="fftw_toc.html">table of contents</A>.
+<P><HR><P>
+
+
+<H1><A NAME="SEC2">Tutorial</A></H1>
+<P>
+<A NAME="IDX14"></A>
+This chapter describes the basic usage of FFTW, i.e., how to compute the
+Fourier transform of a single array.  This chapter tells the truth, but
+not the <EM>whole</EM> truth. Specifically, FFTW implements additional
+routines and flags, providing extra functionality, that are not
+documented here.  See Section <A HREF="fftw_3.html#SEC16">FFTW Reference</A>, for more complete information.
+(Note that you need to compile and install FFTW before you can use it in
+a program.  See Section <A HREF="fftw_6.html#SEC66">Installation and Customization</A>, for the details of
+the installation.)
+
+
+<P>
+Here, we assume a default installation of FFTW.  In some installations
+(particulary from binary packages), the FFTW header files and libraries
+are prefixed with <SAMP>`<CODE>d</CODE>'</SAMP> or <SAMP>`<CODE>s</CODE>'</SAMP> to indicate
+versions in double or single precision, respectively.  The usage of FFTW
+in that case is the same, except that <CODE>#include</CODE> directives and
+link commands must use the appropriate prefix.  See Section <A HREF="fftw_6.html#SEC69">Installing FFTW in both single and double precision</A>, for more information.
+
+
+<P>
+This tutorial chapter is structured as follows.  Section <A HREF="fftw_2.html#SEC3">Complex One-dimensional Transforms Tutorial</A> describes the basic usage of the
+one-dimensional transform of complex data.  Section <A HREF="fftw_2.html#SEC4">Complex Multi-dimensional Transforms Tutorial</A> describes the basic usage of the
+multi-dimensional transform of complex data.  Section <A HREF="fftw_2.html#SEC5">Real One-dimensional Transforms Tutorial</A> describes the one-dimensional transform of real
+data and its inverse.  Finally, Section <A HREF="fftw_2.html#SEC6">Real Multi-dimensional Transforms Tutorial</A> describes the multi-dimensional transform of real data and its
+inverse.  We recommend that you read these sections in the order that
+they are presented.  We then discuss two topics in detail.  In
+Section <A HREF="fftw_2.html#SEC7">Multi-dimensional Array Format</A>, we discuss the various
+alternatives for storing multi-dimensional arrays in memory.  Section <A HREF="fftw_2.html#SEC13">Words of Wisdom</A> shows how you can save FFTW's plans for future use.
+
+
+
+
+<H2><A NAME="SEC3">Complex One-dimensional Transforms Tutorial</A></H2>
+<P>
+<A NAME="IDX15"></A>
+<A NAME="IDX16"></A>
+
+
+<P>
+The basic usage of FFTW is simple.  A typical call to FFTW looks like:
+
+
+
+<PRE>
+#include &#60;fftw.h&#62;
+...
+{
+     fftw_complex in[N], out[N];
+     fftw_plan p;
+     ...
+     p = fftw_create_plan(N, FFTW_FORWARD, FFTW_ESTIMATE);
+     ...
+     fftw_one(p, in, out);
+     ...
+     fftw_destroy_plan(p);  
+}
+</PRE>
+
+<P>
+The first thing we do is to create a <EM>plan</EM>, which is an object
+<A NAME="IDX17"></A>
+that contains all the data that FFTW needs to compute the FFT, using the
+following function:
+
+
+
+<PRE>
+fftw_plan fftw_create_plan(int n, fftw_direction dir, int flags);
+</PRE>
+
+<P>
+<A NAME="IDX18"></A>
+<A NAME="IDX19"></A>
+<A NAME="IDX20"></A>
+
+
+<P>
+The first argument, <CODE>n</CODE>, is the size of the transform you are
+trying to compute.  The size <CODE>n</CODE> can be any positive integer, but
+sizes that are products of small factors are transformed most
+efficiently.  The second argument, <CODE>dir</CODE>, can be either
+<CODE>FFTW_FORWARD</CODE> or <CODE>FFTW_BACKWARD</CODE>, and indicates the direction
+of the transform you
+<A NAME="IDX21"></A>
+<A NAME="IDX22"></A>
+are interested in.  Alternatively, you can use the sign of the exponent
+in the transform, -1 or +1, which corresponds to
+<CODE>FFTW_FORWARD</CODE> or <CODE>FFTW_BACKWARD</CODE> respectively.  The
+<CODE>flags</CODE> argument is either <CODE>FFTW_MEASURE</CODE> or
+<A NAME="IDX23"></A>
+<CODE>FFTW_ESTIMATE</CODE>.  <CODE>FFTW_MEASURE</CODE> means that FFTW actually runs
+<A NAME="IDX24"></A>
+and measures the execution time of several FFTs in order to find the
+best way to compute the transform of size <CODE>n</CODE>.  This may take some
+time, depending on your installation and on the precision of the timer
+in your machine.  <CODE>FFTW_ESTIMATE</CODE>, on the contrary, does not run
+any computation, and just builds a
+<A NAME="IDX25"></A>
+reasonable plan, which may be sub-optimal.  In other words, if your
+program performs many transforms of the same size and initialization
+time is not important, use <CODE>FFTW_MEASURE</CODE>; otherwise use the
+estimate.  (A compromise between these two extremes exists.  See Section <A HREF="fftw_2.html#SEC13">Words of Wisdom</A>.)
+
+
+<P>
+Once the plan has been created, you can use it as many times as you like
+for transforms on arrays of the same size.  When you are done with the
+plan, you deallocate it by calling <CODE>fftw_destroy_plan(plan)</CODE>.
+<A NAME="IDX26"></A>
+
+
+<P>
+The transform itself is computed by passing the plan along with the
+input and output arrays to <CODE>fftw_one</CODE>:
+
+
+
+<PRE>
+void fftw_one(fftw_plan plan, fftw_complex *in, fftw_complex *out);
+</PRE>
+
+<P>
+<A NAME="IDX27"></A>
+
+
+<P>
+Note that the transform is out of place: <CODE>in</CODE> and <CODE>out</CODE> must
+point to distinct arrays. It operates on data of type
+<CODE>fftw_complex</CODE>, a data structure with real (<CODE>in[i].re</CODE>) and
+imaginary (<CODE>in[i].im</CODE>) floating-point components.  The <CODE>in</CODE>
+and <CODE>out</CODE> arrays should have the length specified when the plan was
+created.  An alternative function, <CODE>fftw</CODE>, allows you to
+efficiently perform multiple and/or strided transforms (see Section <A HREF="fftw_3.html#SEC16">FFTW Reference</A>).
+<A NAME="IDX28"></A>
+
+
+<P>
+The DFT results are stored in-order in the array <CODE>out</CODE>, with the
+zero-frequency (DC) component in <CODE>out[0]</CODE>.
+<A NAME="IDX29"></A>
+The array <CODE>in</CODE> is not modified.  Users should note that FFTW
+computes an unnormalized DFT, the sign of whose exponent is given by the
+<CODE>dir</CODE> parameter of <CODE>fftw_create_plan</CODE>.  Thus, computing a
+forward followed by a backward transform (or vice versa) results in the
+original array scaled by <CODE>n</CODE>.  See Section <A HREF="fftw_3.html#SEC23">What FFTW Really Computes</A>,
+for the definition of DFT.
+<A NAME="IDX30"></A>
+
+
+<P>
+A program using FFTW should be linked with <CODE>-lfftw -lm</CODE> on Unix
+systems, or with the FFTW and standard math libraries in general.
+<A NAME="IDX31"></A>
+
+
+
+
+<H2><A NAME="SEC4">Complex Multi-dimensional Transforms Tutorial</A></H2>
+<P>
+<A NAME="IDX32"></A>
+<A NAME="IDX33"></A>
+
+
+<P>
+FFTW can also compute transforms of any number of dimensions
+(<EM>rank</EM>).  The syntax is similar to that for the one-dimensional
+<A NAME="IDX34"></A>
+transforms, with <SAMP>`fftw_'</SAMP> replaced by <SAMP>`fftwnd_'</SAMP> (which stands
+for "<CODE>fftw</CODE> in <CODE>N</CODE> dimensions").
+
+
+<P>
+As before, we <CODE>#include &#60;fftw.h&#62;</CODE> and create a plan for the
+transforms, this time of type <CODE>fftwnd_plan</CODE>:
+
+
+
+<PRE>
+fftwnd_plan fftwnd_create_plan(int rank, const int *n,
+                               fftw_direction dir, int flags);
+</PRE>
+
+<P>
+<A NAME="IDX35"></A>
+<A NAME="IDX36"></A>
+<A NAME="IDX37"></A>
+
+
+<P>
+<CODE>rank</CODE> is the dimensionality of the array, and can be any
+non-negative integer.  The next argument, <CODE>n</CODE>, is a pointer to an
+integer array of length <CODE>rank</CODE> containing the (positive) sizes of
+each dimension of the array.  (Note that the array will be stored in
+row-major order. See Section <A HREF="fftw_2.html#SEC7">Multi-dimensional Array Format</A>, for information
+on row-major order.)  The last two parameters are the same as in
+<CODE>fftw_create_plan</CODE>.  We now, however, have an additional possible
+flag, <CODE>FFTW_IN_PLACE</CODE>, since <CODE>fftwnd</CODE> supports true in-place
+<A NAME="IDX38"></A>
+<A NAME="IDX39"></A>
+<A NAME="IDX40"></A>
+transforms.  Multiple flags are combined using a bitwise <EM>or</EM>
+(<SAMP>`|'</SAMP>).  (An <EM>in-place</EM> transform is one in which the output
+data overwrite the input data.  It thus requires half as much memory
+as--and is often faster than--its opposite, an <EM>out-of-place</EM>
+transform.)
+<A NAME="IDX41"></A>
+<A NAME="IDX42"></A>
+
+
+<P>
+For two- and three-dimensional transforms, FFTWND provides alternative
+routines that accept the sizes of each dimension directly, rather than
+indirectly through a rank and an array of sizes.  These are otherwise
+identical to <CODE>fftwnd_create_plan</CODE>, and are sometimes more
+convenient:
+
+
+
+<PRE>
+fftwnd_plan fftw2d_create_plan(int nx, int ny,
+                               fftw_direction dir, int flags);
+fftwnd_plan fftw3d_create_plan(int nx, int ny, int nz,
+                               fftw_direction dir, int flags);
+</PRE>
+
+<P>
+<A NAME="IDX43"></A>
+<A NAME="IDX44"></A>
+
+
+<P>
+Once the plan has been created, you can use it any number of times for
+transforms of the same size.  When you do not need a plan anymore, you
+can deallocate the plan by calling <CODE>fftwnd_destroy_plan(plan)</CODE>.
+<A NAME="IDX45"></A>
+
+
+<P>
+Given a plan, you can compute the transform of an array of data by
+calling:
+
+
+
+<PRE>
+void fftwnd_one(fftwnd_plan plan, fftw_complex *in, fftw_complex *out);
+</PRE>
+
+<P>
+<A NAME="IDX46"></A>
+
+
+<P>
+Here, <CODE>in</CODE> and <CODE>out</CODE> point to multi-dimensional arrays in
+row-major order, of the size specified when the plan was created.  In
+the case of an in-place transform, the <CODE>out</CODE> parameter is ignored
+and the output data are stored in the <CODE>in</CODE> array.  The results are
+stored in-order, unnormalized, with the zero-frequency component in
+<CODE>out[0]</CODE>.
+<A NAME="IDX47"></A>
+A forward followed by a backward transform (or vice-versa) yields the
+original data multiplied by the size of the array (i.e. the product of
+the dimensions).  See Section <A HREF="fftw_3.html#SEC28">What FFTWND Really Computes</A>, for a discussion
+of what FFTWND computes.
+<A NAME="IDX48"></A>
+
+
+<P>
+For example, code to perform an in-place FFT of a three-dimensional
+array might look like:
+
+
+
+<PRE>
+#include &#60;fftw.h&#62;
+...
+{
+     fftw_complex in[L][M][N];
+     fftwnd_plan p;
+     ...
+     p = fftw3d_create_plan(L, M, N, FFTW_FORWARD,
+                            FFTW_MEASURE | FFTW_IN_PLACE);
+     ...
+     fftwnd_one(p, &#38;in[0][0][0], NULL);
+     ...
+     fftwnd_destroy_plan(p);  
+}
+</PRE>
+
+<P>
+Note that <CODE>in</CODE> is a statically-declared array, which is
+automatically in row-major order, but we must take the address of the
+first element in order to fit the type expected by <CODE>fftwnd_one</CODE>.
+(See Section <A HREF="fftw_2.html#SEC7">Multi-dimensional Array Format</A>.)
+
+
+
+
+<H2><A NAME="SEC5">Real One-dimensional Transforms Tutorial</A></H2>
+<P>
+<A NAME="IDX49"></A>
+<A NAME="IDX50"></A>
+<A NAME="IDX51"></A>
+
+
+<P>
+If the input data are purely real, you can save roughly a factor of two
+in both time and storage by using the <EM>rfftw</EM> transforms, which are
+FFTs specialized for real data.  The output of a such a transform is a
+<EM>halfcomplex</EM> array, which consists of only half of the complex DFT
+amplitudes (since the negative-frequency amplitudes for real data are
+the complex conjugate of the positive-frequency amplitudes).
+<A NAME="IDX52"></A>
+
+
+<P>
+In exchange for these speed and space advantages, the user sacrifices
+some of the simplicity of FFTW's complex transforms.  First of all, to
+allow maximum performance, the output format of the one-dimensional real
+transforms is different from that used by the multi-dimensional
+transforms.  Second, the inverse transform (halfcomplex to real) has the
+side-effect of destroying its input array.  Neither of these
+inconveniences should pose a serious problem for users, but it is
+important to be aware of them.  (Both the inconvenient output format
+and the side-effect of the inverse transform can be ameliorated for
+one-dimensional transforms, at the expense of some performance, by using
+instead the multi-dimensional transform routines with a rank of one.)
+
+
+<P>
+The computation of the plan is similar to that for the complex
+transforms.  First, you <CODE>#include &#60;rfftw.h&#62;</CODE>.  Then, you create a
+plan (of type <CODE>rfftw_plan</CODE>) by calling:
+
+
+
+<PRE>
+rfftw_plan rfftw_create_plan(int n, fftw_direction dir, int flags);
+</PRE>
+
+<P>
+<A NAME="IDX53"></A>
+<A NAME="IDX54"></A>
+<A NAME="IDX55"></A>
+
+
+<P>
+<CODE>n</CODE> is the length of the <EM>real</EM> array in the transform (even
+for halfcomplex-to-real transforms), and can be any positive integer
+(although sizes with small factors are transformed more efficiently).
+<CODE>dir</CODE> is either <CODE>FFTW_REAL_TO_COMPLEX</CODE> or
+<CODE>FFTW_COMPLEX_TO_REAL</CODE>.
+<A NAME="IDX56"></A>
+<A NAME="IDX57"></A>
+The <CODE>flags</CODE> parameter is the same as in <CODE>fftw_create_plan</CODE>.
+
+
+<P>
+Once created, a plan can be used for any number of transforms, and is
+deallocated when you are done with it by calling
+<CODE>rfftw_destroy_plan(plan)</CODE>.
+<A NAME="IDX58"></A>
+
+
+<P>
+Given a plan, a real-to-complex or complex-to-real transform is computed
+by calling:
+
+
+
+<PRE>
+void rfftw_one(rfftw_plan plan, fftw_real *in, fftw_real *out);
+</PRE>
+
+<P>
+<A NAME="IDX59"></A>
+
+
+<P>
+(Note that <CODE>fftw_real</CODE> is an alias for the floating-point type for
+which FFTW was compiled.)  Depending upon the direction of the plan,
+either the input or the output array is halfcomplex, and is stored in
+the following format:
+<A NAME="IDX60"></A>
+
+
+<p align=center>
+r<sub>0</sub>, r<sub>1</sub>, r<sub>2</sub>, ..., r<sub>n/2</sub>, i<sub>(n+1)/2-1</sub>, ..., i<sub>2</sub>, i<sub>1</sub>
+</p>
+
+<P>
+Here,
+r<sub>k</sub>
+is the real part of the kth output, and
+i<sub>k</sub>
+is the imaginary part.  (We follow here the C convention that integer
+division is rounded down, e.g. 7 / 2 = 3.) For a halfcomplex
+array <CODE>hc[]</CODE>, the kth component has its real part in
+<CODE>hc[k]</CODE> and its imaginary part in <CODE>hc[n-k]</CODE>, with the
+exception of <CODE>k</CODE> <CODE>==</CODE> <CODE>0</CODE> or <CODE>n/2</CODE> (the latter only
+if n is even)---in these two cases, the imaginary part is zero due to
+symmetries of the real-complex transform, and is not stored.  Thus, the
+transform of <CODE>n</CODE> real values is a halfcomplex array of length
+<CODE>n</CODE>, and vice versa.  <A NAME="DOCF1" HREF="fftw_foot.html#FOOT1">(1)</A>  This is actually only half of the DFT
+spectrum of the data.  Although the other half can be obtained by
+complex conjugation, it is not required by many applications such as
+convolution and filtering.
+
+
+<P>
+Like the complex transforms, the RFFTW transforms are unnormalized, so a
+forward followed by a backward transform (or vice-versa) yields the
+original data scaled by the length of the array, <CODE>n</CODE>.
+<A NAME="IDX61"></A>
+
+
+<P>
+Let us reiterate here our warning that an <CODE>FFTW_COMPLEX_TO_REAL</CODE>
+transform has the side-effect of destroying its (halfcomplex) input.
+The <CODE>FFTW_REAL_TO_COMPLEX</CODE> transform, however, leaves its (real)
+input untouched, just as you would hope.
+
+
+<P>
+As an example, here is an outline of how you might use RFFTW to compute
+the power spectrum of a real array (i.e. the squares of the absolute
+values of the DFT amplitudes):
+<A NAME="IDX62"></A>
+
+
+
+<PRE>
+#include &#60;rfftw.h&#62;
+...
+{
+     fftw_real in[N], out[N], power_spectrum[N/2+1];
+     rfftw_plan p;
+     int k;
+     ...
+     p = rfftw_create_plan(N, FFTW_REAL_TO_COMPLEX, FFTW_ESTIMATE);
+     ...
+     rfftw_one(p, in, out);
+     power_spectrum[0] = out[0]*out[0];  /* DC component */
+     for (k = 1; k &#60; (N+1)/2; ++k)  /* (k &#60; N/2 rounded up) */
+          power_spectrum[k] = out[k]*out[k] + out[N-k]*out[N-k];
+     if (N % 2 == 0) /* N is even */
+          power_spectrum[N/2] = out[N/2]*out[N/2];  /* Nyquist freq. */
+     ...
+     rfftw_destroy_plan(p);
+}
+</PRE>
+
+<P>
+Programs using RFFTW should link with <CODE>-lrfftw -lfftw -lm</CODE> on Unix,
+or with the FFTW, RFFTW, and math libraries in general.
+<A NAME="IDX63"></A>
+
+
+
+
+<H2><A NAME="SEC6">Real Multi-dimensional Transforms Tutorial</A></H2>
+<P>
+<A NAME="IDX64"></A>
+
+
+<P>
+FFTW includes multi-dimensional transforms for real data of any rank.
+As with the one-dimensional real transforms, they save roughly a factor
+of two in time and storage over complex transforms of the same size.
+Also as in one dimension, these gains come at the expense of some
+increase in complexity--the output format is different from the
+one-dimensional RFFTW (and is more similar to that of the complex FFTW)
+and the inverse (complex to real) transforms have the side-effect of
+overwriting their input data.  
+
+
+<P>
+To use the real multi-dimensional transforms, you first <CODE>#include
+&#60;rfftw.h&#62;</CODE> and then create a plan for the size and direction of
+transform that you are interested in:
+
+
+
+<PRE>
+rfftwnd_plan rfftwnd_create_plan(int rank, const int *n,
+                                 fftw_direction dir, int flags);
+</PRE>
+
+<P>
+<A NAME="IDX65"></A>
+<A NAME="IDX66"></A>
+
+
+<P>
+The first two parameters describe the size of the real data (not the
+halfcomplex data, which will have different dimensions).  The last two
+parameters are the same as those for <CODE>rfftw_create_plan</CODE>.  Just as
+for fftwnd, there are two alternate versions of this routine,
+<CODE>rfftw2d_create_plan</CODE> and <CODE>rfftw3d_create_plan</CODE>, that are
+sometimes more convenient for two- and three-dimensional transforms.
+<A NAME="IDX67"></A>
+<A NAME="IDX68"></A>
+Also as in fftwnd, rfftwnd supports true in-place transforms, specified
+by including <CODE>FFTW_IN_PLACE</CODE> in the flags.
+
+
+<P>
+Once created, a plan can be used for any number of transforms, and is
+deallocated by calling <CODE>rfftwnd_destroy_plan(plan)</CODE>.
+
+
+<P>
+Given a plan, the transform is computed by calling one of the following
+two routines:
+
+
+
+<PRE>
+void rfftwnd_one_real_to_complex(rfftwnd_plan plan,
+                                 fftw_real *in, fftw_complex *out);
+void rfftwnd_one_complex_to_real(rfftwnd_plan plan,
+                                 fftw_complex *in, fftw_real *out);
+</PRE>
+
+<P>
+<A NAME="IDX69"></A>
+<A NAME="IDX70"></A>
+
+
+<P>
+As is clear from their names and parameter types, the former function is
+for <CODE>FFTW_REAL_TO_COMPLEX</CODE> transforms and the latter is for
+<CODE>FFTW_COMPLEX_TO_REAL</CODE> transforms.  (We could have used only a
+single routine, since the direction of the transform is encoded in the
+plan, but we wanted to correctly express the datatypes of the
+parameters.)  The latter routine, as we discuss elsewhere, has the
+side-effect of overwriting its input (except when the rank of the array
+is one).  In both cases, the <CODE>out</CODE> parameter is ignored for
+in-place transforms.
+
+
+<P>
+The format of the complex arrays deserves careful attention.
+<A NAME="IDX71"></A>
+Suppose that the real data has dimensions
+n<sub>1</sub> x n<sub>2</sub> x ... x n<sub>d</sub>
+(in row-major order).  Then, after a real-to-complex transform, the
+output is an
+n<sub>1</sub> x n<sub>2</sub> x ... x (n<sub>d</sub>/2+1)
+array of <CODE>fftw_complex</CODE> values in row-major order, corresponding to
+slightly over half of the output of the corresponding complex transform.
+(Note that the division is rounded down.)  The ordering of the data is
+otherwise exactly the same as in the complex case.  (In principle, the
+output could be exactly half the size of the complex transform output,
+but in more than one dimension this requires too complicated a format to
+be practical.)  Note that, unlike the one-dimensional RFFTW, the real
+and imaginary parts of the DFT amplitudes are here stored together in
+the natural way.
+
+
+<P>
+Since the complex data is slightly larger than the real data, some
+complications arise for in-place transforms.  In this case, the final
+dimension of the real data must be padded with extra values to
+accommodate the size of the complex data--two extra if the last
+dimension is even and one if it is odd.
+<A NAME="IDX72"></A>
+That is, the last dimension of the real data must physically contain
+2 * (n<sub>d</sub>/2+1)
+<CODE>fftw_real</CODE> values (exactly enough to hold the complex data).
+This physical array size does not, however, change the <EM>logical</EM>
+array size--only
+n<sub>d</sub>
+values are actually stored in the last dimension, and
+n<sub>d</sub>
+is the last dimension passed to <CODE>rfftwnd_create_plan</CODE>.
+
+
+<P>
+For example, consider the transform of a two-dimensional real array of
+size <CODE>nx</CODE> by <CODE>ny</CODE>.  The output of the <CODE>rfftwnd</CODE> transform
+is a two-dimensional complex array of size <CODE>nx</CODE> by <CODE>ny/2+1</CODE>,
+where the <CODE>y</CODE> dimension has been cut nearly in half because of
+redundancies in the output.  Because <CODE>fftw_complex</CODE> is twice the
+size of <CODE>fftw_real</CODE>, the output array is slightly bigger than the
+input array.  Thus, if we want to compute the transform in place, we
+must <EM>pad</EM> the input array so that it is of size <CODE>nx</CODE> by
+<CODE>2*(ny/2+1)</CODE>.  If <CODE>ny</CODE> is even, then there are two padding
+elements at the end of each row (which need not be initialized, as they
+are only used for output).
+The following illustration depicts the input and output arrays just
+described, for both the out-of-place and in-place transforms (with the
+arrows indicating consecutive memory locations):
+
+<p align=center><img src="rfftwnd.gif" width=389 height=583>
+
+
+<P>
+The RFFTWND transforms are unnormalized, so a forward followed by a
+backward transform will result in the original data scaled by the number
+of real data elements--that is, the product of the (logical) dimensions
+of the real data.
+<A NAME="IDX73"></A>
+
+
+<P>
+Below, we illustrate the use of RFFTWND by showing how you might use it
+to compute the (cyclic) convolution of two-dimensional real arrays
+<CODE>a</CODE> and <CODE>b</CODE> (using the identity that a convolution corresponds
+to a pointwise product of the Fourier transforms).  For variety,
+in-place transforms are used for the forward FFTs and an out-of-place
+transform is used for the inverse transform.
+<A NAME="IDX74"></A>
+<A NAME="IDX75"></A>
+
+
+
+<PRE>
+#include &#60;rfftw.h&#62;
+...
+{
+     fftw_real a[M][2*(N/2+1)], b[M][2*(N/2+1)], c[M][N];
+     fftw_complex *A, *B, C[M][N/2+1];
+     rfftwnd_plan p, pinv;
+     fftw_real scale = 1.0 / (M * N);
+     int i, j;
+     ...
+     p    = rfftw2d_create_plan(M, N, FFTW_REAL_TO_COMPLEX,
+                                FFTW_ESTIMATE | FFTW_IN_PLACE);
+     pinv = rfftw2d_create_plan(M, N, FFTW_COMPLEX_TO_REAL,
+                                FFTW_ESTIMATE);
+
+     /* aliases for accessing complex transform outputs: */
+     A = (fftw_complex*) &#38;a[0][0];
+     B = (fftw_complex*) &#38;b[0][0];
+     ...
+     for (i = 0; i &#60; M; ++i)
+          for (j = 0; j &#60; N; ++j) {
+               a[i][j] = ... ;
+               b[i][j] = ... ;
+          }
+     ...
+     rfftwnd_one_real_to_complex(p, &#38;a[0][0], NULL);
+     rfftwnd_one_real_to_complex(p, &#38;b[0][0], NULL);
+
+     for (i = 0; i &#60; M; ++i)
+          for (j = 0; j &#60; N/2+1; ++j) {
+               int ij = i*(N/2+1) + j;
+               C[i][j].re = (A[ij].re * B[ij].re
+                             - A[ij].im * B[ij].im) * scale;
+               C[i][j].im = (A[ij].re * B[ij].im
+                             + A[ij].im * B[ij].re) * scale;
+          }
+
+     /* inverse transform to get c, the convolution of a and b;
+        this has the side effect of overwriting C */
+     rfftwnd_one_complex_to_real(pinv, &#38;C[0][0], &#38;c[0][0]);
+     ...
+     rfftwnd_destroy_plan(p);
+     rfftwnd_destroy_plan(pinv);
+}
+</PRE>
+
+<P>
+We access the complex outputs of the in-place transforms by casting
+each real array to a <CODE>fftw_complex</CODE> pointer.  Because this is a
+"flat" pointer, we have to compute the row-major index <CODE>ij</CODE>
+explicitly in the convolution product loop.
+<A NAME="IDX76"></A>
+In order to normalize the convolution, we must multiply by a scale
+factor--we can do so either before or after the inverse transform, and
+choose the former because it obviates the necessity of an additional
+loop.
+<A NAME="IDX77"></A>
+Notice the limits of the loops and the dimensions of the various arrays.
+
+
+<P>
+As with the one-dimensional RFFTW, an out-of-place
+<CODE>FFTW_COMPLEX_TO_REAL</CODE> transform has the side-effect of overwriting
+its input array.  (The real-to-complex transform, on the other hand,
+leaves its input array untouched.)  If you use RFFTWND for a rank-one
+transform, however, this side-effect does not occur.  Because of this
+fact (and the simpler output format), users may find the RFFTWND
+interface more convenient than RFFTW for one-dimensional transforms.
+However, RFFTWND in one dimension is slightly slower than RFFTW because
+RFFTWND uses an extra buffer array internally.
+
+
+
+
+<H2><A NAME="SEC7">Multi-dimensional Array Format</A></H2>
+
+<P>
+This section describes the format in which multi-dimensional arrays are
+stored.  We felt that a detailed discussion of this topic was necessary,
+since it is often a source of confusion among users and several
+different formats are common.  Although the comments below refer to
+<CODE>fftwnd</CODE>, they are also applicable to the <CODE>rfftwnd</CODE> routines.
+
+
+
+
+<H3><A NAME="SEC8">Row-major Format</A></H3>
+<P>
+<A NAME="IDX78"></A>
+
+
+<P>
+The multi-dimensional arrays passed to <CODE>fftwnd</CODE> are expected to be
+stored as a single contiguous block in <EM>row-major</EM> order (sometimes
+called "C order").  Basically, this means that as you step through
+adjacent memory locations, the first dimension's index varies most
+slowly and the last dimension's index varies most quickly.
+
+
+<P>
+To be more explicit, let us consider an array of rank d whose
+dimensions are
+n<sub>1</sub> x n<sub>2</sub> x n<sub>3</sub> x ... x n<sub>d</sub>.
+Now, we specify a location in the array by a sequence of (zero-based) indices,
+one for each dimension:
+(i<sub>1</sub>, i<sub>2</sub>, i<sub>3</sub>,..., i<sub>d</sub>).
+If the array is stored in row-major
+order, then this element is located at the position
+i<sub>d</sub> + n<sub>d</sub> * (i<sub>d-1</sub> + n<sub>d-1</sub> * (... + n<sub>2</sub> * i<sub>1</sub>)).
+
+
+<P>
+Note that each element of the array must be of type <CODE>fftw_complex</CODE>;
+i.e. a (real, imaginary) pair of (double-precision) numbers. Note also
+that, in <CODE>fftwnd</CODE>, the expression above is multiplied by the stride
+to get the actual array index--this is useful in situations where each
+element of the multi-dimensional array is actually a data structure or
+another array, and you just want to transform a single field. In most
+cases, however, you use a stride of 1.
+<A NAME="IDX79"></A>
+
+
+
+
+<H3><A NAME="SEC9">Column-major Format</A></H3>
+<P>
+<A NAME="IDX80"></A>
+
+
+<P>
+Readers from the Fortran world are used to arrays stored in
+<EM>column-major</EM> order (sometimes called "Fortran order").  This is
+essentially the exact opposite of row-major order in that, here, the
+<EM>first</EM> dimension's index varies most quickly.
+
+
+<P>
+If you have an array stored in column-major order and wish to transform
+it using <CODE>fftwnd</CODE>, it is quite easy to do.  When creating the plan,
+simply pass the dimensions of the array to <CODE>fftwnd_create_plan</CODE> in
+<EM>reverse order</EM>.  For example, if your array is a rank three
+<CODE>N x M x L</CODE> matrix in column-major order, you should pass the
+dimensions of the array as if it were an <CODE>L x M x N</CODE> matrix (which
+it is, from the perspective of <CODE>fftwnd</CODE>).  This is done for you
+automatically by the FFTW Fortran wrapper routines (see Section <A HREF="fftw_5.html#SEC62">Calling FFTW from Fortran</A>).
+<A NAME="IDX81"></A>
+
+
+
+
+<H3><A NAME="SEC10">Static Arrays in C</A></H3>
+<P>
+<A NAME="IDX82"></A>
+
+
+<P>
+Multi-dimensional arrays declared statically (that is, at compile time,
+not necessarily with the <CODE>static</CODE> keyword) in C are <EM>already</EM>
+in row-major order.  You don't have to do anything special to transform
+them.  (See Section <A HREF="fftw_2.html#SEC4">Complex Multi-dimensional Transforms Tutorial</A>, for an
+example of this sort of code.)
+
+
+
+
+<H3><A NAME="SEC11">Dynamic Arrays in C</A></H3>
+
+<P>
+Often, especially for large arrays, it is desirable to allocate the
+arrays dynamically, at runtime.  This isn't too hard to do, although it
+is not as straightforward for multi-dimensional arrays as it is for
+one-dimensional arrays.
+
+
+<P>
+Creating the array is simple: using a dynamic-allocation routine like
+<CODE>malloc</CODE>, allocate an array big enough to store N <CODE>fftw_complex</CODE>
+values, where N is the product of the sizes of the array dimensions
+(i.e. the total number of complex values in the array).  For example,
+here is code to allocate a 5x12x27 rank 3 array:
+<A NAME="IDX83"></A>
+
+
+
+<PRE>
+fftw_complex *an_array;
+
+an_array = (fftw_complex *) malloc(5 * 12 * 27 * sizeof(fftw_complex));
+</PRE>
+
+<P>
+Accessing the array elements, however, is more tricky--you can't simply
+use multiple applications of the <SAMP>`[]'</SAMP> operator like you could for
+static arrays.  Instead, you have to explicitly compute the offset into
+the array using the formula given earlier for row-major arrays.  For
+example, to reference the (i,j,k)-th element of the array
+allocated above, you would use the expression <CODE>an_array[k + 27 * (j
++ 12 * i)]</CODE>.
+
+
+<P>
+This pain can be alleviated somewhat by defining appropriate macros, or,
+in C++, creating a class and overloading the <SAMP>`()'</SAMP> operator.
+
+
+
+
+<H3><A NAME="SEC12">Dynamic Arrays in C--The Wrong Way</A></H3>
+
+<P>
+A different method for allocating multi-dimensional arrays in C is often
+suggested that is incompatible with <CODE>fftwnd</CODE>: <EM>using it will
+cause FFTW to die a painful death</EM>.  We discuss the technique here,
+however, because it is so commonly known and used.  This method is to
+create arrays of pointers of arrays of pointers of ...etcetera.  For
+example, the analogue in this method to the example above is:
+
+
+
+<PRE>
+int i,j;
+fftw_complex ***a_bad_array;  /* another way to make a 5x12x27 array */
+
+a_bad_array = (fftw_complex ***) malloc(5 * sizeof(fftw_complex **));
+for (i = 0; i &#60; 5; ++i) {
+     a_bad_array[i] = 
+        (fftw_complex **) malloc(12 * sizeof(fftw_complex *));
+     for (j = 0; j &#60; 12; ++j)
+          a_bad_array[i][j] =
+                (fftw_complex *) malloc(27 * sizeof(fftw_complex));
+}
+</PRE>
+
+<P>
+As you can see, this sort of array is inconvenient to allocate (and
+deallocate).  On the other hand, it has the advantage that the
+(i,j,k)-th element can be referenced simply by
+<CODE>a_bad_array[i][j][k]</CODE>.
+
+
+<P>
+If you like this technique and want to maximize convenience in accessing
+the array, but still want to pass the array to FFTW, you can use a
+hybrid method.  Allocate the array as one contiguous block, but also
+declare an array of arrays of pointers that point to appropriate places
+in the block.  That sort of trick is beyond the scope of this
+documentation; for more information on multi-dimensional arrays in C,
+see the <CODE>comp.lang.c</CODE>
+<A HREF="http://www.eskimo.com/~scs/C-faq/s6.html">FAQ</A>.
+
+
+
+
+<H2><A NAME="SEC13">Words of Wisdom</A></H2>
+<P>
+<A NAME="IDX84"></A>
+<A NAME="IDX85"></A>
+
+
+<P>
+FFTW implements a method for saving plans to disk and restoring them.
+In fact, what FFTW does is more general than just saving and loading
+plans.  The mechanism is called <EM><CODE>wisdom</CODE></EM>.  Here, we describe
+this feature at a high level. See Section <A HREF="fftw_3.html#SEC16">FFTW Reference</A>, for a less casual
+(but more complete) discussion of how to use <CODE>wisdom</CODE> in FFTW.
+
+
+<P>
+Plans created with the <CODE>FFTW_MEASURE</CODE> option produce near-optimal
+FFT performance, but it can take a long time to compute a plan because
+FFTW must actually measure the runtime of many possible plans and select
+the best one.  This is designed for the situations where so many
+transforms of the same size must be computed that the start-up time is
+irrelevant.  For short initialization times but slightly slower
+transforms, we have provided <CODE>FFTW_ESTIMATE</CODE>.  The <CODE>wisdom</CODE>
+mechanism is a way to get the best of both worlds.  There are, however,
+certain caveats that the user must be aware of in using <CODE>wisdom</CODE>.
+For this reason, <CODE>wisdom</CODE> is an optional feature which is not
+enabled by default.
+
+
+<P>
+At its simplest, <CODE>wisdom</CODE> provides a way of saving plans to disk so
+that they can be reused in other program runs.  You create a plan with
+the flags <CODE>FFTW_MEASURE</CODE> and <CODE>FFTW_USE_WISDOM</CODE>, and then save
+the <CODE>wisdom</CODE> using <CODE>fftw_export_wisdom</CODE>:
+<A NAME="IDX86"></A>
+
+
+
+<PRE>
+     plan = fftw_create_plan(..., ... | FFTW_MEASURE | FFTW_USE_WISDOM);
+     fftw_export_wisdom(...);
+</PRE>
+
+<P>
+<A NAME="IDX87"></A>
+
+
+<P>
+The next time you run the program, you can restore the <CODE>wisdom</CODE>
+with <CODE>fftw_import_wisdom</CODE>, and then recreate the plan using the
+same flags as before.  This time, however, the same optimal plan will be
+created very quickly without measurements. (FFTW still needs some time
+to compute trigonometric tables, however.)  The basic outline is:
+
+
+
+<PRE>
+     fftw_import_wisdom(...);
+     plan = fftw_create_plan(..., ... | FFTW_USE_WISDOM);
+</PRE>
+
+<P>
+<A NAME="IDX88"></A>
+
+
+<P>
+Wisdom is more than mere rote memorization, however.  FFTW's
+<CODE>wisdom</CODE> encompasses all of the knowledge and measurements that
+were used to create the plan for a given size.  Therefore, existing
+<CODE>wisdom</CODE> is also applied to the creation of other plans of
+different sizes.
+
+
+<P>
+Whenever a plan is created with the <CODE>FFTW_MEASURE</CODE> and
+<CODE>FFTW_USE_WISDOM</CODE> flags, <CODE>wisdom</CODE> is generated.  Thereafter,
+plans for any transform with a similar factorization will be computed
+more quickly, so long as they use the <CODE>FFTW_USE_WISDOM</CODE> flag.  In
+fact, for transforms with the same factors and of equal or lesser size,
+no measurements at all need to be made and an optimal plan can be
+created with negligible delay!
+
+
+<P>
+For example, suppose that you create a plan for
+N&nbsp;=&nbsp;2<sup>16</sup>.
+Then, for any equal or smaller power of two, FFTW can create a
+plan (with the same direction and flags) quickly, using the
+precomputed <CODE>wisdom</CODE>. Even for larger powers of two, or sizes that
+are a power of two times some other prime factors, plans will be
+computed more quickly than they would otherwise (although some
+measurements still have to be made).
+
+
+<P>
+The <CODE>wisdom</CODE> is cumulative, and is stored in a global, private data
+structure managed internally by FFTW.  The storage space required is
+minimal, proportional to the logarithm of the sizes the <CODE>wisdom</CODE> was
+generated from.  The <CODE>wisdom</CODE> can be forgotten (and its associated
+memory freed) by a call to <CODE>fftw_forget_wisdom()</CODE>; otherwise, it is
+remembered until the program terminates.  It can also be exported to a
+file, a string, or any other medium using <CODE>fftw_export_wisdom</CODE> and
+restored during a subsequent execution of the program (or a different
+program) using <CODE>fftw_import_wisdom</CODE> (these functions are described
+below).
+
+
+<P>
+Because <CODE>wisdom</CODE> is incorporated into FFTW at a very low level, the
+same <CODE>wisdom</CODE> can be used for one-dimensional transforms,
+multi-dimensional transforms, and even the parallel extensions to FFTW.
+Just include <CODE>FFTW_USE_WISDOM</CODE> in the flags for whatever plans you
+create (i.e., always plan wisely).
+
+
+<P>
+Plans created with the <CODE>FFTW_ESTIMATE</CODE> plan can use <CODE>wisdom</CODE>,
+but cannot generate it;  only <CODE>FFTW_MEASURE</CODE> plans actually produce
+<CODE>wisdom</CODE>.  Also, plans can only use <CODE>wisdom</CODE> generated from
+plans created with the same direction and flags.  For example, a size
+<CODE>42</CODE> <CODE>FFTW_BACKWARD</CODE> transform will not use <CODE>wisdom</CODE>
+produced by a size <CODE>42</CODE> <CODE>FFTW_FORWARD</CODE> transform.  The only
+exception to this rule is that <CODE>FFTW_ESTIMATE</CODE> plans can use
+<CODE>wisdom</CODE> from <CODE>FFTW_MEASURE</CODE> plans.
+
+
+
+
+<H3><A NAME="SEC14">Caveats in Using Wisdom</A></H3>
+<P>
+<A NAME="IDX89"></A>
+
+
+
+<BLOCKQUOTE>
+<i>
+<P>
+For in much wisdom is much grief, and he that increaseth knowledge
+increaseth sorrow.
+</i>
+[Ecclesiastes 1:18]
+<A NAME="IDX90"></A>
+</BLOCKQUOTE>
+
+<P>
+There are pitfalls to using <CODE>wisdom</CODE>, in that it can negate FFTW's
+ability to adapt to changing hardware and other conditions. For example,
+it would be perfectly possible to export <CODE>wisdom</CODE> from a program
+running on one processor and import it into a program running on another
+processor.  Doing so, however, would mean that the second program would
+use plans optimized for the first processor, instead of the one it is
+running on.
+
+
+<P>
+It should be safe to reuse <CODE>wisdom</CODE> as long as the hardware and
+program binaries remain unchanged. (Actually, the optimal plan may
+change even between runs of the same binary on identical hardware, due
+to differences in the virtual memory environment, etcetera.  Users
+seriously interested in performance should worry about this problem,
+too.)  It is likely that, if the same <CODE>wisdom</CODE> is used for two
+different program binaries, even running on the same machine, the plans
+may be sub-optimal because of differing code alignments.  It is
+therefore wise to recreate <CODE>wisdom</CODE> every time an application is
+recompiled.  The more the underlying hardware and software changes
+between the creation of <CODE>wisdom</CODE> and its use, the greater grows the
+risk of sub-optimal plans.
+
+
+
+
+<H3><A NAME="SEC15">Importing and Exporting Wisdom</A></H3>
+<P>
+<A NAME="IDX91"></A>
+
+
+
+<PRE>
+void fftw_export_wisdom_to_file(FILE *output_file);
+fftw_status fftw_import_wisdom_from_file(FILE *input_file);
+</PRE>
+
+<P>
+<A NAME="IDX92"></A>
+<A NAME="IDX93"></A>
+
+
+<P>
+<CODE>fftw_export_wisdom_to_file</CODE> writes the <CODE>wisdom</CODE> to
+<CODE>output_file</CODE>, which must be a file open for
+writing. <CODE>fftw_import_wisdom_from_file</CODE> reads the <CODE>wisdom</CODE>
+from <CODE>input_file</CODE>, which must be a file open for reading, and
+returns <CODE>FFTW_SUCCESS</CODE> if successful and <CODE>FFTW_FAILURE</CODE>
+otherwise. In both cases, the file is left open and must be closed by
+the caller.  It is perfectly fine if other data lie before or after the
+<CODE>wisdom</CODE> in the file, as long as the file is positioned at the
+beginning of the <CODE>wisdom</CODE> data before import.
+
+
+
+<PRE>
+char *fftw_export_wisdom_to_string(void);
+fftw_status fftw_import_wisdom_from_string(const char *input_string)
+</PRE>
+
+<P>
+<A NAME="IDX94"></A>
+<A NAME="IDX95"></A>
+
+
+<P>
+<CODE>fftw_export_wisdom_to_string</CODE> allocates a string, exports the
+<CODE>wisdom</CODE> to it in <CODE>NULL</CODE>-terminated format, and returns a
+pointer to the string.  If there is an error in allocating or writing
+the data, it returns <CODE>NULL</CODE>.  The caller is responsible for
+deallocating the string (with <CODE>fftw_free</CODE>) when she is done with
+it. <CODE>fftw_import_wisdom_from_string</CODE> imports the <CODE>wisdom</CODE> from
+<CODE>input_string</CODE>, returning <CODE>FFTW_SUCCESS</CODE> if successful and
+<CODE>FFTW_FAILURE</CODE> otherwise.
+
+
+<P>
+Exporting <CODE>wisdom</CODE> does not affect the store of <CODE>wisdom</CODE>. Imported
+<CODE>wisdom</CODE> supplements the current store rather than replacing it
+(except when there is conflicting <CODE>wisdom</CODE>, in which case the older
+<CODE>wisdom</CODE> is discarded). The format of the exported <CODE>wisdom</CODE> is
+"nerd-readable" LISP-like ASCII text; we will not document it here
+except to note that it is insensitive to white space (interested users
+can contact us for more details).
+<A NAME="IDX96"></A>
+<A NAME="IDX97"></A>
+
+
+<P>
+See Section <A HREF="fftw_3.html#SEC16">FFTW Reference</A>, for more information, and for a description of
+how you can implement <CODE>wisdom</CODE> import/export for other media
+besides files and strings.
+
+
+<P>
+The following is a brief example in which the <CODE>wisdom</CODE> is read from
+a file, a plan is created (possibly generating more <CODE>wisdom</CODE>), and
+then the <CODE>wisdom</CODE> is exported to a string and printed to
+<CODE>stdout</CODE>.
+
+
+
+<PRE>
+{
+     fftw_plan plan;
+     char *wisdom_string;
+     FILE *input_file;
+
+     /* open file to read wisdom from */
+     input_file = fopen("sample.wisdom", "r");
+     if (FFTW_FAILURE == fftw_import_wisdom_from_file(input_file))
+          printf("Error reading wisdom!\n");
+     fclose(input_file); /* be sure to close the file! */
+
+     /* create a plan for N=64, possibly creating and/or using wisdom */
+     plan = fftw_create_plan(64,FFTW_FORWARD,
+                             FFTW_MEASURE | FFTW_USE_WISDOM);
+
+     /* ... do some computations with the plan ... */
+
+     /* always destroy plans when you are done */
+     fftw_destroy_plan(plan);
+
+     /* write the wisdom to a string */
+     wisdom_string = fftw_export_wisdom_to_string();
+     if (wisdom_string != NULL) {
+          printf("Accumulated wisdom: %s\n",wisdom_string);
+
+          /* Just for fun, destroy and restore the wisdom */
+          fftw_forget_wisdom(); /* all gone! */
+          fftw_import_wisdom_from_string(wisdom_string);
+          /* wisdom is back! */
+
+          fftw_free(wisdom_string); /* deallocate it since we're done */
+     }
+}
+</PRE>
+
+<P><HR><P>
+Go to the <A HREF="fftw_1.html">first</A>, <A HREF="fftw_1.html">previous</A>, <A HREF="fftw_3.html">next</A>, <A HREF="fftw_10.html">last</A> section, <A HREF="fftw_toc.html">table of contents</A>.
+</BODY>
+</HTML>

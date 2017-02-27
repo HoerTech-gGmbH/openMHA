@@ -1,0 +1,117 @@
+This is fftw.info, produced by makeinfo version 4.2 from fftw.texi.
+
+   This is the FFTW User's manual.
+
+   Copyright (C) 1997-1999 Massachusetts Institute of Technology
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+
+
+Indirect:
+fftw.info-1: 845
+fftw.info-2: 49505
+fftw.info-3: 98373
+fftw.info-4: 148305
+fftw.info-5: 195175
+
+Tag Table:
+(Indirect)
+Node: Top845
+Node: Introduction4259
+Node: Tutorial10607
+Node: Complex One-dimensional Transforms Tutorial12836
+Node: Complex Multi-dimensional Transforms Tutorial16319
+Node: Real One-dimensional Transforms Tutorial20021
+Ref: Real One-dimensional Transforms Tutorial-Footnote-124847
+Node: Real Multi-dimensional Transforms Tutorial25023
+Node: Multi-dimensional Array Format33169
+Node: Row-major Format33863
+Node: Column-major Format35201
+Node: Static Arrays in C36177
+Node: Dynamic Arrays in C36666
+Node: Dynamic Arrays in C-The Wrong Way38094
+Node: Words of Wisdom39840
+Node: Caveats in Using Wisdom44489
+Node: Importing and Exporting Wisdom45996
+Node: FFTW Reference49505
+Node: Data Types50849
+Node: One-dimensional Transforms Reference53597
+Node: fftw_create_plan54271
+Ref: fftw_create_plan-Footnote-160092
+Node: Discussion on Specific Plans60217
+Node: fftw61562
+Node: fftw_destroy_plan64208
+Node: What FFTW Really Computes64641
+Node: Multi-dimensional Transforms Reference66000
+Node: fftwnd_create_plan66659
+Ref: fftwnd_create_plan-Footnote-173099
+Node: fftwnd73471
+Node: fftwnd_destroy_plan76433
+Node: What FFTWND Really Computes76884
+Node: Real One-dimensional Transforms Reference77766
+Ref: Real One-dimensional Transforms Reference-Footnote-178494
+Node: rfftw_create_plan78585
+Node: rfftw83769
+Node: rfftw_destroy_plan86369
+Node: What RFFTW Really Computes86824
+Node: Real Multi-dimensional Transforms Reference88202
+Node: rfftwnd_create_plan88963
+Node: rfftwnd93914
+Node: Array Dimensions for Real Multi-dimensional Transforms98373
+Node: Strides in In-place RFFTWND100420
+Node: rfftwnd_destroy_plan102812
+Node: What RFFTWND Really Computes103295
+Node: Wisdom Reference104233
+Node: fftw_export_wisdom104499
+Node: fftw_import_wisdom106146
+Node: fftw_forget_wisdom108013
+Node: Memory Allocator Reference108392
+Node: Thread safety109475
+Node: Parallel FFTW111388
+Node: Multi-threaded FFTW113488
+Node: Installation and Supported Hardware/Software114386
+Node: Usage of Multi-threaded FFTW116205
+Ref: Usage of Multi-threaded FFTW-Footnote-1120052
+Node: How Many Threads to Use?120418
+Node: Using Multi-threaded FFTW in a Multi-threaded Program122084
+Node: Tips for Optimal Threading122785
+Node: MPI FFTW124401
+Node: MPI FFTW Installation125243
+Node: Usage of MPI FFTW for Complex Multi-dimensional Transforms127040
+Node: MPI Data Layout132162
+Node: Usage of MPI FFTW for Real Multi-dimensional Transforms137357
+Node: Usage of MPI FFTW for Complex One-dimensional Transforms143774
+Ref: Usage of MPI FFTW for Complex One-dimensional Transforms-Footnote-1147938
+Node: MPI Tips148305
+Ref: MPI Tips-Footnote-1150141
+Node: Calling FFTW from Fortran150297
+Node: Wrapper Routines151725
+Ref: Wrapper Routines-Footnote-1154864
+Node: FFTW Constants in Fortran155067
+Node: Fortran Examples156665
+Node: Installation and Customization160353
+Node: Installation on Unix161690
+Ref: Installation on Unix-Footnote-1166017
+Node: Installation on non-Unix Systems166216
+Node: Installing FFTW in both single and double precision168536
+Node: gcc and Pentium hacks170220
+Node: Customizing the timer172751
+Node: Generating your own code174665
+Node: Acknowledgments177314
+Node: License and Copyright180169
+Node: Concept Index181806
+Node: Library Index195175
+
+End Tag Table

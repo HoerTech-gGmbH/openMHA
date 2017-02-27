@@ -1,0 +1,40 @@
+# This file contains a description of the codelets that compose fftw.
+
+# NOTW is a list of the sizes that FFTW contains hard-coded transforms for
+# (the "base cases" of the FFT recursion):
+
+NOTW="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32 64"
+
+# TWIDDLE is a list of the sizes that FFTW can "recurse by" using
+# hard-coded codelets.  These are the "radices" that FFTW can handle
+# with optimal speed.  (e.g. Suppose you include a size r in TWIDDLE.
+# Then, for any N divisible by r, FFTW can break a transform of size
+# N into r transforms of size N/r using an optimized codelet.)
+
+TWIDDLE="2 3 4 5 6 7 8 9 10 16 32 64"
+
+# same as NOTW and TWIDDLE, but for real->complex transforms
+NOTW_REAL="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32 64 128"
+TWIDDLE_REAL="2 3 4 5 6 7 8 9 10 16 32"
+
+# FFTW & RFFTW source directories
+FFTW_SRCDIR=../fftw
+RFFTW_SRCDIR=../rfftw
+
+# Prefixes of file names
+NOTW_PREFIX=fn_
+TWID_PREFIX=ftw_
+NOTWI_PREFIX=fni_
+TWIDI_PREFIX=ftwi_
+REAL2HC_PREFIX=frc_
+HC2REAL_PREFIX=fcr_
+HC2HC_FORWARD_PREFIX=fhf_
+HC2HC_BACKWARD_PREFIX=fhb_
+
+# To keep the lawyers happy
+COPYRIGHT=../COPYRIGHT
+
+export NOTW TWIDDLE FFTW_SRCDIR NOTW_PREFIX TWID_PREFIX 
+export NOTWI_PREFIX TWIDI_PREFIX COPYRIGHT NOTW_REAL TWIDDLE_REAL
+export REAL2HC_PREFIX HC2REAL_PREFIX HC2HC_FORWARD_PREFIX 
+export HC2HC_BACKWARD_PREFIX

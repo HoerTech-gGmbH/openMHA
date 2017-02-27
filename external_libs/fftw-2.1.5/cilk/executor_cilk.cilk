@@ -1,0 +1,413 @@
+/*
+ * Copyright (c) 1997-1999, 2003 Massachusetts Institute of Technology
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/*
+ *
+ * executor_cilk.cilk -- execute the fft on a parallel machine with Cilk
+ */
+
+#include <cilk.h>
+#include <cilk-lib.h>
+
+#include <fftw-int.h>
+#include "fftw_cilk.cilkh"
+
+static cilk void parallel_twiddle_codelet(int a, int b,
+          fftw_twiddle_codelet *codelet,
+          fftw_complex *W,
+          fftw_complex *out,
+          int ostride,
+          int dist,
+          int ntwiddle)
+{
+     if (b - a < 32) {
+          (*codelet)(out + dist * a, W + ntwiddle * a, ostride, b - a, dist);
+     } else {
+          int ab = (a + b) / 2;
+          spawn parallel_twiddle_codelet(a, ab, codelet, W, out, ostride,
+                                         dist, ntwiddle);
+          spawn parallel_twiddle_codelet(ab, b, codelet, W, out, ostride,
+                                         dist, ntwiddle);
+          sync;
+     }
+}
+
+static cilk void executor_simple_cilk(int n, const fftw_complex *in,
+                                      fftw_complex *out,
+                                      fftw_plan_node *p,
+                                      int istride,
+                                      int ostride)
+{
+     switch (p->type) {
+     case FFTW_NOTW:
+          (*p->nodeu.notw.codelet)(in, out, istride, ostride);
+          break;
+
+     case FFTW_TWIDDLE:
+          {
+               int r = p->nodeu.twiddle.size;
+               int m = n / r;
+               int i;
+               fftw_twiddle_codelet *codelet;
+               fftw_complex *W;
+
+               if (n < 128) {
+                    fftw_executor_simple(n, in, out, p,
+                                         istride, ostride,
+                                         FFTW_NORMAL_RECURSE);
+                    break;
+               }
+
+               for (i = 0; i < r; ++i)
+                    spawn executor_simple_cilk(m, in + i * istride,
+                                               out + i * (m * ostride),
+                                               p->nodeu.twiddle.recurse,
+                                               istride * r, ostride);
+
+               sync;
+               codelet = p->nodeu.twiddle.codelet;
+               W = p->nodeu.twiddle.tw->twarray;
+
+               spawn parallel_twiddle_codelet(0, m,
+                                              codelet,
+                                              W, out, m * ostride,
+                                              ostride,
+                                              p->nodeu.twiddle.codelet_desc->ntwiddle);
+               sync;
+
+               break;
+          }
+
+     case FFTW_GENERIC:
+          {
+               int r = p->nodeu.generic.size;
+               int m = n / r;
+               int i;
+               fftw_generic_codelet *codelet;
+               fftw_complex *W;
+
+               for (i = 0; i < r; ++i)
+                    spawn executor_simple_cilk(m, in + i * istride,
+                                               out + i * (m * ostride),
+                                               p->nodeu.generic.recurse,
+                                               istride * r, ostride);
+
+               sync;
+
+               codelet = p->nodeu.generic.codelet;
+               W = p->nodeu.generic.tw->twarray;
+
+               (*codelet)(out, W, m, r, n, ostride);
+
+               break;
+          }
+
+     case FFTW_RADER:
+          {
+               int r = p->nodeu.rader.size;
+               int m = n / r;
+               int i;
+               fftw_rader_codelet *codelet;
+               fftw_complex *W;
+
+               for (i = 0; i < r; ++i) {
+                    spawn executor_simple_cilk(m, in + i * istride,
+                                               out + i * (m * ostride),
+                                               p->nodeu.rader.recurse,
+                                               istride * r, ostride);
+               }
+               sync;
+
+               codelet = p->nodeu.rader.codelet;
+               W = p->nodeu.rader.tw->twarray;
+               (*codelet)(out, W, m, r, ostride,
+                          p->nodeu.rader.rader_data);
+
+               break;
+          }
+
+     default:
+          fftw_die("BUG in executor: illegal plan\n");
+          break;
+     }
+}
+
+static cilk void executor_simple_inplace_cilk(int n, fftw_complex *in,
+          fftw_plan_node *p,
+          int istride)
+{
+     switch (p->type) {
+     case FFTW_NOTW:
+          (*p->nodeu.notw.codelet) (in, in, istride, istride);
+          break;
+
+     default:
+          {
+               fftw_complex *tmp;
+
+               tmp = (fftw_complex *)
+                     Cilk_alloca(n * sizeof(fftw_complex));
+
+               spawn executor_simple_cilk(n, in, tmp, p, istride, 1);
+               sync;
+               fftw_strided_copy(n, tmp, istride, in);
+          }
+     }
+}
+
+#define FFTW_CILK_HOWMANY_CODELET_THRESHOLD 16
+#define FFTW_CILK_HOWMANY_SIMPLE_THRESHOLD 16
+
+typedef struct
+{
+     int n;
+     fftw_plan_node *p;
+     fftw_notw_codelet *codelet;
+     const fftw_complex *in;
+     fftw_complex *out;
+     int istride, ostride, idist, odist;
+}
+execute_howmany_data;
+
+static cilk void execute_howmany_codelets(
+     execute_howmany_data *d,
+     int min, int max)
+{
+     if (max - min > FFTW_CILK_HOWMANY_CODELET_THRESHOLD) {
+          spawn execute_howmany_codelets(d,
+                                         min,(min+max)/2);
+          spawn execute_howmany_codelets(d,
+                                         (min+max)/2+1,max);
+     } else {
+          fftw_notw_codelet *codelet;
+          const fftw_complex *in;
+          fftw_complex *out;
+          int istride, ostride, idist, odist;
+
+          codelet = d->codelet;
+          in = d->in;
+          out = d->out;
+          istride = d->istride;
+          ostride = d->ostride;
+          idist = d->idist;
+          odist = d->odist;
+
+          for (; min <= max; ++min)
+               (*codelet)(in + min * idist,
+                          out + min * odist, istride, ostride);
+     }
+}
+
+static cilk void execute_howmany_simple(
+     execute_howmany_data *d,
+     int min, int max)
+{
+     if (max - min > FFTW_CILK_HOWMANY_SIMPLE_THRESHOLD) {
+          spawn execute_howmany_simple(d,
+                                       min,(min+max)/2);
+          spawn execute_howmany_simple(d,
+                                       (min+max)/2+1,max);
+     } else {
+          int n;
+          const fftw_complex *in;
+          fftw_complex *out;
+          fftw_plan_node *p;
+          int idist, odist, istride, ostride;
+
+          n = d->n;
+          p = d->p;
+          in = d->in;
+          out = d->out;
+          istride = d->istride;
+          ostride = d->ostride;
+          idist = d->idist;
+          odist = d->odist;
+
+          for (; min <= max; ++min)
+               fftw_executor_simple(n, in + min*idist,
+                                    out + min*odist,
+                                    p, istride, ostride,
+                                    FFTW_NORMAL_RECURSE);
+     }
+}
+
+static cilk void executor_many_cilk(int n, const fftw_complex *in,
+                                    fftw_complex *out,
+                                    fftw_plan_node *p,
+                                    int istride,
+                                    int ostride,
+                                    int howmany, int idist, int odist)
+{
+     switch (p->type) {
+     case FFTW_NOTW:
+          {
+               execute_howmany_data d;
+
+               d.codelet = p->nodeu.notw.codelet;
+               d.in = in;
+               d.out = out;
+               d.istride = istride;
+               d.ostride = ostride;
+               d.idist = idist;
+               d.odist = odist;
+
+               spawn execute_howmany_codelets(&d,0,howmany-1);
+
+               break;
+          }
+
+     default:
+          {
+               execute_howmany_data d;
+
+               d.n = n;
+               d.p = p;
+               d.in = in;
+               d.out = out;
+               d.istride = istride;
+               d.ostride = ostride;
+               d.idist = idist;
+               d.odist = odist;
+
+               spawn execute_howmany_simple(&d,0,howmany-1);
+          }
+     }
+}
+
+static cilk void execute_howmany_codelets_in_place(
+     execute_howmany_data *d,
+     int min, int max)
+{
+     if (max - min > FFTW_CILK_HOWMANY_CODELET_THRESHOLD) {
+          spawn execute_howmany_codelets_in_place(d,
+                                                  min,(min+max)/2);
+          spawn execute_howmany_codelets_in_place(d,
+                                                  (min+max)/2+1,max);
+     } else {
+          fftw_notw_codelet *codelet;
+          const fftw_complex *in;
+          int istride, idist;
+
+          codelet = d->codelet;
+          in = d->in;
+          istride = d->istride;
+          idist = d->idist;
+
+          for (; min <= max; ++min)
+               (*codelet)(in + min * idist,
+                          (fftw_complex *)in + min * idist,
+                          istride, istride);
+     }
+}
+
+static cilk void execute_howmany_simple_in_place(
+     execute_howmany_data *d,
+     int min, int max)
+{
+     if (max - min > FFTW_CILK_HOWMANY_SIMPLE_THRESHOLD) {
+          spawn execute_howmany_simple_in_place(d,
+                                                min,(min+max)/2);
+          spawn execute_howmany_simple_in_place(d,
+                                                (min+max)/2+1,max);
+     } else {
+          int n;
+          fftw_complex *in;
+          fftw_complex *tmp;
+          int istride, idist;
+          fftw_plan_node *p;
+
+          n = d->n;
+          p = d->p;
+          in = (fftw_complex *)d->in + min * (idist = d->idist);
+          istride = d->istride;
+          tmp = d->out + n * Self;
+
+          for (; min <= max; ++min) {
+               fftw_executor_simple(n, in, tmp, p, istride, 1,
+                                    FFTW_NORMAL_RECURSE);
+               fftw_strided_copy(n, tmp, istride, in);
+               in += idist;
+          }
+     }
+}
+
+static cilk void executor_many_inplace_cilk(int n, fftw_complex *in,
+          fftw_plan_node *p,
+          int istride,
+          int howmany, int idist)
+{
+     switch (p->type) {
+     case FFTW_NOTW:
+          {
+               execute_howmany_data d;
+
+               d.codelet = p->nodeu.notw.codelet;
+               d.in = in;
+               d.istride = istride;
+               d.idist = idist;
+
+               spawn execute_howmany_codelets_in_place(&d,0,howmany-1);
+
+               break;
+          }
+
+     default:
+          {
+               execute_howmany_data d;
+
+               d.n = n;
+               d.p = p;
+               d.in = in;
+               d.istride = istride;
+               d.idist = idist;
+               d.out = (fftw_complex *)
+                       Cilk_alloca(Cilk_active_size *
+                                   n * sizeof(fftw_complex));
+
+               spawn execute_howmany_simple_in_place(&d,0,howmany-1);
+          }
+     }
+}
+
+/* user interface */
+cilk void fftw_cilk(fftw_plan plan, int howmany, fftw_complex *in, int istride,
+                    int idist, fftw_complex *out, int ostride, int odist)
+{
+     int n = plan->n;
+
+     if (plan->flags & FFTW_IN_PLACE) {
+          if (howmany == 1) {
+               spawn executor_simple_inplace_cilk(n, in,
+                                                  plan->root, istride);
+          } else {
+               spawn executor_many_inplace_cilk(n, in,
+                                                plan->root, istride, howmany,
+                                                idist);
+          }
+     } else {
+          if (howmany == 1) {
+               spawn executor_simple_cilk(n, in, out,
+                                          plan->root, istride, ostride);
+          } else {
+               spawn executor_many_cilk(n, in, out,
+                                        plan->root, istride, ostride,
+                                        howmany, idist, odist);
+          }
+     }
+}

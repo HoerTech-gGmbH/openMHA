@@ -1,0 +1,20 @@
+/* config.c -- this file contains all the codelets the system knows about */
+
+/* $Id: config_prelude,v 1.7 2000/03/02 21:58:53 stevenj Exp $ */
+
+#include "fftw-int.h"
+
+/* the signature is the same as the size, for now */
+#define NOTW_CODELET(x) \
+	 &fftw_no_twiddle_##x##_desc
+#define NOTWI_CODELET(x) \
+	 &fftwi_no_twiddle_##x##_desc
+
+#define TWIDDLE_CODELET(x) \
+	 &fftw_twiddle_##x##_desc
+                          
+#define TWIDDLEI_CODELET(x) \
+	 &fftwi_twiddle_##x##_desc
+
+/* automatically-generated list of codelets */
+

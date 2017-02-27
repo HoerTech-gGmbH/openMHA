@@ -1,0 +1,76 @@
+                           Parallel FFTW for Cilk
+
+This directory contains routines for doing parallel transforms in one
+or more dimensions on machines with the Cilk language and runtime.
+
+Cilk is a superset of C that allows easy creation of efficient parallel
+programs.  More information on Cilk can be found at the Cilk homepage:
+		  http://supertech.lcs.mit.edu/cilk
+
+-----------------------------------------------------------------------
+
+Installation:
+
+Typing "make" will create the libfftw_cilk.a library.  Before doing
+this, you must have built the libfftw.a library in the fftw/
+directory, and all the object files must still be in that directory!
+
+"make tests" will generate two programs, test_cilk and time_cilk,
+which test the subroutines for correctness and benchmark them against
+the uniprocessor versions, respectively.  The outputs of time_cilk are
+the times in microseconds / n lg n for a single transform.
+
+"make install" will install the libfftw_cilk.a library and the
+fftw_cilk.cilh header file in the locations specified by the prefix,
+LIBDIR, and INCLUDEDIR Makefile variables.
+
+You will probably have to modify the Makefile to reflect the location
+of Cilk on your machine.  The software was developed under Cilk-5.  It
+may work under Cilk-4, but no guarantees are provided.
+
+-----------------------------------------------------------------------
+
+Usage:
+
+The usage is nearly identical to that of the uniprocessor FFTW.
+
+* Before doing any transforms, you must create plans via
+fftw_create_plan or fftwnd_create_plan.  (The plans are of the same
+type as the uniprocessor plans, and are created by the same routines.
+In fact, you can use the same plan for both the uniprocessor FFTW and
+the Cilk FFTW.)
+
+* To perform a parallel 1D transform you call the fftw_cilk procedure,
+which has identical arguments to the fftw subroutine.  It is a Cilk
+procedure, so you have to call it using spawn:
+
+   spawn fftw_cilk(plan,howmany,in,istride,idist,out,ostride,odist);
+
+Be sure to perform a sync before you try to make use of the results of
+this procedure.
+
+* Parallel 1D transforms use the fftwnd_cilk procedure, which has
+the same arguments as the fftwnd subroutine:
+
+   spawn fftwnd_cilk(plan,howmany,in,istride,idist,out,ostride,odist);
+
+Again, be sure to sync before using the results.
+
+-----------------------------------------------------------------------
+
+Notes:
+
+* It is safe to spawn fftw_cilk or fftwnd_cilk multiple times in
+parallel using the same plan.  Spawn away!
+
+* It is *not* safe to call the uniprocessor fftwnd in parallel with
+itself using the same plan.  You have been warned.
+
+* If you use howmany > 1, fftw_cilk and fftwnd_cilk will perform the
+howmany transforms in parallel.  It is the caller's responsibility to
+insure that the outputs don't overlap each other or any of the inputs,
+lest race conditions result.
+
+* For in-place transforms using fftw_cilk, the out parameter is
+ignored.  (Unlike the uniprocessor case, where the out parameter can
+be used to specify a temporary work array.)

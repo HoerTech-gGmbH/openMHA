@@ -1,0 +1,337 @@
+
+/*
+ * Copyright (c) 1997-1999, 2003 Massachusetts Institute of Technology
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/* fftwnd_cilk.cilk: ND transform on parallel machines with Cilk */
+
+#include <cilk.h>
+
+#include <fftw-int.h>
+#include "fftw_cilk.cilkh"
+
+/* Prototypes for functions used internally in this file: */
+
+static cilk void fftw2d_out_of_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in, int istride,
+          fftw_complex *out, int ostride);
+static cilk void fftw3d_out_of_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in, int istride,
+          fftw_complex *out, int ostride);
+static cilk void fftwnd_out_of_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in, int istride,
+          fftw_complex *out, int ostride);
+
+static cilk void fftw2d_in_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in_out, int istride);
+static cilk void fftw3d_in_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in_out, int istride);
+static cilk void fftwnd_in_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in_out, int istride);
+
+/************** Computing the N-Dimensional FFT in Parallel **************/
+
+cilk void fftwnd_cilk(fftwnd_plan plan, int howmany,
+                      fftw_complex *in, int istride, int idist,
+                      fftw_complex *out, int ostride, int odist)
+{
+     int fft_iter;
+
+     /* Put the howmany loop here.  Yes, this has more overhead than
+        moving it farther down would be, but for N-dimensional
+        transforms this shouldn't matter too much (since each
+        transform should be much more expensive than these little
+        switch statements and subroutine calls). */
+
+     /* Nota bene:  This assumes that the outputs of the different
+        FFT's in the howmany loop are non-overlapping!  (ergo
+        they can be done in parallel). */
+
+     /* PS. I didn't use divide & conquer for this loop; it may
+        result in a long critical path if howmany is large (in
+        most cases, however,  howmany will probably be small, unlike
+        for the 1D transform which is used in the ND transform). */
+
+     for (fft_iter = 0; fft_iter < howmany; ++fft_iter) {
+
+          if (plan->is_in_place)	/* fft is in-place */
+               switch (plan->rank) {
+               case 0:
+                    break;
+               case 1:
+                    spawn fftw_cilk(plan->plans[0], 1, in, istride, 0,
+                                    0, 0, 0);
+                    break;
+               case 2:
+                    spawn fftw2d_in_place_aux_cilk(plan,
+                                                   in, istride);
+                    break;
+               case 3:
+                    spawn fftw3d_in_place_aux_cilk(plan,
+                                                   in, istride);
+                    break;
+               default:
+                    spawn fftwnd_in_place_aux_cilk(plan,
+                                                   in, istride);
+               }
+          else {
+               if (in == out || out == 0)
+                    fftw_die("Illegal attempt to perform in-place FFT!\n");
+               switch (plan->rank) {
+               case 0:
+                    break;
+               case 1:
+                    spawn fftw_cilk(plan->plans[0], 1, in, istride, 0,
+                                    out, ostride, 0);
+                    break;
+               case 2:
+                    spawn fftw2d_out_of_place_aux_cilk(plan,
+                                                       in, istride,
+                                                       out, ostride);
+                    break;
+               case 3:
+                    spawn fftw3d_out_of_place_aux_cilk(plan,
+                                                       in, istride,
+                                                       out, ostride);
+                    break;
+               default:
+                    spawn fftwnd_out_of_place_aux_cilk(plan,
+                                                       in, istride,
+                                                       out, ostride);
+               }
+          }
+
+          in += idist;
+          out += odist;
+     }
+}
+
+typedef struct
+{
+     fftw_plan p;
+     int howmany;
+     fftw_complex *in;
+     int istride, idist;
+     int aux_dist;
+}
+fftw_many_in_place_aux_data;
+
+static cilk void fftw_many_in_place_aux(fftw_many_in_place_aux_data *d,
+                                        int min, int max)
+{
+     if (max - min > 0) {
+          spawn fftw_many_in_place_aux(d,min,(min+max)/2);
+          spawn fftw_many_in_place_aux(d,(min+max)/2+1,max);
+     } else if (max - min == 0) {
+          spawn fftw_cilk(d->p, d->howmany,
+                          d->in + min * d->aux_dist, d->istride, d->idist,
+                          0,0,0);
+     }
+}
+
+static cilk void fftw2d_out_of_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in, int istride,
+          fftw_complex *out, int ostride)
+{
+     fftw_plan p0, p1;
+     int n0, n1;
+
+     p0 = p->plans[0];
+     p1 = p->plans[1];
+     n0 = p->n[0];
+     n1 = p->n[1];
+
+     /* FFT y dimension (out-of-place): */
+     spawn fftw_cilk(p1, n0,
+                     in, istride, n1 * istride,
+                     out, ostride, n1 * ostride);
+     sync;
+     /* FFT x dimension (in-place): */
+     spawn fftw_cilk(p0, n1,
+                     out, n1 * ostride, ostride,
+                     0, 0, 0);
+}
+
+static cilk void fftw3d_out_of_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in, int istride,
+          fftw_complex *out, int ostride)
+{
+     fftw_plan p0, p1, p2;
+     int n0, n1, n2;
+
+     p0 = p->plans[0];
+     p1 = p->plans[1];
+     p2 = p->plans[2];
+     n0 = p->n[0];
+     n1 = p->n[1];
+     n2 = p->n[2];
+
+     /* FFT z dimension (out-of-place): */
+     spawn fftw_cilk(p2, n0 * n1,
+                     in, istride, n2 * istride,
+                     out, ostride, n2 * ostride);
+     /* FFT y dimension (in-place): */
+     {
+          fftw_many_in_place_aux_data d;
+
+          sync;
+
+          d.p = p1;
+          d.howmany = n2;
+          d.in = out;
+          d.istride = n2*ostride;
+          d.idist = ostride;
+          d.aux_dist = n1*n2*ostride;
+
+          spawn fftw_many_in_place_aux(&d,0,n0-1);
+     }
+     sync;
+     /* FFT x dimension (in-place): */
+     spawn fftw_cilk(p0, n1 * n2,
+                     out, n1 * n2 * ostride, ostride,
+                     0, 0, 0);
+}
+
+static cilk void fftwnd_out_of_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in, int istride,
+          fftw_complex *out, int ostride)
+{
+     int j;
+
+     /* Do FFT for rank > 3: */
+
+     /* do last dimension (out-of-place): */
+     spawn fftw_cilk(p->plans[p->rank - 1], p->n_before[p->rank - 1],
+                     in, istride, p->n[p->rank - 1] * istride,
+                     out, ostride, p->n[p->rank - 1] * ostride);
+     sync;
+     /* do first dimension (in-place): */
+     spawn fftw_cilk(p->plans[0], p->n_after[0],
+                     out, p->n_after[0] * ostride, ostride,
+                     0, 0, 0);
+     /* do other dimensions (in-place): */
+     for (j = 1; j < p->rank - 1; ++j) {
+          fftw_many_in_place_aux_data d;
+
+          sync;
+
+          d.p = p->plans[j];
+          d.howmany = p->n_after[j];
+          d.in = out;
+          d.istride = p->n_after[j]*ostride;
+          d.idist = ostride;
+          d.aux_dist = ostride * p->n[j] * p->n_after[j];
+
+          spawn fftw_many_in_place_aux(&d,0,p->n_before[j]-1);
+     }
+}
+
+static cilk void fftw2d_in_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in_out, int istride)
+{
+     fftw_plan p0, p1;
+     int n0, n1;
+
+     p0 = p->plans[0];
+     p1 = p->plans[1];
+     n0 = p->n[0];
+     n1 = p->n[1];
+
+     /* FFT y dimension: */
+     spawn fftw_cilk(p1, n0,
+                     in_out, istride, istride * n1,
+                     0, 0, 0);
+     sync;
+     /* FFT x dimension: */
+     spawn fftw_cilk(p0, n1,
+                     in_out, istride * n1, istride,
+                     0, 0, 0);
+}
+
+static cilk void fftw3d_in_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in_out, int istride)
+{
+     fftw_plan p0, p1, p2;
+     int n0, n1, n2;
+
+     p0 = p->plans[0];
+     p1 = p->plans[1];
+     p2 = p->plans[2];
+     n0 = p->n[0];
+     n1 = p->n[1];
+     n2 = p->n[2];
+
+     /* FFT z dimension: */
+     spawn fftw_cilk(p2, n0 * n1,
+                     in_out, istride, n2 * istride,
+                     0, 0, 0);
+     /* FFT y dimension: */
+     {
+          fftw_many_in_place_aux_data d;
+
+          sync;
+
+          d.p = p1;
+          d.howmany = n2;
+          d.in = in_out;
+          d.istride = n2*istride;
+          d.idist = istride;
+          d.aux_dist = n1*n2*istride;
+
+          spawn fftw_many_in_place_aux(&d,0,n0-1);
+     }
+     sync;
+     /* FFT x dimension: */
+     spawn fftw_cilk(p0, n1 * n2,
+                     in_out,
+                     n1 * n2 * istride, istride,
+                     0, 0, 0);
+}
+
+static cilk void fftwnd_in_place_aux_cilk(fftwnd_plan p,
+          fftw_complex *in_out, int istride)
+/* Do FFT for rank > 3: */
+{
+     int j;
+
+     /* do last dimension: */
+     spawn fftw_cilk(p->plans[p->rank - 1], p->n_before[p->rank - 1],
+                     in_out, istride, p->n[p->rank - 1] * istride,
+                     0, 0, 0);
+     sync;
+     /* do first dimension: */
+     spawn fftw_cilk(p->plans[0], p->n_after[0],
+                     in_out, p->n_after[0] * istride, istride,
+                     0, 0, 0);
+
+     /* do other dimensions: */
+     for (j = 1; j < p->rank - 1; ++j) {
+          fftw_many_in_place_aux_data d;
+
+          sync;
+
+          d.p = p->plans[j];
+          d.howmany = p->n_after[j];
+          d.in = in_out;
+          d.istride = p->n_after[j]*istride;
+          d.idist = istride;
+          d.aux_dist = istride * p->n[j] * p->n_after[j];
+
+          spawn fftw_many_in_place_aux(&d,0,p->n_before[j]-1);
+     }
+}

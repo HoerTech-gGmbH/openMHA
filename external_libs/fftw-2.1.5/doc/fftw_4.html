@@ -1,0 +1,1104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<!-- This HTML file has been created by texi2html 1.52
+     from fftw.texi on 24 March 2003 -->
+
+<TITLE>FFTW - Parallel FFTW</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+Go to the <A HREF="fftw_1.html">first</A>, <A HREF="fftw_3.html">previous</A>, <A HREF="fftw_5.html">next</A>, <A HREF="fftw_10.html">last</A> section, <A HREF="fftw_toc.html">table of contents</A>.
+<P><HR><P>
+
+
+<H1><A NAME="SEC47">Parallel FFTW</A></H1>
+
+<P>
+<A NAME="IDX201"></A>
+In this chapter we discuss the use of FFTW in a parallel environment,
+documenting the different parallel libraries that we have provided.
+(Users calling FFTW from a multi-threaded program should also consult
+Section <A HREF="fftw_3.html#SEC46">Thread safety</A>.)  The FFTW package currently contains three parallel
+transform implementations that leverage the uniprocessor FFTW code:
+
+
+
+<UL>
+
+<LI>
+
+<A NAME="IDX202"></A>
+The first set of routines utilizes shared-memory threads for parallel
+one- and multi-dimensional transforms of both real and complex data.
+Any program using FFTW can be trivially modified to use the
+multi-threaded routines.  This code can use any common threads
+implementation, including POSIX threads.  (POSIX threads are available
+on most Unix variants, including Linux.)  These routines are located in
+the <CODE>threads</CODE> directory, and are documented in Section <A HREF="fftw_4.html#SEC48">Multi-threaded FFTW</A>.
+
+<LI>
+
+<A NAME="IDX203"></A>
+<A NAME="IDX204"></A>
+The <CODE>mpi</CODE> directory contains multi-dimensional transforms
+of real and complex data for parallel machines supporting MPI.  It also
+includes parallel one-dimensional transforms for complex data.  The main
+feature of this code is that it supports distributed-memory transforms,
+so it runs on everything from workstation clusters to massively-parallel
+supercomputers.  More information on MPI can be found at the
+<A HREF="http://www.mcs.anl.gov/mpi">MPI home page</A>.  The FFTW MPI routines
+are documented in Section <A HREF="fftw_4.html#SEC55">MPI FFTW</A>.
+
+<LI>
+
+<A NAME="IDX205"></A>
+We also have an experimental parallel implementation written in Cilk, a
+C-like parallel language developed at MIT and currently available for
+several SMP platforms.  For more information on Cilk see
+<A HREF="http://supertech.lcs.mit.edu/cilk">the Cilk home page</A>.  The FFTW
+Cilk code can be found in the <CODE>cilk</CODE> directory, with parallelized
+one- and multi-dimensional transforms of complex data.  The Cilk FFTW
+routines are documented in <CODE>cilk/README</CODE>.
+
+</UL>
+
+
+
+<H2><A NAME="SEC48">Multi-threaded FFTW</A></H2>
+
+<P>
+<A NAME="IDX206"></A>
+In this section we document the parallel FFTW routines for shared-memory
+threads on SMP hardware.  These routines, which support parallel one-
+and multi-dimensional transforms of both real and complex data, are the
+easiest way to take advantage of multiple processors with FFTW.  They
+work just like the corresponding uniprocessor transform routines, except
+that they take the number of parallel threads to use as an extra
+parameter.  Any program that uses the uniprocessor FFTW can be trivially
+modified to use the multi-threaded FFTW.
+
+
+
+
+<H3><A NAME="SEC49">Installation and Supported Hardware/Software</A></H3>
+
+<P>
+All of the FFTW threads code is located in the <CODE>threads</CODE>
+subdirectory of the FFTW package.  On Unix systems, the FFTW threads
+libraries and header files can be automatically configured, compiled,
+and installed along with the uniprocessor FFTW libraries simply by
+including <CODE>--enable-threads</CODE> in the flags to the <CODE>configure</CODE>
+script (see Section <A HREF="fftw_6.html#SEC67">Installation on Unix</A>).  (Note also that the threads
+routines, when enabled, are automatically tested by the <SAMP>`<CODE>make
+check'</SAMP></CODE> self-tests.)
+<A NAME="IDX207"></A>
+
+
+<P>
+The threads routines require your operating system to have some sort of
+shared-memory threads support.  Specifically, the FFTW threads package
+works with POSIX threads (available on most Unix variants, including
+Linux), Solaris threads, <A HREF="http://www.be.com">BeOS</A> threads (tested
+on BeOS DR8.2), Mach C threads (reported to work by users), and Win32
+threads (reported to work by users).  (There is also untested code to
+use MacOS MP threads.)  We also support using
+<A HREF="http://www.openmp.org">OpenMP</A> or SGI MP compiler directives to
+launch threads, enabled by using <CODE>--with-openmp</CODE> or
+<CODE>--with-sgimp</CODE> in addition to <CODE>--enable-threads</CODE>.  This is
+especially useful if you are employing that sort of directive in your
+own code, in order to minimize conflicts.  If you have a shared-memory
+machine that uses a different threads API, it should be a simple matter
+of programming to include support for it; see the file
+<CODE>fftw_threads-int.h</CODE> for more detail.
+
+
+<P>
+SMP hardware is not required, although of course you need multiple
+processors to get any benefit from the multithreaded transforms.
+
+
+
+
+<H3><A NAME="SEC50">Usage of Multi-threaded FFTW</A></H3>
+
+<P>
+Here, it is assumed that the reader is already familiar with the usage
+of the uniprocessor FFTW routines, described elsewhere in this manual.
+We only describe what one has to change in order to use the
+multi-threaded routines.
+
+
+<P>
+First, instead of including <CODE>&#60;fftw.h&#62;</CODE> or <CODE>&#60;rfftw.h&#62;</CODE>, you
+should include the files <CODE>&#60;fftw_threads.h&#62;</CODE> or
+<CODE>&#60;rfftw_threads.h&#62;</CODE>, respectively.
+
+
+<P>
+Second, before calling any FFTW routines, you should call the function:
+
+
+
+<PRE>
+int fftw_threads_init(void);
+</PRE>
+
+<P>
+<A NAME="IDX208"></A>
+
+
+<P>
+This function, which should only be called once (probably in your
+<CODE>main()</CODE> function), performs any one-time initialization required
+to use threads on your system.  It returns zero if successful, and a
+non-zero value if there was an error (in which case, something is
+seriously wrong and you should probably exit the program).
+
+
+<P>
+Third, when you want to actually compute the transform, you should use
+one of the following transform routines instead of the ordinary FFTW
+functions:
+
+
+
+<PRE>
+fftw_threads(nthreads, plan, howmany, in, istride, 
+             idist, out, ostride, odist);
+<A NAME="IDX209"></A>
+fftw_threads_one(nthreads, plan, in, out);
+<A NAME="IDX210"></A>
+fftwnd_threads(nthreads, plan, howmany, in, istride,
+               idist, out, ostride, odist);
+<A NAME="IDX211"></A>
+fftwnd_threads_one(nthreads, plan, in, out);
+<A NAME="IDX212"></A>
+rfftw_threads(nthreads, plan, howmany, in, istride, 
+              idist, out, ostride, odist);
+<A NAME="IDX213"></A>
+rfftw_threads_one(nthreads, plan, in, out);
+<A NAME="IDX214"></A>
+rfftwnd_threads_real_to_complex(nthreads, plan, howmany, in, 
+                                istride, idist, out, ostride, odist);
+<A NAME="IDX215"></A>
+rfftwnd_threads_one_real_to_complex(nthreads, plan, in, out);
+<A NAME="IDX216"></A>
+rfftwnd_threads_complex_to_real(nthreads, plan, howmany, in,
+                                istride, idist, out, ostride, odist);
+<A NAME="IDX217"></A>
+rfftwnd_threads_one_real_to_complex(nthreads, plan, in, out);
+<A NAME="IDX218"></A>
+rfftwnd_threads_one_complex_to_real(nthreads, plan, in, out);
+<A NAME="IDX219"></A></PRE>
+
+<P>
+All of these routines take exactly the same arguments and have exactly
+the same effects as their uniprocessor counterparts (i.e. without the
+<SAMP>`<CODE>_threads</CODE>'</SAMP>) <EM>except</EM> that they take one extra
+parameter, <CODE>nthreads</CODE> (of type <CODE>int</CODE>), before the normal
+parameters.<A NAME="DOCF5" HREF="fftw_foot.html#FOOT5">(5)</A>  The <CODE>nthreads</CODE>
+parameter specifies the number of threads of execution to use when
+performing the transform (actually, the maximum number of threads).
+<A NAME="IDX220"></A>
+
+
+<P>
+For example, to parallelize a single one-dimensional transform of
+complex data, instead of calling the uniprocessor <CODE>fftw_one(plan,
+in, out)</CODE>, you would call <CODE>fftw_threads_one(nthreads, plan, in,
+out)</CODE>.  Passing an <CODE>nthreads</CODE> of <CODE>1</CODE> means to use only one
+thread (the main thread), and is equivalent to calling the uniprocessor
+routine.  Passing an <CODE>nthreads</CODE> of <CODE>2</CODE> means that the
+transform is potentially parallelized over two threads (and two
+processors, if you have them), and so on.
+
+
+<P>
+These are the only changes you need to make to your source code.  Calls
+to all other FFTW routines (plan creation, destruction, wisdom,
+etcetera) are not parallelized and remain the same.  (The same plans and
+wisdom are used by both uniprocessor and multi-threaded transforms.)
+Your arrays are allocated and formatted in the same way, and so on.
+
+
+<P>
+Programs using the parallel complex transforms should be linked with
+<CODE>-lfftw_threads -lfftw -lm</CODE> on Unix.  Programs using the parallel
+real transforms should be linked with <CODE>-lrfftw_threads
+-lfftw_threads -lrfftw -lfftw -lm</CODE>.  You will also need to link with
+whatever library is responsible for threads on your system
+(e.g. <CODE>-lpthread</CODE> on Linux).
+<A NAME="IDX221"></A>
+
+
+
+
+<H3><A NAME="SEC51">How Many Threads to Use?</A></H3>
+
+<P>
+<A NAME="IDX222"></A>
+There is a fair amount of overhead involved in spawning and synchronizing
+threads, so the optimal number of threads to use depends upon the size
+of the transform as well as on the number of processors you have.
+
+
+<P>
+As a general rule, you don't want to use more threads than you have
+processors.  (Using more threads will work, but there will be extra
+overhead with no benefit.)  In fact, if the problem size is too small,
+you may want to use fewer threads than you have processors.
+
+
+<P>
+You will have to experiment with your system to see what level of
+parallelization is best for your problem size.  Useful tools to help you
+do this are the test programs that are automatically compiled along with
+the threads libraries, <CODE>fftw_threads_test</CODE> and
+<CODE>rfftw_threads_test</CODE> (in the <CODE>threads</CODE> subdirectory).  These
+<A NAME="IDX223"></A>
+<A NAME="IDX224"></A>
+take the same arguments as the other FFTW test programs (see
+<CODE>tests/README</CODE>), except that they also take the number of threads
+to use as a first argument, and report the parallel speedup in speed
+tests.  For example,
+
+
+
+<PRE>
+fftw_threads_test 2 -s 128x128
+</PRE>
+
+<P>
+will benchmark complex 128x128 transforms using two threads and report
+the speedup relative to the uniprocessor transform.
+<A NAME="IDX225"></A>
+
+
+<P>
+For instance, on a 4-processor 200MHz Pentium Pro system running Linux
+2.2.0, we found that the "crossover" point at which 2 threads became
+beneficial for complex transforms was about 4k points, while 4 threads
+became beneficial at 8k points.
+
+
+
+
+<H3><A NAME="SEC52">Using Multi-threaded FFTW in a Multi-threaded Program</A></H3>
+
+<P>
+<A NAME="IDX226"></A>
+It is perfectly possible to use the multi-threaded FFTW routines from a
+multi-threaded program (e.g. have multiple threads computing
+multi-threaded transforms simultaneously).  If you have the processors,
+more power to you!  However, the same restrictions apply as for the
+uniprocessor FFTW routines (see Section <A HREF="fftw_3.html#SEC46">Thread safety</A>).  In particular, you
+should recall that you may not create or destroy plans in parallel.
+
+
+
+
+<H3><A NAME="SEC53">Tips for Optimal Threading</A></H3>
+
+<P>
+Not all transforms are equally well-parallelized by the multi-threaded
+FFTW routines.  (This is merely a consequence of laziness on the part of
+the implementors, and is not inherent to the algorithms employed.)
+Mainly, the limitations are in the parallel one-dimensional transforms.
+The things to avoid if you want optimal parallelization are as follows:
+
+
+
+
+<H3><A NAME="SEC54">Parallelization deficiencies in one-dimensional transforms</A></H3>
+
+
+<UL>
+
+<LI>
+
+Large prime factors can sometimes parallelize poorly.  Of course, you
+should avoid these anyway if you want high performance.
+
+<LI>
+
+<A NAME="IDX227"></A>
+Single in-place transforms don't parallelize completely.  (Multiple
+in-place transforms, i.e. <CODE>howmany &#62; 1</CODE>, are fine.)  Again, you
+should avoid these in any case if you want high performance, as they
+require transforming to a scratch array and copying back.
+
+<LI>
+
+Single real-complex (<CODE>rfftw</CODE>) transforms don't parallelize
+completely.  This is unfortunate, but parallelizing this correctly would
+have involved a lot of extra code (and a much larger library).  You
+still get some benefit from additional processors, but if you have a
+very large number of processors you will probably be better off using
+the parallel complex (<CODE>fftw</CODE>) transforms.  Note that
+multi-dimensional real transforms or multiple one-dimensional real
+transforms are fine.
+
+</UL>
+
+
+
+<H2><A NAME="SEC55">MPI FFTW</A></H2>
+
+<P>
+<A NAME="IDX228"></A>
+This section describes the MPI FFTW routines for distributed-memory (and
+shared-memory) machines supporting MPI (Message Passing Interface).  The
+MPI routines are significantly different from the ordinary FFTW because
+the transform data here are <EM>distributed</EM> over multiple processes,
+so that each process gets only a portion of the array.
+<A NAME="IDX229"></A>
+Currently, multi-dimensional transforms of both real and complex data,
+as well as one-dimensional transforms of complex data, are supported.
+
+
+
+
+<H3><A NAME="SEC56">MPI FFTW Installation</A></H3>
+
+<P>
+The FFTW MPI library code is all located in the <CODE>mpi</CODE> subdirectoy
+of the FFTW package (along with source code for test programs).  On Unix
+systems, the FFTW MPI libraries and header files can be automatically
+configured, compiled, and installed along with the uniprocessor FFTW
+libraries simply by including <CODE>--enable-mpi</CODE> in the flags to the
+<CODE>configure</CODE> script (see Section <A HREF="fftw_6.html#SEC67">Installation on Unix</A>).
+<A NAME="IDX230"></A>
+
+
+<P>
+The only requirement of the FFTW MPI code is that you have the standard
+MPI 1.1 (or later) libraries and header files installed on your system.
+A free implementation of MPI is available from
+<A HREF="http://www-unix.mcs.anl.gov/mpi/mpich/">the MPICH home page</A>.
+
+
+<P>
+Previous versions of the FFTW MPI routines have had an unfortunate
+tendency to expose bugs in MPI implementations.  The current version has
+been largely rewritten, and hopefully avoids some of the problems.  If
+you run into difficulties, try passing the optional workspace to
+<CODE>(r)fftwnd_mpi</CODE> (see below), as this allows us to use the standard
+(and hopefully well-tested) <CODE>MPI_Alltoall</CODE> primitive for
+<A NAME="IDX231"></A>
+communications.  Please let us know (<A HREF="mailto:fftw@fftw.org">fftw@fftw.org</A>)
+how things work out.
+
+
+<P>
+<A NAME="IDX232"></A>
+<A NAME="IDX233"></A>
+Several test programs are included in the <CODE>mpi</CODE> directory.  The
+ones most useful to you are probably the <CODE>fftw_mpi_test</CODE> and
+<CODE>rfftw_mpi_test</CODE> programs, which are run just like an ordinary MPI
+program and accept the same parameters as the other FFTW test programs
+(c.f. <CODE>tests/README</CODE>).  For example, <CODE>mpirun <I>...params...</I>
+fftw_mpi_test -r 0</CODE> will run non-terminating complex-transform
+correctness tests of random dimensions.  They can also do performance
+benchmarks.
+
+
+
+
+<H3><A NAME="SEC57">Usage of MPI FFTW for Complex Multi-dimensional Transforms</A></H3>
+
+<P>
+Usage of the MPI FFTW routines is similar to that of the uniprocessor
+FFTW.  We assume that the reader already understands the usage of the
+uniprocessor FFTW routines, described elsewhere in this manual.  Some
+familiarity with MPI is also helpful.
+
+
+<P>
+A typical program performing a complex two-dimensional MPI transform
+might look something like:
+
+
+
+<PRE>
+#include &#60;fftw_mpi.h&#62;
+
+int main(int argc, char **argv)
+{
+      const int NX = ..., NY = ...;
+      fftwnd_mpi_plan plan;
+      fftw_complex *data;
+
+      MPI_Init(&#38;argc,&#38;argv);
+
+      plan = fftw2d_mpi_create_plan(MPI_COMM_WORLD,
+                                    NX, NY,
+                                    FFTW_FORWARD, FFTW_ESTIMATE);
+
+      ...allocate and initialize data...
+
+      fftwnd_mpi(p, 1, data, NULL, FFTW_NORMAL_ORDER);
+
+      ...
+
+      fftwnd_mpi_destroy_plan(plan);
+      MPI_Finalize();
+}
+</PRE>
+
+<P>
+The calls to <CODE>MPI_Init</CODE> and <CODE>MPI_Finalize</CODE> are required in all
+<A NAME="IDX234"></A>
+<A NAME="IDX235"></A>
+MPI programs; see the <A HREF="http://www.mcs.anl.gov/mpi/">MPI home page</A>
+for more information.  Note that all of your processes run the program
+in parallel, as a group; there is no explicit launching of
+threads/processes in an MPI program.
+
+
+<P>
+<A NAME="IDX236"></A>
+As in the ordinary FFTW, the first thing we do is to create a plan (of
+type <CODE>fftwnd_mpi_plan</CODE>), using:
+
+
+
+<PRE>
+fftwnd_mpi_plan fftw2d_mpi_create_plan(MPI_Comm comm,
+                                       int nx, int ny,
+                                       fftw_direction dir, int flags);
+</PRE>
+
+<P>
+<A NAME="IDX237"></A>
+<A NAME="IDX238"></A>
+
+
+<P>
+Except for the first argument, the parameters are identical to those of
+<CODE>fftw2d_create_plan</CODE>.  (There are also analogous
+<CODE>fftwnd_mpi_create_plan</CODE> and <CODE>fftw3d_mpi_create_plan</CODE>
+functions.  Transforms of any rank greater than one are supported.)
+<A NAME="IDX239"></A>
+<A NAME="IDX240"></A>
+The first argument is an MPI <EM>communicator</EM>, which specifies the
+group of processes that are to be involved in the transform; the
+standard constant <CODE>MPI_COMM_WORLD</CODE> indicates all available
+processes.
+<A NAME="IDX241"></A>
+
+
+<P>
+Next, one has to allocate and initialize the data.  This is somewhat
+tricky, because the transform data is distributed across the processes
+involved in the transform.  It is discussed in detail by the next
+section (see Section <A HREF="fftw_4.html#SEC58">MPI Data Layout</A>).
+
+
+<P>
+The actual computation of the transform is performed by the function
+<CODE>fftwnd_mpi</CODE>, which differs somewhat from its uniprocessor
+equivalent and is described by:
+
+
+
+<PRE>
+void fftwnd_mpi(fftwnd_mpi_plan p,
+                int n_fields,
+                fftw_complex *local_data, fftw_complex *work,
+                fftwnd_mpi_output_order output_order);
+</PRE>
+
+<P>
+<A NAME="IDX242"></A>
+
+
+<P>
+There are several things to notice here:
+
+
+
+<UL>
+
+<LI>
+
+<A NAME="IDX243"></A>
+First of all, all <CODE>fftw_mpi</CODE> transforms are in-place: the output is
+in the <CODE>local_data</CODE> parameter, and there is no need to specify
+<CODE>FFTW_IN_PLACE</CODE> in the plan flags.
+
+<LI>
+
+<A NAME="IDX244"></A>
+<A NAME="IDX245"></A>
+The MPI transforms also only support a limited subset of the
+<CODE>howmany</CODE>/<CODE>stride</CODE>/<CODE>dist</CODE> functionality of the
+uniprocessor routines: the <CODE>n_fields</CODE> parameter is equivalent to
+<CODE>howmany=n_fields</CODE>, <CODE>stride=n_fields</CODE>, and <CODE>dist=1</CODE>.
+(Conceptually, the <CODE>n_fields</CODE> parameter allows you to transform an
+array of contiguous vectors, each with length <CODE>n_fields</CODE>.)
+<CODE>n_fields</CODE> is <CODE>1</CODE> if you are only transforming a single,
+ordinary array.
+
+<LI>
+
+The <CODE>work</CODE> parameter is an optional workspace.  If it is not
+<CODE>NULL</CODE>, it should be exactly the same size as the <CODE>local_data</CODE>
+array.  If it is provided, FFTW is able to use the built-in
+<CODE>MPI_Alltoall</CODE> primitive for (often) greater efficiency at the
+<A NAME="IDX246"></A>
+expense of extra storage space.
+
+<LI>
+
+Finally, the last parameter specifies whether the output data has the
+same ordering as the input data (<CODE>FFTW_NORMAL_ORDER</CODE>), or if it is
+transposed (<CODE>FFTW_TRANSPOSED_ORDER</CODE>).  Leaving the data transposed
+<A NAME="IDX247"></A>
+<A NAME="IDX248"></A>
+results in significant performance improvements due to a saved
+communication step (needed to un-transpose the data).  Specifically, the
+first two dimensions of the array are transposed, as is described in
+more detail by the next section.
+
+</UL>
+
+<P>
+<A NAME="IDX249"></A>
+The output of <CODE>fftwnd_mpi</CODE> is identical to that of the
+corresponding uniprocessor transform.  In particular, you should recall
+our conventions for normalization and the sign of the transform
+exponent.
+
+
+<P>
+The same plan can be used to compute many transforms of the same size.
+After you are done with it, you should deallocate it by calling
+<CODE>fftwnd_mpi_destroy_plan</CODE>.
+<A NAME="IDX250"></A>
+
+
+<P>
+<A NAME="IDX251"></A>
+<A NAME="IDX252"></A>
+<B>Important:</B> The FFTW MPI routines must be called in the same order by
+all processes involved in the transform.  You should assume that they
+all are blocking, as if each contained a call to <CODE>MPI_Barrier</CODE>.
+
+
+<P>
+Programs using the FFTW MPI routines should be linked with
+<CODE>-lfftw_mpi -lfftw -lm</CODE> on Unix, in addition to whatever libraries
+are required for MPI.
+<A NAME="IDX253"></A>
+
+
+
+
+<H3><A NAME="SEC58">MPI Data Layout</A></H3>
+
+<P>
+<A NAME="IDX254"></A>
+<A NAME="IDX255"></A>
+The transform data used by the MPI FFTW routines is <EM>distributed</EM>: a
+distinct portion of it resides with each process involved in the
+transform.  This allows the transform to be parallelized, for example,
+over a cluster of workstations, each with its own separate memory, so
+that you can take advantage of the total memory of all the processors
+you are parallelizing over.
+
+
+<P>
+In particular, the array is divided according to the rows (first
+dimension) of the data: each process gets a subset of the rows of the
+<A NAME="IDX256"></A>
+data.  (This is sometimes called a "slab decomposition.")  One
+consequence of this is that you can't take advantage of more processors
+than you have rows (e.g. <CODE>64x64x64</CODE> matrix can at most use 64
+processors).  This isn't usually much of a limitation, however, as each
+processor needs a fair amount of data in order for the
+parallel-computation benefits to outweight the communications costs.
+
+
+<P>
+Below, the first dimension of the data will be referred to as
+<SAMP>`<CODE>x</CODE>'</SAMP> and the second dimension as <SAMP>`<CODE>y</CODE>'</SAMP>.
+
+
+<P>
+FFTW supplies a routine to tell you exactly how much data resides on the
+current process:
+
+
+
+<PRE>
+void fftwnd_mpi_local_sizes(fftwnd_mpi_plan p,
+                            int *local_nx,
+                            int *local_x_start,
+                            int *local_ny_after_transpose,
+                            int *local_y_start_after_transpose,
+                            int *total_local_size);
+</PRE>
+
+<P>
+<A NAME="IDX257"></A>
+
+
+<P>
+Given a plan <CODE>p</CODE>, the other parameters of this routine are set to
+values describing the required data layout, described below.
+
+
+<P>
+<CODE>total_local_size</CODE> is the number of <CODE>fftw_complex</CODE> elements
+that you must allocate for your local data (and workspace, if you
+choose).  (This value should, of course, be multiplied by
+<CODE>n_fields</CODE> if that parameter to <CODE>fftwnd_mpi</CODE> is not <CODE>1</CODE>.)
+
+
+<P>
+The data on the current process has <CODE>local_nx</CODE> rows, starting at
+row <CODE>local_x_start</CODE>.  If <CODE>fftwnd_mpi</CODE> is called with
+<CODE>FFTW_TRANSPOSED_ORDER</CODE> output, then <CODE>y</CODE> will be the first
+dimension of the output, and the local <CODE>y</CODE> extent will be given by
+<CODE>local_ny_after_transpose</CODE> and
+<CODE>local_y_start_after_transpose</CODE>.  Otherwise, the output has the
+same dimensions and layout as the input.
+
+
+<P>
+For instance, suppose you want to transform three-dimensional data of
+size <CODE>nx x ny x nz</CODE>.  Then, the current process will store a subset
+of this data, of size <CODE>local_nx x ny x nz</CODE>, where the <CODE>x</CODE>
+indices correspond to the range <CODE>local_x_start</CODE> to
+<CODE>local_x_start+local_nx-1</CODE> in the "real" (i.e. logical) array.
+If <CODE>fftwnd_mpi</CODE> is called with <CODE>FFTW_TRANSPOSED_ORDER</CODE> output,
+<A NAME="IDX258"></A>
+then the result will be a <CODE>ny x nx x nz</CODE> array, of which a
+<CODE>local_ny_after_transpose x nx x nz</CODE> subset is stored on the
+current process (corresponding to <CODE>y</CODE> values starting at
+<CODE>local_y_start_after_transpose</CODE>).
+
+
+<P>
+The following is an example of allocating such a three-dimensional array
+array (<CODE>local_data</CODE>) before the transform and initializing it to
+some function <CODE>f(x,y,z)</CODE>:
+
+
+
+<PRE>
+        fftwnd_mpi_local_sizes(plan, &#38;local_nx, &#38;local_x_start,
+                               &#38;local_ny_after_transpose,
+                               &#38;local_y_start_after_transpose,
+                               &#38;total_local_size);
+
+        local_data = (fftw_complex*) malloc(sizeof(fftw_complex) *
+                                            total_local_size);
+
+        for (x = 0; x &#60; local_nx; ++x)
+                for (y = 0; y &#60; ny; ++y)
+                        for (z = 0; z &#60; nz; ++z)
+                                local_data[(x*ny + y)*nz + z]
+                                        = f(x + local_x_start, y, z);
+</PRE>
+
+<P>
+Some important things to remember:
+
+
+
+<UL>
+
+<LI>
+
+Although the local data is of dimensions <CODE>local_nx x ny x nz</CODE> in
+the above example, do <EM>not</EM> allocate the array to be of size
+<CODE>local_nx*ny*nz</CODE>.  Use <CODE>total_local_size</CODE> instead.
+
+<LI>
+
+The amount of data on each process will not necessarily be the same; in
+fact, <CODE>local_nx</CODE> may even be zero for some processes.  (For
+example, suppose you are doing a <CODE>6x6</CODE> transform on four
+processors.  There is no way to effectively use the fourth processor in
+a slab decomposition, so we leave it empty.  Proof left as an exercise
+for the reader.)
+
+<LI>
+
+<A NAME="IDX259"></A>
+All arrays are, of course, in row-major order (see Section <A HREF="fftw_2.html#SEC7">Multi-dimensional Array Format</A>).
+
+<LI>
+
+If you want to compute the inverse transform of the output of
+<CODE>fftwnd_mpi</CODE>, the dimensions of the inverse transform are given by
+the dimensions of the output of the forward transform.  For example, if
+you are using <CODE>FFTW_TRANSPOSED_ORDER</CODE> output in the above example,
+then the inverse plan should be created with dimensions <CODE>ny x nx x
+nz</CODE>.
+
+<LI>
+
+The data layout only depends upon the dimensions of the array, not on
+the plan, so you are guaranteed that different plans for the same size
+(or inverse plans) will use the same (consistent) data layouts.
+
+</UL>
+
+
+
+<H3><A NAME="SEC59">Usage of MPI FFTW for Real Multi-dimensional Transforms</A></H3>
+
+<P>
+MPI transforms specialized for real data are also available, similiar to
+the uniprocessor <CODE>rfftwnd</CODE> transforms.  Just as in the uniprocessor
+case, the real-data MPI functions gain roughly a factor of two in speed
+(and save a factor of two in space) at the expense of more complicated
+data formats in the calling program.  Before reading this section, you
+should definitely understand how to call the uniprocessor <CODE>rfftwnd</CODE>
+functions and also the complex MPI FFTW functions.
+
+
+<P>
+The following is an example of a program using <CODE>rfftwnd_mpi</CODE>.  It
+computes the size <CODE>nx x ny x nz</CODE> transform of a real function
+<CODE>f(x,y,z)</CODE>, multiplies the imaginary part by <CODE>2</CODE> for fun, then
+computes the inverse transform.  (We'll also use
+<CODE>FFTW_TRANSPOSED_ORDER</CODE> output for the transform, and additionally
+supply the optional workspace parameter to <CODE>rfftwnd_mpi</CODE>, just to
+add a little spice.)
+
+
+
+<PRE>
+#include &#60;rfftw_mpi.h&#62;
+
+int main(int argc, char **argv)
+{
+     const int nx = ..., ny = ..., nz = ...;
+     int local_nx, local_x_start, local_ny_after_transpose,
+         local_y_start_after_transpose, total_local_size;
+     int x, y, z;
+     rfftwnd_mpi_plan plan, iplan;
+     fftw_real *data, *work;
+     fftw_complex *cdata;
+
+     MPI_Init(&#38;argc,&#38;argv);
+
+     /* create the forward and backward plans: */
+     plan = rfftw3d_mpi_create_plan(MPI_COMM_WORLD,
+                                    nx, ny, nz,
+                                    FFTW_REAL_TO_COMPLEX,
+                                    FFTW_ESTIMATE);
+<A NAME="IDX260"></A>     iplan = rfftw3d_mpi_create_plan(MPI_COMM_WORLD,
+      /* dim.'s of REAL data --&#62; */  nx, ny, nz,
+                                     FFTW_COMPLEX_TO_REAL,
+                                     FFTW_ESTIMATE);
+
+     rfftwnd_mpi_local_sizes(plan, &#38;local_nx, &#38;local_x_start,
+                            &#38;local_ny_after_transpose,
+                            &#38;local_y_start_after_transpose,
+                            &#38;total_local_size);
+<A NAME="IDX261"></A>
+     data = (fftw_real*) malloc(sizeof(fftw_real) * total_local_size);
+
+     /* workspace is the same size as the data: */
+     work = (fftw_real*) malloc(sizeof(fftw_real) * total_local_size);
+
+     /* initialize data to f(x,y,z): */
+     for (x = 0; x &#60; local_nx; ++x)
+             for (y = 0; y &#60; ny; ++y)
+                     for (z = 0; z &#60; nz; ++z)
+                             data[(x*ny + y) * (2*(nz/2+1)) + z]
+                                     = f(x + local_x_start, y, z);
+
+     /* Now, compute the forward transform: */
+     rfftwnd_mpi(plan, 1, data, work, FFTW_TRANSPOSED_ORDER);
+<A NAME="IDX262"></A>
+     /* the data is now complex, so typecast a pointer: */
+     cdata = (fftw_complex*) data;
+     
+     /* multiply imaginary part by 2, for fun:
+        (note that the data is transposed) */
+     for (y = 0; y &#60; local_ny_after_transpose; ++y)
+             for (x = 0; x &#60; nx; ++x)
+                     for (z = 0; z &#60; (nz/2+1); ++z)
+                             cdata[(y*nx + x) * (nz/2+1) + z].im
+                                     *= 2.0;
+
+     /* Finally, compute the inverse transform; the result
+        is transposed back to the original data layout: */
+     rfftwnd_mpi(iplan, 1, data, work, FFTW_TRANSPOSED_ORDER);
+
+     free(data);
+     free(work);
+     rfftwnd_mpi_destroy_plan(plan);
+<A NAME="IDX263"></A>     rfftwnd_mpi_destroy_plan(iplan);
+     MPI_Finalize();
+}
+</PRE>
+
+<P>
+There's a lot of stuff in this example, but it's all just what you would
+have guessed, right?  We replaced all the <CODE>fftwnd_mpi*</CODE> functions
+by <CODE>rfftwnd_mpi*</CODE>, but otherwise the parameters were pretty much
+the same.  The data layout distributed among the processes just like for
+the complex transforms (see Section <A HREF="fftw_4.html#SEC58">MPI Data Layout</A>), but in addition the
+final dimension is padded just like it is for the uniprocessor in-place
+real transforms (see Section <A HREF="fftw_3.html#SEC37">Array Dimensions for Real Multi-dimensional Transforms</A>).
+<A NAME="IDX264"></A>
+In particular, the <CODE>z</CODE> dimension of the real input data is padded
+to a size <CODE>2*(nz/2+1)</CODE>, and after the transform it contains
+<CODE>nz/2+1</CODE> complex values.
+<A NAME="IDX265"></A>
+<A NAME="IDX266"></A>
+
+
+<P>
+Some other important things to know about the real MPI transforms:
+
+
+
+<UL>
+
+<LI>
+
+As for the uniprocessor <CODE>rfftwnd_create_plan</CODE>, the dimensions
+passed for the <CODE>FFTW_COMPLEX_TO_REAL</CODE> plan are those of the
+<EM>real</EM> data.  In particular, even when <CODE>FFTW_TRANSPOSED_ORDER</CODE>
+<A NAME="IDX267"></A>
+<A NAME="IDX268"></A>
+is used as in this case, the dimensions are those of the (untransposed)
+real output, not the (transposed) complex input.  (For the complex MPI
+transforms, on the other hand, the dimensions are always those of the
+input array.)
+
+<LI>
+
+The output ordering of the transform (<CODE>FFTW_TRANSPOSED_ORDER</CODE> or
+<CODE>FFTW_TRANSPOSED_ORDER</CODE>) <EM>must</EM> be the same for both forward
+and backward transforms.  (This is not required in the complex case.)
+
+<LI>
+
+<CODE>total_local_size</CODE> is the required size in <CODE>fftw_real</CODE> values,
+not <CODE>fftw_complex</CODE> values as it is for the complex transforms.
+
+<LI>
+
+<CODE>local_ny_after_transpose</CODE> and <CODE>local_y_start_after_transpose</CODE>
+describe the portion of the array after the transform; that is, they are
+indices in the complex array for an <CODE>FFTW_REAL_TO_COMPLEX</CODE> transform
+and in the real array for an <CODE>FFTW_COMPLEX_TO_REAL</CODE> transform.
+
+<LI>
+
+<CODE>rfftwnd_mpi</CODE> always expects <CODE>fftw_real*</CODE> array arguments, but
+of course these pointers can refer to either real or complex arrays,
+depending upon which side of the transform you are on.  Just as for
+in-place uniprocessor real transforms (and also in the example above),
+this is most easily handled by typecasting to a complex pointer when
+handling the complex data.
+
+<LI>
+
+As with the complex transforms, there are also
+<CODE>rfftwnd_create_plan</CODE> and <CODE>rfftw2d_create_plan</CODE> functions, and
+any rank greater than one is supported.
+<A NAME="IDX269"></A>
+<A NAME="IDX270"></A>
+
+</UL>
+
+<P>
+Programs using the MPI FFTW real transforms should link with
+<CODE>-lrfftw_mpi -lfftw_mpi -lrfftw -lfftw -lm</CODE> on Unix.
+<A NAME="IDX271"></A>
+
+
+
+
+<H3><A NAME="SEC60">Usage of MPI FFTW for Complex One-dimensional Transforms</A></H3>
+
+<P>
+The MPI FFTW also includes routines for parallel one-dimensional
+transforms of complex data (only).  Although the speedup is generally
+worse than it is for the multi-dimensional routines,<A NAME="DOCF6" HREF="fftw_foot.html#FOOT6">(6)</A> these distributed-memory one-dimensional transforms are
+especially useful for performing one-dimensional transforms that don't
+fit into the memory of a single machine.
+
+
+<P>
+The usage of these routines is straightforward, and is similar to that
+of the multi-dimensional MPI transform functions.  You first include the
+header <CODE>&#60;fftw_mpi.h&#62;</CODE> and then create a plan by calling:
+
+
+
+<PRE>
+fftw_mpi_plan fftw_mpi_create_plan(MPI_Comm comm, int n, 
+                                   fftw_direction dir, int flags);
+</PRE>
+
+<P>
+<A NAME="IDX272"></A>
+<A NAME="IDX273"></A>
+
+
+<P>
+The last three arguments are the same as for <CODE>fftw_create_plan</CODE>
+(except that all MPI transforms are automatically <CODE>FFTW_IN_PLACE</CODE>).
+The first argument specifies the group of processes you are using, and
+is usually <CODE>MPI_COMM_WORLD</CODE> (all processes).
+<A NAME="IDX274"></A>
+A plan can be used for many transforms of the same size, and is
+destroyed when you are done with it by calling
+<CODE>fftw_mpi_destroy_plan(plan)</CODE>.
+<A NAME="IDX275"></A>
+
+
+<P>
+If you don't care about the ordering of the input or output data of the
+transform, you can include <CODE>FFTW_SCRAMBLED_INPUT</CODE> and/or
+<CODE>FFTW_SCRAMBLED_OUTPUT</CODE> in the <CODE>flags</CODE>.
+<A NAME="IDX276"></A>
+<A NAME="IDX277"></A>
+<A NAME="IDX278"></A>
+These save some communications at the expense of having the input and/or
+output reordered in an undocumented way.  For example, if you are
+performing an FFT-based convolution, you might use
+<CODE>FFTW_SCRAMBLED_OUTPUT</CODE> for the forward transform and
+<CODE>FFTW_SCRAMBLED_INPUT</CODE> for the inverse transform.
+
+
+<P>
+The transform itself is computed by:
+
+
+
+<PRE>
+void fftw_mpi(fftw_mpi_plan p, int n_fields,
+              fftw_complex *local_data, fftw_complex *work);
+</PRE>
+
+<P>
+<A NAME="IDX279"></A>
+
+
+<P>
+<A NAME="IDX280"></A>
+<CODE>n_fields</CODE>, as in <CODE>fftwnd_mpi</CODE>, is equivalent to
+<CODE>howmany=n_fields</CODE>, <CODE>stride=n_fields</CODE>, and <CODE>dist=1</CODE>, and
+should be <CODE>1</CODE> when you are computing the transform of a single
+array.  <CODE>local_data</CODE> contains the portion of the array local to the
+current process, described below.  <CODE>work</CODE> is either <CODE>NULL</CODE> or
+an array exactly the same size as <CODE>local_data</CODE>; in the latter case,
+FFTW can use the <CODE>MPI_Alltoall</CODE> communications primitive which is
+(usually) faster at the expense of extra storage.  Upon return,
+<CODE>local_data</CODE> contains the portion of the output local to the
+current process (see below).
+<A NAME="IDX281"></A>
+
+
+<P>
+<A NAME="IDX282"></A>
+To find out what portion of the array is stored local to the current
+process, you call the following routine:
+
+
+
+<PRE>
+void fftw_mpi_local_sizes(fftw_mpi_plan p,
+                          int *local_n, int *local_start,
+                          int *local_n_after_transform,
+                          int *local_start_after_transform,
+                          int *total_local_size);
+</PRE>
+
+<P>
+<A NAME="IDX283"></A>
+
+
+<P>
+<CODE>total_local_size</CODE> is the number of <CODE>fftw_complex</CODE> elements
+you should actually allocate for <CODE>local_data</CODE> (and <CODE>work</CODE>).
+<CODE>local_n</CODE> and <CODE>local_start</CODE> indicate that the current process
+stores <CODE>local_n</CODE> elements corresponding to the indices
+<CODE>local_start</CODE> to <CODE>local_start+local_n-1</CODE> in the "real"
+array.  <EM>After the transform, the process may store a different
+portion of the array.</EM>  The portion of the data stored on the process
+after the transform is given by <CODE>local_n_after_transform</CODE> and
+<CODE>local_start_after_transform</CODE>.  This data is exactly the same as a
+contiguous segment of the corresponding uniprocessor transform output
+(i.e. an in-order sequence of sequential frequency bins).
+
+
+<P>
+Note that, if you compute both a forward and a backward transform of the
+same size, the local sizes are guaranteed to be consistent.  That is,
+the local size after the forward transform will be the same as the local
+size before the backward transform, and vice versa.
+
+
+<P>
+Programs using the FFTW MPI routines should be linked with
+<CODE>-lfftw_mpi -lfftw -lm</CODE> on Unix, in addition to whatever libraries
+are required for MPI.
+<A NAME="IDX284"></A>
+
+
+
+
+<H3><A NAME="SEC61">MPI Tips</A></H3>
+
+<P>
+There are several things you should consider in order to get the best
+performance out of the MPI FFTW routines.
+
+
+<P>
+<A NAME="IDX285"></A>
+First, if possible, the first and second dimensions of your data should
+be divisible by the number of processes you are using.  (If only one can
+be divisible, then you should choose the first dimension.)  This allows
+the computational load to be spread evenly among the processes, and also
+reduces the communications complexity and overhead.  In the
+one-dimensional transform case, the size of the transform should ideally
+be divisible by the <EM>square</EM> of the number of processors.
+
+
+<P>
+<A NAME="IDX286"></A>
+Second, you should consider using the <CODE>FFTW_TRANSPOSED_ORDER</CODE>
+output format if it is not too burdensome.  The speed gains from
+communications savings are usually substantial.
+
+
+<P>
+Third, you should consider allocating a workspace for
+<CODE>(r)fftw(nd)_mpi</CODE>, as this can often
+(but not always) improve performance (at the cost of extra storage).
+
+
+<P>
+Fourth, you should experiment with the best number of processors to use
+for your problem.  (There comes a point of diminishing returns, when the
+communications costs outweigh the computational benefits.<A NAME="DOCF7" HREF="fftw_foot.html#FOOT7">(7)</A>)  The <CODE>fftw_mpi_test</CODE> program can output helpful performance
+benchmarks.
+<A NAME="IDX287"></A>
+<A NAME="IDX288"></A>
+It accepts the same parameters as the uniprocessor test programs
+(c.f. <CODE>tests/README</CODE>) and is run like an ordinary MPI program.  For
+example, <CODE>mpirun -np 4 fftw_mpi_test -s 128x128x128</CODE> will benchmark
+a <CODE>128x128x128</CODE> transform on four processors, reporting timings and
+parallel speedups for all variants of <CODE>fftwnd_mpi</CODE> (transposed,
+with workspace, etcetera).  (Note also that there is the
+<CODE>rfftw_mpi_test</CODE> program for the real transforms.)
+<A NAME="IDX289"></A>
+
+
+<P><HR><P>
+Go to the <A HREF="fftw_1.html">first</A>, <A HREF="fftw_3.html">previous</A>, <A HREF="fftw_5.html">next</A>, <A HREF="fftw_10.html">last</A> section, <A HREF="fftw_toc.html">table of contents</A>.
+</BODY>
+</HTML>

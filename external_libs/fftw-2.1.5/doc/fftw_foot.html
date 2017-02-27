@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<!-- This HTML file has been created by texi2html 1.52
+     from fftw.texi on 24 March 2003 -->
+
+<TITLE>FFTW - Footnotes</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+<H1>FFTW</H1>
+<H2>For version 2.1.5, 16 March 2003</H2>
+<P>
+<P><HR><P>
+<H3><A NAME="FOOT1" HREF="fftw_2.html#DOCF1">(1)</A></H3>
+<P>The output for the
+multi-dimensional rfftw is a more-conventional array of
+<CODE>fftw_complex</CODE> values, but the format here permitted us greater
+efficiency in one dimension.
+<H3><A NAME="FOOT2" HREF="fftw_3.html#DOCF2">(2)</A></H3>
+<P>The basic problem is the resolution of the clock:
+FFTW needs to run for a certain time for the clock to be reliable.
+<H3><A NAME="FOOT3" HREF="fftw_3.html#DOCF3">(3)</A></H3>
+<P><CODE>fftwnd</CODE> actually may use some temporary
+storage (hidden in the plan), but this storage space is only the size of
+the largest dimension of the array, rather than being as big as the
+entire array.  (Unless you use <CODE>fftwnd</CODE> to perform one-dimensional
+transforms, in which case the temporary storage required for in-place
+transforms <EM>is</EM> as big as the entire array.)
+<H3><A NAME="FOOT4" HREF="fftw_3.html#DOCF4">(4)</A></H3>
+<P>The etymologically-correct spelling would be
+<CODE>frftw_</CODE>, but it is hard to remember.
+<H3><A NAME="FOOT5" HREF="fftw_4.html#DOCF5">(5)</A></H3>
+<P>There is one exception: when performing
+one-dimensional in-place transforms, the <CODE>out</CODE> parameter is always
+ignored by the multi-threaded routines, instead of being used as a
+workspace if it is non-<CODE>NULL</CODE> as in the uniprocessor routines.  The
+multi-threaded routines always allocate their own workspace (the size of
+which depends upon the number of threads).
+<H3><A NAME="FOOT6" HREF="fftw_4.html#DOCF6">(6)</A></H3>
+<P>The 1D
+transforms require much more communication.  All the communication in
+our FFT routines takes the form of an all-to-all communication: the
+multi-dimensional transforms require two all-to-all communications (or
+one, if you use <CODE>FFTW_TRANSPOSED_ORDER</CODE>), while the one-dimensional
+transforms require <EM>three</EM> (or two, if you use scrambled input or
+output).
+<H3><A NAME="FOOT7" HREF="fftw_4.html#DOCF7">(7)</A></H3>
+<P>An
+FFT is particularly hard on communications systems, as it requires an
+<EM>all-to-all</EM> communication, which is more or less the worst possible
+case.
+<H3><A NAME="FOOT8" HREF="fftw_5.html#DOCF8">(8)</A></H3>
+<P>Technically, Fortran 77 identifiers are
+not allowed to have more than 6 characters, nor may they contain
+underscores.  Any compiler that enforces this limitation doesn't deserve
+to link to FFTW.
+<H3><A NAME="FOOT9" HREF="fftw_6.html#DOCF9">(9)</A></H3>
+<P>Each version of <CODE>cc</CODE>
+seems to have its own magic incantation to get the fastest code most of
+the time--you'd think that people would have agreed upon some
+convention, e.g. "<CODE>-Omax</CODE>", by now.
+<P><HR><P>
+This document was generated on 24 March 2003 using the
+<A HREF="http://wwwinfo.cern.ch/dis/texi2html/">texi2html</A>
+translator version 1.52. (properly hacked by athena@theory.lcs.mit.edu)</P>
+</BODY>
+</HTML>

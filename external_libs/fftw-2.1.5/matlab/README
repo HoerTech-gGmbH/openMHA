@@ -1,0 +1,88 @@
+			   FFTW for MATLAB
+			 http://www.fftw.org
+
+This directory contains files that allow you to call FFTW from MATLAB
+(instead of MATLAB's own FFT functions).  This is accomplished by
+means of a "MEX" program--a MATLAB external function--that wraps
+around the FFTW library.
+
+NOTE: you must have MATLAB 5.0 or later to use these routines.
+
+Once you have compiled and installed the MEX (see below), using FFTW
+from within MATLAB is simple:
+
+The forward transform:
+	b = fftw(a,-1)
+
+The backwards transform:
+	c = fftw(b,+1)
+
+Note that FFTW computes the unnormalized DFT, so "c" in the above code
+is a scaled version of the original "a".  (To get back the original
+"a", you would compute: c / prod(size(c)).)
+
+To get help on using FFTW in MATLAB, simply type "help fftw" at the
+MATLAB prompt.
+
+There are a few points that you should be aware of:
+
+* The first call is expensive:
+
+The first time you call FFTW from within MATLAB, it performs
+expensive one-time computations.  (It is figuring out a "plan"--see
+the FFTW manual for more information on what is happening.)  So, the
+first FFT you compute is slow (it probably takes several seconds).
+However, subsequent transforms of the same size will reuse the initial
+computations, and will be quite fast (often 2-3 times as fast as
+MATLAB's built-in FFT).  So, you should use FFTW within MATLAB when
+you are computing many FFTs of the same size and the initial cost is
+unimportant.  If you just need a single FFT, use MATLAB's built-in
+routines.
+
+To reduce the startup cost, at some slight penalty in performance,
+replace FFTW_MEASURE in fftw.c with FFTW_ESTIMATE.
+
+* Small transforms are inefficient:
+
+There is a certain amount of overhead involved in calling FFTW from
+MATLAB, and this makes small transforms relatively inefficient.  So,
+if you are doing very small transforms in MATLAB, you might be better
+off with the built-in routines.  (The exact point at which FFTW begins
+to win will depend upon your machine.  It is simple for you to use
+MATLAB's timing routines to find out what is best in your
+application.)
+
+(One of the major costs is in translating the array from MATLAB's
+representation, in which real and imaginary parts are stored
+separately, to FFTW's representation, in which complex numbers are
+stored as adjacent real/imaginary pairs.)
+
+* FFTW computes multi-dimensional transforms:
+
+The FFTW call in MATLAB computes a transform of the same
+dimensionality as the matrix that you give it.  Thus, it is analogous
+to the "fftn" routine in MATLAB, rather than the "fft" routine.
+
+* All transforms are out-of-place:
+
+Although the FFTW library is capable of performing in-place
+multi-dimensional transforms, the MATLAB routine is out-of-place.
+This is simply a restriction of the environment--as far as we can
+tell, we are not allowed to modify the inputs that are passed to us,
+and must return our results in a separate array.
+
+**********************************************************************
+
+			     Installation
+
+Installation of the FFTW MEX routines is straightforward.  First, you
+have to compile the FFTW library (see the FFTW manual).  Then, you must
+compile the file fftw.c in this directory using the MEX compilation
+procedure on your machine.  Finally, you take the MEX file that is
+produced, along with the fftw.m file in this directory, and install
+them wherever you typically put your MATLAB scripts.
+
+The method for compiling MEX files should be described in your MATLAB
+manual.  (You will need to link with the FFTW library that you had
+compiled earlier.)  On UNIX systems, you can simply type "make", and
+the Makefile in this directory should do the right thing.

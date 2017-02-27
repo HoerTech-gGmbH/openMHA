@@ -1,0 +1,186 @@
+This is fftw.info, produced by makeinfo version 4.2 from fftw.texi.
+
+   This is the FFTW User's manual.
+
+   Copyright (C) 1997-1999 Massachusetts Institute of Technology
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+
+
+File: fftw.info,  Node: Library Index,  Prev: Concept Index,  Up: Top
+
+Library Index
+*************
+
+* Menu:
+
+* fftw:                                  fftw.
+* fftw2d_create_plan <1>:                fftwnd_create_plan.
+* fftw2d_create_plan:                    Complex Multi-dimensional Transforms Tutorial.
+* fftw2d_create_plan_specific:           fftwnd_create_plan.
+* fftw2d_mpi_create_plan:                Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* fftw3d_create_plan <1>:                fftwnd_create_plan.
+* fftw3d_create_plan:                    Complex Multi-dimensional Transforms Tutorial.
+* fftw3d_create_plan_specific:           fftwnd_create_plan.
+* fftw3d_f77_create_plan:                Fortran Examples.
+* fftw3d_mpi_create_plan:                Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* FFTW_BACKWARD:                         Complex One-dimensional Transforms Tutorial.
+* FFTW_COMPLEX:                          Data Types.
+* fftw_complex <1>:                      Data Types.
+* fftw_complex:                          Complex One-dimensional Transforms Tutorial.
+* FFTW_COMPLEX_TO_REAL <1>:              Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* FFTW_COMPLEX_TO_REAL <2>:              rfftw_create_plan.
+* FFTW_COMPLEX_TO_REAL:                  Real One-dimensional Transforms Tutorial.
+* fftw_create_plan <1>:                  fftw_create_plan.
+* fftw_create_plan:                      Complex One-dimensional Transforms Tutorial.
+* fftw_create_plan_specific:             fftw_create_plan.
+* fftw_destroy_plan <1>:                 fftw_destroy_plan.
+* fftw_destroy_plan:                     Complex One-dimensional Transforms Tutorial.
+* fftw_direction <1>:                    rfftwnd_create_plan.
+* fftw_direction <2>:                    fftwnd_create_plan.
+* fftw_direction <3>:                    fftw_create_plan.
+* fftw_direction <4>:                    Real One-dimensional Transforms Tutorial.
+* fftw_direction <5>:                    Complex Multi-dimensional Transforms Tutorial.
+* fftw_direction:                        Complex One-dimensional Transforms Tutorial.
+* FFTW_ENABLE_FLOAT:                     Data Types.
+* FFTW_ESTIMATE:                         Complex One-dimensional Transforms Tutorial.
+* fftw_export_wisdom <1>:                fftw_export_wisdom.
+* fftw_export_wisdom:                    Words of Wisdom.
+* fftw_export_wisdom_to_file <1>:        fftw_export_wisdom.
+* fftw_export_wisdom_to_file:            Importing and Exporting Wisdom.
+* fftw_export_wisdom_to_string <1>:      fftw_export_wisdom.
+* fftw_export_wisdom_to_string:          Importing and Exporting Wisdom.
+* fftw_f77_create_plan:                  Fortran Examples.
+* fftw_f77_destroy_plan:                 Fortran Examples.
+* fftw_f77_one <1>:                      Fortran Examples.
+* fftw_f77_one:                          Wrapper Routines.
+* fftw_f77_threads_one:                  Fortran Examples.
+* fftw_forget_wisdom:                    fftw_forget_wisdom.
+* FFTW_FORWARD:                          Complex One-dimensional Transforms Tutorial.
+* fftw_free_hook:                        Memory Allocator Reference.
+* fftw_import_wisdom <1>:                fftw_import_wisdom.
+* fftw_import_wisdom:                    Words of Wisdom.
+* fftw_import_wisdom_from_file <1>:      fftw_import_wisdom.
+* fftw_import_wisdom_from_file:          Importing and Exporting Wisdom.
+* fftw_import_wisdom_from_string <1>:    fftw_import_wisdom.
+* fftw_import_wisdom_from_string:        Importing and Exporting Wisdom.
+* FFTW_IN_PLACE:                         Complex Multi-dimensional Transforms Tutorial.
+* fftw_malloc:                           Memory Allocator Reference.
+* fftw_malloc_hook:                      Memory Allocator Reference.
+* FFTW_MEASURE:                          Complex One-dimensional Transforms Tutorial.
+* fftw_mpi:                              Usage of MPI FFTW for Complex One-dimensional Transforms.
+* fftw_mpi_create_plan:                  Usage of MPI FFTW for Complex One-dimensional Transforms.
+* fftw_mpi_destroy_plan:                 Usage of MPI FFTW for Complex One-dimensional Transforms.
+* fftw_mpi_local_sizes:                  Usage of MPI FFTW for Complex One-dimensional Transforms.
+* fftw_mpi_plan:                         Usage of MPI FFTW for Complex One-dimensional Transforms.
+* fftw_mpi_test <1>:                     MPI Tips.
+* fftw_mpi_test:                         MPI FFTW Installation.
+* FFTW_NORMAL_ORDER:                     Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* fftw_one <1>:                          fftw.
+* fftw_one:                              Complex One-dimensional Transforms Tutorial.
+* FFTW_OUT_OF_PLACE:                     fftw_create_plan.
+* fftw_plan <1>:                         fftw_create_plan.
+* fftw_plan:                             Complex One-dimensional Transforms Tutorial.
+* FFTW_REAL:                             Data Types.
+* fftw_real:                             Data Types.
+* FFTW_REAL_TO_COMPLEX <1>:              rfftw_create_plan.
+* FFTW_REAL_TO_COMPLEX:                  Real One-dimensional Transforms Tutorial.
+* FFTW_SCRAMBLED_INPUT:                  Usage of MPI FFTW for Complex One-dimensional Transforms.
+* FFTW_SCRAMBLED_OUTPUT:                 Usage of MPI FFTW for Complex One-dimensional Transforms.
+* fftw_test <1>:                         gcc and Pentium hacks.
+* fftw_test:                             Installation on non-Unix Systems.
+* fftw_threads:                          Usage of Multi-threaded FFTW.
+* fftw_threads_init:                     Usage of Multi-threaded FFTW.
+* fftw_threads_one:                      Usage of Multi-threaded FFTW.
+* fftw_threads_test:                     How Many Threads to Use?.
+* FFTW_THREADSAFE:                       Thread safety.
+* FFTW_TIME_MIN:                         Customizing the timer.
+* FFTW_TRANSPOSED_ORDER <1>:             MPI Tips.
+* FFTW_TRANSPOSED_ORDER <2>:             Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* FFTW_TRANSPOSED_ORDER <3>:             MPI Data Layout.
+* FFTW_TRANSPOSED_ORDER:                 Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* FFTW_USE_WISDOM:                       Words of Wisdom.
+* fftwnd <1>:                            fftwnd.
+* fftwnd:                                Complex Multi-dimensional Transforms Tutorial.
+* fftwnd_create_plan <1>:                fftwnd_create_plan.
+* fftwnd_create_plan:                    Complex Multi-dimensional Transforms Tutorial.
+* fftwnd_create_plan_specific:           fftwnd_create_plan.
+* fftwnd_destroy_plan <1>:               fftwnd_destroy_plan.
+* fftwnd_destroy_plan:                   Complex Multi-dimensional Transforms Tutorial.
+* fftwnd_f77_create_plan:                Fortran Examples.
+* fftwnd_f77_destroy_plan:               Fortran Examples.
+* fftwnd_f77_one:                        Fortran Examples.
+* fftwnd_mpi:                            Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* fftwnd_mpi_create_plan:                Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* fftwnd_mpi_destroy_plan:               Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* fftwnd_mpi_local_sizes:                MPI Data Layout.
+* fftwnd_mpi_plan:                       Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* fftwnd_one <1>:                        fftwnd.
+* fftwnd_one:                            Complex Multi-dimensional Transforms Tutorial.
+* fftwnd_plan <1>:                       fftwnd_create_plan.
+* fftwnd_plan:                           Complex Multi-dimensional Transforms Tutorial.
+* fftwnd_threads:                        Usage of Multi-threaded FFTW.
+* fftwnd_threads_one:                    Usage of Multi-threaded FFTW.
+* genfft <1>:                            Acknowledgments.
+* genfft:                                Generating your own code.
+* rfftw:                                 rfftw.
+* rfftw2d_create_plan <1>:               Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* rfftw2d_create_plan <2>:               rfftwnd_create_plan.
+* rfftw2d_create_plan:                   Real Multi-dimensional Transforms Tutorial.
+* rfftw2d_f77_create_plan:               Fortran Examples.
+* rfftw3d_create_plan <1>:               rfftwnd_create_plan.
+* rfftw3d_create_plan:                   Real Multi-dimensional Transforms Tutorial.
+* rfftw3d_mpi_create_plan:               Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* rfftw_create_plan <1>:                 rfftw_create_plan.
+* rfftw_create_plan:                     Real One-dimensional Transforms Tutorial.
+* rfftw_create_plan_specific:            rfftw_create_plan.
+* rfftw_destroy_plan <1>:                rfftw_destroy_plan.
+* rfftw_destroy_plan:                    Real One-dimensional Transforms Tutorial.
+* rfftw_f77_create_plan:                 Fortran Examples.
+* rfftw_f77_destroy_plan:                Fortran Examples.
+* rfftw_f77_one:                         Fortran Examples.
+* rfftw_mpi_test <1>:                    MPI Tips.
+* rfftw_mpi_test:                        MPI FFTW Installation.
+* rfftw_one <1>:                         rfftw.
+* rfftw_one:                             Real One-dimensional Transforms Tutorial.
+* rfftw_plan <1>:                        rfftw_create_plan.
+* rfftw_plan:                            Real One-dimensional Transforms Tutorial.
+* rfftw_test:                            Installation on non-Unix Systems.
+* rfftw_threads:                         Usage of Multi-threaded FFTW.
+* rfftw_threads_one:                     Usage of Multi-threaded FFTW.
+* rfftw_threads_test:                    How Many Threads to Use?.
+* rfftwnd_complex_to_real:               rfftwnd.
+* rfftwnd_create_plan <1>:               Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* rfftwnd_create_plan <2>:               rfftwnd_create_plan.
+* rfftwnd_create_plan:                   Real Multi-dimensional Transforms Tutorial.
+* rfftwnd_destroy_plan:                  rfftwnd_destroy_plan.
+* rfftwnd_f77_destroy_plan:              Fortran Examples.
+* rfftwnd_f77_one_real_to_complex:       Fortran Examples.
+* rfftwnd_mpi:                           Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* rfftwnd_mpi_destroy_plan:              Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* rfftwnd_mpi_local_sizes:               Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* rfftwnd_one_complex_to_real <1>:       rfftwnd.
+* rfftwnd_one_complex_to_real:           Real Multi-dimensional Transforms Tutorial.
+* rfftwnd_one_real_to_complex <1>:       rfftwnd.
+* rfftwnd_one_real_to_complex:           Real Multi-dimensional Transforms Tutorial.
+* rfftwnd_plan <1>:                      rfftwnd_create_plan.
+* rfftwnd_plan:                          Real Multi-dimensional Transforms Tutorial.
+* rfftwnd_real_to_complex:               rfftwnd.
+* rfftwnd_threads_complex_to_real:       Usage of Multi-threaded FFTW.
+* rfftwnd_threads_one_complex_to_real:   Usage of Multi-threaded FFTW.
+* rfftwnd_threads_one_real_to_complex:   Usage of Multi-threaded FFTW.
+* rfftwnd_threads_real_to_complex:       Usage of Multi-threaded FFTW.
+
+

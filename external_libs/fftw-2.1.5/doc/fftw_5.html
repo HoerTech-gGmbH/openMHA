@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<!-- This HTML file has been created by texi2html 1.52
+     from fftw.texi on 24 March 2003 -->
+
+<TITLE>FFTW - Calling FFTW from Fortran</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+Go to the <A HREF="fftw_1.html">first</A>, <A HREF="fftw_4.html">previous</A>, <A HREF="fftw_6.html">next</A>, <A HREF="fftw_10.html">last</A> section, <A HREF="fftw_toc.html">table of contents</A>.
+<P><HR><P>
+
+
+<H1><A NAME="SEC62">Calling FFTW from Fortran</A></H1>
+
+<P>
+<A NAME="IDX290"></A>
+The standard FFTW libraries include special wrapper functions that allow
+Fortran programs to call FFTW subroutines.  This chapter describes how
+those functions may be employed to use FFTW from Fortran.  We assume
+here that the reader is already familiar with the usage of FFTW in C, as
+described elsewhere in this manual.
+
+
+<P>
+In general, it is not possible to call C functions directly from
+Fortran, due to Fortran's inability to pass arguments by value and also
+because Fortran compilers typically expect identifiers to be mangled
+<A NAME="IDX291"></A>
+somehow for linking.  However, if C functions are written in a special
+way, they <EM>are</EM> callable from Fortran, and we have employed this
+technique to create Fortran-callable "wrapper" functions around the
+main FFTW routines.  These wrapper functions are included in the FFTW
+libraries by default, unless a Fortran compiler isn't found on your
+system or <CODE>--disable-fortran</CODE> is included in the <CODE>configure</CODE>
+flags.
+
+
+<P>
+As a result, calling FFTW from Fortran requires little more than
+appending <SAMP>`<CODE>_f77</CODE>'</SAMP> to the function names and then linking
+normally with the FFTW libraries.  There are a few wrinkles, however, as
+we shall discuss below.
+
+
+
+
+<H2><A NAME="SEC63">Wrapper Routines</A></H2>
+
+<P>
+All of the uniprocessor and multi-threaded transform routines have
+Fortran-callable wrappers, except for the wisdom import/export functions
+(since it is not possible to exchange string and file arguments portably
+with Fortran) and the specific planner routines (see Section <A HREF="fftw_3.html#SEC20">Discussion on Specific Plans</A>).  The name of the wrapper routine is the same as that
+of the corresponding C routine, but with
+<CODE>fftw/fftwnd/rfftw/rfftwnd</CODE> replaced by
+<CODE>fftw_f77/fftwnd_f77/rfftw_f77/rfftwnd_f77</CODE>.  For example, in
+Fortran, instead of calling <CODE>fftw_one</CODE> you would call
+<CODE>fftw_f77_one</CODE>.<A NAME="DOCF8" HREF="fftw_foot.html#FOOT8">(8)</A>
+<A NAME="IDX292"></A>
+For the most part, all of the arguments to the functions are the same,
+with the following exceptions:
+
+
+
+<UL>
+
+<LI>
+
+<CODE>plan</CODE> variables (what would be of type <CODE>fftw_plan</CODE>,
+<CODE>rfftwnd_plan</CODE>, etcetera, in C), must be declared as a type that is
+the same size as a pointer (address) on your machine.  (Fortran has no
+generic pointer type.)  The Fortran <CODE>integer</CODE> type is usually the
+same size as a pointer, but you need to be wary (especially on 64-bit
+machines).  (You could also use <CODE>integer*4</CODE> on a 32-bit machine and
+<CODE>integer*8</CODE> on a 64-bit machine.)  Ugh.  (<CODE>g77</CODE> has a special
+type, <CODE>integer(kind=7)</CODE>, that is defined to be the same size as a
+pointer.)
+
+<LI>
+
+Any function that returns a value (e.g. <CODE>fftw_create_plan</CODE>) is
+converted into a subroutine.  The return value is converted into an
+additional (first) parameter of the wrapper subroutine.  (The reason for
+this is that some Fortran implementations seem to have trouble with C
+function return values.)
+
+<LI>
+
+<A NAME="IDX293"></A>
+When performing one-dimensional <CODE>FFTW_IN_PLACE</CODE> transforms, you
+don't have the option of passing <CODE>NULL</CODE> for the <CODE>out</CODE> argument
+(since there is no way to pass <CODE>NULL</CODE> from Fortran).  Therefore,
+when performing such transforms, you <EM>must</EM> allocate and pass a
+contiguous scratch array of the same size as the transform.  Note that
+for in-place multi-dimensional (<CODE>(r)fftwnd</CODE>) transforms, the
+<CODE>out</CODE> argument is ignored, so you can pass anything for that
+parameter.
+
+<LI>
+
+<A NAME="IDX294"></A>
+The wrapper routines expect multi-dimensional arrays to be in
+column-major order, which is the ordinary format of Fortran arrays.
+They do this transparently and costlessly simply by reversing the order
+of the dimensions passed to FFTW, but this has one important consequence
+for multi-dimensional real-complex transforms, discussed below.
+
+</UL>
+
+<P>
+<A NAME="IDX295"></A>
+In general, you should take care to use Fortran data types that
+correspond to (i.e. are the same size as) the C types used by FFTW.  If
+your C and Fortran compilers are made by the same vendor, the
+correspondence is usually straightforward (i.e. <CODE>integer</CODE>
+corresponds to <CODE>int</CODE>, <CODE>real</CODE> corresponds to <CODE>float</CODE>,
+etcetera).  Such simple correspondences are assumed in the examples
+below.  The examples also assume that FFTW was compiled in
+double precision (the default).
+
+
+
+
+<H2><A NAME="SEC64">FFTW Constants in Fortran</A></H2>
+
+<P>
+When creating plans in FFTW, a number of constants are used to specify
+options, such as <CODE>FFTW_FORWARD</CODE> or <CODE>FFTW_USE_WISDOM</CODE>.  The
+same constants must be used with the wrapper routines, but of course the
+C header files where the constants are defined can't be incorporated
+directly into Fortran code.
+
+
+<P>
+Instead, we have placed Fortran equivalents of the FFTW constant
+definitions in the file <CODE>fortran/fftw_f77.i</CODE> of the FFTW package.
+If your Fortran compiler supports a preprocessor, you can use that to
+incorporate this file into your code whenever you need to call FFTW.
+Otherwise, you will have to paste the constant definitions in directly.
+They are:
+
+
+
+<PRE>
+      integer FFTW_FORWARD,FFTW_BACKWARD
+      parameter (FFTW_FORWARD=-1,FFTW_BACKWARD=1)
+
+      integer FFTW_REAL_TO_COMPLEX,FFTW_COMPLEX_TO_REAL
+      parameter (FFTW_REAL_TO_COMPLEX=-1,FFTW_COMPLEX_TO_REAL=1)
+
+      integer FFTW_ESTIMATE,FFTW_MEASURE
+      parameter (FFTW_ESTIMATE=0,FFTW_MEASURE=1)
+
+      integer FFTW_OUT_OF_PLACE,FFTW_IN_PLACE,FFTW_USE_WISDOM
+      parameter (FFTW_OUT_OF_PLACE=0)
+      parameter (FFTW_IN_PLACE=8,FFTW_USE_WISDOM=16)
+
+      integer FFTW_THREADSAFE
+      parameter (FFTW_THREADSAFE=128)
+</PRE>
+
+<P>
+<A NAME="IDX296"></A>
+In C, you combine different flags (like <CODE>FFTW_USE_WISDOM</CODE> and
+<CODE>FFTW_MEASURE</CODE>) using the <SAMP>`<CODE>|</CODE>'</SAMP> operator; in Fortran you
+should just use <SAMP>`<CODE>+</CODE>'</SAMP>.
+
+
+
+
+<H2><A NAME="SEC65">Fortran Examples</A></H2>
+
+<P>
+In C you might have something like the following to transform a
+one-dimensional complex array:
+
+
+
+<PRE>
+        fftw_complex in[N], *out[N];
+        fftw_plan plan;
+
+        plan = fftw_create_plan(N,FFTW_FORWARD,FFTW_ESTIMATE);
+        fftw_one(plan,in,out);
+        fftw_destroy_plan(plan);
+</PRE>
+
+<P>
+In Fortran, you use the following to accomplish the same thing:
+
+
+
+<PRE>
+        double complex in, out
+        dimension in(N), out(N)
+        integer plan
+
+        call fftw_f77_create_plan(plan,N,FFTW_FORWARD,FFTW_ESTIMATE)
+        call fftw_f77_one(plan,in,out)
+        call fftw_f77_destroy_plan(plan)
+</PRE>
+
+<P>
+<A NAME="IDX297"></A>
+<A NAME="IDX298"></A>
+<A NAME="IDX299"></A>
+
+
+<P>
+Notice how all routines are called as Fortran subroutines, and the plan
+is returned via the first argument to <CODE>fftw_f77_create_plan</CODE>.
+<EM>Important:</EM> these examples assume that <CODE>integer</CODE> is the same
+size as a pointer, and may need modification on a 64-bit machine.
+See Section <A HREF="fftw_5.html#SEC63">Wrapper Routines</A>, above.  To do the same thing, but using 8
+threads in parallel (see Section <A HREF="fftw_4.html#SEC48">Multi-threaded FFTW</A>), you would simply
+replace the call to <CODE>fftw_f77_one</CODE> with:
+
+
+
+<PRE>
+        call fftw_f77_threads_one(8,plan,in,out)
+</PRE>
+
+<P>
+<A NAME="IDX300"></A>
+
+
+<P>
+To transform a three-dimensional array in-place with C, you might do:
+
+
+
+<PRE>
+        fftw_complex arr[L][M][N];
+        fftwnd_plan plan;
+        int n[3] = {L,M,N};
+
+        plan = fftwnd_create_plan(3,n,FFTW_FORWARD,
+                                  FFTW_ESTIMATE | FFTW_IN_PLACE);
+        fftwnd_one(plan, arr, 0);
+        fftwnd_destroy_plan(plan);
+</PRE>
+
+<P>
+In Fortran, you would use this instead:
+
+
+
+<PRE>
+        double complex arr
+        dimension arr(L,M,N)
+        integer n
+        dimension n(3)
+        integer plan
+
+        n(1) = L
+        n(2) = M
+        n(3) = N
+        call fftwnd_f77_create_plan(plan,3,n,FFTW_FORWARD,
+       +                            FFTW_ESTIMATE + FFTW_IN_PLACE)
+        call fftwnd_f77_one(plan, arr, 0)
+        call fftwnd_f77_destroy_plan(plan)
+</PRE>
+
+<P>
+<A NAME="IDX301"></A>
+<A NAME="IDX302"></A>
+<A NAME="IDX303"></A>
+
+
+<P>
+Instead of calling <CODE>fftwnd_f77_create_plan(plan,3,n,...)</CODE>, we could
+also have called <CODE>fftw3d_f77_create_plan(plan,L,M,N,...)</CODE>.
+<A NAME="IDX304"></A>
+
+
+<P>
+Note that we pass the array dimensions in the "natural" order; also
+note that the last argument to <CODE>fftwnd_f77</CODE> is ignored since the
+transform is <CODE>FFTW_IN_PLACE</CODE>.
+
+
+<P>
+To transform a one-dimensional real array in Fortran, you might do:
+
+
+
+<PRE>
+        double precision in, out
+        dimension in(N), out(N)
+        integer plan
+
+        call rfftw_f77_create_plan(plan,N,FFTW_REAL_TO_COMPLEX,
+       +                           FFTW_ESTIMATE)
+        call rfftw_f77_one(plan,in,out)
+        call rfftw_f77_destroy_plan(plan)
+</PRE>
+
+<P>
+<A NAME="IDX305"></A>
+<A NAME="IDX306"></A>
+<A NAME="IDX307"></A>
+
+
+<P>
+To transform a two-dimensional real array, out of place, you might use
+the following:
+
+
+
+<PRE>
+        double precision in
+        double complex out
+        dimension in(M,N), out(M/2 + 1, N)
+        integer plan
+
+        call rfftw2d_f77_create_plan(plan,M,N,FFTW_REAL_TO_COMPLEX,
+       +                             FFTW_ESTIMATE)
+        call rfftwnd_f77_one_real_to_complex(plan, in, out)
+        call rfftwnd_f77_destroy_plan(plan)
+</PRE>
+
+<P>
+<A NAME="IDX308"></A>
+<A NAME="IDX309"></A>
+<A NAME="IDX310"></A>
+
+
+<P>
+<B>Important:</B> Notice that it is the <EM>first</EM> dimension of the
+complex output array that is cut in half in Fortran, rather than the
+last dimension as in C.  This is a consequence of the wrapper routines
+reversing the order of the array dimensions passed to FFTW so that the
+Fortran program can use its ordinary column-major order.
+<A NAME="IDX311"></A>
+<A NAME="IDX312"></A>
+
+
+<P><HR><P>
+Go to the <A HREF="fftw_1.html">first</A>, <A HREF="fftw_4.html">previous</A>, <A HREF="fftw_6.html">next</A>, <A HREF="fftw_10.html">last</A> section, <A HREF="fftw_toc.html">table of contents</A>.
+</BODY>
+</HTML>

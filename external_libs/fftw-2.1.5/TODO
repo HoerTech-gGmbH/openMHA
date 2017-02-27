@@ -1,0 +1,63 @@
+The following are a number of ideas for future work that we have
+thought of, or which have been suggested to us.  Let us know
+(fftw@fftw.org) if you have other proposals, or if there is something
+that you want to work on.
+
+* Implement some sort of Prime Factor algorithm (Temperton's?)  (PFA is
+now used in the codelets.)
+
+* Try the Winograd blocks for the base cases. (We now use Rader's
+algorithm for prime size codelets.)
+
+* Try on-the-fly generation of twiddle factors, to save space and
+cache. (Done.  However, not yet enabled in the standard distribution.
+The codelet generator is capable of generating code that either loads
+or computes the twiddle factors, and the FFTW C code supports both
+ways.  We do not have enough experimental numbers to determine which
+way is faster, however)
+
+* Since we now have "strided wisdom," it would be nice to keep the
+stride into account when planning 1D transform recursively.  We should
+eliminate the planner table altogether, and just use the wisdom table
+for planning.
+
+* Implement fast DCT and DST codes (cosine and sine transforms);
+equivalently, implement fast algorithms for transforms of real/even
+and real/odd data.  There are two parts to this: (i) modify the
+codelet generator to output hard-coded transforms of small sizes [this
+is done], and (ii) figure out & implement a recursive framework for
+combining these codelets to achieve transforms of general lengths.
+(Once this is done, implement multi-dimensional transforms, etcetera.)
+
+* Implement a library of convolution routines, windowing, filters,
+etcetera based on FFTW.  As DSP isn't our field (we are interested in
+FFTs for other reasons), this sort of thing is probably best left to
+others.  Let us know if you're interested in writing such a thing,
+though, and we'll be happy to link to your site and give you feedback.
+
+* Generate multi-dimensional codelets for use in two/three-dimensional
+transforms.  (i.e. implement what is sometimes called a "vector-radix"
+algorithm.)  There are potential cache benefits to this.
+
+* Take advantage of the vector instructions on the Pentium-III and
+forthcoming PowerPC architectures.  (Coming from the old Cray vector
+supercomputers and the horrible coding they encouraged, this seems
+suspiciously like a giant step backwards in computer architectures...)
+We'd like to see better gcc support before we do anything along these
+lines, though.
+
+* In rfftw, implement a fast O(n lg n) algorithm for prime sizes and
+large prime factors (currently, only the complex FFTW has fast
+algorithms for prime sizes).  The basic problem is that we don't know
+of any such algorithm specialized for real data; suggestions and/or
+references are welcome.
+
+* In the MPI transforms, implement a parallel 1D transform for real
+data (i.e. rfftw_mpi).  (Currently, there are only parallel 1D
+transforms for complex data in the MPI code.)
+
+* In the MPI transforms, implement more sophisticated (i.e. faster)
+in-place and out-of-place transpose routines for the in-process
+transposes (used as subroutines by the distributed transpose).  The
+current routines are quite simplistic, although it is not clear how
+much they hurt performance.

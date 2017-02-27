@@ -1,0 +1,366 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(fftw/planner.c)
+AM_INIT_AUTOMAKE(fftw, 2.1.5)
+
+dnl This is the version info according to the libtool versioning system.
+dnl It does *not* correspond to the release number.
+SHARED_VERSION_INFO="2:7:0"
+AM_CONFIG_HEADER(fftw/config.h fftw/fftw.h)
+AM_ENABLE_SHARED(no)
+
+dnl -----------------------------------------------------------------------
+
+AC_ARG_ENABLE(threads, [  --enable-threads        compile FFTW SMP threads library], enable_threads=$enableval, enable_threads=no)
+
+AC_ARG_WITH(openmp, [  --with-openmp           use OpenMP directives instead of a threads library], with_openmp=$withval, with_openmp=no)
+
+AC_ARG_WITH(sgimp, [  --with-sgi-mp           use SGI MP directives instead of a threads library], with_sgimp=$withval, with_sgimp=no)
+
+AC_ARG_ENABLE(mpi, [  --enable-mpi            compile FFTW MPI library], enable_mpi=$enableval, enable_mpi=no)
+
+AC_ARG_ENABLE(fortran, [  --disable-fortran       don't include fortran-callable wrappers], enable_fortran=$enableval, enable_fortran=yes)
+
+AC_ARG_WITH(gcc, [  --with-gcc              use gcc instead of the native compiler cc], ok=$withval, ok=no)
+if test "$ok" = "yes"; then
+	CC=gcc
+fi
+
+AC_ARG_ENABLE(float, [  --enable-float          compile fftw for single precision], enable_float=$enableval, enable_float=no)
+if test "$enable_float" = "yes"; then
+	AC_DEFINE(FFTW_ENABLE_FLOAT)
+fi
+
+FFTW_PREFIX=""
+AC_ARG_ENABLE(type-prefix, [  --enable-type-prefix    prefix files with d/s to indicate precision], ok=$enableval, ok=no)
+AC_MSG_CHECKING([type prefix for installed files])
+if test "$ok" = "yes"; then
+        if test "$enable_float" = "yes"; then
+                FFTW_PREFIX="s"
+        else
+                FFTW_PREFIX="d"
+        fi
+        AC_MSG_RESULT($FFTW_PREFIX)
+elif test "$ok" = "no"; then
+        AC_MSG_RESULT([(none)])
+else
+        FFTW_PREFIX="$ok"
+        AC_MSG_RESULT($FFTW_PREFIX)
+fi
+AC_SUBST(FFTW_PREFIX)
+
+FFTW_PREFIX1="xyz"
+if test -n "$FFTW_PREFIX"; then
+	FFTW_PREFIX1="$FFTW_PREFIX"
+fi
+AC_SUBST(FFTW_PREFIX1)
+
+AC_ARG_ENABLE(i386-hacks, [  --enable-i386-hacks     enable gcc/x86 specific performance hacks], ok=$enableval, ok=no)
+if test "$ok" = "yes"; then
+	AC_DEFINE(FFTW_ENABLE_I386_HACKS)
+fi
+
+AC_ARG_ENABLE(pentium-timer, [  --enable-pentium-timer  enable high resolution Pentium timer], ok=$enableval, ok=no)
+if test "$ok" = "yes"; then
+	AC_DEFINE(FFTW_ENABLE_PENTIUM_TIMER)
+fi
+
+AC_ARG_ENABLE(debug, [  --enable-debug          compile fftw with extra runtime checks for debugging], ok=$enableval, ok=no)
+if test "$ok" = "yes"; then
+	AC_DEFINE(FFTW_DEBUG)
+fi
+
+AC_ARG_ENABLE(debug-alignment, [  --enable-debug-alignment          enable runtime checks for alignment on x86], ok=$enableval, ok=no)
+if test "$ok" = "yes"; then
+	AC_DEFINE(FFTW_DEBUG_ALIGNMENT)
+fi
+
+AC_ARG_ENABLE(vec-recurse, [  --enable-vec-recurse    enable experimental performance hack], ok=$enableval, ok=no)
+if test "$ok" = "yes"; then
+	AC_DEFINE(FFTW_ENABLE_VECTOR_RECURSE)
+fi
+
+dnl -----------------------------------------------------------------------
+
+# Use native cc if present
+AC_MSG_CHECKING([for vendor's cc to be used instead of gcc])
+AC_CHECK_PROG(CC, cc, cc)
+
+dnl Checks for programs.
+AC_PROG_CC
+ACX_PROG_CC_EGCS
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PROG_LN_S
+AM_PROG_LIBTOOL
+AC_CHECK_PROG(PERL, perl, perl, echo perl)
+AC_SUBST(PERL)
+
+dnl -----------------------------------------------------------------------
+
+if test "$enable_fortran" = "yes"; then
+        AC_PROG_F77
+        if test -z "$F77"; then
+                enable_fortran=no
+                AC_MSG_WARN([*** Couldn't find f77 compiler; switching to --disable-fortran.])
+        fi
+	AC_F77_DUMMY_MAIN([], [enable_fortran=no
+		AC_MSG_WARN([*** Couldn't figure out how to link C and Fortran; switching to --disable-fortran.])])
+fi
+
+if test "x$enable_fortran" = xyes; then
+        AC_F77_WRAPPERS
+fi
+
+dnl -----------------------------------------------------------------------
+
+AC_SUBST(SHARED_VERSION_INFO)
+AC_DEFINE_UNQUOTED(FFTW_VERSION, "$VERSION")
+
+# Get the version number that will be appended to shared libraries:
+SHARED_VERSION=`echo $SHARED_VERSION_INFO | awk -F':' '{ print $1 "." $3 "." $2 }'`
+AC_SUBST(SHARED_VERSION)
+
+ACX_PROG_CC_MAXOPT
+
+ACX_GCC_ALIGNS_STACK(AC_DEFINE(FFTW_GCC_ALIGNS_STACK), [
+	if test "$enable_i386_hacks" = yes; then
+	if test "${acx_gcc_stack_align_bug-no}" = yes; then
+		# we are using a gcc with a stack alignment bug, and we should
+		# turn stack alignment off so that our own hacks work instead.
+		ACX_CHECK_CC_FLAGS(-mpreferred-stack-boundary=2, m_psb_2,
+			[CFLAGS="$CFLAGS -mpreferred-stack-boundary=2"],
+			AC_MSG_ERROR([can't disable buggy stack alignment]))
+	fi
+	fi])
+
+if test "${enable_debug}" = "yes"; then
+	CFLAGS="-g"
+fi
+
+dnl add gcc warnings, in debug/maintainer mode only
+if test "$enable_debug" = yes || test "$USE_MAINTAINER_MODE" = yes; then
+	if test $ac_cv_prog_gcc = yes; then
+		CFLAGS="$CFLAGS -Wall -W -Wcast-qual -Wpointer-arith -Wcast-align -pedantic -Wno-long-long -Wshadow -Wbad-function-cast -Wwrite-strings -Wstrict-prototypes -Wredundant-decls -Wnested-externs" # -Wundef -Wconversion -Wmissing-prototypes -Wmissing-declarations 
+	fi
+fi
+
+dnl Checks for libraries.
+AC_CHECK_LIB(m, sqrt)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(sys/time.h unistd.h getopt.h malloc.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+
+if test $ac_cv_c_const = no; then
+  echo "**************************************************************"
+  echo "* WARNING: The "'``'"const'' keyword does not appear to work     *"
+  echo "* properly on this system.  Expect problems.                 *"
+  echo "* (It's >= 1998.  Get an ANSI C compiler.)                   *"
+  case "${host_cpu}-${host_os}" in
+    sparc-solaris2*) 
+      echo "* Maybe you are using the wrong C compiler.  Please see the  *"
+      echo "* FFTW FAQ for more information.                             *"
+      ;;
+  esac
+  echo "**************************************************************"
+fi
+	
+dnl Checks for library functions.
+AC_FUNC_ALLOCA
+AC_CHECK_FUNCS(gettimeofday)
+AC_CHECK_FUNCS(BSDgettimeofday)
+AC_CHECK_FUNCS(gethrtime)
+AC_CHECK_FUNCS(getopt)
+AC_CHECK_FUNCS(getopt_long)
+
+AC_MSG_CHECKING([for isnan])
+AC_TRY_LINK([#include <math.h>
+], if (!isnan(3.14159)) isnan(2.7183);, ok=yes, ok=no)
+if test "$ok" = "yes"; then
+	AC_DEFINE(HAVE_ISNAN)
+fi
+AC_MSG_RESULT(${ok})
+
+# Check for hrtime_t data type; some systems (AIX) seem to have
+# a function called gethrtime but no hrtime_t!
+AC_MSG_CHECKING([for hrtime_t])
+AC_TRY_LINK([
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+], [hrtime_t foobar;], ok=yes, ok=no)
+if test "$ok" = "yes"; then
+	AC_DEFINE(HAVE_HRTIME_T)
+fi
+AC_MSG_RESULT(${ok})
+
+AC_CHECK_SIZEOF(int, 0)
+AC_CHECK_SIZEOF(long long, 0)
+
+AC_ARG_ENABLE(unsafe-mulmod, [  --enable-unsafe-mulmod  risk overflow for large prime sizes], enable_unsafe_mulmod=$enableval, enable_unsafe_mulmod=no)
+if test "$enable_unsafe_mulmod" = "yes"; then
+        AC_DEFINE(FFTW_ENABLE_UNSAFE_MULMOD)
+fi
+
+
+dnl make a couple of jokes for user's amusement.  See gcc/future.options in
+dnl egcs distribution
+ACX_CHECK_CC_FLAGS("-fkeep-programmers-inline",fkeep_programmers_inline)
+ACX_CHECK_CC_FLAGS("-vomit-frame-pointer",vomit_frame_pointer)
+
+dnl -----------------------------------------------------------------------
+
+dnl Check for threads library...
+FFTW_THREADS_LIBLIST=""
+FFTW_THREADS_INCLUDELIST=""
+FFTW_THREADS_PROGLIST=""
+THREADLIBS=""
+if test "$enable_threads" = "yes"; then
+	if test "$with_openmp"x != nox; then
+		AC_MSG_CHECKING(how to enable OpenMP)
+		omp_enabler=unknown
+		save_CFLAGS="$CFLAGS"
+		CFLAGS="$save_CFLAGS -omp"
+		AC_TRY_LINK_FUNC(omp_set_num_threads,THREADLIBS=" "
+			omp_enabler="$CC -omp")
+		if test -z "$THREADLIBS"; then
+			CFLAGS="$save_CFLAGS -mp"
+			AC_TRY_LINK_FUNC(omp_set_num_threads,THREADLIBS=" "
+				omp_enabler="$CC -mp")
+		fi
+		if test -z "$THREADLIBS"; then
+			CFLAGS="$save_CFLAGS"
+			AC_TRY_LINK_FUNC(omp_set_num_threads,THREADLIBS=" "
+				omp_enabler="automatic")
+		fi
+		AC_MSG_RESULT($omp_enabler)
+		if test -z "$THREADLIBS"; then
+			AC_MSG_ERROR([don't know how to enable OpenMP])
+		fi
+		AC_DEFINE(FFTW_USING_OPENMP_THREADS)
+	fi
+	if test "$with_sgimp"x != nox; then
+		AC_MSG_CHECKING(how to enable SGI MP)
+		mp_enabler=unknown
+		save_CFLAGS="$CFLAGS"
+		CFLAGS="$save_CFLAGS -mp"
+		AC_TRY_LINK_FUNC(mp_set_numthreads,THREADLIBS=" "
+			mp_enabler="$CC -mp")
+		if test -z "$THREADLIBS"; then
+			CFLAGS="$save_CFLAGS"
+			AC_TRY_LINK_FUNC(mp_numthreads,THREADLIBS=" "
+				mp_enabler="automatic")
+		fi
+		AC_MSG_RESULT($mp_enabler)
+		if test -z "$THREADLIBS"; then 
+			AC_MSG_ERROR([don't know how to enable SGI MP])
+		fi
+		AC_DEFINE(FFTW_USING_SGIMP_THREADS)
+	fi
+
+	# POSIX threads, the default choice:
+	if test -z "$THREADLIBS"; then
+		sinclude(acx_pthread.m4)
+		ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
+	                     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+	                     CC="$PTHREAD_CC"
+	                     AC_DEFINE(FFTW_USING_POSIX_THREADS)])
+	fi
+	# Solaris threads:
+	if test -z "$THREADLIBS"; then
+		AC_CHECK_LIB(thread, thr_create,
+		             [THREADLIBS="-lthread"
+                	      AC_DEFINE(FFTW_USING_SOLARIS_THREADS)])
+	fi
+	# Mach C threads:
+	if test -z "$THREADLIBS"; then
+		AC_CHECK_FUNC(cthread_fork,
+		             [THREADLIBS=" "
+                	      AC_DEFINE(FFTW_USING_MACH_THREADS)])
+		AC_CHECK_HEADERS(mach/cthreads.h cthreads.h cthread.h)
+	fi
+	if test -z "$THREADLIBS"; then
+		AC_CHECK_LIB(cthread, cthread_fork,
+		             [THREADLIBS="-lcthread"
+                	      AC_DEFINE(FFTW_USING_MACH_THREADS)])
+		AC_CHECK_HEADERS(mach/cthreads.h cthreads.h cthread.h)
+	fi
+	if test -z "$THREADLIBS"; then
+		AC_CHECK_LIB(cthreads, cthread_fork,
+		             [THREADLIBS="-lcthreads"
+                	      AC_DEFINE(FFTW_USING_MACH_THREADS)])
+		AC_CHECK_HEADERS(mach/cthreads.h cthreads.h cthread.h)
+	fi
+	# BeOS threads:
+	if test -z "$THREADLIBS"; then
+		AC_CHECK_FUNC(spawn_thread,
+		             [THREADLIBS=" "
+                	      AC_DEFINE(FFTW_USING_BEOS_THREADS)])
+	fi
+	if test -z "$THREADLIBS"; then
+		AC_MSG_ERROR(couldn't find threads library for --enable-threads)
+	else
+		FFTW_THREADS_LIBLIST="lib${FFTW_PREFIX}fftw_threads.la lib${FFTW_PREFIX}rfftw_threads.la"
+		FFTW_THREADS_INCLUDELIST="${FFTW_PREFIX}fftw_threads.h ${FFTW_PREFIX}rfftw_threads.h"
+		FFTW_THREADS_PROGLIST="fftw_threads_test rfftw_threads_test"
+	fi
+fi
+AC_SUBST(FFTW_THREADS_LIBLIST)
+AC_SUBST(FFTW_THREADS_INCLUDELIST)
+AC_SUBST(FFTW_THREADS_PROGLIST)
+AC_SUBST(THREADLIBS)
+
+dnl -----------------------------------------------------------------------
+
+dnl Check for mpi library...
+FFTW_MPI_LIBLIST=""
+FFTW_MPI_INCLUDELIST=""
+FFTW_MPI_PROGLIST=""
+sinclude(acx_mpi.m4)
+if test "$enable_mpi" = "yes"; then
+	ACX_MPI([], [AC_MSG_ERROR([couldn't find mpi library for --enable-mpi])])
+	FFTW_MPI_LIBLIST="lib${FFTW_PREFIX}fftw_mpi.la lib${FFTW_PREFIX}rfftw_mpi.la"
+	FFTW_MPI_INCLUDELIST="${FFTW_PREFIX}fftw_mpi.h ${FFTW_PREFIX}rfftw_mpi.h"
+	FFTW_MPI_PROGLIST="test_sched test_transpose_mpi fftw_mpi_test rfftw_mpi_test"
+
+	AC_MSG_CHECKING([for MPI_Comm_f2c])
+	save_CC="$CC"
+	CC="$MPICC"
+	ok=yes
+	AC_TRY_LINK([#include <mpi.h>
+	], [MPI_Comm_f2c(0);], [AC_DEFINE(HAVE_MPI_COMM_F2C)], [ok=no])
+	AC_MSG_RESULT($ok)
+	CC="$save_CC"
+else
+	MPICC="$CC"
+	AC_SUBST(MPICC)
+fi
+AC_SUBST(FFTW_MPI_LIBLIST)
+AC_SUBST(FFTW_MPI_INCLUDELIST)
+AC_SUBST(FFTW_MPI_PROGLIST)
+
+dnl -----------------------------------------------------------------------
+
+AC_OUTPUT(fftw/Makefile tests/Makefile rfftw/Makefile doc/Makefile Makefile threads/Makefile mpi/Makefile fftw.spec)
+
+case "${host_cpu}" in
+i?86)	if test "${enable_i386_hacks-no}" != "yes"; then
+	if test "${enable_float-no}" != "yes"; then
+	if test "${acx_gcc_aligns_stack-no}" != "yes"; then
+	 echo "**************************************************************"
+	 echo "* If you are running an x86 system with gcc, also try        *"
+	 echo "*    configure --enable-i386-hacks                           *"
+	 echo "* which might produce significant speed improvements.        *"
+	 echo "* (See the Installation chapter of the manual for more       *"
+         echo "*  details)                                                  *"
+	 echo "**************************************************************"
+	fi
+	fi
+	fi
+esac

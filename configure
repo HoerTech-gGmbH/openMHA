@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
+# Copyright © 2013 2014 2015 2016 HörTech gGmbH
+#
+# openMHA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# openMHA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License, version 3 for more details.
+#
+# You should have received a copy of the GNU Affero General Public License, 
+# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+(
+    ARCH=`uname -m`
+    echo ARCH=$ARCH
+    PLATFORM=`uname -o | sed -e 's/GNU.Linux/linux/' -e 's/Cygwin/MinGW/' -e 's/Msys/MinGW/'`
+    echo PLATFORM=$PLATFORM
+    GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/'`
+    echo GCC_VER=$GCC_VER
+    echo DYNAMIC_LIB_EXT=`uname -o | grep -q -e 'Linux' && echo ".so" || echo ".dll"`
+#    echo BUILD_DIR=build
+    echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
+    echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
+    uname -m|grep -q -e "x86_64" && (echo "CFLAGS+=-fPIC";echo "CXXFLAGS+=-fPIC")
+    uname -o|grep -q -e "Linux" && (echo "WITH_HASP=yes")
+    pkg-config alsa && (echo "WITH_ALSA=yes")
+    pkg-config jack && (echo "WITH_JACK=yes")
+    if [ "x$PLATFORM" = "xMinGW" ]
+    then echo WITH_JACK=yes
+	 if [ "x$ARCH" = "xx86_64" ]
+	 then echo "JACK_LINKER_COMMAND = -ljack64"
+	 fi
+    fi
+    echo "SSE+=-msse -msse2 -mfpmath=sse"
+    echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
+    echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM)'
+    echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM)'
+) |tee config.mk
+
+# Local Variables:
+# coding: utf-8-unix
+# End:

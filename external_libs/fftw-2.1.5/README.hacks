@@ -1,0 +1,132 @@
+This file contains a random collection of the various hacks we did (or
+did not dare to do) in order to get performance.  It is not intended
+to be complete nor up to date, but it may be instructive for people to
+read (see also my (Matteo Frigo's) slides on the web page).
+
+1) Negative constants:
+
+        a = 0.5 * b;               a = 0.5 * b;  
+        c = 0.5 * d;	           c = -0.5 * d; 
+        e = 1.0 + a;	 vs.       e = 1.0 + a;  
+        f = 1.0 - c;	           f = 1.0 + c;  
+
+   The code on the left is faster.  Guess why? The constants
+   0.5 and -0.5 are stored in different memory locations and loaded
+   separately.
+
+2) Twiddle factors:
+
+   For some reason that escapes me, every package I have seen
+   (including FFTW 1.0) stores the twiddle factors in such
+   a way that the codelets need to access memory in a random
+   fashion.  It is much faster to just store the factors in the
+   order they will be needed.  This increased spatial locality
+   exploits caches and improves performance by about 30% for big
+   arrays.
+
+3) Loops:
+
+   You may notice that the `twiddle' codelets contain a loop.
+   This is the most logical choice, as opposed to moving the loop
+   outside the codelet.  For example, one would expect that
+
+      for (i = 0; i < n; ++i)
+          foo();
+
+   be slower than the case where the loop is inside foo().  This is
+   usually the case, *except* for the ultrasparc.  FFTW would be 10%
+   faster (more or less) if the loop were outside the codelet.
+   Unfortunately, it would be slower everywhere else. If you want to
+   play with this, the codelet generator can be easily hacked...
+
+4) Array padding:
+
+   (This is a disgusting hack that my programmer's ethic
+   pervents me from releasing to the public).  
+
+   On the IBM RS/6000, for big n, the following **** is *way* faster:
+
+   - Take the input array
+   - `inflate' it, that is, produce a bigger array in which every
+     k-th element is unused (say k=512).  In other words, insert
+     holes in the input.
+   - execute fftw normally (properly hacked to keep the holes into
+     account)
+   - compact the array.
+
+   With this hack, FFTW is sensibly faster than IBM's ESSL library.
+   Sorry guys, I don't want to be responsible for releasing this
+   monster (this works only on the RS/6000, fortunately).
+
+5) Phase of moon:
+
+   Don't take the numbers on the web page too seriously.  The
+   architectural details of modern machines make performance
+   *extremely* sensitive to little details such as where your code and
+   data are placed in memory.  The ultimate example of brain damage is
+   the Pentium Pro (what a surprise...), where we had a case in which
+   adding a printf() statement to FFTW slowed down another completely
+   unrelated fft program by a factor of 20.
+
+   Our strategy to generate huge pieces of straight-line code should
+   immunize FFTW sufficiently well against these problems, but you are
+   still likely to observe weird things like: FFTW_ESTIMATE can be
+   faster than FFTW_MEASURE.
+
+   FFTW-17.0 will compute the phase of the moon in the planner and take
+   it into account.
+
+6) Estimator:
+
+   The estimator tries to come up with a `reasonable' plan.
+   Unfortunately, this concept is very machine-dependent.  The
+   estimator in the release is tuned for the UltraSPARC.
+
+   The following two parameters can be found in fftw/planner.c :
+
+   #define NOTW_OPTIMAL_SIZE 32
+   #define TWIDDLE_OPTIMAL_SIZE 12
+
+   They say: use non-twiddle codelets of size close to 32, and twiddle
+   codelets of size close to 12.  More or less, these are the most
+   efficient pieces of code on the UltraSPARC.  Your mileage *will*
+   vary.  Here are some suggestions for other machines.
+
+   Pentium
+
+   #define NOTW_OPTIMAL_SIZE 8   (or 16)
+   #define TWIDDLE_OPTIMAL_SIZE 8
+
+   Pentium Pro:
+
+   #define NOTW_OPTIMAL_SIZE 32   (or 16)
+   #define TWIDDLE_OPTIMAL_SIZE 2
+
+   
+   RS/6000:
+
+   #define NOTW_OPTIMAL_SIZE 32
+   #define TWIDDLE_OPTIMAL_SIZE 32
+
+   The basic idea is: compute some plans for sizes you most care
+   about, print the plan and plug in the numbers that appear more
+   often (or some kind of average).  Note the dramatic difference
+   between Pentium an Pentium Pro. (NO LONGER TRUE WITH --enable-i386-hacks)
+
+7) Stack alignment:
+
+   Pentium-type processors impose a huge performance penalty if double-
+   precision values are not aligned to 8-byte boundaries in memory.
+   (We have seen factors of 3 or more in tight loops.)  Unfortunately,
+   the Intel ABI specifies that variables on the stack need only be aligned to
+   4-byte boundaries.  Even more unfortunately, this convention is followed
+   by Linux/x86 and gcc.
+
+   To get around this, we wrote special macros (HACK_ALIGN_STACK_EVEN
+   and HACK_ALIGN_STACK_ODD) that take effect when FFTW is compiled
+   with gcc/egcs and 'configure --enable-i386-hacks' is used.  These
+   macros are called before the computation-intensive "codelets"
+   of FFTW.  They use the gcc __builtin_alloca function to examine the
+   stack pointer and align the stack to an even or odd 4-byte boundary,
+   depending upon how many values will be pushed on the stack to call
+   the codelet.

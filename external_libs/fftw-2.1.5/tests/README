@@ -1,0 +1,71 @@
+This directory contains a test program, fftw_test, for the one- and
+multi-dimensional transforms.  There is also a corresponding program,
+rfftw_test, for the real-complex transforms, which takes the same
+command-line options as fftw_test.  (See the FFTW manual for
+compilation instructions.)
+
+They take a number of command-line options that determine what to
+tests.  (On systems lacking a command-line, they will prompt the user
+interactively for this information.)  We use the following
+conventions. 
+
+   <n> is a size parameter, and it has the form N1xN2xN3... .  For
+example, 3x8 denotes a two-dimensional array with 3 rows and 8
+columns.  A single number N denotes a 1D transform of size N.  For the
+cases where it matters, the syntax xN denotes a ND-transform of rank
+1.  For example, x5 denotes a n-dimensional array of rank 1 with 5
+elements.  (This matters for real->complex transforms)
+
+   <rank> is an integer.  Rank 0 denotes 1D transforms.  Rank >= 1
+denotes n-dimensional transforms.  Again, rank 0 uses [R]FFTW, but
+rank >= 1 uses [R]FFTWND.
+
+   -r <rank>           Tests the forward and backward transforms of
+                       random dimensions and sizes.  Does not terminate 
+                       (press ^C when you are tired).  We use the FFT
+                       testing algorithm described in:
+
+                       Funda Ergün, "Testing multivariate linear functions:
+                       Overcoming the generator bottleneck." Proceedings of
+                       the Twenty-Seventh Annual ACM Symposium on the Theory
+                       of Computing, pp. 407-416 (1995).
+
+   -c <n>              Checks the forward and backward transform of size <n>
+                       
+
+   -s <n>              Test the speed of the transform of size <n>
+                       Times both in-place and out-of-place transforms.
+
+   -a <rank>           Like fftw_test -c <n>  for all n = 1 ... infinity.
+	               Does not terminate (press ^C when you are tired)
+
+   -p <rank>           Exercises the planner to make sure there are no 
+                       memory leaks.
+
+   -m                  Uses the FFTW_MEASURE flag (instead of FFTW_ESTIMATE)
+                       during correctness tests (this will slow things down
+                       considerably).
+
+   -w <file>           Tests the "wisdom" mechanism (wisdom is used
+                       in all transforms computed...this option should
+                       precede one of the other options above).  Also,
+                       loads wisdom from <file> and stores accumulated
+                       wisdom in <file> (after tests are completed).
+                       (<file> is created if it does not exist.)
+
+   -t                  Tests the resolution of the timer you are currently
+                       using.  This is done by measuring the time per
+                       iteration of a simple loop--the time/iter should
+                       converge to some value for large numbers of iterations,
+                       and the rate of convergence can be used to infer
+                       something about the timer resolution.
+
+                       The minimum timing interval required to achieve
+                       various levels of consistency/accuracy is outputted.
+                       You can compare this to the FFTW_TIME_MIN setting
+                       in fftw.h to see how appropriate it is for your
+                       machine's clock.
+
+   -v                  Verbose output (should precede other options).
+
+   -h                  Prints help on these and other command-line flags

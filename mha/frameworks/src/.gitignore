@@ -1,0 +1,8 @@
+# This file is part of the HörTech Master Hearing Aid (MHA)
+# Copyright © 2016 HörTech gGmbH
+# All rights reserved.
+
+MHA.java
+MHAJNI.java
+fw_t.java
+fw_t_wrap.cxx

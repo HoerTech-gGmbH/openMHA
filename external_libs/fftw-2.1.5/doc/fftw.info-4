@@ -1,0 +1,933 @@
+This is fftw.info, produced by makeinfo version 4.2 from fftw.texi.
+
+   This is the FFTW User's manual.
+
+   Copyright (C) 1997-1999 Massachusetts Institute of Technology
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+
+
+File: fftw.info,  Node: MPI Tips,  Prev: Usage of MPI FFTW for Complex One-dimensional Transforms,  Up: MPI FFTW
+
+MPI Tips
+--------
+
+   There are several things you should consider in order to get the best
+performance out of the MPI FFTW routines.
+
+   First, if possible, the first and second dimensions of your data
+should be divisible by the number of processes you are using.  (If only
+one can be divisible, then you should choose the first dimension.)
+This allows the computational load to be spread evenly among the
+processes, and also reduces the communications complexity and overhead.
+In the one-dimensional transform case, the size of the transform
+should ideally be divisible by the _square_ of the number of processors.
+
+   Second, you should consider using the `FFTW_TRANSPOSED_ORDER' output
+format if it is not too burdensome.  The speed gains from
+communications savings are usually substantial.
+
+   Third, you should consider allocating a workspace for
+`(r)fftw(nd)_mpi', as this can often (but not always) improve
+performance (at the cost of extra storage).
+
+   Fourth, you should experiment with the best number of processors to
+use for your problem.  (There comes a point of diminishing returns,
+when the communications costs outweigh the computational benefits.(1))
+The `fftw_mpi_test' program can output helpful performance benchmarks.
+It accepts the same parameters as the uniprocessor test programs (c.f.
+`tests/README') and is run like an ordinary MPI program.  For example,
+`mpirun -np 4 fftw_mpi_test -s 128x128x128' will benchmark a
+`128x128x128' transform on four processors, reporting timings and
+parallel speedups for all variants of `fftwnd_mpi' (transposed, with
+workspace, etcetera).  (Note also that there is the `rfftw_mpi_test'
+program for the real transforms.)
+
+   ---------- Footnotes ----------
+
+   (1) An FFT is particularly hard on communications systems, as it
+requires an "all-to-all" communication, which is more or less the worst
+possible case.
+
+
+File: fftw.info,  Node: Calling FFTW from Fortran,  Next: Installation and Customization,  Prev: Parallel FFTW,  Up: Top
+
+Calling FFTW from Fortran
+*************************
+
+   The standard FFTW libraries include special wrapper functions that
+allow Fortran programs to call FFTW subroutines.  This chapter
+describes how those functions may be employed to use FFTW from Fortran.
+We assume here that the reader is already familiar with the usage of
+FFTW in C, as described elsewhere in this manual.
+
+   In general, it is not possible to call C functions directly from
+Fortran, due to Fortran's inability to pass arguments by value and also
+because Fortran compilers typically expect identifiers to be mangled
+somehow for linking.  However, if C functions are written in a special
+way, they _are_ callable from Fortran, and we have employed this
+technique to create Fortran-callable "wrapper" functions around the
+main FFTW routines.  These wrapper functions are included in the FFTW
+libraries by default, unless a Fortran compiler isn't found on your
+system or `--disable-fortran' is included in the `configure' flags.
+
+   As a result, calling FFTW from Fortran requires little more than
+appending ``_f77'' to the function names and then linking normally with
+the FFTW libraries.  There are a few wrinkles, however, as we shall
+discuss below.
+
+* Menu:
+
+* Wrapper Routines::
+* FFTW Constants in Fortran::
+* Fortran Examples::
+
+
+File: fftw.info,  Node: Wrapper Routines,  Next: FFTW Constants in Fortran,  Prev: Calling FFTW from Fortran,  Up: Calling FFTW from Fortran
+
+Wrapper Routines
+================
+
+   All of the uniprocessor and multi-threaded transform routines have
+Fortran-callable wrappers, except for the wisdom import/export functions
+(since it is not possible to exchange string and file arguments portably
+with Fortran) and the specific planner routines (*note Discussion on
+Specific Plans::).  The name of the wrapper routine is the same as that
+of the corresponding C routine, but with `fftw/fftwnd/rfftw/rfftwnd'
+replaced by `fftw_f77/fftwnd_f77/rfftw_f77/rfftwnd_f77'.  For example,
+in Fortran, instead of calling `fftw_one' you would call
+`fftw_f77_one'.(1) For the most part, all of the arguments to the
+functions are the same, with the following exceptions:
+
+   * `plan' variables (what would be of type `fftw_plan',
+     `rfftwnd_plan', etcetera, in C), must be declared as a type that is
+     the same size as a pointer (address) on your machine.  (Fortran
+     has no generic pointer type.)  The Fortran `integer' type is
+     usually the same size as a pointer, but you need to be wary
+     (especially on 64-bit machines).  (You could also use `integer*4'
+     on a 32-bit machine and `integer*8' on a 64-bit machine.)  Ugh.
+     (`g77' has a special type, `integer(kind=7)', that is defined to
+     be the same size as a pointer.)
+
+   * Any function that returns a value (e.g. `fftw_create_plan') is
+     converted into a subroutine.  The return value is converted into an
+     additional (first) parameter of the wrapper subroutine.  (The
+     reason for this is that some Fortran implementations seem to have
+     trouble with C function return values.)
+
+   * When performing one-dimensional `FFTW_IN_PLACE' transforms, you
+     don't have the option of passing `NULL' for the `out' argument
+     (since there is no way to pass `NULL' from Fortran).  Therefore,
+     when performing such transforms, you _must_ allocate and pass a
+     contiguous scratch array of the same size as the transform.  Note
+     that for in-place multi-dimensional (`(r)fftwnd') transforms, the
+     `out' argument is ignored, so you can pass anything for that
+     parameter.
+
+   * The wrapper routines expect multi-dimensional arrays to be in
+     column-major order, which is the ordinary format of Fortran arrays.
+     They do this transparently and costlessly simply by reversing the
+     order of the dimensions passed to FFTW, but this has one important
+     consequence for multi-dimensional real-complex transforms,
+     discussed below.
+
+
+   In general, you should take care to use Fortran data types that
+correspond to (i.e. are the same size as) the C types used by FFTW.  If
+your C and Fortran compilers are made by the same vendor, the
+correspondence is usually straightforward (i.e. `integer' corresponds
+to `int', `real' corresponds to `float', etcetera).  Such simple
+correspondences are assumed in the examples below.  The examples also
+assume that FFTW was compiled in double precision (the default).
+
+   ---------- Footnotes ----------
+
+   (1) Technically, Fortran 77 identifiers are not allowed to have more
+than 6 characters, nor may they contain underscores.  Any compiler that
+enforces this limitation doesn't deserve to link to FFTW.
+
+
+File: fftw.info,  Node: FFTW Constants in Fortran,  Next: Fortran Examples,  Prev: Wrapper Routines,  Up: Calling FFTW from Fortran
+
+FFTW Constants in Fortran
+=========================
+
+   When creating plans in FFTW, a number of constants are used to
+specify options, such as `FFTW_FORWARD' or `FFTW_USE_WISDOM'.  The same
+constants must be used with the wrapper routines, but of course the C
+header files where the constants are defined can't be incorporated
+directly into Fortran code.
+
+   Instead, we have placed Fortran equivalents of the FFTW constant
+definitions in the file `fortran/fftw_f77.i' of the FFTW package.  If
+your Fortran compiler supports a preprocessor, you can use that to
+incorporate this file into your code whenever you need to call FFTW.
+Otherwise, you will have to paste the constant definitions in directly.
+They are:
+
+           integer FFTW_FORWARD,FFTW_BACKWARD
+           parameter (FFTW_FORWARD=-1,FFTW_BACKWARD=1)
+     
+           integer FFTW_REAL_TO_COMPLEX,FFTW_COMPLEX_TO_REAL
+           parameter (FFTW_REAL_TO_COMPLEX=-1,FFTW_COMPLEX_TO_REAL=1)
+     
+           integer FFTW_ESTIMATE,FFTW_MEASURE
+           parameter (FFTW_ESTIMATE=0,FFTW_MEASURE=1)
+     
+           integer FFTW_OUT_OF_PLACE,FFTW_IN_PLACE,FFTW_USE_WISDOM
+           parameter (FFTW_OUT_OF_PLACE=0)
+           parameter (FFTW_IN_PLACE=8,FFTW_USE_WISDOM=16)
+     
+           integer FFTW_THREADSAFE
+           parameter (FFTW_THREADSAFE=128)
+
+   In C, you combine different flags (like `FFTW_USE_WISDOM' and
+`FFTW_MEASURE') using the ``|'' operator; in Fortran you should just
+use ``+''.
+
+
+File: fftw.info,  Node: Fortran Examples,  Prev: FFTW Constants in Fortran,  Up: Calling FFTW from Fortran
+
+Fortran Examples
+================
+
+   In C you might have something like the following to transform a
+one-dimensional complex array:
+
+             fftw_complex in[N], *out[N];
+             fftw_plan plan;
+     
+             plan = fftw_create_plan(N,FFTW_FORWARD,FFTW_ESTIMATE);
+             fftw_one(plan,in,out);
+             fftw_destroy_plan(plan);
+
+   In Fortran, you use the following to accomplish the same thing:
+
+             double complex in, out
+             dimension in(N), out(N)
+             integer plan
+     
+             call fftw_f77_create_plan(plan,N,FFTW_FORWARD,FFTW_ESTIMATE)
+             call fftw_f77_one(plan,in,out)
+             call fftw_f77_destroy_plan(plan)
+
+   Notice how all routines are called as Fortran subroutines, and the
+plan is returned via the first argument to `fftw_f77_create_plan'.
+_Important:_ these examples assume that `integer' is the same size as a
+pointer, and may need modification on a 64-bit machine.  *Note Wrapper
+Routines::, above.  To do the same thing, but using 8 threads in
+parallel (*note Multi-threaded FFTW::), you would simply replace the
+call to `fftw_f77_one' with:
+
+             call fftw_f77_threads_one(8,plan,in,out)
+
+   To transform a three-dimensional array in-place with C, you might do:
+
+             fftw_complex arr[L][M][N];
+             fftwnd_plan plan;
+             int n[3] = {L,M,N};
+     
+             plan = fftwnd_create_plan(3,n,FFTW_FORWARD,
+                                       FFTW_ESTIMATE | FFTW_IN_PLACE);
+             fftwnd_one(plan, arr, 0);
+             fftwnd_destroy_plan(plan);
+
+   In Fortran, you would use this instead:
+
+             double complex arr
+             dimension arr(L,M,N)
+             integer n
+             dimension n(3)
+             integer plan
+     
+             n(1) = L
+             n(2) = M
+             n(3) = N
+             call fftwnd_f77_create_plan(plan,3,n,FFTW_FORWARD,
+            +                            FFTW_ESTIMATE + FFTW_IN_PLACE)
+             call fftwnd_f77_one(plan, arr, 0)
+             call fftwnd_f77_destroy_plan(plan)
+
+   Instead of calling `fftwnd_f77_create_plan(plan,3,n,...)', we could
+also have called `fftw3d_f77_create_plan(plan,L,M,N,...)'.
+
+   Note that we pass the array dimensions in the "natural" order; also
+note that the last argument to `fftwnd_f77' is ignored since the
+transform is `FFTW_IN_PLACE'.
+
+   To transform a one-dimensional real array in Fortran, you might do:
+
+             double precision in, out
+             dimension in(N), out(N)
+             integer plan
+     
+             call rfftw_f77_create_plan(plan,N,FFTW_REAL_TO_COMPLEX,
+            +                           FFTW_ESTIMATE)
+             call rfftw_f77_one(plan,in,out)
+             call rfftw_f77_destroy_plan(plan)
+
+   To transform a two-dimensional real array, out of place, you might
+use the following:
+
+             double precision in
+             double complex out
+             dimension in(M,N), out(M/2 + 1, N)
+             integer plan
+     
+             call rfftw2d_f77_create_plan(plan,M,N,FFTW_REAL_TO_COMPLEX,
+            +                             FFTW_ESTIMATE)
+             call rfftwnd_f77_one_real_to_complex(plan, in, out)
+             call rfftwnd_f77_destroy_plan(plan)
+
+   Important: Notice that it is the _first_ dimension of the complex
+output array that is cut in half in Fortran, rather than the last
+dimension as in C.  This is a consequence of the wrapper routines
+reversing the order of the array dimensions passed to FFTW so that the
+Fortran program can use its ordinary column-major order.
+
+
+File: fftw.info,  Node: Installation and Customization,  Next: Acknowledgments,  Prev: Calling FFTW from Fortran,  Up: Top
+
+Installation and Customization
+******************************
+
+   This chapter describes the installation and customization of FFTW,
+the latest version of which may be downloaded from the FFTW home page
+(http://www.fftw.org).
+
+   As distributed, FFTW makes very few assumptions about your system.
+All you need is an ANSI C compiler (`gcc' is fine, although
+vendor-provided compilers often produce faster code).  However,
+installation of FFTW is somewhat simpler if you have a Unix or a GNU
+system, such as Linux.  In this chapter, we first describe the
+installation of FFTW on Unix and non-Unix systems.  We then describe how
+you can customize FFTW to achieve better performance.  Specifically, you
+can I) enable `gcc'/x86-specific hacks that improve performance on
+Pentia and PentiumPro's; II) adapt FFTW to use the high-resolution clock
+of your machine, if any; III) produce code (_codelets_) to support fast
+transforms of sizes that are not supported efficiently by the standard
+FFTW distribution.
+
+* Menu:
+
+* Installation on Unix::
+* Installation on non-Unix Systems::
+* Installing FFTW in both single and double precision::
+* gcc and Pentium hacks::
+* Customizing the timer::
+* Generating your own code::
+
+
+File: fftw.info,  Node: Installation on Unix,  Next: Installation on non-Unix Systems,  Prev: Installation and Customization,  Up: Installation and Customization
+
+Installation on Unix
+====================
+
+   FFTW comes with a `configure' program in the GNU style.
+Installation can be as simple as:
+
+     ./configure
+     make
+     make install
+
+   This will build the uniprocessor complex and real transform libraries
+along with the test programs.  We strongly recommend that you use GNU
+`make' if it is available; on some systems it is called `gmake'.  The
+"`make install'" command installs the fftw and rfftw libraries in
+standard places, and typically requires root privileges (unless you
+specify a different install directory with the `--prefix' flag to
+`configure').  You can also type "`make check'" to put the FFTW test
+programs through their paces.  If you have problems during
+configuration or compilation, you may want to run "`make distclean'"
+before trying again; this ensures that you don't have any stale files
+left over from previous compilation attempts.
+
+   The `configure' script knows good `CFLAGS' (C compiler flags) for a
+few systems.  If your system is not known, the `configure' script will
+print out a warning.  (1)  In this case, you can compile FFTW with the
+command
+     make CFLAGS="<write your CFLAGS here>"
+   If you do find an optimal set of `CFLAGS' for your system, please
+let us know what they are (along with the output of `config.guess') so
+that we can include them in future releases.
+
+   The `configure' program supports all the standard flags defined by
+the GNU Coding Standards; see the `INSTALL' file in FFTW or the GNU web
+page (http://www.gnu.org/prep/standards_toc.html).  Note especially
+`--help' to list all flags and `--enable-shared' to create shared,
+rather than static, libraries.  `configure' also accepts a few
+FFTW-specific flags, particularly:
+
+   * `--enable-float' Produces a single-precision version of FFTW
+     (`float') instead of the default double-precision (`double').
+     *Note Installing FFTW in both single and double precision::.
+
+   * `--enable-type-prefix' Adds a `d' or `s' prefix to all installed
+     libraries and header files to indicate the floating-point
+     precision.  *Note Installing FFTW in both single and double
+     precision::.  (`--enable-type-prefix=<prefix>' lets you add an
+     arbitrary prefix.)  By default, no prefix is used.
+
+   * `--enable-threads' Enables compilation and installation of the FFTW
+     threads library (*note Multi-threaded FFTW::), which provides a
+     simple interface to parallel transforms for SMP systems.  (By
+     default, the threads routines are not compiled.)
+
+   * `--with-openmp', `--with-sgimp' In conjunction with
+     `--enable-threads', causes the multi-threaded FFTW library to use
+     OpenMP or SGI MP compiler directives in order to induce
+     parallelism, rather than spawning its own threads directly.
+     (Useful especially for programs already employing such directives,
+     in order to minimize conflicts between different parallelization
+     mechanisms.)
+
+   * `--enable-mpi' Enables compilation and installation of the FFTW MPI
+     library (*note MPI FFTW::), which provides parallel transforms for
+     distributed-memory systems with MPI.  (By default, the MPI
+     routines are not compiled.)
+
+   * `--disable-fortran' Disables inclusion of Fortran-callable wrapper
+     routines (*note Calling FFTW from Fortran::) in the standard FFTW
+     libraries.  These wrapper routines increase the library size by
+     only a negligible amount, so they are included by default as long
+     as the `configure' script finds a Fortran compiler on your system.
+
+   * `--with-gcc' Enables the use of `gcc'.  By default, FFTW uses the
+     vendor-supplied `cc' compiler if present.  Unfortunately, `gcc'
+     produces slower code than `cc' on many systems.
+
+   * `--enable-i386-hacks'  *Note gcc and Pentium hacks::, below.
+
+   * `--enable-pentium-timer'  *Note gcc and Pentium hacks::, below.
+
+
+   To force `configure' to use a particular C compiler (instead of the
+default, usually `cc'), set the environment variable `CC' to the name
+of the desired compiler before running `configure'; you may also need
+to set the flags via the variable `CFLAGS'.
+
+   ---------- Footnotes ----------
+
+   (1) Each version of `cc' seems to have its own magic incantation to
+get the fastest code most of the time--you'd think that people would
+have agreed upon some convention, e.g. "`-Omax'", by now.
+
+
+File: fftw.info,  Node: Installation on non-Unix Systems,  Next: Installing FFTW in both single and double precision,  Prev: Installation on Unix,  Up: Installation and Customization
+
+Installation on non-Unix Systems
+================================
+
+   It is quite straightforward to install FFTW even on non-Unix systems
+lacking the niceties of the `configure' script.  The FFTW Home Page may
+include some FFTW packages preconfigured for particular
+systems/compilers, and also contains installation notes sent in by
+users.  All you really need to do, though, is to compile all of the
+`.c' files in the appropriate directories of the FFTW package.  (You
+needn't worry about the many extraneous files lying around.)
+
+   For the complex transforms, compile all of the `.c' files in the
+`fftw' directory and link them into a library.  Similarly, for the real
+transforms, compile all of the `.c' files in the `rfftw' directory into
+a library.  Note that these sources `#include' various files in the
+`fftw' and `rfftw' directories, so you may need to set up the
+`#include' paths for your compiler appropriately.  Be sure to enable
+the highest-possible level of optimization in your compiler.
+
+   By default, FFTW is compiled for double-precision transforms.  To
+work in single precision rather than double precision, `#define' the
+symbol `FFTW_ENABLE_FLOAT' in `fftw.h' (in the `fftw' directory) and
+(re)compile FFTW.
+
+   These libraries should be linked with any program that uses the
+corresponding transforms.  The required header files, `fftw.h' and
+`rfftw.h', are located in the `fftw' and `rfftw' directories
+respectively; you may want to put them with the libraries, or wherever
+header files normally go on your system.
+
+   FFTW includes test programs, `fftw_test' and `rfftw_test', in the
+`tests' directory.  These are compiled and linked like any program
+using FFTW, except that they use additional header files located in the
+`fftw' and `rfftw' directories, so you will need to set your compiler
+`#include' paths appropriately.  `fftw_test' is compiled from
+`fftw_test.c' and `test_main.c', while `rfftw_test' is compiled from
+`rfftw_test.c' and `test_main.c'.  When you run these programs, you
+will be prompted interactively for various possible tests to perform;
+see also `tests/README' for more information.
+
+
+File: fftw.info,  Node: Installing FFTW in both single and double precision,  Next: gcc and Pentium hacks,  Prev: Installation on non-Unix Systems,  Up: Installation and Customization
+
+Installing FFTW in both single and double precision
+===================================================
+
+   It is often useful to install both single- and double-precision
+versions of the FFTW libraries on the same machine, and we provide a
+convenient mechanism for achieving this on Unix systems.
+
+   When the `--enable-type-prefix' option of configure is used, the
+FFTW libraries and header files are installed with a prefix of `d' or
+`s', depending upon whether you compiled in double or single precision.
+Then, instead of linking your program with `-lrfftw -lfftw', for
+example, you would link with `-ldrfftw -ldfftw' to use the
+double-precision version or with `-lsrfftw -lsfftw' to use the
+single-precision version.  Also, you would `#include' `<drfftw.h>' or
+`<srfftw.h>' instead of `<rfftw.h>', and so on.
+
+   _The names of FFTW functions, data types, and constants remain
+unchanged!_  You still call, for instance, `fftw_one' and not
+`dfftw_one'.  Only the names of header files and libraries are
+modified.  One consequence of this is that _you cannot use both the
+single- and double-precision FFTW libraries in the same program,
+simultaneously,_ as the function names would conflict.
+
+   So, to install both the single- and double-precision libraries on the
+same machine, you would do:
+
+     ./configure --enable-type-prefix [ other options ]
+     make
+     make install
+     make clean
+     ./configure --enable-float --enable-type-prefix [ other options ]
+     make
+     make install
+
+
+File: fftw.info,  Node: gcc and Pentium hacks,  Next: Customizing the timer,  Prev: Installing FFTW in both single and double precision,  Up: Installation and Customization
+
+`gcc' and Pentium hacks
+=======================
+
+   The `configure' option `--enable-i386-hacks' enables specific
+optimizations for the Pentium and later x86 CPUs under gcc, which can
+significantly improve performance of double-precision transforms.
+Specifically, we have tested these hacks on Linux with `gcc' 2.[789]
+and versions of `egcs' since 1.0.3.  These optimizations affect only
+the performance and not the correctness of FFTW (i.e. it is always safe
+to try them out).
+
+   These hacks provide a workaround to the incorrect alignment of local
+`double' variables in `gcc'.  The compiler aligns these variables to
+multiples of 4 bytes, but execution is much faster (on Pentium and
+PentiumPro) if `double's are aligned to a multiple of 8 bytes.  By
+carefully counting the number of variables allocated by the compiler in
+performance-critical regions of the code, we have been able to
+introduce dummy allocations (using `alloca') that align the stack
+properly.  The hack depends crucially on the compiler flags that are
+used.  For example, it won't work without `-fomit-frame-pointer'.
+
+   In principle, these hacks are no longer required under `gcc'
+versions 2.95 and later, which automatically align the stack correctly
+(see `-mpreferred-stack-boundary' in the `gcc' manual).  However, we
+have encountered a bug
+(http://egcs.cygnus.com/ml/gcc-bugs/1999-11/msg00259.html) in the stack
+alignment of versions 2.95.[012] that causes FFTW's stack to be
+misaligned under some circumstances.  The `configure' script
+automatically detects this bug and disables `gcc''s stack alignment in
+favor of our own hacks when `--enable-i386-hacks' is used.
+
+   The `fftw_test' program outputs speed measurements that you can use
+to see if these hacks are beneficial.
+
+   The `configure' option `--enable-pentium-timer' enables the use of
+the Pentium and PentiumPro cycle counter for timing purposes.  In order
+to get correct results, you must define `FFTW_CYCLES_PER_SEC' in
+`fftw/config.h' to be the clock speed of your processor; the resulting
+FFTW library will be nonportable.  The use of this option is
+deprecated.  On serious operating systems (such as Linux), FFTW uses
+`gettimeofday()', which has enough resolution and is portable.  (Note
+that Win32 has its own high-resolution timing routines as well.  FFTW
+contains unsupported code to use these routines.)
+
+
+File: fftw.info,  Node: Customizing the timer,  Next: Generating your own code,  Prev: gcc and Pentium hacks,  Up: Installation and Customization
+
+Customizing the timer
+=====================
+
+   FFTW needs a reasonably-precise clock in order to find the optimal
+way to compute a transform.  On Unix systems, `configure' looks for
+`gettimeofday' and other system-specific timers.  If it does not find
+any high resolution clock, it defaults to using the `clock()' function,
+which is very portable, but forces FFTW to run for a long time in order
+to get reliable measurements.
+
+   If your machine supports a high-resolution clock not recognized by
+FFTW, it is therefore advisable to use it.  You must edit
+`fftw/fftw-int.h'.  There are a few macros you must redefine.  The code
+is documented and should be self-explanatory.  (By the way, `fftw-int'
+stands for `fftw-internal', but for some inexplicable reason people are
+still using primitive systems with 8.3 filenames.)
+
+   Even if you don't install high-resolution timing code, we still
+recommend that you look at the `FFTW_TIME_MIN' constant in
+`fftw/fftw-int.h'. This constant holds the minimum time interval (in
+seconds) required to get accurate timing measurements, and should be (at
+least) several hundred times the resolution of your clock.  The default
+constants are on the conservative side, and may cause FFTW to take
+longer than necessary when you create a plan. Set `FFTW_TIME_MIN' to
+whatever is appropriate on your system (be sure to set the _right_
+`FFTW_TIME_MIN'...there are several definitions in `fftw-int.h',
+corresponding to different platforms and timers).
+
+   As an aid in checking the resolution of your clock, you can use the
+`tests/fftw_test' program with the `-t' option (c.f. `tests/README').
+Remember, the mere fact that your clock reports times in, say,
+picoseconds, does not mean that it is actually _accurate_ to that
+resolution.
+
+
+File: fftw.info,  Node: Generating your own code,  Prev: Customizing the timer,  Up: Installation and Customization
+
+Generating your own code
+========================
+
+   If you know that you will only use transforms of a certain size (say,
+powers of 2) and want to reduce the size of the library, you can
+reconfigure FFTW to support only those sizes you are interested in.  You
+may even generate code to enable efficient transforms of a size not
+supported by the default distribution.  The default distribution
+supports transforms of any size, but not all sizes are equally fast.
+The default installation of FFTW is best at handling sizes of the form
+2^a 3^b 5^c 7^d 11^e 13^f, where e+f is either 0 or 1, and the other
+exponents are arbitrary.  Other sizes are computed by means of a slow,
+general-purpose routine.  However, if you have an application that
+requires fast transforms of size, say, `17', there is a way to generate
+specialized code to handle that.
+
+   The directory `gensrc' contains all the programs and scripts that
+were used to generate FFTW.  In particular, the program
+`gensrc/genfft.ml' was used to generate the code that FFTW uses to
+compute the transforms.  We do not expect casual users to use it.
+`genfft' is a rather sophisticated program that generates directed
+acyclic graphs of FFT algorithms and performs algebraic simplifications
+on them.  `genfft' is written in Objective Caml, a dialect of ML.
+Objective Caml is described at `http://pauillac.inria.fr/ocaml/' and
+can be downloaded from from `ftp://ftp.inria.fr/lang/caml-light'.
+
+   If you have Objective Caml installed, you can type `sh bootstrap.sh'
+in the top-level directory to re-generate the files.  If you change the
+`gensrc/config' file, you can optimize FFTW for sizes that are not
+currently supported efficiently (say, 17 or 19).
+
+   We do not provide more details about the code-generation process,
+since we do not expect that users will need to generate their own code.
+However, feel free to contact us at <fftw@fftw.org> if you are
+interested in the subject.
+
+   You might find it interesting to learn Caml and/or some modern
+programming techniques that we used in the generator (including monadic
+programming), especially if you heard the rumor that Java and
+object-oriented programming are the latest advancement in the field.
+The internal operation of the codelet generator is described in the
+paper, "A Fast Fourier Transform Compiler," by M. Frigo, which is
+available from the FFTW home page (http://www.fftw.org) and will appear
+in the `Proceedings of the 1999 ACM SIGPLAN Conference on Programming
+Language Design and Implementation (PLDI)'.
+
+
+File: fftw.info,  Node: Acknowledgments,  Next: License and Copyright,  Prev: Installation and Customization,  Up: Top
+
+Acknowledgments
+***************
+
+   Matteo Frigo was supported in part by the Defense Advanced Research
+Projects Agency (DARPA) under Grants N00014-94-1-0985 and
+F30602-97-1-0270, and by a Digital Equipment Corporation Fellowship.
+Steven G. Johnson was supported in part by a DoD NDSEG Fellowship, an
+MIT Karl Taylor Compton Fellowship, and by the Materials Research
+Science and Engineering Center program of the National Science
+Foundation under award DMR-9400334.
+
+   Both authors were also supported in part by their respective
+girlfriends, by the letters "Q" and "R", and by the number 12.
+
+   We are grateful to SUN Microsystems Inc. for its donation of a
+cluster of 9 8-processor Ultra HPC 5000 SMPs (24 Gflops peak). These
+machines served as the primary platform for the development of earlier
+versions of FFTW.
+
+   We thank Intel Corporation for donating a four-processor Pentium Pro
+machine.  We thank the Linux community for giving us a decent OS to run
+on that machine.
+
+   The `genfft' program was written using Objective Caml, a dialect of
+ML.  Objective Caml is a small and elegant language developed by Xavier
+Leroy.  The implementation is available from `ftp.inria.fr' in the
+directory `lang/caml-light'.  We used versions 1.07 and 2.00 of the
+software.  In previous releases of FFTW, `genfft' was written in Caml
+Light, by the same authors.  An even earlier implementation of `genfft'
+was written in Scheme, but Caml is definitely better for this kind of
+application.
+
+   FFTW uses many tools from the GNU project, including `automake',
+`texinfo', and `libtool'.
+
+   Prof. Charles E. Leiserson of MIT provided continuous support and
+encouragement.  This program would not exist without him.  Charles also
+proposed the name "codelets" for the basic FFT blocks.
+
+   Prof. John D. Joannopoulos of MIT demonstrated continuing tolerance
+of Steven's "extra-curricular" computer-science activities.  Steven's
+chances at a physics degree would not exist without him.
+
+   Andrew Sterian contributed the Windows timing code.
+
+   Didier Miras reported a bug in the test procedure used in FFTW 1.2.
+We now use a completely different test algorithm by Funda Ergun that
+does not require a separate FFT program to compare against.
+
+   Wolfgang Reimer contributed the Pentium cycle counter and a few fixes
+that help portability.
+
+   Ming-Chang Liu uncovered a well-hidden bug in the complex transforms
+of FFTW 2.0 and supplied a patch to correct it.
+
+   The FFTW FAQ was written in `bfnn' (Bizarre Format With No Name) and
+formatted using the tools developed by Ian Jackson for the Linux FAQ.
+
+   _We are especially thankful to all of our users for their continuing
+support, feedback, and interest during our development of FFTW._
+
+
+File: fftw.info,  Node: License and Copyright,  Next: Concept Index,  Prev: Acknowledgments,  Up: Top
+
+License and Copyright
+*********************
+
+   FFTW is copyright (C) 1997-1999 Massachusetts Institute of
+Technology.
+
+   FFTW is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+   This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.  You can
+also find the GPL on the GNU web site
+(http://www.gnu.org/copyleft/gpl.html).
+
+   In addition, we kindly ask you to acknowledge FFTW and its authors in
+any program or publication in which you use FFTW.  (You are not
+_required_ to do so; it is up to your common sense to decide whether
+you want to comply with this request or not.)
+
+   Non-free versions of FFTW are available under terms different than
+the General Public License. (e.g. they do not require you to accompany
+any object code using FFTW with the corresponding source code.)  For
+these alternate terms you must purchase a license from MIT's Technology
+Licensing Office.  Users interested in such a license should contact us
+(<fftw@fftw.org>) for more information.
+
+
+File: fftw.info,  Node: Concept Index,  Next: Library Index,  Prev: License and Copyright,  Up: Top
+
+Concept Index
+*************
+
+* Menu:
+
+* algorithm:                             Introduction.
+* benchfft:                              Introduction.
+* benchmark <1>:                         gcc and Pentium hacks.
+* benchmark <2>:                         MPI Tips.
+* benchmark <3>:                         How Many Threads to Use?.
+* benchmark:                             Introduction.
+* blocking:                              Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* C multi-dimensional arrays:            Static Arrays in C.
+* Caml <1>:                              Acknowledgments.
+* Caml:                                  Generating your own code.
+* Cilk <1>:                              Parallel FFTW.
+* Cilk:                                  Introduction.
+* clock:                                 Customizing the timer.
+* code generator <1>:                    Generating your own code.
+* code generator:                        Introduction.
+* column-major <1>:                      Fortran Examples.
+* column-major <2>:                      Wrapper Routines.
+* column-major:                          Column-major Format.
+* compiler <1>:                          gcc and Pentium hacks.
+* compiler <2>:                          Installation on non-Unix Systems.
+* compiler <3>:                          Installation on Unix.
+* compiler <4>:                          Installation and Customization.
+* compiler <5>:                          Calling FFTW from Fortran.
+* compiler:                              Introduction.
+* compiler flags:                        Installation on Unix.
+* complex multi-dimensional transform <1>: Multi-dimensional Transforms Reference.
+* complex multi-dimensional transform:   Complex Multi-dimensional Transforms Tutorial.
+* complex number:                        Data Types.
+* complex one-dimensional transform:     Complex One-dimensional Transforms Tutorial.
+* complex to real transform <1>:         Real One-dimensional Transforms Reference.
+* complex to real transform:             Real One-dimensional Transforms Tutorial.
+* complex transform:                     Complex One-dimensional Transforms Tutorial.
+* configure <1>:                         Installing FFTW in both single and double precision.
+* configure <2>:                         Installation on Unix.
+* configure <3>:                         MPI FFTW Installation.
+* configure <4>:                         Installation and Supported Hardware/Software.
+* configure:                             Data Types.
+* convolution:                           Real Multi-dimensional Transforms Tutorial.
+* cyclic convolution:                    Real Multi-dimensional Transforms Tutorial.
+* Discrete Fourier Transform <1>:        What RFFTWND Really Computes.
+* Discrete Fourier Transform <2>:        What RFFTW Really Computes.
+* Discrete Fourier Transform <3>:        What FFTWND Really Computes.
+* Discrete Fourier Transform:            What FFTW Really Computes.
+* distributed array format <1>:          Usage of MPI FFTW for Complex One-dimensional Transforms.
+* distributed array format <2>:          Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* distributed array format:              MPI Data Layout.
+* distributed memory <1>:                MPI Data Layout.
+* distributed memory <2>:                MPI FFTW.
+* distributed memory:                    Parallel FFTW.
+* Ecclesiastes:                          Caveats in Using Wisdom.
+* executor:                              Introduction.
+* FFTW:                                  Introduction.
+* FFTWND:                                Multi-dimensional Transforms Reference.
+* flags <1>:                             FFTW Constants in Fortran.
+* flags <2>:                             Usage of MPI FFTW for Complex One-dimensional Transforms.
+* flags <3>:                             rfftwnd_create_plan.
+* flags <4>:                             rfftw_create_plan.
+* flags <5>:                             fftwnd_create_plan.
+* flags <6>:                             fftw_create_plan.
+* flags <7>:                             Complex Multi-dimensional Transforms Tutorial.
+* flags:                                 Complex One-dimensional Transforms Tutorial.
+* floating-point precision <1>:          Installing FFTW in both single and double precision.
+* floating-point precision <2>:          Installation on non-Unix Systems.
+* floating-point precision <3>:          Installation on Unix.
+* floating-point precision <4>:          Wrapper Routines.
+* floating-point precision:              Data Types.
+* Fortran-callable wrappers <1>:         Installation on Unix.
+* Fortran-callable wrappers <2>:         Calling FFTW from Fortran.
+* Fortran-callable wrappers:             Column-major Format.
+* frequency <1>:                         What FFTW Really Computes.
+* frequency <2>:                         Complex Multi-dimensional Transforms Tutorial.
+* frequency:                             Complex One-dimensional Transforms Tutorial.
+* gettimeofday:                          Customizing the timer.
+* girlfriends:                           Acknowledgments.
+* halfcomplex array <1>:                 Data Types.
+* halfcomplex array:                     Real One-dimensional Transforms Tutorial.
+* hermitian array <1>:                   What RFFTWND Really Computes.
+* hermitian array:                       Data Types.
+* in-place transform <1>:                Wrapper Routines.
+* in-place transform <2>:                Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* in-place transform <3>:                Tips for Optimal Threading.
+* in-place transform <4>:                Array Dimensions for Real Multi-dimensional Transforms.
+* in-place transform <5>:                rfftwnd_create_plan.
+* in-place transform <6>:                fftwnd.
+* in-place transform <7>:                fftw.
+* in-place transform <8>:                fftw_create_plan.
+* in-place transform:                    Complex Multi-dimensional Transforms Tutorial.
+* installation:                          Installation and Customization.
+* linking on Unix <1>:                   Usage of MPI FFTW for Complex One-dimensional Transforms.
+* linking on Unix <2>:                   Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* linking on Unix <3>:                   Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* linking on Unix <4>:                   Usage of Multi-threaded FFTW.
+* linking on Unix <5>:                   Real One-dimensional Transforms Tutorial.
+* linking on Unix:                       Complex One-dimensional Transforms Tutorial.
+* LISP <1>:                              Acknowledgments.
+* LISP:                                  Importing and Exporting Wisdom.
+* load-balancing:                        MPI Tips.
+* malloc <1>:                            Memory Allocator Reference.
+* malloc:                                Dynamic Arrays in C.
+* ML:                                    Generating your own code.
+* monadic programming:                   Generating your own code.
+* MPI <1>:                               Installation on Unix.
+* MPI <2>:                               MPI FFTW.
+* MPI <3>:                               Parallel FFTW.
+* MPI:                                   Introduction.
+* MPI_Alltoall <1>:                      Usage of MPI FFTW for Complex One-dimensional Transforms.
+* MPI_Alltoall <2>:                      Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* MPI_Alltoall:                          MPI FFTW Installation.
+* MPI_Barrier:                           Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* MPI_COMM_WORLD <1>:                    Usage of MPI FFTW for Complex One-dimensional Transforms.
+* MPI_COMM_WORLD:                        Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* MPI_Finalize:                          Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* MPI_Init:                              Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* multi-dimensional transform <1>:       Real Multi-dimensional Transforms Reference.
+* multi-dimensional transform <2>:       Multi-dimensional Transforms Reference.
+* multi-dimensional transform:           Complex Multi-dimensional Transforms Tutorial.
+* n_fields <1>:                          Usage of MPI FFTW for Complex One-dimensional Transforms.
+* n_fields:                              Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* nerd-readable text:                    Importing and Exporting Wisdom.
+* normalization <1>:                     Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* normalization <2>:                     What RFFTW Really Computes.
+* normalization <3>:                     What FFTW Really Computes.
+* normalization <4>:                     Real Multi-dimensional Transforms Tutorial.
+* normalization <5>:                     Real One-dimensional Transforms Tutorial.
+* normalization <6>:                     Complex Multi-dimensional Transforms Tutorial.
+* normalization:                         Complex One-dimensional Transforms Tutorial.
+* number of threads <1>:                 How Many Threads to Use?.
+* number of threads:                     Usage of Multi-threaded FFTW.
+* out-of-place transform:                Complex Multi-dimensional Transforms Tutorial.
+* padding <1>:                           Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* padding <2>:                           Array Dimensions for Real Multi-dimensional Transforms.
+* padding:                               Real Multi-dimensional Transforms Tutorial.
+* parallel transform <1>:                Parallel FFTW.
+* parallel transform:                    Introduction.
+* Pentium hack:                          gcc and Pentium hacks.
+* plan <1>:                              Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* plan <2>:                              Complex One-dimensional Transforms Tutorial.
+* plan:                                  Introduction.
+* planner:                               Introduction.
+* power spectrum:                        Real One-dimensional Transforms Tutorial.
+* rank:                                  Complex Multi-dimensional Transforms Tutorial.
+* real multi-dimensional transform <1>:  Real Multi-dimensional Transforms Reference.
+* real multi-dimensional transform:      Real Multi-dimensional Transforms Tutorial.
+* real number:                           Data Types.
+* real transform <1>:                    Real One-dimensional Transforms Reference.
+* real transform:                        Real One-dimensional Transforms Tutorial.
+* RFFTW <1>:                             Real One-dimensional Transforms Reference.
+* RFFTW:                                 Real One-dimensional Transforms Tutorial.
+* RFFTWND:                               Real Multi-dimensional Transforms Reference.
+* rfftwnd array format <1>:              Fortran Examples.
+* rfftwnd array format <2>:              Usage of MPI FFTW for Real Multi-dimensional Transforms.
+* rfftwnd array format <3>:              Strides in In-place RFFTWND.
+* rfftwnd array format <4>:              Array Dimensions for Real Multi-dimensional Transforms.
+* rfftwnd array format:                  Real Multi-dimensional Transforms Tutorial.
+* row-major <1>:                         MPI Data Layout.
+* row-major <2>:                         fftwnd_create_plan.
+* row-major <3>:                         Row-major Format.
+* row-major:                             Real Multi-dimensional Transforms Tutorial.
+* saving plans to disk:                  Words of Wisdom.
+* slab decomposition:                    MPI Data Layout.
+* specific planner:                      Discussion on Specific Plans.
+* stride <1>:                            Usage of MPI FFTW for Complex Multi-dimensional Transforms.
+* stride <2>:                            Strides in In-place RFFTWND.
+* stride <3>:                            rfftwnd.
+* stride <4>:                            rfftw.
+* stride <5>:                            fftwnd.
+* stride <6>:                            fftw.
+* stride:                                Row-major Format.
+* thread safety <1>:                     Using Multi-threaded FFTW in a Multi-threaded Program.
+* thread safety:                         Thread safety.
+* threads <1>:                           Installation on Unix.
+* threads <2>:                           Multi-threaded FFTW.
+* threads <3>:                           Parallel FFTW.
+* threads <4>:                           Thread safety.
+* threads:                               Introduction.
+* timer, customization of:               Customizing the timer.
+* Tutorial:                              Tutorial.
+* wisdom <1>:                            Wisdom Reference.
+* wisdom <2>:                            rfftwnd_create_plan.
+* wisdom <3>:                            fftwnd_create_plan.
+* wisdom <4>:                            fftw_create_plan.
+* wisdom:                                Words of Wisdom.
+* wisdom, import and export:             Importing and Exporting Wisdom.
+* wisdom, problems with:                 Caveats in Using Wisdom.
+

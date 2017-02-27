@@ -1,0 +1,338 @@
+Version 2.1.5 (3/24/2003)
+
+  * Bug fix: Fortran wrappers were disabled in version 2.1.4.
+
+Version 2.1.4 (3/16/2003)
+
+  * Upgraded to newer versions of autoconf, etcetera, to fix compilation
+    problems on various recent systems.
+
+  * The configure script no longer picks the wrong architecture flags
+    (which caused FFTW to crash) on newer IBM POWER machines running AIX.
+
+  * Multi-threaded transforms should now utilize multiple CPUs on
+    Solaris (which creates threads in single-processor mode by default).
+
+  * Added experimental support for OpenMP (and SGI MP) compiler
+    parallelization directives in the multi-threaded transforms,
+    instead of using explicit thread spawning.  Enable by configuring
+    --with-openmp or --with-sgi-mp in addition to --enable-threads.
+
+  * Expanded FAQ.
+
+Version 2.1.3 (11/7/1999)
+
+  * The configure script no longer overrides the CFLAGS environment
+    variable if it is defined.  (Thanks to Diab Jerius.)
+
+  * Experimental Fortran-callable wrapper routines for MPI FFTW.
+    See mpi/README.f77 for more information.
+
+  * The configure script now detects and works around a stack
+    alignment bug in gcc 2.95.x on x86.
+
+  * configure attempts to guess the appropriate -mcpu flag on 
+    Linux/PPC systems, improving performance (especially on G3s with
+    gcc 2.95 or later).
+
+  * Fixed integer overflow bug for complex transforms of large prime
+    sizes (> 32768).  Thanks to Ezio Riva for the bug report.
+
+  * Fixed memory leak in the Matlab wrappers; thanks to Matthew Davis
+    for the bug report.
+
+  * Fixed bugs in the configure script when detecting POSIX threads
+    libraries on AIX and Tru64 (nee Digital) Unix.
+
+  * Fixed bug in multi-threaded transforms on AIX (which strangely
+    creates threads in non-joinable mode by default).  Thanks to
+    Jim Lindsay for the bug report, and for allowing us to debug on
+    Northwestern University's IBM SP2.
+
+  * Slight fix to help build DLL's on Win32 (thanks to Andrew Sterian).
+
+Version 2.1.2 (5/18/1999)
+
+  * Fixed bug in our MPI test programs which made them fail under MPICH with
+    the p4 device (TCP/IP).  (The 2.1.1 transforms worked, but the test
+    programs crashed.)
+
+  * Added missing fftw_f77_threads_init function to the Fortran wrappers
+    for the multi-threaded transforms.  Thanks to V. Sundararajan for
+    the bug report.
+
+  * The codelet generator can now output efficient hard-coded DCT/DST
+    transforms.  As a side effect of this work, we slightly reduced the 
+    code size of rfftw.
+
+  * Test programs now support GNU-style long options when used with glibc.
+
+  * Added some more ideas to our TODO list.
+
+  * Improved codelet generator speed.
+
+Version 2.1.1 (3/31/1999)
+
+  * Fixed bug in the complex transforms for certain sizes with
+    intermediate-length prime factors (17-97), which under some 
+    (hopefully rare) circumstances could cause incorrect results.
+    Thanks to Ming-Chang Liu for the bug report and patch.  (The test
+    program will now catch this sort of problem when it is run in
+    paranoid mode.)
+
+Version 2.1 (3/8/1999)
+
+  * Added Fortran-callable wrapper routines for the multi-threaded
+    transforms.
+
+  * Documentation fixes and improvements.
+
+  * The --enable-type-prefix option to configure makes it easy to install
+    both single- and double-precision versions of FFTW on the same
+    (Unix) system.  (See the installation section of the manual.)
+
+  * The MPI FFTW routines now include parallel one-dimensional transforms
+    for complex data.  (See the fftw_mpi documentation in the FFTW
+    manual.)
+
+  * The MPI FFTW routines now include parallel multi-dimensional transforms
+    specialized for real data.  (See the rfftwnd_mpi documentation in the
+    FFTW manual.)
+
+  * The MPI FFTW routines are now documented in the main
+    manual (in the doc directory).  On Unix systems, they are also
+    automatically configured, compiled, and installed along with the main
+    FFTW library when you include --enable-mpi in the flags to the
+    configure script.  (See the FFTW manual.)
+
+  * Largely-rewritten MPI code.  It is now cleaner and (sometimes) faster.
+    It also supports the option of a user-supplied workspace for (often)
+    greater performance (using the MPI_Alltoall primitive).  Beware that
+    the interfaces have changed slightly, however.
+
+  * The multi-threaded FFTW routines now include parallel one- and
+    multi-dimensional transforms of real data.  (See the rfftw_threads
+    documentation in the FFTW manual.)
+
+  * The multi-threaded FFTW routines are now documented in the main
+    manual (in the doc directory).  On Unix systems, they are also
+    automatically configured, compiled, and installed along with the main
+    FFTW library when you include --enable-threads in the flags to the
+    configure script.  (See the FFTW manual.)
+
+  * The multi-threaded FFTW routines now include support for Mach C 
+    threads (used, for example, in Apple's MacOS X).
+
+  * The Fortran-callable wrapper routines are now incorporated into
+    the ordinary FFTW libraries by default (although you can
+    disable this with the --disable-fortran option to configure) and
+    are documented in the main FFTW manual.
+
+  * Added an illustration of the data layout to the rfftwnd tutorial
+    section of the manual, in the hope of preventing future confusion
+    on this subject.
+
+  * The test programs now allow you to specify multidimensional sizes
+    (e.g. 128x54x81) for the -c and -s correctness and speed test options.
+
+Version 2.0.1 (9/29/98)
+
+  * (bug fix) Due to a poorly-parenthesized expression, rfftwnd overflowed
+    32-bit integer precision for rank > 1 transforms with a final
+    dimension >= 65536.  This is now fixed.  (Thanks to Walter Brisken
+    for the bug report.)
+
+  * (bug fix) Added definition of FFTW_OUT_OF_PLACE to fftw.h.  The
+    flag is mentioned several times in the documentation, but its
+    definition was accidentally omitted since FFTW_OUT_OF_PLACE is the
+    default behavior.
+
+  * Corrected various small errors in the documentation.  Thanks to
+    Geir Thomassen and Jeremy Buhler for their comments.
+
+  * Improved speed of the codelet generator by orders of magnitude,
+    since a user needed a hard-coded fft of size 101.
+
+  * Modified buffering in multidimensional transforms for some speed
+    improvements (only when fftwnd_create_plan_specific is used).
+    Thanks to Geert van Kempen for his tips.
+
+  * Added Andrew Sterian's patch to allow FFTW to be used as a shared
+    library more easily on Win32.
+
+Version 2.0 (9/11/1998)
+
+  * Completely rewritten real-complex transforms, now using
+    specialized codelets and an inherently real-complex algorithm for
+    greatly increased speed.  Also, rfftw can now handle odd sizes and
+    strided transforms.  Beware that the output format for 1D rfftw
+    transforms has changed.  See the manual for more details.
+
+  * The complex transforms now use a fast algorithm for large prime
+    factors, working in O(N lg N) time even for prime sizes.
+    (Previously, the complexity contained an O(p^2) term, where p is
+    the largest prime factor of N.  This is still the case for the
+    rfftw transforms.)  Small prime factors are still more efficient,
+    however.
+
+  * Added functions fftw_one, fftwnd_one, rfftw_one, etcetera, to
+    simplify and clarify the use of fftw for single, unit-stride
+    transforms.
+
+  * Renamed FFTW_COMPLEX, FFTW_REAL to fftw_complex, fftw_real (for
+    greater consistency in capitalization).  The all-caps names will
+    continue to be supported indefinitely, but are deprecated.  (Also,
+    support for the COMPLEX and REAL types from FFTW 1.0 is now
+    disabled by default.)
+
+  * There are now Fortran-callable wrappers for the rfftw real-complex
+    transforms.
+
+  * New section of the manual discussing the use of FFTW with multiple
+    threads, and a new FFTW_THREADSAFE flag (described therein).
+
+  * Added shared library support.  Use configure --enable-shared to
+    produce a shared library instead of a static library (the default).
+
+  * Dropped support for the operation-count (*_op_count) routines
+    introduced in v1.3, as these were little-used and were a pain to
+    keep up-to-date as FFTW changed internally.
+
+  * Made it easier to support floating-point types other than float
+    and double (e.g. long double).  (See the file fftw-int.h.)
+
+Version 1.3 (4/9/1998)
+
+  * Multi-dimensional transforms contain significant performance
+    improvements for dimensions >= 3.
+
+  * Performance improvements in multi-dimensional transforms
+    with howmany > 1 and stride > dist.
+
+  * Improved parallelization and performance in the threads
+    code for dimensions >= 3.
+
+  * Changed the wisdom import/export format (the new wisdom remembers
+    the stride of the plan that generated it, for use with the new
+    create_plan_specific functions).  (You should regenerate any stored
+    wisdom you have anyway, since this is a new version of FFTW.)
+
+  * Several small fixes to aid compilation on some systems.
+
+  * Fixed a bug in the MPI transform (in the transpose routine) that
+    caused errors for some array sizes.
+
+  * Fixed the (hopefully) last few things causing problems with C++
+    compilers.
+
+  * Hack for x86/gcc to properly align local double-precision variables.
+
+  * Completely rewritten codelet generator.  Now it produces
+    better code for non powers of 2, and is ready to produce
+    real->complex transforms.
+
+  * Testing algorithm is now more robust, and has a more rigorous
+    theoretical foundation.  (Bugs in testing large transforms or
+    in single precision are now fixed--these bugs were only in the
+    test programs and not in the FFTW library itself.)
+
+  * Added "specific" planners, which allow plan optimization for a
+    specific array/stride.  They also reduce the memory requirements
+    of the planner, and permit new optimizations in the multi-dimensional
+    case.  (See the *_create_plan_specific functions.)
+
+  * FFTW can now compute a count of the number of arithmetic operations
+    it requires, which is useful for some academic purposes.  (See the
+    *_count_plan_ops functions.)
+
+  * Adapted for use with GNU autoconf to aid installation on UNIX systems.
+    (Installation on non-UNIX systems should be the same as before.)
+
+  * Used gettimeofday function if available.  (This function typically
+    has much higher accuracy than clock(), permitting plans to be
+    created much more quickly than before on many machines.)
+
+  * Made timing algorithm (hopefully) more robust in the face of
+    system interrupts, etc.
+
+  * Added wrapper routines for calling FFTW from MATLAB (in the
+    matlab/ directory).
+
+  * Added wrapper routines for calling FFTW from Fortran (in the
+    fortran/ directory).  (These were available separately before.)
+
+Version 1.2.1 (12/4/1997)
+
+  * Fixed a third bug in the mpi transpose routines (sheesh!) that
+    could cause problems when re-using a transpose plan.  Thanks
+    to Eric Skyllingstad for the bug reports.
+
+  * Fixed another bug in the mpi transpose routines. This bug produced
+    a memory leak and also occasionally tries to free a null pointer,
+    which causes problems on some systems.  The mpi transpose/fft routines
+    now pass all of our malloc paranoia tests.
+
+  * Fixed bug in mpi transpose routines, where wrong results 
+    could be given for some large 2D arrays.
+
+Version 1.2 (9/8/1997)
+
+  * Added a FAQ (in the FAQ/ directory).
+
+  * Fixed bug in rfftwnd routines where a block was accidentally
+    allocated to be too small, causing random memory to be
+    overwritten (yikes!).  (Amazingly, this bug only caused the
+    test program to fail on one system that we could find.  Our
+    test suite can now catch this sort of bug.)
+
+  * Abstractified taking differences of times (with fftw_time_diff
+    macro/function) to allow more general timer data structures.
+
+  * Added "wisdom" mechanism for saving plans & related info.
+
+  * Made timing mechanism more robust and maintainable.  (Instead of
+    using a fixed number of iterations, we now repeatedly double
+    the number of iterations until a specified time interval
+    (FFTW_TIME_MIN) is reached.)
+
+  * Fixed header files to prevent difficulties when a mix of C and
+    C++ compilers is used, and to prevent problems with multiple
+    inclusions.
+
+  * Added experimental distributed-memory transforms using MPI.
+
+  * Fixed memory leak in fftwnd_destroy_plan (reported by Richard
+    Sullivan).  Our test programs now all check for leaks.
+
+Version 1.1 (5/5/1997)
+
+  * Improved speed (yes!) [Some clever tricks with twiddle factors
+    and better code generator]
+
+  * Renamed `blocks' to `codelets', just to be fashionable
+
+  * Rewritten planner and executor--much simpler and more readable
+    code.  Reference-counter garbage collection employed throughout.
+
+  * Much improved codelet generator.  The ML code should be now
+    readable by humans, and easier to modify.
+
+  * Support for Prime Factor transforms in the codelet generator.
+
+  * Renamed COMPLEX -> FFTW_COMPLEX to avoid clashes with
+    existing packages.  COMPLEX is still supported
+    for compatibility with 1.0
+
+  * Added experimental real->complex transform (quick hack,
+    use at your own risk).
+
+  * Added experimental parallel transforms using Cilk.
+
+  * Added experimental parallel transforms using threads (currently,
+    POSIX threads and Solaris threads are implemented and tested).
+
+  * Added DOS support, in the sense that we now support 8.3 filenames.
+
+Version 1.0 (3/24/1997)
+
+  * First release.

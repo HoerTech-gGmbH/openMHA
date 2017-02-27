@@ -1,0 +1,460 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<!-- This HTML file has been created by texi2html 1.52
+     from fftw.texi on 24 March 2003 -->
+
+<TITLE>FFTW - Installation and Customization</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+Go to the <A HREF="fftw_1.html">first</A>, <A HREF="fftw_5.html">previous</A>, <A HREF="fftw_7.html">next</A>, <A HREF="fftw_10.html">last</A> section, <A HREF="fftw_toc.html">table of contents</A>.
+<P><HR><P>
+
+
+<H1><A NAME="SEC66">Installation and Customization</A></H1>
+
+<P>
+This chapter describes the installation and customization of FFTW, the
+latest version of which may be downloaded from
+<A HREF="http://www.fftw.org">the FFTW home page</A>.
+
+
+<P>
+As distributed, FFTW makes very few assumptions about your system.  All
+you need is an ANSI C compiler (<CODE>gcc</CODE> is fine, although
+vendor-provided compilers often produce faster code).
+<A NAME="IDX313"></A>
+However, installation of FFTW is somewhat simpler if you have a Unix or
+a GNU system, such as Linux.  In this chapter, we first describe the
+installation of FFTW on Unix and non-Unix systems.  We then describe how
+you can customize FFTW to achieve better performance.  Specifically, you
+can I) enable <CODE>gcc</CODE>/x86-specific hacks that improve performance on
+Pentia and PentiumPro's; II) adapt FFTW to use the high-resolution clock
+of your machine, if any; III) produce code (<EM>codelets</EM>) to support
+fast transforms of sizes that are not supported efficiently by the
+standard FFTW distribution.
+<A NAME="IDX314"></A>
+
+
+
+
+<H2><A NAME="SEC67">Installation on Unix</A></H2>
+
+<P>
+FFTW comes with a <CODE>configure</CODE> program in the GNU style.
+Installation can be as simple as:
+<A NAME="IDX315"></A>
+
+
+
+<PRE>
+./configure
+make
+make install
+</PRE>
+
+<P>
+This will build the uniprocessor complex and real transform libraries
+along with the test programs.  We strongly recommend that you use GNU
+<CODE>make</CODE> if it is available; on some systems it is called
+<CODE>gmake</CODE>.  The "<CODE>make install</CODE>" command installs the fftw and
+rfftw libraries in standard places, and typically requires root
+privileges (unless you specify a different install directory with the
+<CODE>--prefix</CODE> flag to <CODE>configure</CODE>).  You can also type
+"<CODE>make check</CODE>" to put the FFTW test programs through their paces.
+If you have problems during configuration or compilation, you may want
+to run "<CODE>make distclean</CODE>" before trying again; this ensures that
+you don't have any stale files left over from previous compilation
+attempts.
+
+
+<P>
+The <CODE>configure</CODE> script knows good <CODE>CFLAGS</CODE> (C compiler flags)
+<A NAME="IDX316"></A>
+for a few systems.  If your system is not known, the <CODE>configure</CODE>
+script will print out a warning.  <A NAME="DOCF9" HREF="fftw_foot.html#FOOT9">(9)</A>  In this case, you can compile
+FFTW with the command
+
+<PRE>
+make CFLAGS="&#60;write your CFLAGS here&#62;"
+</PRE>
+
+<P>
+If you do find an optimal set of <CODE>CFLAGS</CODE> for your system, please
+let us know what they are (along with the output of <CODE>config.guess</CODE>)
+so that we can include them in future releases.
+
+
+<P>
+The <CODE>configure</CODE> program supports all the standard flags defined by
+the GNU Coding Standards; see the <CODE>INSTALL</CODE> file in FFTW or
+<A HREF="http://www.gnu.org/prep/standards_toc.html">the GNU web page</A>.
+Note especially <CODE>--help</CODE> to list all flags and
+<CODE>--enable-shared</CODE> to create shared, rather than static, libraries.
+<CODE>configure</CODE> also accepts a few FFTW-specific flags, particularly:
+
+
+
+<UL>
+
+<LI>
+
+<A NAME="IDX317"></A>
+<CODE>--enable-float</CODE> Produces a single-precision version of FFTW
+(<CODE>float</CODE>) instead of the default double-precision (<CODE>double</CODE>).
+See Section <A HREF="fftw_6.html#SEC69">Installing FFTW in both single and double precision</A>.
+
+<LI>
+
+<CODE>--enable-type-prefix</CODE> Adds a <SAMP>`d'</SAMP> or <SAMP>`s'</SAMP> prefix to all
+installed libraries and header files to indicate the floating-point
+precision.  See Section <A HREF="fftw_6.html#SEC69">Installing FFTW in both single and double precision</A>.  (<CODE>--enable-type-prefix=&#60;prefix&#62;</CODE> lets you add an
+arbitrary prefix.)  By default, no prefix is used.
+
+<LI>
+
+<A NAME="IDX318"></A>
+<CODE>--enable-threads</CODE> Enables compilation and installation of the FFTW
+threads library (see Section <A HREF="fftw_4.html#SEC48">Multi-threaded FFTW</A>), which provides a
+simple interface to parallel transforms for SMP systems.  (By default,
+the threads routines are not compiled.)
+
+<LI>
+
+<CODE>--with-openmp</CODE>, <CODE>--with-sgimp</CODE>
+In conjunction with <CODE>--enable-threads</CODE>, causes the multi-threaded
+FFTW library to use OpenMP or SGI MP compiler directives in order to
+induce parallelism, rather than spawning its own threads directly.
+(Useful especially for programs already employing such directives, in
+order to minimize conflicts between different parallelization
+mechanisms.)
+
+<LI>
+
+<A NAME="IDX319"></A>
+<CODE>--enable-mpi</CODE> Enables compilation and installation of the FFTW MPI
+library (see Section <A HREF="fftw_4.html#SEC55">MPI FFTW</A>), which provides parallel transforms for
+distributed-memory systems with MPI.  (By default, the MPI routines are
+not compiled.)
+
+<LI>
+
+<A NAME="IDX320"></A>
+<CODE>--disable-fortran</CODE> Disables inclusion of Fortran-callable wrapper
+routines (see Section <A HREF="fftw_5.html#SEC62">Calling FFTW from Fortran</A>) in the standard FFTW
+libraries.  These wrapper routines increase the library size by only a
+negligible amount, so they are included by default as long as the
+<CODE>configure</CODE> script finds a Fortran compiler on your system.
+
+<LI>
+
+<CODE>--with-gcc</CODE> Enables the use of <CODE>gcc</CODE>.  By default, FFTW uses
+the vendor-supplied <CODE>cc</CODE> compiler if present.  Unfortunately,
+<CODE>gcc</CODE> produces slower code than <CODE>cc</CODE> on many systems.
+
+<LI>
+
+<CODE>--enable-i386-hacks</CODE>  See Section <A HREF="fftw_6.html#SEC70"><CODE>gcc</CODE> and Pentium hacks</A>, below.
+
+<LI>
+
+<CODE>--enable-pentium-timer</CODE>  See Section <A HREF="fftw_6.html#SEC70"><CODE>gcc</CODE> and Pentium hacks</A>, below.
+
+</UL>
+
+<P>
+To force <CODE>configure</CODE> to use a particular C compiler (instead of the
+<A NAME="IDX321"></A>
+default, usually <CODE>cc</CODE>), set the environment variable <CODE>CC</CODE> to
+the name of the desired compiler before running <CODE>configure</CODE>; you
+may also need to set the flags via the variable <CODE>CFLAGS</CODE>.
+<A NAME="IDX322"></A>
+
+
+
+
+<H2><A NAME="SEC68">Installation on non-Unix Systems</A></H2>
+
+<P>
+It is quite straightforward to install FFTW even on non-Unix systems
+lacking the niceties of the <CODE>configure</CODE> script.  The FFTW Home Page
+may include some FFTW packages preconfigured for particular
+systems/compilers, and also contains installation notes sent in by
+<A NAME="IDX323"></A>
+users.  All you really need to do, though, is to compile all of the
+<CODE>.c</CODE> files in the appropriate directories of the FFTW package.
+(You needn't worry about the many extraneous files lying around.)
+
+
+<P>
+For the complex transforms, compile all of the <CODE>.c</CODE> files in the
+<CODE>fftw</CODE> directory and link them into a library.  Similarly, for the
+real transforms, compile all of the <CODE>.c</CODE> files in the <CODE>rfftw</CODE>
+directory into a library.  Note that these sources <CODE>#include</CODE>
+various files in the <CODE>fftw</CODE> and <CODE>rfftw</CODE> directories, so you
+may need to set up the <CODE>#include</CODE> paths for your compiler
+appropriately.  Be sure to enable the highest-possible level of
+optimization in your compiler.
+
+
+<P>
+<A NAME="IDX324"></A>
+By default, FFTW is compiled for double-precision transforms.  To work
+in single precision rather than double precision, <CODE>#define</CODE> the
+symbol <CODE>FFTW_ENABLE_FLOAT</CODE> in <CODE>fftw.h</CODE> (in the <CODE>fftw</CODE>
+directory) and (re)compile FFTW.
+
+
+<P>
+These libraries should be linked with any program that uses the
+corresponding transforms.  The required header files, <CODE>fftw.h</CODE> and
+<CODE>rfftw.h</CODE>, are located in the <CODE>fftw</CODE> and <CODE>rfftw</CODE>
+directories respectively; you may want to put them with the libraries,
+or wherever header files normally go on your system.
+
+
+<P>
+FFTW includes test programs, <CODE>fftw_test</CODE> and <CODE>rfftw_test</CODE>, in
+<A NAME="IDX325"></A>
+<A NAME="IDX326"></A>
+the <CODE>tests</CODE> directory.  These are compiled and linked like any
+program using FFTW, except that they use additional header files located
+in the <CODE>fftw</CODE> and <CODE>rfftw</CODE> directories, so you will need to set
+your compiler <CODE>#include</CODE> paths appropriately.  <CODE>fftw_test</CODE> is
+compiled from <CODE>fftw_test.c</CODE> and <CODE>test_main.c</CODE>, while
+<CODE>rfftw_test</CODE> is compiled from <CODE>rfftw_test.c</CODE> and
+<CODE>test_main.c</CODE>.  When you run these programs, you will be prompted
+interactively for various possible tests to perform; see also
+<CODE>tests/README</CODE> for more information.
+
+
+
+
+<H2><A NAME="SEC69">Installing FFTW in both single and double precision</A></H2>
+
+<P>
+<A NAME="IDX327"></A>
+It is often useful to install both single- and double-precision versions
+of the FFTW libraries on the same machine, and we provide a convenient
+mechanism for achieving this on Unix systems.
+
+
+<P>
+<A NAME="IDX328"></A>
+When the <CODE>--enable-type-prefix</CODE> option of configure is used, the
+FFTW libraries and header files are installed with a prefix of <SAMP>`d'</SAMP>
+or <SAMP>`s'</SAMP>, depending upon whether you compiled in double or single
+precision.  Then, instead of linking your program with <CODE>-lrfftw
+-lfftw</CODE>, for example, you would link with <CODE>-ldrfftw -ldfftw</CODE> to use
+the double-precision version or with <CODE>-lsrfftw -lsfftw</CODE> to use the
+single-precision version.  Also, you would <CODE>#include</CODE>
+<CODE>&#60;drfftw.h&#62;</CODE> or <CODE>&#60;srfftw.h&#62;</CODE> instead of <CODE>&#60;rfftw.h&#62;</CODE>, and
+so on.
+
+
+<P>
+<EM>The names of FFTW functions, data types, and constants remain
+unchanged!</EM>  You still call, for instance, <CODE>fftw_one</CODE> and not
+<CODE>dfftw_one</CODE>.  Only the names of header files and libraries are
+modified.  One consequence of this is that <EM>you <B>cannot</B> use both
+the single- and double-precision FFTW libraries in the same program,
+simultaneously,</EM> as the function names would conflict.
+
+
+<P>
+So, to install both the single- and double-precision libraries on the
+same machine, you would do:
+
+
+
+<PRE>
+./configure --enable-type-prefix <I>[ other options ]</I>
+make
+make install
+make clean
+./configure --enable-float --enable-type-prefix <I>[ other options ]</I>
+make
+make install
+</PRE>
+
+
+
+<H2><A NAME="SEC70"><CODE>gcc</CODE> and Pentium hacks</A></H2>
+<P>
+<A NAME="IDX329"></A>
+The <CODE>configure</CODE> option <CODE>--enable-i386-hacks</CODE> enables specific
+optimizations for the Pentium and later x86 CPUs under gcc, which can
+significantly improve performance of double-precision transforms.
+Specifically, we have tested these hacks on Linux with <CODE>gcc</CODE> 2.[789]
+and versions of <CODE>egcs</CODE> since 1.0.3.  These optimizations affect
+only the performance and not the correctness of FFTW (i.e. it is always
+safe to try them out).
+
+
+<P>
+These hacks provide a workaround to the incorrect alignment of local
+<CODE>double</CODE> variables in <CODE>gcc</CODE>.  The
+compiler aligns these
+<A NAME="IDX330"></A>
+variables to multiples of 4 bytes, but execution is much faster (on
+Pentium and PentiumPro) if <CODE>double</CODE>s are aligned to a multiple of 8
+bytes.  By carefully counting the number of variables allocated by the
+compiler in performance-critical regions of the code, we have been able
+to introduce dummy allocations (using <CODE>alloca</CODE>) that align the
+stack properly.  The hack depends crucially on the compiler flags that
+are used.  For example, it won't work without
+<CODE>-fomit-frame-pointer</CODE>.
+
+
+<P>
+In principle, these hacks are no longer required under <CODE>gcc</CODE>
+versions 2.95 and later, which automatically align the stack correctly
+(see <CODE>-mpreferred-stack-boundary</CODE> in the <CODE>gcc</CODE> manual).
+However, we have encountered a
+<A HREF="http://egcs.cygnus.com/ml/gcc-bugs/1999-11/msg00259.html">bug</A> in
+the stack alignment of versions 2.95.[012] that causes FFTW's stack to
+be misaligned under some circumstances.  The <CODE>configure</CODE> script
+automatically detects this bug and disables <CODE>gcc</CODE>'s stack alignment
+in favor of our own hacks when <CODE>--enable-i386-hacks</CODE> is used.
+
+
+<P>
+The <CODE>fftw_test</CODE> program outputs speed measurements that you can use
+to see if these hacks are beneficial.
+<A NAME="IDX331"></A>
+<A NAME="IDX332"></A>
+
+
+<P>
+The <CODE>configure</CODE> option <CODE>--enable-pentium-timer</CODE> enables the
+use of the Pentium and PentiumPro cycle counter for timing purposes.  In
+order to get correct results, you must define <CODE>FFTW_CYCLES_PER_SEC</CODE>
+in <CODE>fftw/config.h</CODE> to be the clock speed of your processor; the
+resulting FFTW library will be nonportable.  The use of this option is
+deprecated.  On serious operating systems (such as Linux), FFTW uses
+<CODE>gettimeofday()</CODE>, which has enough resolution and is portable.
+(Note that Win32 has its own high-resolution timing routines as well.
+FFTW contains unsupported code to use these routines.)
+
+
+
+
+<H2><A NAME="SEC71">Customizing the timer</A></H2>
+<P>
+<A NAME="IDX333"></A>
+
+
+<P>
+FFTW needs a reasonably-precise clock in order to find the optimal way
+to compute a transform.  On Unix systems, <CODE>configure</CODE> looks for
+<CODE>gettimeofday</CODE> and other system-specific timers.  If it does not
+find any high resolution clock, it defaults to using the <CODE>clock()</CODE>
+function, which is very portable, but forces FFTW to run for a long time
+in order to get reliable measurements.
+<A NAME="IDX334"></A>
+<A NAME="IDX335"></A>
+
+
+<P>
+If your machine supports a high-resolution clock not recognized by FFTW,
+it is therefore advisable to use it.  You must edit
+<CODE>fftw/fftw-int.h</CODE>.  There are a few macros you must redefine.  The
+code is documented and should be self-explanatory.  (By the way,
+<CODE>fftw-int</CODE> stands for <CODE>fftw-internal</CODE>, but for some
+inexplicable reason people are still using primitive systems with 8.3
+filenames.)
+
+
+<P>
+Even if you don't install high-resolution timing code, we still
+recommend that you look at the <CODE>FFTW_TIME_MIN</CODE> constant in
+<A NAME="IDX336"></A>
+<CODE>fftw/fftw-int.h</CODE>. This constant holds the minimum time interval (in
+seconds) required to get accurate timing measurements, and should be (at
+least) several hundred times the resolution of your clock.  The default
+constants are on the conservative side, and may cause FFTW to take
+longer than necessary when you create a plan. Set <CODE>FFTW_TIME_MIN</CODE>
+to whatever is appropriate on your system (be sure to set the
+<EM>right</EM> <CODE>FFTW_TIME_MIN</CODE>...there are several definitions in
+<CODE>fftw-int.h</CODE>, corresponding to different platforms and timers).
+
+
+<P>
+As an aid in checking the resolution of your clock, you can use the
+<CODE>tests/fftw_test</CODE> program with the <CODE>-t</CODE> option
+(c.f. <CODE>tests/README</CODE>). Remember, the mere fact that your clock
+reports times in, say, picoseconds, does not mean that it is actually
+<EM>accurate</EM> to that resolution.
+
+
+
+
+<H2><A NAME="SEC72">Generating your own code</A></H2>
+<P>
+<A NAME="IDX337"></A>
+<A NAME="IDX338"></A>
+<A NAME="IDX339"></A>
+
+
+<P>
+If you know that you will only use transforms of a certain size (say,
+powers of 2) and want to reduce the size of the library, you can
+reconfigure FFTW to support only those sizes you are interested in.  You
+may even generate code to enable efficient transforms of a size not
+supported by the default distribution.  The default distribution
+supports transforms of any size, but not all sizes are equally fast.
+The default installation of FFTW is best at handling sizes of the form
+2<SUP>a</SUP> 3<SUP>b</SUP> 5<SUP>c</SUP> 7<SUP>d</SUP>
+        11<SUP>e</SUP> 13<SUP>f</SUP>,
+where e+f is either 0 or
+1, and the other exponents are arbitrary.  Other sizes are
+computed by means of a slow, general-purpose routine.  However, if you
+have an application that requires fast transforms of size, say,
+<CODE>17</CODE>, there is a way to generate specialized code to handle that.
+
+
+<P>
+The directory <CODE>gensrc</CODE> contains all the programs and scripts that
+were used to generate FFTW.  In particular, the program
+<CODE>gensrc/genfft.ml</CODE> was used to generate the code that FFTW uses to
+compute the transforms.  We do not expect casual users to use it.
+<CODE>genfft</CODE> is a rather sophisticated program that generates directed
+acyclic graphs of FFT algorithms and performs algebraic simplifications
+on them.  <CODE>genfft</CODE> is written in Objective Caml, a dialect of ML.
+Objective Caml is described at <A HREF="http://pauillac.inria.fr/ocaml/">http://pauillac.inria.fr/ocaml/</A>
+and can be downloaded from from <A HREF="ftp://ftp.inria.fr/lang/caml-light">ftp://ftp.inria.fr/lang/caml-light</A>.
+<A NAME="IDX340"></A>
+<A NAME="IDX341"></A>
+
+
+<P>
+If you have Objective Caml installed, you can type <CODE>sh
+bootstrap.sh</CODE> in the top-level directory to re-generate the files.  If
+you change the <CODE>gensrc/config</CODE> file, you can optimize FFTW for
+sizes that are not currently supported efficiently (say, 17 or 19).
+
+
+<P>
+We do not provide more details about the code-generation process, since
+we do not expect that users will need to generate their own code.
+However, feel free to contact us at <A HREF="mailto:fftw@fftw.org">fftw@fftw.org</A> if
+you are interested in the subject.  
+
+
+<P>
+<A NAME="IDX342"></A>
+You might find it interesting to learn Caml and/or some modern
+programming techniques that we used in the generator (including monadic
+programming), especially if you heard the rumor that Java and
+object-oriented programming are the latest advancement in the field.
+The internal operation of the codelet generator is described in the
+paper, "A Fast Fourier Transform Compiler," by M. Frigo, which is
+available from the <A HREF="http://www.fftw.org">FFTW home page</A>
+and will appear in the <CITE>Proceedings of the 1999 ACM SIGPLAN
+Conference on Programming Language Design and Implementation (PLDI)</CITE>.
+
+
+<P><HR><P>
+Go to the <A HREF="fftw_1.html">first</A>, <A HREF="fftw_5.html">previous</A>, <A HREF="fftw_7.html">next</A>, <A HREF="fftw_10.html">last</A> section, <A HREF="fftw_toc.html">table of contents</A>.
+</BODY>
+</HTML>

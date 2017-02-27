@@ -1,0 +1,1077 @@
+This is fftw.info, produced by makeinfo version 4.2 from fftw.texi.
+
+   This is the FFTW User's manual.
+
+   Copyright (C) 1997-1999 Massachusetts Institute of Technology
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+
+
+File: fftw.info,  Node: FFTW Reference,  Next: Parallel FFTW,  Prev: Tutorial,  Up: Top
+
+FFTW Reference
+**************
+
+   This chapter provides a complete reference for all sequential (i.e.,
+one-processor) FFTW functions.  We first define the data types upon
+which FFTW operates, that is, real, complex, and "halfcomplex" numbers
+(*note Data Types::).  Then, in four sections, we explain the FFTW
+program interface for complex one-dimensional transforms (*note
+One-dimensional Transforms Reference::), complex multi-dimensional
+transforms (*note Multi-dimensional Transforms Reference::), and real
+one-dimensional transforms (*note Real One-dimensional Transforms
+Reference::), real multi-dimensional transforms (*note Real
+Multi-dimensional Transforms Reference::).  *Note Wisdom Reference::
+describes the `wisdom' mechanism for exporting and importing plans.
+Finally, *Note Memory Allocator Reference:: describes how to change
+FFTW's default memory allocator.  For parallel transforms, *Note
+Parallel FFTW::.
+
+* Menu:
+
+* Data Types::                  real, complex, and halfcomplex numbers
+* One-dimensional Transforms Reference::
+* Multi-dimensional Transforms Reference::
+* Real One-dimensional Transforms Reference::
+* Real Multi-dimensional Transforms Reference::
+* Wisdom Reference::
+* Memory Allocator Reference::
+* Thread safety::
+
+
+File: fftw.info,  Node: Data Types,  Next: One-dimensional Transforms Reference,  Prev: FFTW Reference,  Up: FFTW Reference
+
+Data Types
+==========
+
+   The routines in the FFTW package use three main kinds of data types.
+"Real" and "complex" numbers should be already known to the reader.  We
+also use the term "halfcomplex" to describe complex arrays in a special
+packed format used by the one-dimensional real transforms (taking
+advantage of the "hermitian" symmetry that arises in those cases).
+
+   By including `<fftw.h>' or `<rfftw.h>', you will have access to the
+following definitions:
+
+     typedef double fftw_real;
+     
+     typedef struct {
+          fftw_real re, im;
+     } fftw_complex;
+     
+     #define c_re(c)  ((c).re)
+     #define c_im(c)  ((c).im)
+
+   All FFTW operations are performed on the `fftw_real' and
+`fftw_complex' data types.  For `fftw_complex' numbers, the two macros
+`c_re' and `c_im' retrieve, respectively, the real and imaginary parts
+of the number.
+
+   A "real array" is an array of real numbers.  A "complex array" is an
+array of complex numbers.  A one-dimensional array X of n complex
+numbers is "hermitian" if the following property holds: for all 0 <= i
+< n, we have X[i] = conj(X[n-i]).  Hermitian arrays are relevant to
+FFTW because the Fourier transform of a real array is hermitian.
+
+   Because of its symmetry, a hermitian array can be stored in half the
+space of a complex array of the same size.  FFTW's one-dimensional real
+transforms store hermitian arrays as "halfcomplex" arrays.  A
+halfcomplex array of size n is a one-dimensional array of n `fftw_real'
+numbers.  A hermitian array X in stored into a halfcomplex array Y as
+follows.  For all integers i such that 0 <= i <= n / 2, we have Y[i] =
+Re(X[i]).  For all integers i such that 0 < i < n / 2, we have Y[n-i] =
+Im(X[i]).
+
+   We now illustrate halfcomplex storage for n = 4 and n = 5, since the
+scheme depends on the parity of n.  Let n = 4.  In this case, we have
+Y[0] = Re(X[0]), Y[1] = Re(X[1]), Y[2] = Re(X[2]), and  Y[3] = Im(X[1]).
+Let now n = 5.  In this case, we have Y[0] = Re(X[0]), Y[1] = Re(X[1]),
+Y[2] = Re(X[2]), Y[3] = Im(X[2]), and Y[4] = Im(X[1]).
+
+   By default, the type `fftw_real' equals the C type `double'.  To
+work in single precision rather than double precision, `#define' the
+symbol `FFTW_ENABLE_FLOAT' in `fftw.h' and then recompile the library.
+On Unix systems, you can instead use `configure --enable-float' at
+installation time (*note Installation and Customization::).
+
+   In version 1 of FFTW, the data types were called `FFTW_REAL' and
+`FFTW_COMPLEX'.  We changed the capitalization for consistency with the
+rest of FFTW's conventions.  The old names are still supported, but
+their use is deprecated.
+
+
+File: fftw.info,  Node: One-dimensional Transforms Reference,  Next: Multi-dimensional Transforms Reference,  Prev: Data Types,  Up: FFTW Reference
+
+One-dimensional Transforms Reference
+====================================
+
+   The one-dimensional complex routines are generally prefixed with
+`fftw_'.  Programs using FFTW should be linked with `-lfftw -lm' on
+Unix systems, or with the FFTW and standard math libraries in general.
+
+* Menu:
+
+* fftw_create_plan::            Plan Creation
+* Discussion on Specific Plans::
+* fftw::                        Plan Execution
+* fftw_destroy_plan::           Plan Destruction
+* What FFTW Really Computes::   Definition of the DFT.
+
+
+File: fftw.info,  Node: fftw_create_plan,  Next: Discussion on Specific Plans,  Prev: One-dimensional Transforms Reference,  Up: One-dimensional Transforms Reference
+
+Plan Creation for One-dimensional Transforms
+--------------------------------------------
+
+     #include <fftw.h>
+     
+     fftw_plan fftw_create_plan(int n, fftw_direction dir,
+                                int flags);
+     
+     fftw_plan fftw_create_plan_specific(int n, fftw_direction dir,
+                                         int flags,
+                                         fftw_complex *in, int istride,
+                                         fftw_complex *out, int ostride);
+
+   The function `fftw_create_plan' creates a plan, which is a data
+structure containing all the information that `fftw' needs in order to
+compute the 1D Fourier transform. You can create as many plans as you
+need, but only one plan for a given array size is required (a plan can
+be reused many times).
+
+   `fftw_create_plan' returns a valid plan, or `NULL' if, for some
+reason, the plan can't be created.  In the default installation, this
+cannot happen, but it is possible to configure FFTW in such a way that
+some input sizes are forbidden, and FFTW cannot create a plan.
+
+   The `fftw_create_plan_specific' variant takes as additional
+arguments specific input/output arrays and their strides.  For the last
+four arguments, you should pass the arrays and strides that you will
+eventually be passing to `fftw'.  The resulting plans will be optimized
+for those arrays and strides, although they may be used on other arrays
+as well.  Note: the contents of the in and out arrays are _destroyed_
+by the specific planner (the initial contents are ignored, so the
+arrays need not have been initialized).
+
+Arguments
+.........
+
+   * `n' is the size of the transform.  It can be  any positive integer.
+
+        - FFTW is best at handling sizes of the form 2^a 3^b 5^c 7^d
+          11^e 13^f, where e+f is either 0 or 1, and the other
+          exponents are arbitrary.  Other sizes are computed by means
+          of a slow, general-purpose routine (which nevertheless retains
+          O(n lg n) performance, even for prime sizes).  (It is
+          possible to customize FFTW for different array sizes.  *Note
+          Installation and Customization::, for more information.)
+          Transforms whose sizes are powers of 2 are especially fast.
+
+   * `dir' is the sign of the exponent in the formula that defines the
+     Fourier transform.  It can be -1 or +1.  The aliases
+     `FFTW_FORWARD' and `FFTW_BACKWARD' are provided, where
+     `FFTW_FORWARD' stands for -1.
+
+   * `flags' is a boolean OR (`|') of zero or more of the following:
+        - `FFTW_MEASURE': this flag tells FFTW to find the optimal plan
+          by actually _computing_ several FFTs and measuring their
+          execution time.  Depending on the installation, this can take
+          some time. (1)
+
+        - `FFTW_ESTIMATE': do not run any FFT and provide a "reasonable"
+          plan (for a RISC processor with many registers).  If neither
+          `FFTW_ESTIMATE' nor `FFTW_MEASURE' is provided, the default is
+          `FFTW_ESTIMATE'.
+
+        - `FFTW_OUT_OF_PLACE': produce a plan assuming that the input
+          and output arrays will be distinct (this is the default).
+
+        - `FFTW_IN_PLACE': produce a plan assuming that you want the
+          output in the input array.  The algorithm used is not
+          necessarily in place: FFTW is able to compute true in-place
+          transforms only for small values of `n'.  If FFTW is not able
+          to compute the transform in-place, it will allocate a
+          temporary array (unless you provide one yourself), compute
+          the transform out of place, and copy the result back.
+          _Warning: This option changes the meaning of some parameters
+          of `fftw'_ (*note Computing the One-dimensional Transform:
+          fftw.).
+
+          The in-place option is mainly provided for people who want to
+          write their own in-place multi-dimensional Fourier transform,
+          using FFTW as a base.  For example, consider a
+          three-dimensional `n * n * n' transform.  An out-of-place
+          algorithm will need another array (which may be huge).
+          However, FFTW can compute the in-place transform along each
+          dimension using only a temporary array of size `n'.
+          Moreover, if FFTW happens to be able to compute the transform
+          truly in-place, no temporary array and no copying are needed.
+          As distributed, FFTW `knows' how to compute in-place
+          transforms of size 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+          14, 15, 16, 32 and 64.
+
+          The default mode of operation is `FFTW_OUT_OF_PLACE'.
+
+        - `FFTW_USE_WISDOM': use any `wisdom' that is available to help
+          in the creation of the plan. (*Note Words of Wisdom::.)  This
+          can greatly speed the creation of plans, especially with the
+          `FFTW_MEASURE' option. `FFTW_ESTIMATE' plans can also take
+          advantage of `wisdom' to produce a more optimal plan (based
+          on past measurements) than the estimation heuristic would
+          normally generate. When the `FFTW_MEASURE' option is used,
+          new `wisdom' will also be generated if the current transform
+          size is not completely understood by existing `wisdom'.
+
+
+   * `in', `out', `istride', `ostride' (only for
+     `fftw_create_plan_specific'): see corresponding arguments in the
+     description of `fftw'.  (*Note Computing the One-dimensional
+     Transform: fftw.)  In particular, the `out' and `ostride'
+     parameters have the same special meaning for `FFTW_IN_PLACE'
+     transforms as they have for `fftw'.
+
+
+   ---------- Footnotes ----------
+
+   (1) The basic problem is the resolution of the clock: FFTW needs to
+run for a certain time for the clock to be reliable.
+
+
+File: fftw.info,  Node: Discussion on Specific Plans,  Next: fftw,  Prev: fftw_create_plan,  Up: One-dimensional Transforms Reference
+
+Discussion on Specific Plans
+----------------------------
+
+   We recommend the use of the specific planners, even in cases where
+you will be transforming arrays different from those passed to the
+specific planners, as they confer the following advantages:
+
+   * The resulting plans will be optimized for your specific arrays and
+     strides.  This may or may not make a significant difference, but it
+     certainly doesn't hurt.  (The ordinary planner does its planning
+     based upon a stride-one temporary array that it allocates.)
+
+   * Less intermediate storage is required during the planning process.
+     (The ordinary planner uses O(`N') temporary storage, where `N' is
+     the maximum dimension, while it is creating the plan.)
+
+   * For multi-dimensional transforms, new parameters become accessible
+     for optimization by the planner.  (Since multi-dimensional arrays
+     can be very large, we don't dare to allocate one in the ordinary
+     planner for experimentation.  This prevents us from doing certain
+     optimizations that can yield dramatic improvements in some cases.)
+
+
+   On the other hand, note that _the specific planner destroys the
+contents of the `in' and `out' arrays_.
+
+
+File: fftw.info,  Node: fftw,  Next: fftw_destroy_plan,  Prev: Discussion on Specific Plans,  Up: One-dimensional Transforms Reference
+
+Computing the One-dimensional Transform
+---------------------------------------
+
+     #include <fftw.h>
+     
+     void fftw(fftw_plan plan, int howmany,
+               fftw_complex *in, int istride, int idist,
+               fftw_complex *out, int ostride, int odist);
+     
+     void fftw_one(fftw_plan plan, fftw_complex *in,
+               fftw_complex *out);
+
+   The function `fftw' computes the one-dimensional Fourier transform,
+using a plan created by `fftw_create_plan' (*Note Plan Creation for
+One-dimensional Transforms: fftw_create_plan.)  The function `fftw_one'
+provides a simplified interface for the common case of single input
+array of stride 1.
+
+Arguments
+.........
+
+   * `plan' is the plan created by `fftw_create_plan' (*note Plan
+     Creation for One-dimensional Transforms: fftw_create_plan.).
+
+   * `howmany' is the number of transforms `fftw' will compute.  It is
+     faster to tell FFTW to compute many transforms, instead of simply
+     calling `fftw' many times.
+
+   * `in', `istride' and `idist' describe the input array(s).  There
+     are `howmany' input arrays; the first one is pointed to by `in',
+     the second one is pointed to by `in + idist', and so on, up to `in
+     + (howmany - 1) * idist'.  Each input array consists of complex
+     numbers (*note Data Types::), which are not necessarily contiguous
+     in memory.  Specifically, `in[0]' is the first element of the
+     first array, `in[istride]' is the second element of the first
+     array, and so on.  In general, the `i'-th element of the `j'-th
+     input array will be in position `in[i * istride + j * idist]'.
+
+   * `out', `ostride' and `odist' describe the output array(s).  The
+     format is the same as for the input array.
+
+        - _In-place transforms_: If the `plan' specifies an in-place
+          transform, `ostride' and `odist' are always ignored.  If
+          `out' is `NULL', `out' is ignored, too.  Otherwise, `out' is
+          interpreted as a pointer to an array of `n' complex numbers,
+          that FFTW will use as temporary space to perform the in-place
+          computation.  `out' is used as scratch space and its contents
+          destroyed.  In this case, `out' must be an ordinary array
+          whose elements are contiguous in memory (no striding).
+
+
+   The function `fftw_one' transforms a single, contiguous input array
+to a contiguous output array.  By definition, the call
+     fftw_one(plan, in, out)
+   is equivalent to
+     fftw(plan, 1, in, 1, 0, out, 1, 0)
+
+
+File: fftw.info,  Node: fftw_destroy_plan,  Next: What FFTW Really Computes,  Prev: fftw,  Up: One-dimensional Transforms Reference
+
+Destroying a One-dimensional Plan
+---------------------------------
+
+     #include <fftw.h>
+     
+     void fftw_destroy_plan(fftw_plan plan);
+
+   The function `fftw_destroy_plan' frees the plan `plan' and releases
+all the memory associated with it.  After destruction, a plan is no
+longer valid.
+
+
+File: fftw.info,  Node: What FFTW Really Computes,  Prev: fftw_destroy_plan,  Up: One-dimensional Transforms Reference
+
+What FFTW Really Computes
+-------------------------
+
+   In this section, we define precisely what FFTW computes.  Please be
+warned that different authors and software packages might employ
+different conventions than FFTW does.
+
+   The forward transform of a complex array X of size n computes an
+array Y, where  Y[i] = sum for j = 0 to (n - 1) of X[j] * exp(-2 pi i j sqrt(-1)/n) .
+The backward transform computes  Y[i] = sum for j = 0 to (n - 1) of X[j] * exp(2 pi i j sqrt(-1)/n) .
+FFTW computes an unnormalized transform, that is, the equation
+IFFT(FFT(X)) = n X holds.  In other words, applying the forward and
+then the backward transform will multiply the input by n.
+
+   An `FFTW_FORWARD' transform corresponds to a sign of -1 in the
+exponent of the DFT.  Note also that we use the standard "in-order"
+output ordering--the k-th output corresponds to the frequency k/n (or
+k/T, where T is your total sampling period).  For those who like to
+think in terms of positive and negative frequencies, this means that
+the positive frequencies are stored in the first half of the output and
+the negative frequencies are stored in backwards order in the second
+half of the output.  (The frequency -k/n is the same as the frequency
+(n-k)/n.)
+
+
+File: fftw.info,  Node: Multi-dimensional Transforms Reference,  Next: Real One-dimensional Transforms Reference,  Prev: One-dimensional Transforms Reference,  Up: FFTW Reference
+
+Multi-dimensional Transforms Reference
+======================================
+
+   The multi-dimensional complex routines are generally prefixed with
+`fftwnd_'.  Programs using FFTWND should be linked with `-lfftw -lm' on
+Unix systems, or with the FFTW and standard math libraries in general.
+
+* Menu:
+
+* fftwnd_create_plan::          Plan Creation
+* fftwnd::                      Plan Execution
+* fftwnd_destroy_plan::         Plan Destruction
+* What FFTWND Really Computes::
+
+
+File: fftw.info,  Node: fftwnd_create_plan,  Next: fftwnd,  Prev: Multi-dimensional Transforms Reference,  Up: Multi-dimensional Transforms Reference
+
+Plan Creation for Multi-dimensional Transforms
+----------------------------------------------
+
+     #include <fftw.h>
+     
+     fftwnd_plan fftwnd_create_plan(int rank, const int *n,
+                                    fftw_direction dir, int flags);
+     
+     fftwnd_plan fftw2d_create_plan(int nx, int ny,
+                                    fftw_direction dir, int flags);
+     
+     fftwnd_plan fftw3d_create_plan(int nx, int ny, int nz,
+                                    fftw_direction dir, int flags);
+     
+     fftwnd_plan fftwnd_create_plan_specific(int rank, const int *n,
+                                             fftw_direction dir,
+                                             int flags,
+                                             fftw_complex *in, int istride,
+                                             fftw_complex *out, int ostride);
+     
+     fftwnd_plan fftw2d_create_plan_specific(int nx, int ny,
+                                             fftw_direction dir,
+                                             int flags,
+                                             fftw_complex *in, int istride,
+                                             fftw_complex *out, int ostride);
+     
+     fftwnd_plan fftw3d_create_plan_specific(int nx, int ny, int nz,
+                                             fftw_direction dir, int flags,
+                                             fftw_complex *in, int istride,
+                                             fftw_complex *out, int ostride);
+
+   The function `fftwnd_create_plan' creates a plan, which is a data
+structure containing all the information that `fftwnd' needs in order
+to compute a multi-dimensional Fourier transform.  You can create as
+many plans as you need, but only one plan for a given array size is
+required (a plan can be reused many times).  The functions
+`fftw2d_create_plan' and `fftw3d_create_plan' are optional, alternative
+interfaces to `fftwnd_create_plan' for two and three dimensions,
+respectively.
+
+   `fftwnd_create_plan' returns a valid plan, or `NULL' if, for some
+reason, the plan can't be created.  This can happen if memory runs out
+or if the arguments are invalid in some way (e.g.  if `rank' < 0).
+
+   The `create_plan_specific' variants take as additional arguments
+specific input/output arrays and their strides.  For the last four
+arguments, you should pass the arrays and strides that you will
+eventually be passing to `fftwnd'.  The resulting plans will be
+optimized for those arrays and strides, although they may be used on
+other arrays as well.  Note: the contents of the in and out arrays are
+_destroyed_ by the specific planner (the initial contents are ignored,
+so the arrays need not have been initialized).  *Note Discussion on
+Specific Plans::, for a discussion on specific plans.
+
+Arguments
+.........
+
+   * `rank' is the dimensionality of the arrays to be transformed.  It
+     can be any non-negative integer.
+
+   * `n' is a pointer to an array of `rank' integers, giving the size
+     of each dimension of the arrays to be transformed.  These sizes,
+     which must be positive integers, correspond to the dimensions of
+     row-major arrays--i.e. `n[0]' is the size of the dimension whose
+     indices vary most slowly, and so on. (*Note Multi-dimensional
+     Array Format::, for more information on row-major storage.)  *Note
+     Plan Creation for One-dimensional Transforms: fftw_create_plan,
+     for more information regarding optimal array sizes.
+
+   * `nx' and `ny' in `fftw2d_create_plan' are positive integers
+     specifying the dimensions of the rank 2 array to be transformed.
+     i.e. they specify that the transform will operate on `nx x ny'
+     arrays in row-major order, where `nx' is the number of rows and
+     `ny' is the number of columns.
+
+   * `nx', `ny' and `nz' in `fftw3d_create_plan' are positive integers
+     specifying the dimensions of the rank 3 array to be transformed.
+     i.e. they specify that the transform will operate on `nx x ny x
+     nz' arrays in row-major order.
+
+   * `dir' is the sign of the exponent in the formula that defines the
+     Fourier transform.  It can be -1 or +1.  The aliases
+     `FFTW_FORWARD' and `FFTW_BACKWARD' are provided, where
+     `FFTW_FORWARD' stands for -1.
+
+   * `flags' is a boolean OR (`|') of zero or more of the following:
+        - `FFTW_MEASURE': this flag tells FFTW to find the optimal plan
+          by actually _computing_ several FFTs and measuring their
+          execution time.
+
+        - `FFTW_ESTIMATE': do not run any FFT and provide a "reasonable"
+          plan (for a RISC processor with many registers).  If neither
+          `FFTW_ESTIMATE' nor `FFTW_MEASURE' is provided, the default is
+          `FFTW_ESTIMATE'.
+
+        - `FFTW_OUT_OF_PLACE': produce a plan assuming that the input
+          and output arrays will be distinct (this is the default).
+
+        - `FFTW_IN_PLACE': produce a plan assuming that you want to
+          perform the transform in-place.  (Unlike the one-dimensional
+          transform, this "really" (1) performs the transform
+          in-place.) Note that, if you want to perform in-place
+          transforms, you _must_ use a plan created with this option.
+
+          The default mode of operation is `FFTW_OUT_OF_PLACE'.
+
+        - `FFTW_USE_WISDOM': use any `wisdom' that is available to help
+          in the creation of the plan. (*Note Words of Wisdom::.)  This
+          can greatly speed the creation of plans, especially with the
+          `FFTW_MEASURE' option. `FFTW_ESTIMATE' plans can also take
+          advantage of `wisdom' to produce a more optimal plan (based
+          on past measurements) than the estimation heuristic would
+          normally generate. When the `FFTW_MEASURE' option is used,
+          new `wisdom' will also be generated if the current transform
+          size is not completely understood by existing `wisdom'. Note
+          that the same `wisdom' is shared between one-dimensional and
+          multi-dimensional transforms.
+
+
+   * `in', `out', `istride', `ostride' (only for the
+     `_create_plan_specific' variants): see corresponding arguments in
+     the description of `fftwnd'.  (*Note Computing the
+     Multi-dimensional Transform: fftwnd.)
+
+
+   ---------- Footnotes ----------
+
+   (1) `fftwnd' actually may use some temporary storage (hidden in the
+plan), but this storage space is only the size of the largest dimension
+of the array, rather than being as big as the entire array.  (Unless
+you use `fftwnd' to perform one-dimensional transforms, in which case
+the temporary storage required for in-place transforms _is_ as big as
+the entire array.)
+
+
+File: fftw.info,  Node: fftwnd,  Next: fftwnd_destroy_plan,  Prev: fftwnd_create_plan,  Up: Multi-dimensional Transforms Reference
+
+Computing the Multi-dimensional Transform
+-----------------------------------------
+
+     #include <fftw.h>
+     
+     void fftwnd(fftwnd_plan plan, int howmany,
+                 fftw_complex *in, int istride, int idist,
+                 fftw_complex *out, int ostride, int odist);
+     
+     void fftwnd_one(fftwnd_plan p, fftw_complex *in,
+                     fftw_complex *out);
+
+   The function `fftwnd' computes one or more multi-dimensional Fourier
+Transforms, using a plan created by `fftwnd_create_plan' (*note Plan
+Creation for Multi-dimensional Transforms: fftwnd_create_plan.). (Note
+that the plan determines the rank and dimensions of the array to be
+transformed.)  The function `fftwnd_one' provides a simplified
+interface for the common case of single input array of stride 1.
+
+Arguments
+.........
+
+   * `plan' is the plan created by `fftwnd_create_plan'.  (*note Plan
+     Creation for Multi-dimensional Transforms: fftwnd_create_plan.).
+     In the case of two and three-dimensional transforms, it could also
+     have been created by `fftw2d_create_plan' or `fftw3d_create_plan',
+     respectively.
+
+   * `howmany' is the number of multi-dimensional transforms `fftwnd'
+     will compute.
+
+   * `in', `istride' and `idist' describe the input array(s).  There
+     are `howmany' multi-dimensional input arrays; the first one is
+     pointed to by `in', the second one is pointed to by `in + idist',
+     and so on, up to `in + (howmany - 1) * idist'.  Each
+     multi-dimensional input array consists of complex numbers (*note
+     Data Types::), stored in row-major format (*note Multi-dimensional
+     Array Format::), which are not necessarily contiguous in memory.
+     Specifically, `in[0]' is the first element of the first array,
+     `in[istride]' is the second element of the first array, and so on.
+     In general, the `i'-th element of the `j'-th input array will be
+     in position `in[i * istride + j * idist]'. Note that, here, `i'
+     refers to an index into the row-major format for the
+     multi-dimensional array, rather than an index in any particular
+     dimension.
+
+        - _In-place transforms_: For plans created with the
+          `FFTW_IN_PLACE' option, the transform is computed
+          in-place--the output is returned in the `in' array, using the
+          same strides, etcetera, as were used in the input.
+
+   * `out', `ostride' and `odist' describe the output array(s).  The
+     format is the same as for the input array.
+
+        - _In-place transforms_: These parameters are ignored for plans
+          created with the `FFTW_IN_PLACE' option.
+
+
+   The function `fftwnd_one' transforms a single, contiguous input
+array to a contiguous output array.  By definition, the call
+     fftwnd_one(plan, in, out)
+   is equivalent to
+     fftwnd(plan, 1, in, 1, 0, out, 1, 0)
+
+
+File: fftw.info,  Node: fftwnd_destroy_plan,  Next: What FFTWND Really Computes,  Prev: fftwnd,  Up: Multi-dimensional Transforms Reference
+
+Destroying a Multi-dimensional Plan
+-----------------------------------
+
+     #include <fftw.h>
+     
+     void fftwnd_destroy_plan(fftwnd_plan plan);
+
+   The function `fftwnd_destroy_plan' frees the plan `plan' and
+releases all the memory associated with it.  After destruction, a plan
+is no longer valid.
+
+
+File: fftw.info,  Node: What FFTWND Really Computes,  Prev: fftwnd_destroy_plan,  Up: Multi-dimensional Transforms Reference
+
+What FFTWND Really Computes
+---------------------------
+
+   The conventions that we follow for the multi-dimensional transform
+are analogous to those for the one-dimensional transform. In
+particular, the forward transform has a negative sign in the exponent
+and neither the forward nor the backward transforms will perform any
+normalization.  Computing the backward transform of the forward
+transform will multiply the array by the product of its dimensions.
+The output is in-order, and the zeroth element of the output is the
+amplitude of the zero frequency component.
+
+   The TeX version of this manual contains the exact definition of the
+n-dimensional transform FFTW uses.  It is not possible to display the
+definition on a ASCII terminal properly.
+
+
+File: fftw.info,  Node: Real One-dimensional Transforms Reference,  Next: Real Multi-dimensional Transforms Reference,  Prev: Multi-dimensional Transforms Reference,  Up: FFTW Reference
+
+Real One-dimensional Transforms Reference
+=========================================
+
+   The one-dimensional real routines are generally prefixed with
+`rfftw_'. (1)  Programs using RFFTW should be linked with `-lrfftw
+-lfftw -lm' on Unix systems, or with the RFFTW, the FFTW, and the
+standard math libraries in general.
+
+* Menu:
+
+* rfftw_create_plan::           Plan Creation
+* rfftw::                       Plan Execution
+* rfftw_destroy_plan::          Plan Destruction
+* What RFFTW Really Computes::
+
+   ---------- Footnotes ----------
+
+   (1) The etymologically-correct spelling would be `frftw_', but it is
+hard to remember.
+
+
+File: fftw.info,  Node: rfftw_create_plan,  Next: rfftw,  Prev: Real One-dimensional Transforms Reference,  Up: Real One-dimensional Transforms Reference
+
+Plan Creation for Real One-dimensional Transforms
+-------------------------------------------------
+
+     #include <rfftw.h>
+     
+     rfftw_plan rfftw_create_plan(int n, fftw_direction dir, int flags);
+     
+     rfftw_plan rfftw_create_plan_specific(int n, fftw_direction dir,
+     	    int flags, fftw_real *in, int istride,
+     	    fftw_real *out, int ostride);
+
+   The function `rfftw_create_plan' creates a plan, which is a data
+structure containing all the information that `rfftw' needs in order to
+compute the 1D real Fourier transform. You can create as many plans as
+you need, but only one plan for a given array size is required (a plan
+can be reused many times).
+
+   `rfftw_create_plan' returns a valid plan, or `NULL' if, for some
+reason, the plan can't be created.  In the default installation, this
+cannot happen, but it is possible to configure RFFTW in such a way that
+some input sizes are forbidden, and RFFTW cannot create a plan.
+
+   The `rfftw_create_plan_specific' variant takes as additional
+arguments specific input/output arrays and their strides.  For the last
+four arguments, you should pass the arrays and strides that you will
+eventually be passing to `rfftw'.  The resulting plans will be
+optimized for those arrays and strides, although they may be used on
+other arrays as well.  Note: the contents of the in and out arrays are
+_destroyed_ by the specific planner (the initial contents are ignored,
+so the arrays need not have been initialized).  *Note Discussion on
+Specific Plans::, for a discussion on specific plans.
+
+Arguments
+.........
+
+   * `n' is the size of the transform.  It can be  any positive integer.
+
+        - RFFTW is best at handling sizes of the form 2^a 3^b 5^c 7^d
+          11^e 13^f, where e+f is either 0 or 1, and the other
+          exponents are arbitrary.  Other sizes are computed by means
+          of a slow, general-purpose routine (reducing to O(n^2)
+          performance for prime sizes).  (It is possible to customize
+          RFFTW for different array sizes.  *Note Installation and
+          Customization::, for more information.)  Transforms whose
+          sizes are powers of 2 are especially fast.  If you have large
+          prime factors, it may be faster to switch over to the complex
+          FFTW routines, which have O(n lg n) performance even for
+          prime sizes (we don't know of a similar algorithm specialized
+          for real data, unfortunately).
+
+
+   * `dir' is the direction of the desired transform, either
+     `FFTW_REAL_TO_COMPLEX' or `FFTW_COMPLEX_TO_REAL', corresponding to
+     `FFTW_FORWARD' or `FFTW_BACKWARD', respectively.
+
+   * `flags' is a boolean OR (`|') of zero or more of the following:
+        - `FFTW_MEASURE': this flag tells RFFTW to find the optimal
+          plan by actually _computing_ several FFTs and measuring their
+          execution time.  Depending on the installation, this can take
+          some time.
+
+        - `FFTW_ESTIMATE': do not run any FFT and provide a "reasonable"
+          plan (for a RISC processor with many registers).  If neither
+          `FFTW_ESTIMATE' nor `FFTW_MEASURE' is provided, the default is
+          `FFTW_ESTIMATE'.
+
+        - `FFTW_OUT_OF_PLACE': produce a plan assuming that the input
+          and output arrays will be distinct (this is the default).
+
+        - `FFTW_IN_PLACE': produce a plan assuming that you want the
+          output in the input array.  The algorithm used is not
+          necessarily in place: RFFTW is able to compute true in-place
+          transforms only for small values of `n'.  If RFFTW is not
+          able to compute the transform in-place, it will allocate a
+          temporary array (unless you provide one yourself), compute
+          the transform out of place, and copy the result back.
+          _Warning: This option changes the meaning of some parameters
+          of `rfftw'_ (*note Computing the Real One-dimensional
+          Transform: rfftw.).
+
+          The default mode of operation is `FFTW_OUT_OF_PLACE'.
+
+        - `FFTW_USE_WISDOM': use any `wisdom' that is available to help
+          in the creation of the plan. (*Note Words of Wisdom::.)  This
+          can greatly speed the creation of plans, especially with the
+          `FFTW_MEASURE' option. `FFTW_ESTIMATE' plans can also take
+          advantage of `wisdom' to produce a more optimal plan (based
+          on past measurements) than the estimation heuristic would
+          normally generate. When the `FFTW_MEASURE' option is used,
+          new `wisdom' will also be generated if the current transform
+          size is not completely understood by existing `wisdom'.
+
+
+   * `in', `out', `istride', `ostride' (only for
+     `rfftw_create_plan_specific'): see corresponding arguments in the
+     description of `rfftw'.  (*Note Computing the Real One-dimensional
+     Transform: rfftw.)  In particular, the `out' and `ostride'
+     parameters have the same special meaning for `FFTW_IN_PLACE'
+     transforms as they have for `rfftw'.
+
+
+
+File: fftw.info,  Node: rfftw,  Next: rfftw_destroy_plan,  Prev: rfftw_create_plan,  Up: Real One-dimensional Transforms Reference
+
+Computing the Real One-dimensional Transform
+--------------------------------------------
+
+     #include <rfftw.h>
+     
+     void rfftw(rfftw_plan plan, int howmany,
+                fftw_real *in, int istride, int idist,
+                fftw_real *out, int ostride, int odist);
+     
+     void rfftw_one(rfftw_plan plan, fftw_real *in, fftw_real *out);
+
+   The function `rfftw' computes the Real One-dimensional Fourier
+Transform, using a plan created by `rfftw_create_plan' (*note Plan
+Creation for Real One-dimensional Transforms: rfftw_create_plan.).  The
+function `rfftw_one' provides a simplified interface for the common
+case of single input array of stride 1.
+
+   _Important:_ When invoked for an out-of-place,
+`FFTW_COMPLEX_TO_REAL' transform, the input array is overwritten with
+scratch values by these routines.  The input array is not modified for
+`FFTW_REAL_TO_COMPLEX' transforms.
+
+Arguments
+.........
+
+   * `plan' is the plan created by `rfftw_create_plan' (*note Plan
+     Creation for Real One-dimensional Transforms: rfftw_create_plan.).
+
+   * `howmany' is the number of transforms `rfftw' will compute.  It is
+     faster to tell RFFTW to compute many transforms, instead of simply
+     calling `rfftw' many times.
+
+   * `in', `istride' and `idist' describe the input array(s).  There
+     are two cases.  If the `plan' defines a `FFTW_REAL_TO_COMPLEX'
+     transform, `in' is a real array.  Otherwise, for
+     `FFTW_COMPLEX_TO_REAL' transforms, `in' is a halfcomplex array
+     _whose contents will be destroyed_.
+
+   * `out', `ostride' and `odist' describe the output array(s), and
+     have the same meaning as the corresponding parameters for the
+     input array.
+
+        - _In-place transforms_: If the `plan' specifies an in-place
+          transform, `ostride' and `odist' are always ignored.  If
+          `out' is `NULL', `out' is ignored, too.  Otherwise, `out' is
+          interpreted as a pointer to an array of `n' complex numbers,
+          that FFTW will use as temporary space to perform the in-place
+          computation.  `out' is used as scratch space and its contents
+          destroyed.  In this case, `out' must be an ordinary array
+          whose elements are contiguous in memory (no striding).
+
+
+   The function `rfftw_one' transforms a single, contiguous input array
+to a contiguous output array.  By definition, the call
+     rfftw_one(plan, in, out)
+   is equivalent to
+     rfftw(plan, 1, in, 1, 0, out, 1, 0)
+
+
+File: fftw.info,  Node: rfftw_destroy_plan,  Next: What RFFTW Really Computes,  Prev: rfftw,  Up: Real One-dimensional Transforms Reference
+
+Destroying a Real One-dimensional Plan
+--------------------------------------
+
+     #include <rfftw.h>
+     
+     void rfftw_destroy_plan(rfftw_plan plan);
+
+   The function `rfftw_destroy_plan' frees the plan `plan' and releases
+all the memory associated with it.  After destruction, a plan is no
+longer valid.
+
+
+File: fftw.info,  Node: What RFFTW Really Computes,  Prev: rfftw_destroy_plan,  Up: Real One-dimensional Transforms Reference
+
+What RFFTW Really Computes
+--------------------------
+
+   In this section, we define precisely what RFFTW computes.
+
+   The real to complex (`FFTW_REAL_TO_COMPLEX') transform of a real
+array X of size n computes an hermitian array Y, where   Y[i] = sum for j = 0 to (n - 1) of X[j] * exp(-2 pi i j sqrt(-1)/n)
+(That
+Y is a hermitian array is not intended to be obvious, although the
+proof is easy.)  The hermitian array Y is stored in halfcomplex order
+(*note Data Types::).  Currently, RFFTW provides no way to compute a
+real to complex transform with a positive sign in the exponent.
+
+   The complex to real (`FFTW_COMPLEX_TO_REAL') transform of a hermitian
+array X of size n computes a real array Y, where   Y[i] = sum for j = 0 to (n - 1) of X[j] * exp(2 pi i j sqrt(-1)/n)
+(That
+Y is a real array is not intended to be obvious, although the proof is
+easy.)  The hermitian input array X is stored in halfcomplex order
+(*note Data Types::).  Currently, RFFTW provides no way to compute a
+complex to real transform with a negative sign in the exponent.
+
+   Like FFTW, RFFTW computes an unnormalized transform.  In other words,
+applying the real to complex (forward) and then the complex to real
+(backward) transform will multiply the input by n.
+
+
+File: fftw.info,  Node: Real Multi-dimensional Transforms Reference,  Next: Wisdom Reference,  Prev: Real One-dimensional Transforms Reference,  Up: FFTW Reference
+
+Real Multi-dimensional Transforms Reference
+===========================================
+
+   The multi-dimensional real routines are generally prefixed with
+`rfftwnd_'.  Programs using RFFTWND should be linked with `-lrfftw
+-lfftw -lm' on Unix systems, or with the FFTW, RFFTW, and standard math
+libraries in general.
+
+* Menu:
+
+* rfftwnd_create_plan::         Plan Creation
+* rfftwnd::                     Plan Execution
+* Array Dimensions for Real Multi-dimensional Transforms::
+* Strides in In-place RFFTWND::
+* rfftwnd_destroy_plan::        Plan Destruction
+* What RFFTWND Really Computes::
+
+
+File: fftw.info,  Node: rfftwnd_create_plan,  Next: rfftwnd,  Prev: Real Multi-dimensional Transforms Reference,  Up: Real Multi-dimensional Transforms Reference
+
+Plan Creation for Real Multi-dimensional Transforms
+---------------------------------------------------
+
+     #include <rfftw.h>
+     
+     rfftwnd_plan rfftwnd_create_plan(int rank, const int *n,
+                                      fftw_direction dir, int flags);
+     
+     rfftwnd_plan rfftw2d_create_plan(int nx, int ny,
+                                      fftw_direction dir, int flags);
+     
+     rfftwnd_plan rfftw3d_create_plan(int nx, int ny, int nz,
+                                      fftw_direction dir, int flags);
+
+   The function `rfftwnd_create_plan' creates a plan, which is a data
+structure containing all the information that `rfftwnd' needs in order
+to compute a multi-dimensional real Fourier transform.  You can create
+as many plans as you need, but only one plan for a given array size is
+required (a plan can be reused many times).  The functions
+`rfftw2d_create_plan' and `rfftw3d_create_plan' are optional,
+alternative interfaces to `rfftwnd_create_plan' for two and three
+dimensions, respectively.
+
+   `rfftwnd_create_plan' returns a valid plan, or `NULL' if, for some
+reason, the plan can't be created.  This can happen if the arguments
+are invalid in some way (e.g. if `rank' < 0).
+
+Arguments
+.........
+
+   * `rank' is the dimensionality of the arrays to be transformed.  It
+     can be any non-negative integer.
+
+   * `n' is a pointer to an array of `rank' integers, giving the size
+     of each dimension of the arrays to be transformed.  Note that these
+     are always the dimensions of the _real_ arrays; the complex arrays
+     have different dimensions (*note Array Dimensions for Real
+     Multi-dimensional Transforms::).  These sizes, which must be
+     positive integers, correspond to the dimensions of row-major
+     arrays--i.e. `n[0]' is the size of the dimension whose indices
+     vary most slowly, and so on. (*Note Multi-dimensional Array
+     Format::, for more information.)
+        - *Note Plan Creation for Real One-dimensional Transforms:
+          rfftw_create_plan, for more information regarding optimal
+          array sizes.
+
+   * `nx' and `ny' in `rfftw2d_create_plan' are positive integers
+     specifying the dimensions of the rank 2 array to be transformed.
+     i.e. they specify that the transform will operate on `nx x ny'
+     arrays in row-major order, where `nx' is the number of rows and
+     `ny' is the number of columns.
+
+   * `nx', `ny' and `nz' in `rfftw3d_create_plan' are positive integers
+     specifying the dimensions of the rank 3 array to be transformed.
+     i.e. they specify that the transform will operate on `nx x ny x
+     nz' arrays in row-major order.
+
+   * `dir' is the direction of the desired transform, either
+     `FFTW_REAL_TO_COMPLEX' or `FFTW_COMPLEX_TO_REAL', corresponding to
+     `FFTW_FORWARD' or `FFTW_BACKWARD', respectively.
+
+   * `flags' is a boolean OR (`|') of zero or more of the following:
+        - `FFTW_MEASURE': this flag tells FFTW to find the optimal plan
+          by actually _computing_ several FFTs and measuring their
+          execution time.
+
+        - `FFTW_ESTIMATE': do not run any FFT and provide a "reasonable"
+          plan (for a RISC processor with many registers).  If neither
+          `FFTW_ESTIMATE' nor `FFTW_MEASURE' is provided, the default is
+          `FFTW_ESTIMATE'.
+
+        - `FFTW_OUT_OF_PLACE': produce a plan assuming that the input
+          and output arrays will be distinct (this is the default).
+
+        - `FFTW_IN_PLACE': produce a plan assuming that you want to
+          perform the transform in-place.  (Unlike the one-dimensional
+          transform, this "really" performs the transform in-place.)
+          Note that, if you want to perform in-place transforms, you
+          _must_ use a plan created with this option.  The use of this
+          option has important implications for the size of the
+          input/output array (*note Computing the Real
+          Multi-dimensional Transform: rfftwnd.).
+
+          The default mode of operation is `FFTW_OUT_OF_PLACE'.
+
+        - `FFTW_USE_WISDOM': use any `wisdom' that is available to help
+          in the creation of the plan. (*Note Words of Wisdom::.)  This
+          can greatly speed the creation of plans, especially with the
+          `FFTW_MEASURE' option. `FFTW_ESTIMATE' plans can also take
+          advantage of `wisdom' to produce a more optimal plan (based
+          on past measurements) than the estimation heuristic would
+          normally generate. When the `FFTW_MEASURE' option is used,
+          new `wisdom' will also be generated if the current transform
+          size is not completely understood by existing `wisdom'. Note
+          that the same `wisdom' is shared between one-dimensional and
+          multi-dimensional transforms.
+
+
+
+
+File: fftw.info,  Node: rfftwnd,  Next: Array Dimensions for Real Multi-dimensional Transforms,  Prev: rfftwnd_create_plan,  Up: Real Multi-dimensional Transforms Reference
+
+Computing the Real Multi-dimensional Transform
+----------------------------------------------
+
+     #include <rfftw.h>
+     
+     void rfftwnd_real_to_complex(rfftwnd_plan plan, int howmany,
+                                  fftw_real *in, int istride, int idist,
+                                  fftw_complex *out, int ostride, int odist);
+     void rfftwnd_complex_to_real(rfftwnd_plan plan, int howmany,
+                                  fftw_complex *in, int istride, int idist,
+                                  fftw_real *out, int ostride, int odist);
+     
+     void rfftwnd_one_real_to_complex(rfftwnd_plan p, fftw_real *in,
+                                      fftw_complex *out);
+     void rfftwnd_one_complex_to_real(rfftwnd_plan p, fftw_complex *in,
+                                      fftw_real *out);
+
+   These functions compute the real multi-dimensional Fourier Transform,
+using a plan created by `rfftwnd_create_plan' (*note Plan Creation for
+Real Multi-dimensional Transforms: rfftwnd_create_plan.). (Note that
+the plan determines the rank and dimensions of the array to be
+transformed.)  The ``rfftwnd_one_'' functions provide a simplified
+interface for the common case of single input array of stride 1.
+Unlike other transform routines in FFTW, we here use separate functions
+for the two directions of the transform in order to correctly express
+the datatypes of the parameters.
+
+   _Important:_ When invoked for an out-of-place,
+`FFTW_COMPLEX_TO_REAL' transform with `rank > 1', the input array is
+overwritten with scratch values by these routines.  The input array is
+not modified for `FFTW_REAL_TO_COMPLEX' transforms or for
+`FFTW_COMPLEX_TO_REAL' with `rank == 1'.
+
+Arguments
+.........
+
+   * `plan' is the plan created by `rfftwnd_create_plan'.  (*note Plan
+     Creation for Real Multi-dimensional Transforms:
+     rfftwnd_create_plan.). In the case of two and three-dimensional
+     transforms, it could also have been created by
+     `rfftw2d_create_plan' or `rfftw3d_create_plan', respectively.
+
+     `FFTW_REAL_TO_COMPLEX' plans must be used with the
+     ``real_to_complex'' functions, and `FFTW_COMPLEX_TO_REAL' plans
+     must be used with the ``complex_to_real'' functions.  It is an
+     error to mismatch the plan direction and the transform function.
+
+   * `howmany' is the number of transforms to be computed.
+
+   * `in', `istride' and `idist' describe the input array(s).  There
+     are `howmany' input arrays; the first one is pointed to by `in',
+     the second one is pointed to by `in + idist', and so on, up to `in
+     + (howmany - 1) * idist'.  Each input array is stored in row-major
+     format (*note Multi-dimensional Array Format::), and is not
+     necessarily contiguous in memory.  Specifically, `in[0]' is the
+     first element of the first array, `in[istride]' is the second
+     element of the first array, and so on.  In general, the `i'-th
+     element of the `j'-th input array will be in position `in[i *
+     istride + j * idist]'. Note that, here, `i' refers to an index into
+     the row-major format for the multi-dimensional array, rather than
+     an index in any particular dimension.
+
+     The dimensions of the arrays are different for real and complex
+     data, and are discussed in more detail below (*note Array
+     Dimensions for Real Multi-dimensional Transforms::).
+
+        - _In-place transforms_: For plans created with the
+          `FFTW_IN_PLACE' option, the transform is computed
+          in-place--the output is returned in the `in' array.  The
+          meaning of the `stride' and `dist' parameters in this case is
+          subtle and is discussed below (*note Strides in In-place
+          RFFTWND::).
+
+   * `out', `ostride' and `odist' describe the output array(s).  The
+     format is the same as that for the input array.  See below for a
+     discussion of the dimensions of the output array for real and
+     complex data.
+
+        - _In-place transforms_: These parameters are ignored for plans
+          created with the `FFTW_IN_PLACE' option.
+
+
+   The function `rfftwnd_one' transforms a single, contiguous input
+array to a contiguous output array.  By definition, the call
+     rfftwnd_one_...(plan, in, out)
+   is equivalent to
+     rfftwnd_...(plan, 1, in, 1, 0, out, 1, 0)
+

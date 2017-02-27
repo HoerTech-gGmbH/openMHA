@@ -1,0 +1,41 @@
+INDENT = indent -i5  # if you don't have indent: INDENT = cat
+GENFFT = ./genfft
+GOPTS = -magic-alignment-check -magic-twiddle-load-all  -magic-variables 4 -magic-loopi #-magic-use-wsquare -magic-enable-fma -magic-enable-fma-expansion
+PRELUDE = ./codelet_prelude
+ADD_DATE = sed -e s/@DATE@/"`date`"/
+
+$(NOTW_PREFIX)%.c:  $(GENFFT) $(COPYRIGHT) $(PRELUDE)
+	(cat $(COPYRIGHT) $(PRELUDE); $(GENFFT) $(GOPTS) -notwiddle $*) | $(ADD_DATE) | $(INDENT) >$@
+
+$(NOTWI_PREFIX)%.c:  $(GENFFT) $(COPYRIGHT) $(PRELUDE)
+	(cat $(COPYRIGHT) $(PRELUDE); $(GENFFT) $(GOPTS) -notwiddleinv $*) | $(ADD_DATE) | $(INDENT) >$@
+
+$(TWID_PREFIX)%.c:  $(GENFFT) $(COPYRIGHT) $(PRELUDE)
+	(cat $(COPYRIGHT) $(PRELUDE); $(GENFFT) $(GOPTS) -twiddle $*) | $(ADD_DATE) | $(INDENT) >$@
+
+$(TWIDI_PREFIX)%.c:  $(GENFFT) $(COPYRIGHT) $(PRELUDE)
+	(cat $(COPYRIGHT) $(PRELUDE); $(GENFFT) $(GOPTS) -twiddleinv $*) | $(ADD_DATE) | $(INDENT) >$@
+
+$(REAL2HC_PREFIX)%.c:  $(GENFFT) $(COPYRIGHT) $(PRELUDE)
+	(cat $(COPYRIGHT) $(PRELUDE); $(GENFFT) $(GOPTS) -real2hc $*) | $(ADD_DATE) | $(INDENT) >$@
+
+$(HC2REAL_PREFIX)%.c:  $(GENFFT) $(COPYRIGHT) $(PRELUDE)
+	(cat $(COPYRIGHT) $(PRELUDE); $(GENFFT) $(GOPTS) -hc2real $*) | $(ADD_DATE) | $(INDENT) >$@
+
+$(HC2HC_FORWARD_PREFIX)%.c:  $(GENFFT) $(COPYRIGHT) $(PRELUDE)
+	(cat $(COPYRIGHT) $(PRELUDE); $(GENFFT) $(GOPTS) -hc2hc-forward $*) | $(ADD_DATE) | $(INDENT) >$@
+
+$(HC2HC_BACKWARD_PREFIX)%.c:  $(GENFFT) $(COPYRIGHT) $(PRELUDE)
+	(cat $(COPYRIGHT) $(PRELUDE); $(GENFFT) $(GOPTS) -hc2hc-backward $*) | $(ADD_DATE) | $(INDENT) >$@
+
+.PHONY:	$(GENFFT)
+$(GENFFT):
+	make -f Makefile.genfft
+
+clean:
+	rm -f *~ a.out core *.c $(GENFFT) *.zi *.zo nohup.out 
+	rm -f *.cm[xio] *.o
+
+
+
+

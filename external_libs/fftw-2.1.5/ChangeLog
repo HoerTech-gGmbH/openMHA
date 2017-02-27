@@ -1,0 +1,5039 @@
+2003-03-18  Steven G. Johnson  <stevenj@ab-initio>
+
+	* fftw/fftwf77.c, rfftw/rfftwf77.c, threads/fftw_f77_threads.c,
+	threads/rfftw_f77_threads.c: whoops, missing Fortran wrappers,
+	grr...thanks to Stuart Midgley
+
+2003-03-16  Steven G. Johnson  <stevenj@ab-initio>
+
+	* configure.in: 2.1.4
+
+	* COPYRIGHT, cilk/executor_cilk.cilk, cilk/fftw_cilk.cilkh,
+	cilk/fftwnd_cilk.cilk, cilk/test_cilk.cilk, cilk/time_cilk.cilk,
+	fftw/config.h.in, fftw/executor.c, fftw/fftw-int.h,
+	fftw/fftw.h.in, fftw/fftwf77.c, fftw/fftwnd.c, fftw/generic.c,
+	fftw/malloc.c, fftw/planner.c, fftw/putils.c, fftw/rader.c,
+	fftw/timer.c, fftw/twiddle.c, fftw/wisdom.c, fftw/wisdomio.c,
+	fortran/f77_test.F, gensrc/asched.ml, gensrc/asched.mli,
+	gensrc/complex.ml, gensrc/complex.mli, gensrc/dag.ml,
+	gensrc/dag.mli, gensrc/expr.ml, gensrc/expr.mli,
+	gensrc/exprdag.ml, gensrc/exprdag.mli, gensrc/fft.ml,
+	gensrc/genfft.ml, gensrc/magic.ml, gensrc/number.ml,
+	gensrc/number.mli, gensrc/schedule.ml, gensrc/schedule.mli,
+	gensrc/symmetry.ml, gensrc/to_c.ml, gensrc/to_c.mli,
+	gensrc/twiddle.ml, gensrc/util.ml, gensrc/util.mli,
+	gensrc/variable.ml, gensrc/variable.mli, matlab/fftw.c,
+	mpi/TOMS_transpose.c, mpi/TOMS_transpose.h, mpi/fftw_f77_mpi.c,
+	mpi/fftw_f77_mpi.h, mpi/fftw_mpi.c, mpi/fftw_mpi.h,
+	mpi/fftw_mpi_test.c, mpi/fftwnd_mpi.c, mpi/rfftw_f77_mpi.c,
+	mpi/rfftw_mpi.h, mpi/rfftw_mpi_test.c, mpi/rfftwnd_mpi.c,
+	mpi/sched.c, mpi/sched.h, mpi/test_sched.c,
+	mpi/test_transpose_mpi.c, mpi/transpose_mpi.c, rfftw/rexec.c,
+	rfftw/rexec2.c, rfftw/rfftw.h, rfftw/rfftwf77.c, rfftw/rfftwnd.c,
+	rfftw/rgeneric.c, rfftw/rplanner.c, tests/fftw_test.c,
+	tests/rfftw_test.c, tests/test_main.c, threads/executor_threads.c,
+	threads/fftw_f77_threads.c, threads/fftw_threads-int.h,
+	threads/fftw_threads.c, threads/fftw_threads.h,
+	threads/fftw_threads_test.c, threads/fftwnd_threads.c,
+	threads/rexec2_threads.c, threads/rexec_threads.c,
+	threads/rfftw_f77_threads.c, threads/rfftw_threads.h,
+	threads/rfftw_threads_test.c, threads/rfftwnd_threads.c: update
+	copyright year
+
+2003-03-15  Steven G. Johnson  <stevenj@ab-initio>
+
+	* fftw/fftw.h.in: removed C99 complex stuff, since it breaks
+	backwards compatibility
+
+2003-03-08  Steven G. Johnson  <stevenj@ab-initio>
+
+	* configure.in, acinclude.m4: warnings only in debug/maintainer
+	mode
+
+2003-01-15  Steven G. Johnson  <stevenj@ab-initio>
+
+	* doc/fftw.texi: fixed typo (thanks to Andrew Young for the
+	correction)
+
+2003-01-13  Steven G. Johnson  <stevenj@ab-initio>
+
+	* configure.in: added check if c/f77 linking works
+
+2002-11-27  Steven G. Johnson  <stevenj@ab-initio>
+
+	* FAQ/fftw-faq.bfnn: noted pgcc problems
+
+2002-10-24  Steven G. Johnson  <stevenj@ab-initio>
+
+	* Makefile.am, gensrc/Makefile.fftw.am: whoops
+
+	* NEWS: slight fix
+
+	* NEWS: more news
+
+	* fftw/fftw.h.in: qualified compatibility claim
+
+	* acx_mpi.m4: sync with MPB
+
+	* ChangeLog: updated
+
+	* NEWS, configure.in: use acx_mpi.m4
+
+	* mpi/Makefile.am: whoops
+
+	* acx_mpi.m4: added
+
+	* FAQ/fftw-faq.bfnn: more FAQs
+
+	* acinclude.m4, configure.in, fftw/config.h.in, fftw/f77_func.h,
+	fftw/fftwf77.c, mpi/fftw_f77_mpi.h, rfftw/rfftwf77.c,
+	threads/fftw_f77_threads.c, threads/rfftw_f77_threads.c: use
+	autoconf's AC_F77_WRAPPERS instead of our own mangling code...the
+	autoconf stuff is derived from ours, anyway
+
+2002-10-24  Steven G. Johnson  <stevenj@ab-initio>
+
+	* NEWS, configure.in: use acx_mpi.m4
+
+	* mpi/Makefile.am: whoops
+
+	* acx_mpi.m4: added
+
+	* FAQ/fftw-faq.bfnn: more FAQs
+
+	* acinclude.m4, configure.in, fftw/config.h.in, fftw/f77_func.h,
+	fftw/fftwf77.c, mpi/fftw_f77_mpi.h, rfftw/rfftwf77.c,
+	threads/fftw_f77_threads.c, threads/rfftw_f77_threads.c: use
+	autoconf's AC_F77_WRAPPERS instead of our own mangling code...the
+	autoconf stuff is derived from ours, anyway
+
+	* configure.in: bumped version
+
+	* gensrc/Makefile.fftw.am, gensrc/Makefile.rfftw.am: whoops
+
+	* acinclude.m4, configure.in, gensrc/Makefile.fftw.am,
+	gensrc/Makefile.rfftw.am, mpi/Makefile.am, tests/Makefile.am,
+	threads/Makefile.am: eliminated SUBST_XXX hackery...it doesn't
+	work with the latest autoconf, and doesn't seem to be needed any
+	more either
+
+	* FAQ/fftw-faq.bfnn: noted AIX problem
+
+	* acx_pthread.m4: sync with fftw3
+
+2002-07-12  Steven G. Johnson  <stevenj@ab-initio>
+
+	* acx_pthread.m4: switch to C so that CFLAGS work
+
+2002-04-18  Steven G. Johnson  <stevenj@ab-initio>
+
+	* acx_pthread.m4: remove pthread.h test
+
+	* acx_pthread.m4: synchronize formatting with AC archive
+
+2001-11-06  FFTW Maintainers  <fftw@ab-initio>
+
+	* threads/fftw_threads.c: fix thread parallelization on Solaris
+
+2001-06-27  Steven G. Johnson  <stevenj@ab-initio>
+
+	* ChangeLog: updated
+
+2001-06-21  Steven G. Johnson  <stevenj@fftw.org>
+
+	* configure.in: added IBM AIX mpi cc command
+
+2001-04-21  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: removed extraneous @end
+
+	* acinclude.m4: fixed underquoting bug (caused configure script to
+	not work)
+
+2001-04-21  Steven G. Johnson  <stevenj@fftw.org>
+
+	* fortran/f77_test.F: more compilation notes
+
+2001-04-01  fftw  <fftw@fftw.org>
+
+	* acinclude.m4: Use -O3 instead of -O6 with gcc.  -O6 isn't a real
+	flag anyway, and it is not recognized by some versions of gcc
+	(notably, Apple's hacked-up version on MacOS X).
+
+2001-03-08  fftw  <fftw@fftw.org>
+
+	* acx_pthread.m4: check for -mt *after* -lpthread. -mt links only
+	-lthread, but this sometimes mysteriously works, and I don't want
+	to link in more than I have to or rely on something which seems to
+	be undocumented(?).
+
+2001-02-16  fftw  <fftw@fftw.org>
+
+	* configure.in: Steven Berukoff reports that -lmpich is needed,
+	even with mpicc, for some MPI installations.
+
+2000-12-30  fftw  <fftw@fftw.org>
+
+	* acx_pthread.m4: minor comment fix
+
+	* acx_pthread.m4: clarified -mt effects
+
+2000-12-21  Steven G. Johnson  <stevenj@fftw.org>
+
+	* acx_pthread.m4: not sure if -mt uses -lpthread...
+
+	* acx_pthread.m4: added -mt flag
+
+2000-12-09  fftw  <fftw@fftw.org>
+
+	* acx_pthread.m4: fixed position of AC_REQUIRE
+
+	* FAQ/fftw-faq.bfnn: addressed finite-precision floating-point in
+	FAQ
+
+2000-10-22  fftw  <fftw@fftw.org>
+
+	* acx_pthread.m4: fixed comment
+
+	* gensrc/genfft.ml, gensrc/symmetry.ml: whoops, undo accidental
+	commit
+
+	* acx_pthread.m4, gensrc/genfft.ml, gensrc/symmetry.ml: many
+	changes
+
+2000-10-16  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: point rfftw users to fftw for prime sizes
+
+2000-10-04  fftw  <fftw@fftw.org>
+
+	* acinclude.m4: newer xlc versions reportedly accept -qarch=auto
+	to automatically tune for the native host.
+
+2000-07-03  fftw  <fftw@fftw.org>
+
+	* acinclude.m4: Punt on guessing -qarch/-qtune flags for AIX,
+	since there seems to be no good way to guess the CPU.
+
+2000-06-26  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/fftwnd.c: Unrolled loop to expose more parallelism.
+
+2000-06-07  fftw  <fftw@fftw.org>
+
+	* configure.in: Added "mpcc" MPI compiler for IBM SP3.  thanks to
+	Ferenc Molnar for the information.
+
+2000-06-03  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/complex.ml, gensrc/complex.mli, gensrc/genfft.ml,
+	gensrc/symmetry.ml, gensrc/variable.ml: Implemented mp3mdct
+	generation mode for generating the MDCT used in mp3.
+
+2000-06-02  Matteo Frigo  <athena@fftw.org>
+
+	* cilk/executor_cilk.cilk, cilk/fftw_cilk.cilkh,
+	cilk/fftwnd_cilk.cilk, cilk/Makefile, cilk/test_cilk.cilk,
+	cilk/time_cilk.cilk, fftw/malloc.c, fftw/planner.c, fftw/putils.c,
+	fftw/rader.c, fftw/twiddle.c: Adapted (simplified) to the
+	forthcoming Cilk-5.3
+
+	* gensrc/exprdag.ml: Iterate optimization until convergence.
+	Saves two fops in fhb_9.c
+
+2000-05-29  fftw  <fftw@fftw.org>
+
+	* acx_pthread.m4: The autoconf folks like the macro name to be
+	quoted in AC_DEFUN.
+
+2000-05-20  fftw  <fftw@fftw.org>
+
+	* fftw/fftw.h.in: If the user includes <complex.h> before
+	<fftw.h>, then use the new C99 complex type for fftw_complex.
+	This way, all the arithmetic operators, etcetera, are available to
+	the user.  The C99 complex type should be binary-compatible with
+	FFTW's struct-based type.
+
+	* gensrc/ast.ml: deleted unused file
+
+2000-05-19  Steven G. Johnson  <stevenj@fftw.org>
+
+	* acx_pthread.m4: synchronized with macro archive, and added in
+	Sequent -Kthread support.
+
+2000-04-05  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: slight change for clarity
+
+2000-03-31  Steven G. Johnson  <stevenj@fftw.org>
+
+	* acx_pthread.m4: only have one @author line, in accordance with
+	needs of the autoconf macro archive.
+
+2000-03-24  fftw  <fftw@fftw.org>
+
+	* acx_pthread.m4: check to see if threads work with no arguments
+	before trying -kthread, to avoid compiler warnings on such
+	systems.
+
+2000-03-23  fftw  <fftw@fftw.org>
+
+	* configure.in: output message change
+
+2000-03-23  Steven G. Johnson  <stevenj@fftw.org>
+
+	* acx_pthread.m4: minor change
+
+	* acx_pthread.m4: try PTHREAD_LIBS and PTHREAD_CFLAGS environment
+	variables first
+
+	* acx_pthread.m4: Added FreeBSD LinuxThreads port (-llthread)
+	support.  Thanks to Jonathan Wilkins for his time and the use of
+	his machine.
+
+2000-03-21  fftw  <fftw@fftw.org>
+
+	* acx_pthread.m4: fixed AC_DEFINE for HAVE_PTHREAD
+
+	* acx_pthread.m4: added acknowledgments
+
+	* acx_pthread.m4: include description strings for AC_DEFINEs so
+	that autoheader will work
+
+	* acx_pthread.m4: check for pthread.h before checking for threads
+	libraries
+
+	* acx_pthread.m4: don't check for cc_r if threads weren't found
+
+	* acx_pthread.m4: check for -kthread, then -lpthread, then
+	-pthread
+
+	* threads/fftw_threads_test.c: added missing newline to error
+	message
+
+	* doc/fftw.texi: documented --with-openmp and --with-sgimp
+
+	* threads/fftw_threads.c: bug fix in compiler thread directive
+	loop
+
+2000-03-20  fftw  <fftw@fftw.org>
+
+	* configure.in, fftw/config.h.in, threads/fftw_threads.c,
+	threads/fftw_threads-int.h: added experimental support for openmp
+	and sgi mp compiler directives for threads code
+
+	* Makefile.am: make sure acx_pthread.m4 is included in the dist
+
+	* acx_pthread.m4: minor rewording in comment
+
+	* acx_pthread.m4, configure.in, fftw/config.h.in,
+	threads/fftw_threads.c: Separated POSIX threads library checks
+	into a separate macro (ACX_PTHREAD) for submission to the autoconf
+	macro repository (replacing an earlier macro there by Alejandro
+	Cuervo).  Also, added checks for -pthread compiler flag required
+	on FreeBSD (thanks to Jonathan Wilkins for the use of his machine
+	for testing).
+
+2000-03-02  Steven G. Johnson  <stevenj@fftw.org>
+
+	* ChangeLog: fixed email addresses
+
+	* ChangeLog: updated
+
+	* mpi/sched.c, mpi/test_transpose_mpi.c, mpi/transpose_mpi.c,
+	rfftw/rexec2.c, rfftw/rexec.c, rfftw/rfftwf77.c, rfftw/rfftw.h,
+	rfftw/rfftwnd.c, rfftw/rgeneric.c, rfftw/rplanner.c,
+	tests/fftw_test.c, tests/rfftw_test.c, tests/test_main.c,
+	threads/executor_threads.c, threads/fftw_f77_threads.c,
+	threads/fftwnd_threads.c, threads/fftw_threads.c,
+	threads/fftw_threads.h, threads/fftw_threads-int.h,
+	threads/fftw_threads_test.c, threads/rexec2_threads.c,
+	threads/rexec_threads.c, threads/rfftw_f77_threads.c,
+	threads/rfftwnd_threads.c, threads/rfftw_threads.h,
+	threads/rfftw_threads_test.c, configure.in, fftw/executor.c,
+	fftw/f77_func.h, fftw/fftwf77.c, fftw/fftw-int.h, fftw/fftwnd.c,
+	fftw/generic.c, fftw/malloc.c, fftw/planner.c, fftw/putils.c,
+	fftw/rader.c, fftw/timer.c, fftw/twiddle.c, fftw/wisdom.c,
+	fftw/wisdomio.c, gensrc/codelet_prelude, gensrc/config_prelude,
+	gensrc/rconfig_prelude, matlab/fftw.c, mpi/fftw_f77_mpi.h,
+	mpi/fftw_mpi.c, mpi/fftw_mpi.h, mpi/fftw_mpi_test.c,
+	mpi/fftwnd_mpi.c, mpi/rfftw_f77_mpi.c, mpi/rfftw_mpi.h,
+	mpi/rfftw_mpi_test.c, mpi/rfftwnd_mpi.c, mpi/TOMS_transpose.h:
+	whoops, kill acx_pthread test code
+
+Wed Feb 23 17:07:23 2000  fftw  <fftw@fftw.org>
+
+	* mpi/README.f77: noted column-major slab decomposition
+
+Tue Feb 22 00:23:44 2000  Matteo Frigo  <athena@fftw.org>
+
+	* doc/fftw.texi: Changed ``@iftex\\@tex\\@end tex\\@end iftex'' to
+	``@tex\\@end tex'' because nesting is broken with texi2dvi-3.12
+	and texi2dvi-4.00.  I don't know whether this is a texi2dvi bug or
+	our fault.  (Nesting works properly if one does not use texi2dvi.)
+
+Mon Feb 14 19:41:37 2000  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/rconfig_prelude: Removed copyright, because it is added
+	by makerconfig.sh.
+
+Fri Feb 11 07:15:05 2000  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Noted problems with DEC CC.  Thanks to Xavier
+	Marduel for the bug report.
+
+Sun Feb  6 20:01:52 2000  fftw  <fftw@fftw.org>
+
+	* gensrc/Makefile.fftw.am, gensrc/Makefile.rfftw.am,
+	mpi/Makefile.am, threads/Makefile.am: Use $(srcdir)/foo instead of
+	$<, since according to GNU Makefile conventions document, many
+	non-GNU 'make' implementations only set $< for implicit rules.
+
+Thu Jan 27 16:18:03 2000  fftw  <fftw@fftw.org>
+
+	* configure.in, gensrc/Makefile.fftw.am, gensrc/Makefile.rfftw.am,
+	mpi/Makefile.am, threads/Makefile.am: Used $@, $< in Makefile
+	rules for srfftw.h, etcetera.  This should fix things in VPATH
+	builds; thanks to Michael Poole for the suggestion.
+
+Wed Nov 10 20:01:40 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* threads/fftw_threads-int.h: Yikes!  Self-#include should be
+	fftw_threads.h.
+
+Mon Nov  8 00:53:35 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* NEWS: noted (expected) 2.1.3 release date
+
+	* doc/texi2html, AUTHORS: Updated Matteo's email address.
+
+	* README: Noted mailing list URL.
+
+Sun Nov  7 19:15:52 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Reference latest version of gcc bug report.
+
+	* acinclude.m4: Updated stack alignment check to also check for
+	misaligned main() (due to OS/libc/loader problems), and to
+	reference latest version of gcc bug report.
+
+Fri Nov  5 01:49:21 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* NEWS: Thanked Diab Jerius for CFLAGS patch.
+
+	* NEWS: noted that configure no longer overrides CFLAGS.
+
+	* acinclude.m4: Fixed code so that configure will not override the
+	CFLAGS environment variable.
+
+Tue Nov  2 23:52:02 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* rfftw/rfftwnd.c, doc/fftw.texi: Ugh, ugh, triple ugh!  Had to
+	modify the rule for stride interpretation of in-place rfftwnd
+	transforms to handle a pathological case.  Before, if you did
+	howmany transforms of size 1 (stride=1, dist=1) both the r2c and
+	c2r transforms would work okay, BUT: the input of the r2c
+	transform would have the required "padding" elements to make room
+	for the complex output, while the c2r transform would output real
+	numbers *without* padding (because of the idist==1 -> odist_t=1
+	rule).  Thus, we'd have the bizarre situation of r2c + c2r = input
+	in different order (no padding).  This caused the rfftwnd_mpi
+	tests to fail for Nx1 transforms (N > 2).  So, I've modified the
+	rule slightly to idist==1 && idist < istride.  This should
+	continue to make rfftwnd do what we want in all the ordinary
+	cases, but fixes this case.
+
+Mon Nov  1 22:31:14 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* NEWS: noted that gcc stack alignment bug was only on x86.
+
+Sun Oct 31 23:17:12 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* mpi/test_transpose_mpi.c: got rid of unused variables.
+
+	* mpi/test_sched.c: got rid of unused variable
+
+	* mpi/rfftw_f77_mpi.c: fixed typo
+
+	* configure.in: awk -F can't be followed by a space in older
+	awk's.
+
+	* mpi/Makefile.am: added README.f77 to distribution
+
+	* mpi/README.f77: minor fixes
+
+	* fortran/fftw_f77.i: changed "c" comments to "!" to accommodate
+	f90 freeform mode.  Also added params for experimental MPI
+	wrappers.
+
+Fri Oct 29 21:41:59 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* mpi/README.f77, mpi/fftw_f77_mpi.h: minor additions to
+	documentation
+
+	* Makefile.am: disable autoheader here too (it was a problem once
+	today; why not before?)
+
+	* mpi/README.f77, NEWS: Added description of experimental MPI
+	wrappers.
+
+	* acinclude.m4, configure.in: Use AC_F77_LIBRARY_LDFLAGS when
+	attempting to link Fortran with C code in ACX_F77_FUNC_MANGLE.
+
+	* fftw/config.h.in, mpi/Makefile.am, mpi/fftw_f77_mpi.c,
+	mpi/fftw_f77_mpi.h, mpi/rfftw_f77_mpi.c, configure.in: Added
+	experimental Fortran-callable wrappers for the MPI transforms.
+
+	* acinclude.m4: small fix
+
+Thu Oct 28 19:53:33 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Noted stack alignment bug in gcc 2.95.[012].
+
+	* NEWS, acinclude.m4, configure.in: Work around buggy stack
+	alignment in gcc-2.95.x.
+
+	* acinclude.m4, configure.in: Reorganized macros in acinclude.m4
+	somewhat.  New checks for -fstrict-aliasing and try to guess cpu
+	type on powerpc by looking at /proc/cpuinfo (using -mcpu=750 makes
+	a ~10% difference on a PowerPC G3).
+
+Tue Oct 26 21:45:06 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* tests/test_main.c: Added obligatory new joke for 2.1.3 release.
+
+	* threads/executor_threads.c, threads/rexec_threads.c,
+	rfftw/rexec.c, rfftw/rexec2.c, gensrc/to_c.ml, fftw/executor.c,
+	fftw/fftw-int.h: Technically, macros with empty argument lists
+	invoke undefined behavior in ANSI C, although they will be allowed
+	in the C99 language revision.  Fix HACK_ALIGN_STACK_* macros to
+	remove this usage.
+
+	* fftw/config.h.in, fftw/fftw-int.h, doc/fftw.texi, configure.in:
+	--enable-i386-hacks is no longer needed in gcc-2.95+
+	(i.e. versions which have the -mpreferred-stack-boundary flag).
+
+	* fftw/fftw-int.h: Indented alignment #preprocessor statements to
+	make them more readable.  Also, made it so that you can use
+	--debug-alignment even without --enable-i386-hacks.
+
+Tue Oct 26 16:17:51 1999  Matteo Frigo  <athena@fftw.org>
+
+	* ChangeLog: Updated ChangeLog
+
+Tue Oct 26 05:47:25 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* acinclude.m4: No point in doing both -mcpu and -mtune (-mcpu
+	includes -mtune).
+
+	* doc/fftw.texi: Some fixes in Fortran docs.
+
+	* rfftw/rexec.c, rfftw/rplanner.c, fftw/config.h.in,
+	fftw/executor.c, fftw/planner.c, configure.in: Vector recursion is
+	now enabled by a --enable-vec-recurse flag (disabled by default).
+
+	* NEWS: Added version number.
+
+Tue Sep 28 09:13:39 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* rfftw/rplanner.c, fftw/planner.c: Disable vector recursion for
+	now.
+
+	* fftw/rader.c, fftw/twiddle.c, fftw/config.h.in, fftw/fftw-int.h,
+	FAQ/fftw-faq.bfnn, NEWS, configure.in: Fixed overflow for (x*y)%p
+	in Rader routines (for complex transforms of prime sizes).  Thanks
+	to Ezio Riva (ERiva@artis-software.com) for the bug report.
+
+Thu Aug 19 03:08:29 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* NEWS: Noted Matlab wrapper bug fix.
+
+Tue Aug 17 18:46:54 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* matlab/fftw.c: Fixed bug (memory leak; a new plan is created on
+	each call for the multi-dim.  transforms).  Thanks to Matthew
+	Davis <m.davis2@physics.ox.ac.uk> for the bug report.
+
+Wed Jul 28 19:12:15 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* NEWS, configure.in: Fixed configure script problems with
+	--enable-threads on Digital Unix.
+
+Tue Jul 27 20:03:22 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* fftw.spec.in: Many changes, including several based on
+	suggestions by Keith Amidon <camalot@picnicpark.org>.  Now install
+	into the "build root" at build time so that building the RPM does
+	not affect existing FFTW installations (and doesn't require root
+	privileges).  Compilation (and configuration) now only occurs
+	during the build phase.  Post install and uninstall scripts run
+	ldconfig to update the linker database, and warn the user if the
+	install directory is not in /etc/ld.so.conf.  Finally, the
+	double-precision libraries are installed into the standard [r]fftw
+	names instead of under d[r]fftw.
+
+	* tests/test_main.c: Minor cleanup.
+
+Sat Jul 24 20:32:58 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* tests/test_main.c, tests/test_main.h: Added -1
+	(--only-one-speed-test) option, as I'm tired of waiting for the 8
+	different speed tests to run when I only want one.
+
+	* threads/fftw_threads_test.c, threads/rfftw_threads_test.c,
+	tests/fftw_test.c, tests/rfftw_test.c, tests/test_main.c,
+	tests/test_main.h, rfftw/rplanner.c, mpi/fftw_mpi_test.c,
+	mpi/rfftw_mpi_test.c, fftw/fftw-int.h, fftw/fftw.h.in,
+	fftw/fftwnd.c, fftw/planner.c, fftw/putils.c, fftw/rader.c,
+	fftw/wisdom.c, fftw/wisdomio.c: Implemented new
+	FFTW_NO_VECTOR_RECURSE flag to inhibit use of vector recursion.
+	This flag is used internally in the planner to prevent vector
+	recursion at anything other than the top level of the plan
+	(instead of the planner_depth stuff used previously), and insures
+	that the correct wisdom is used.  (Note, however, that the wisdom
+	is still not specific to the vector_size parameter; this needs to
+	be fixed.)
+
+Mon Jul 19 17:04:16 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* fftw/fftw-int.h: Added a comment about why we have macros for
+	trig. functions.
+
+Mon Jun 21 16:01:44 1999  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Noted that SGI MipsPro bugs seem to have been
+	fixed.  Also mentioned problems with egcs-1.0.2 on the PowerPC.
+
+Sat Jun 19 17:47:28 1999  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Noted incorrect code generation in Metrowerks
+	CodeWarrior Pro 4 for the Macintosh.  (Maybe we should rename this
+	FAQ question?)
+
+Fri Jun 18 19:20:28 1999  fftw  <fftw@fftw.org>
+
+	* FAQ/m-html.pl: Updated FFTW Manual bookmark.
+
+Sat Jun 12 05:03:31 1999  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Added clarifications to fftwnd reference, as
+	suggested by John F. Gibson of Cornell.
+
+Tue Jun  8 22:17:35 1999  fftw  <fftw@fftw.org>
+
+	* threads/fftw_threads-int.h, tests/test_main.c, matlab/fftw.m,
+	gensrc/README, matlab/README, fftw/fftw-int.h, doc/fftw.texi,
+	FAQ/html.refs, FAQ/m-html.pl, cilk/README, FAQ/fftw-faq.bfnn,
+	TODO, fftw.spec.in, Makefile.am, README: Great URL change: web
+	page -> www.fftw.org, ftp -> ftp.fftw.org, email -> @fftw.org.
+	Note that currently, this means that some of links in the
+	documentation are broken (links to sub-pages within the main FFTW
+	site).  This will be fixed once we get real hosting for fftw.org.
+
+Mon Jun  7 23:36:19 1999  fftw  <fftw@fftw.org>
+
+	* fftw/config.h.in, fftw/fftw-int.h: Added warnings to flaky MacOS
+	nanosecond timer routines.  (The ordinary Mac timer routines, with
+	microsecond accuracy (in theory) are okay.)
+
+Tue Jun  1 21:52:50 1999  fftw  <fftw@fftw.org>
+
+	* fftw/fftw-int.h: Oops, I declared fftw_time twice.
+
+	* fftw/fftw-int.h: Incorporated new timer code by Sampo Niskanen.
+
+Mon May 31 17:45:34 1999  Matteo Frigo  <athena@fftw.org>
+
+	* acinclude.m4: Added -arch host to osf-alpha CFLAGS.
+
+Sat May 29 20:38:03 1999  fftw  <fftw@fftw.org>
+
+	* Makefile.am: slight reformatting.
+
+	* Makefile.am: Make sure lynx doesn't attempt to reformat logo gif
+	data.
+
+	* NEWS: Noted the date of each release (plus or minus a day or
+	two, in some cases).  Merged release notes for beta releases with
+	those of final releases.
+
+Sat May 29 04:28:29 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* ChangeLog: ChangeLog now reflects all revisions of FFTW (instead
+	of starting at 6/11/98).
+
+	* ChangeLog: Updated change log.
+
+Sat May 29 03:25:59 1999  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Fixed another typo.
+
+	* doc/fftw.texi: Typo fix.
+
+Fri May 28 19:33:41 1999  fftw  <fftw@fftw.org>
+
+	* fftw.spec.in, Attic/fftw.spec, Makefile.am, configure.in: You
+	can now build the RPM package by running 'make rpm' (as root)
+	after 'make dist'.  fftw.spec is now kept in sync automatically
+	with the version numbers in configure.in.
+
+Thu May 27 05:48:57 1999  fftw  <fftw@fftw.org>
+
+	* threads/rexec_threads.c, rfftw/rplanner.c,
+	threads/executor_threads.c, rfftw/rexec2.c, rfftw/rfftw.h,
+	rfftw/rexec.c, fftw/rader.c, fftw/wisdom.c, fftw/putils.c,
+	fftw/planner.c, fftw/fftw.h.in, fftw/fftw-int.h, fftw/executor.c:
+	Initial version of "vector recursion" in executor.  No vector
+	codelets yet.  The threads code works, but does not do vector
+	recursion.  No use of vector recursion for in-place howmany loops
+	yet.
+
+Wed May 26 18:06:47 1999  fftw  <fftw@fftw.org>
+
+	* gensrc/complex.ml: In times_3_3 routine, got rid of infinite
+	loop for multiplication by non-constants (was biting us during
+	generation of twiddle codelets).
+
+	* gensrc/number.ml, gensrc/magic.ml, gensrc/genfft.ml,
+	gensrc/exprdag.ml, gensrc/complex.ml: Various cleanup
+
+	* tests/test_main.c, fftw/config.h.in, fftw/fftw.h.in: Centralized
+	tests for Windows (in config.h.in) and use HAVE_WIN32 elsewhere.
+
+Tue May 25 23:59:14 1999  fftw  <fftw@fftw.org>
+
+	* NEWS: Removed extra period.
+
+	* doc/fftw.texi: Noted possibility of "d" or "s" prefix in the
+	tutorial (as requested by many users).
+
+	* FAQ/fftw-faq.bfnn, Attic/fftw.spec, NEWS, configure.in: Bumped
+	version number to 2.1.3, documented AIX threads fix.
+
+	* threads/fftw_threads-int.h, threads/fftw_threads.c,
+	fftw/fftw-int.h, configure.in, fftw/config.h.in, acinclude.m4:
+	Fixed threads bug on AIX: pthread_create on AIX spawns detached
+	(non-joinable) threads by default.  Also fixed much autoconf
+	lossage on AIX.  Thanks to Jim Lindsay (lindsay@mill.acns.nwu.edu)
+	for the bug report and for the use of Northwestern's SP2.
+
+	* fftw/timer.c: Only use BSDgettimeofday if gettimeofday is not
+	available (causes problems on some AIX systems).
+
+	* tests/rfftw_test.c, tests/fftw_test.c, rfftw/rplanner.c,
+	fftw/planner.c, fftw/fftw-int.h: Put (r)fftw_plan_hook in
+	fftw-int.h, with a typedef, and used Andrew Sterian's DL_IMPORT
+	macro to succor the lost souls using VC++.
+
+Fri May 21 17:58:30 1999  fftw  <fftw@fftw.org>
+
+	* tests/test_main.c: Fixed typo in help string.
+
+Tue May 18 23:39:07 1999  fftw  <fftw@fftw.org>
+
+	* threads/rfftw_threads_test.c, tests/test_main.h,
+	threads/fftw_threads_test.c, tests/test_main.c,
+	tests/rfftw_test.c, tests/fftw_test.c, mpi/rfftw_mpi_test.c,
+	mpi/fftw_mpi_test.c, FAQ/fftw-faq.bfnn, NEWS: Whoops, found the
+	real source of the MPI bug that was supposedly fixed in 2.1.2.
+	MPI_Init can modify argv (and does so, for processes other than
+	the first), but we passed the original argv to getopt.  This is
+	now fixed.  (This is a bug in the MPI test programs of 2.1.2 also,
+	but as it's only in the test programs and doesn't seem to bite us
+	on any known MPI implementation, it can wait until the next FFTW
+	release.)  Sigh.
+
+Mon May 17 23:09:31 1999  fftw  <fftw@fftw.org>
+
+	* NEWS: Went into more detail regarding the generator changes.
+
+Mon May 17 22:20:27 1999  Matteo Frigo  <athena@fftw.org>
+
+	* NEWS: Note reduction in rfftw code size.
+
+	* gensrc/symmetry.ml, gensrc/genfft.ml, fftw/twiddle.c: Reduced
+	code size and # of operations of rfftw twiddle codelets.
+
+Mon May 17 19:57:11 1999  fftw  <fftw@fftw.org>
+
+	* ChangeLog: Updated
+
+	* NEWS: Noted codelet generator speed.
+
+	* gensrc/symmetry.ml, gensrc/genfft.ml, gensrc/fft.ml: Improved
+	real{even|odd}2 transforms
+
+	* doc/fftw.texi: Fixed typo.
+
+	* gensrc/exprdag.ml: Improved simplifier for DCT-type transforms.
+
+	* TODO: Noted that the transpose routines for MPI could use
+	improving.
+
+	* gensrc/symmetry.ml: Fixed comment.
+
+	* gensrc/symmetry.ml, gensrc/genfft.ml, gensrc/fft.ml: Fixed
+	modified DCT/DST generation (realeven2/realodd2) so that it works
+	now.  The simplifier really sucks for this, at the moment.  Why?
+
+Sun May 16 23:59:33 1999  fftw  <fftw@fftw.org>
+
+	* gensrc/genfft.ml: Fixed real[even,odd]2 codelet node type
+	output.
+
+	* gensrc/variable.ml, gensrc/variable.mli, gensrc/symmetry.ml,
+	gensrc/genfft.ml: Added generators realeven2 and realodd2 for the
+	modified DCT and DST (i.e. transforms for real data that are
+	even/odd about n=-1/2, not n=0).
+
+	* gensrc/exprdag.ml: Memoized eval for speed reasons.
+
+	* gensrc/util.ml, gensrc/exprdag.ml: Implemented better
+	statistics.
+
+	* gensrc/exprdag.ml: Improved complexity of network transposition
+	from O(n^2)=O(slow) to O(n) [times O(polylog)]
+
+	* TODO: Noted that the generator can now output efficient
+	hard-coded DCT/DST routines of small sizes.
+
+	* gensrc/variable.mli, gensrc/variable.ml, gensrc/symmetry.ml,
+	gensrc/genfft.ml, gensrc/complex.mli, gensrc/complex.ml: Added
+	realeven and realodd codelet generation options.  (They work.)
+
+Mon May 10 02:48:14 1999  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Noted how to force compiler choice via CC
+	env. variable.  Also added "compiler" index entry.
+
+Fri May  7 20:12:11 1999  fftw  <fftw@fftw.org>
+
+	* TODO, NEWS: Updated TODO.
+
+	* README: Fixed Cilk URL.
+
+	* NEWS: Noted GNU-style long options in the test programs.
+
+Thu May  6 22:35:05 1999  fftw  <fftw@fftw.org>
+
+	* tests/test_main.c: --help option no longer causes an exit with
+	an error code.
+
+	* tests/test_main.c, configure.in, fftw/config.h.in: Test programs
+	now use GNU-ly correct long options if getopt_long is available.
+
+	* FAQ/fftw-faq.bfnn, NEWS: MPICH bug fix is apparently not
+	specific to Linux (it also fixed the same problem on some
+	Ultrasparcs).
+
+	* Attic/fftw.spec: Updated for 2.1.2.
+
+	* mpi/fftw_mpi_test.c: --only-parallel argument hack should also
+	only be accessed by process 0.
+
+Wed May  5 23:02:12 1999  fftw  <fftw@fftw.org>
+
+	* NEWS: Noted addition of omitted fftw_f77_threads_init function.
+
+	* FAQ/fftw-faq.bfnn: Bug fix (dates need to have two digits for
+	the day).
+
+	* threads/rfftw_threads_test.c, threads/fftw_threads_test.c,
+	tests/test_main.c, tests/test_main.h, tests/rfftw_test.c,
+	tests/fftw_test.c, mpi/rfftw_mpi_test.c, mpi/test_transpose_mpi.c,
+	FAQ/fftw-faq.bfnn, mpi/fftw_mpi_test.c, NEWS, configure.in: Fixed
+	bug when running test programs under MPICH; prepared for 2.1.2
+	release.
+
+Sun Apr 18 04:16:39 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* Attic/fftw.spec: Made package relocatable.
+
+	* Attic/fftw.spec: Created spec file for generating RPM packages
+	of FFTW.
+
+	* FAQ/fftw-faq.bfnn: Revised linker FAQ entry.
+
+Mon Apr 12 19:34:17 1999  fftw  <fftw@fftw.org>
+
+	* tests/test_main.c: Added joke.
+
+Sat Apr 10 00:14:37 1999  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Added linker FAQ entry.
+
+Wed Apr  7 17:17:48 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* threads/fftw_f77_threads.c: Added missing fftw_f77_threads_init
+	function (thanks to V. Sundararajan for pointing out the
+	omission).
+
+Tue Apr  6 19:29:13 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* configure.in: Check for hcc in addition to mpicc (hcc is used by
+	the LAM MPI implementation).
+
+Wed Mar 31 00:54:20 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* NEWS, doc/fftw.texi, ChangeLog: Fixed credit for 2.1.1 bug fix
+	(real credit goes to Ming-Chang Liu, according to Jeff
+	Briedenbach, whose name was misspelled anyway).
+
+Tue Mar 30 18:19:21 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Moderated language.
+
+	* NEWS: This isn't LaTeX, Matteo; an en dash in a monospaced font
+	is rendered the same as a hyphen (i.e. "-" not "--").
+
+Mon Mar 29 19:23:24 1999  Matteo Frigo  <athena@fftw.org>
+
+	* ChangeLog: Updated
+
+	* NEWS: Minor change.
+
+Sun Mar 28 20:24:30 1999  Matteo Frigo  <athena@fftw.org>
+
+	* tests/rfftw_test.c, tests/fftw_test.c: Implemented paranoid
+	check for real->complex and complex->real transforms
+
+Sun Mar 28 00:11:47 1999  fftw  <fftw@fftw.org>
+
+	* NEWS: Moderated language.  I do not want to claim that the bug
+	occurs in `rare' circumstances.  A bug is a bug, period.
+
+	* tests/fftw_test.c, rfftw/rplanner.c: Implemented paranoid check
+	for in-place complex planners.  I still don't know how to check
+	real->complex plans, though (apart from rewriting test_ergun for
+	real->complex and complex->real)
+
+Fri Mar 26 22:58:57 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi, FAQ/fftw-faq.bfnn, NEWS: Updated documentation
+	for FFTW 2.1.1.
+
+	* configure.in: Updated version number for 2.1.1 (as well as
+	shared lib. version).
+
+	* threads/Makefile.am, mpi/Makefile.am: Fixed typo in comment.
+
+	* threads/fftw_threads_test.c, threads/rfftw_threads_test.c,
+	mpi/rfftw_mpi_test.c, mpi/fftw_mpi_test.c: Added definition of
+	enter_paranoid_mode() to threads & MPI test programs.
+
+	* fftw/planner.c: Slight modification for future safety (not
+	necessary now).
+
+Thu Mar 25 02:29:08 1999  Matteo Frigo  <athena@fftw.org>
+
+	* tests/test_main.c, tests/test_main.h, tests/rfftw_test.c,
+	tests/fftw_test.c, fftw/planner.c: Added hooks for paranoid
+	verification of every single plan.
+
+Tue Mar 23 17:44:35 1999  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/generic.c: Array read out of bounds---fixed.  Thanks to
+	Jeff Breiden.
+
+Tue Mar  9 01:40:54 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Noted free-ness in "What is FFTW?"
+	description.
+
+Mon Mar  8 20:21:46 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* threads/fftw_threads.c: By default, don't even try to specify
+	PTHREAD_SCOPE_SYSTEM, since it causes problems on @!#%$ IRIX 6.5
+	(in which PTHREAD_SCOPE_SYSTEM is not supported, but
+	pthread_attr_setscope doesn't return an error!!!).  Just use the
+	default attributes (fftw_pthread_attributes_p == NULL).
+
+	* threads/fftw_threads.c: Fixed typo in comment.
+
+	* NEWS: Added 2.1 news.
+
+Mon Mar  8 18:00:37 1999  fftw  <fftw@fftw.org>
+
+	* tests/rfftw_test.c, tests/fftw_test.c: Fixed pow(8192, x) -->
+	pow(8192.0, x) .  This failed on Digital unix, I don't know why.
+
+Mon Mar  8 15:16:51 1999  Matteo Frigo  <athena@fftw.org>
+
+	* ChangeLog: Updated
+
+	* configure.in: Updated version number
+
+Sun Mar  7 19:47:54 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: a_slow_array --> a_bad_array
+
+	* doc/fftw.texi: Removed all reference to performance from
+	"Dynamic Arrays--The Wrong Way" section.
+
+	* doc/fftw.texi: Clarified output parameter of Fortran
+	multi-dimensional in-place transforms.
+
+	* NEWS, doc/fftw.texi: Thanks to Erik Scheirer (boom@sonyx.com)
+	for testing the Mach C threads code.
+
+Sat Mar  6 05:59:42 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* mpi/fftw_mpi_test.c: Added undocumented --only-parallel flag.
+
+	* threads/rfftw_f77_threads.c, threads/fftw_f77_threads.c,
+	threads/Makefile.am, doc/fftw.texi, NEWS: Added Fortran-callable
+	wrappers for the multi-threaded routines.
+
+Thu Feb 25 16:42:10 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* threads/fftw_threads.c, threads/fftw_threads-int.h: Made
+	pthreads code more tolerant if user doesn't call
+	fftw_threads_init.
+
+	* tests/rfftw_test.c, tests/fftw_test.c, mpi/rfftw_mpi_test.c,
+	mpi/fftw_mpi_test.c: Reduced array sizes somewhat for planner
+	tests.
+
+Wed Feb 24 21:43:26 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Added user thank-you to acknowledgements.
+
+	* doc/fftw.texi: Clarified output format of 1d MPI transforms.
+
+	* FAQ/fftw-faq.bfnn: Small change.
+
+Wed Feb 24 19:45:30 1999  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Changed wording regarding VC++5.0.
+
+	* doc/texi2html: Fixed bug in index generation
+
+Wed Feb 24 04:16:19 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: moved configure to fpindex, and added more
+	entries.
+
+	* doc/fftw.texi: Added more padding index entries.
+
+	* doc/fftw.texi: Objective Caml -> Caml in the index.
+
+	* doc/fftw.texi: Added @cindex floating-point precision
+
+	* doc/fftw.texi: Updated index.
+
+	* doc/fftw.texi: typo fix: rfftwnd_threads_*_one ->
+	rfftwnd_threads_one_*
+
+	* doc/fftw.texi: Print table of contents at the end, as directed
+	by the texinfo manual, so that pagination is not screwed up when
+	the TOC has an odd number of pages.
+
+Tue Feb 23 04:32:15 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Fixed typo.
+
+	* doc/fftw.texi: Indentation fix.
+
+Mon Feb 22 19:20:41 1999  Matteo Frigo  <athena@fftw.org>
+
+	* ChangeLog: Updated
+
+Mon Feb 22 19:16:12 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Noted workaround for buggy SGI compilers.
+
+	* ChangeLog: Line-wrapped (I wish you would remember to do this,
+	Matteo).
+
+	* gensrc/Makefile.rfftw.am, mpi/Makefile.am, threads/Makefile.am,
+	gensrc/Makefile.fftw.am: Got rid of hackery in header creation,
+	since circular dependencies are gone.  Also added prefixed headers
+	to CLEANFILES so they get deleted by 'make clean'.
+
+	* configure.in: Used xyz for prefix1 instead of just x, to make
+	future conflicts less likely.
+
+Mon Feb 22 18:55:16 1999  Matteo Frigo  <athena@fftw.org>
+
+	* configure.in: Fix for irix didn't work, let's try this
+
+	* ChangeLog: Fixed typo
+
+	* ChangeLog: Updated
+
+	* configure.in: Accounted for irix thread lossage
+
+	* tests/test_main.c: usage() must normally exit, otherwise the
+	test programs tries to read argv[] out of bounds.
+
+	* doc/Makefile.am: fftw.ps used compressed fonts
+
+	* gensrc/Makefile.rfftw.am, gensrc/Makefile.fftw.am: rfftw.h
+	didn't go into distribution.  Fixed
+
+	* threads/Makefile.am, gensrc/Makefile.rfftw.am, mpi/Makefile.am,
+	configure.in, gensrc/Makefile.fftw.am: Removed circular
+	dependencies
+
+	* configure.in: Fixed typo
+
+Mon Feb 22 05:19:40 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* tests/test_main.c: Added some new jokes.  Also, print out
+	floating-point precision for -v.
+
+	* mpi/rfftw_mpi_test.c, threads/Makefile.am,
+	gensrc/Makefile.rfftw.am, mpi/Makefile.am, mpi/fftw_mpi_test.c,
+	gensrc/Makefile.fftw.am: Made sure header files are not deleted
+	when no prefix is added.  (Also got rid of some extraneous
+	newlines printed by mpi code.)
+
+	* configure.in, NEWS: Renamed 2.1 -> 2.1-beta1.
+
+	* doc/Makefile.am: make clean shouldn't remove rfftwnd.gif.
+
+Sun Feb 21 20:33:51 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* NEWS: Feature set for 2.1 is now frozen (I think).
+
+	* doc/fftw.texi: slight change
+
+	* mpi/Makefile.am, threads/Makefile.am, gensrc/Makefile.fftw.am,
+	gensrc/Makefile.rfftw.am: Whoops!  Don't include
+	XXX_FFTW_PREFIX_XXX header files in CLEANFILES, because that will
+	cause 'make clean' to delete irreplaceable files when no prefix is
+	being used.
+
+	* mpi/Makefile.am, threads/Makefile.am, gensrc/Makefile.fftw.am,
+	gensrc/Makefile.rfftw.am: Fixed installed headers to use
+	FFTW_PREFIX for their own header inclusions.
+
+	* configure.in, doc/fftw.texi, NEWS: Documented
+	--enable-type-prefix.
+
+	* mpi/Makefile.am, tests/Makefile.am, threads/Makefile.am,
+	gensrc/Makefile.fftw.am, gensrc/Makefile.rfftw.am, acinclude.m4,
+	configure.in: Use FFTW_PREFIX for all installed files.
+
+	* configure.in: Use g77 in preference to fort77.
+
+Sun Feb 21 17:56:49 1999  Matteo Frigo  <athena@fftw.org>
+
+	* tests/Makefile.am: Fixed forgotted XXX_FFTW_NAME_XXX
+
+	* configure.in: Allowed user specification of [r]fftw-name
+
+Sun Feb 21 17:35:28 1999  fftw  <fftw@fftw.org>
+
+	* tests/Makefile.am, configure.in, gensrc/Makefile.fftw.am,
+	gensrc/Makefile.rfftw.am, acinclude.m4: (Preliminary) hack: allow
+	user to change name of fftw library.
+
+	* configure.in: Incremented shared library version number.
+
+	* configure.in: Added rfftw_mpi.h to list of files to install for
+	--enable-mpi.
+
+Sat Feb 20 23:00:41 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: The ascii and info (but not html) versions of
+	the FAQ were chopping off the answer to the last question.  Rather
+	than fix the bug, I just added a trailing comment like in the
+	Linux FAQ, which seems to correct the problem.
+
+	* FAQ/fftw-faq.bfnn: Minor fixes and updates for 2.1.
+
+	* mpi/rfftw_mpi_test.c, mpi/fftw_mpi.h, mpi/fftw_mpi_test.c,
+	mpi/fftw_mpi.c: Share plans between forward and backward fftw_mpi
+	plans (and between other fftw_mpi plans of the same size).
+
+	* tests/rfftw_test.c, tests/fftw_test.c: In -p test with rank > 1,
+	reduce the size of the arrays for the plan.
+
+	* mpi/transpose_mpi.c: Got rid of compiler warning (code was okay,
+	though).
+
+	* doc/fftw.texi: small fix.
+
+Sat Feb 20 03:27:36 1999  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Minor tweaks
+
+Sat Feb 20 02:57:37 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/Makefile.am, doc/rfftwnd.gif: fig2dev gif output stinks;
+	"manually" add better version of gif figure.
+
+	* doc/fftw.texi: Added link.
+
+	* doc/Makefile.am: Make sure to distribute rfftwnd.fig.
+
+	* doc/fftw.texi: Some post-reorganization grooming.
+
+	* configure.in: Whoops!  Use $enableval, not $withval, in
+	AC_ARG_ENABLE.
+
+Fri Feb 19 23:50:45 1999  Matteo Frigo  <athena@fftw.org>
+
+	* doc/Makefile.am, doc/fftw.texi: Added picture to postscript
+	manual
+
+Fri Feb 19 23:29:07 1999  fftw  <fftw@fftw.org>
+
+	* configure.in: Added fort77 to list of fortran compiler (linux
+	f2c comes with a program with this name)
+
+	* doc/rfftwnd.gif, doc/rfftwnd.fig, doc/Makefile.am:
+	Reverse-engineered rfftwnd picture from postscirpt to fig, so I
+	can edit it and produce smaller postscript. (Linux rules!)
+
+	* doc/fftw.texi: Restructured manual
+
+Fri Feb 19 20:32:13 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* fftw/config.h.in, threads/fftw_threads-int.h, configure.in,
+	doc/fftw.texi, NEWS: Added untested support for Mach C threads.
+	Also changed three --with options to --enable.
+
+Fri Feb 19 17:22:38 1999  Matteo Frigo  <athena@fftw.org>
+
+	* threads/rfftw_threads_test.c, threads/rfftwnd_threads.c,
+	threads/rexec2_threads.c, threads/rexec_threads.c,
+	threads/rfftw_threads.h, threads/fftw_threads_test.c,
+	threads/fftwnd_threads.c, threads/fftw_threads.c,
+	threads/fftw_threads.h, threads/executor_threads.c,
+	threads/fftw_threads-int.h, tests/test_main.c, tests/fftw_test.c,
+	tests/rfftw_test.c, rfftw/rgeneric.c, rfftw/rplanner.c,
+	rfftw/rfftwf77.c, rfftw/rfftwnd.c, rfftw/rexec2.c, rfftw/rfftw.h,
+	mpi/transpose_mpi.c, rfftw/rexec.c, mpi/sched.h, mpi/test_sched.c,
+	mpi/test_transpose_mpi.c, mpi/rfftw_mpi_test.c, mpi/rfftwnd_mpi.c,
+	mpi/sched.c, mpi/fftwnd_mpi.c, mpi/rfftw_mpi.h, mpi/fftw_mpi.c,
+	mpi/fftw_mpi.h, mpi/fftw_mpi_test.c, mpi/TOMS_transpose.h,
+	matlab/fftw.c, mpi/TOMS_transpose.c, gensrc/variable.ml,
+	gensrc/variable.mli, gensrc/util.mli, gensrc/twiddle.ml,
+	gensrc/util.ml, gensrc/to_c.mli, gensrc/symmetry.ml,
+	gensrc/to_c.ml, gensrc/schedule.ml, gensrc/schedule.mli,
+	gensrc/number.mli, gensrc/rconfig_prelude, gensrc/magic.ml,
+	gensrc/number.ml, gensrc/fft.ml, gensrc/genfft.ml,
+	gensrc/exprdag.mli, gensrc/expr.ml, gensrc/expr.mli,
+	gensrc/exprdag.ml, gensrc/dag.ml, gensrc/dag.mli,
+	gensrc/complex.ml, gensrc/complex.mli, gensrc/asched.mli,
+	gensrc/ast.ml, gensrc/asched.ml, fftw/wisdomio.c,
+	fortran/f77_test.F, fftw/twiddle.c, fftw/wisdom.c, fftw/rader.c,
+	fftw/timer.c, fftw/planner.c, fftw/putils.c, fftw/generic.c,
+	fftw/malloc.c, fftw/fftwf77.c, fftw/fftwnd.c, fftw/fftw-int.h,
+	fftw/fftw.h.in, fftw/executor.c, fftw/f77_func.h,
+	fftw/config.h.in, cilk/time_cilk.cilk, doc/fftw.texi,
+	cilk/fftwnd_cilk.cilk, cilk/test_cilk.cilk,
+	cilk/executor_cilk.cilk, cilk/fftw_cilk.cilkh, COPYRIGHT,
+	ChangeLog: Fixed copyright year
+
+Fri Feb 19 06:12:37 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Minor changes.
+
+	* doc/fftw.texi: Various updates.
+
+	* doc/fftw.texi: Acknowledged Steven's long-suffering advisor.  =)
+
+	* doc/fftw.texi: Noted that 1d complex MPI transforms are
+	supported.
+
+	* NEWS: Noted rfftwnd illustration.
+
+	* README: Moved threads, mpi, and fortran descriptions to be under
+	"official" header.
+
+	* TODO: Removed parallel rfftw from TODO (it's done).
+
+	* doc/rfftwnd.gif, doc/fftw.texi, doc/Makefile.am: Added rfftwnd
+	illustration to the manual (HTML version only).
+
+Thu Feb 18 22:44:08 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: rfftwnd_mpi documentation bug fix.
+
+Tue Feb 16 23:24:36 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Noted library requirements of 1D MPI.
+
+	* mpi/fftw_mpi.h, mpi/fftw_mpi.c, doc/fftw.texi: Added scrambled
+	input/output options (flags) for 1d mpi transforms.
+
+	* cilk/Makefile: Don't complain if Makefile.common doesn't exist.
+
+	* mpi/fftw_mpi_test.c: Fixed printf.
+
+	* mpi/Makefile.am: Made sure headers are included in make dist.
+
+	* doc/fftw.texi: Documented 1D MPI transforms in manual.
+
+	* mpi/fftw_mpi.c, mpi/fftw_mpi.h, mpi/fftw_mpi_test.c,
+	mpi/Makefile.am, NEWS: Added MPI 1D FFT for those crazy guys at
+	Caltech.
+
+	* NEWS, doc/fftw.texi: Documented real MPI transforms.
+
+	* mpi/rfftw_mpi_test.c: Small fix.
+
+Mon Feb 15 23:50:41 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* mpi/rfftw_mpi_test.c, mpi/rfftwnd_mpi.c, mpi/fftw_mpi_test.c,
+	mpi/rfftw_mpi.h, configure.in, mpi/Makefile.am: Added rfftw MPI
+	transforms.
+
+	* mpi/Attic/transpose_mpi.h: this header file is now part of
+	fftw_mpi.h
+
+	* doc/fftw.texi: fixed quote marks.
+
+	* doc/fftw.texi: Fixed typo.
+
+	* doc/fftw.texi: Fixed parallel ref. in intro.
+
+	* doc/fftw.texi: fixed typo
+
+	* doc/fftw.texi: Noted stupid Fortran identifier length
+	limitation.
+
+	* doc/fftw.texi: hyphenation fix
+
+	* doc/fftw.texi: Fixed cross-reference.
+
+	* doc/fftw.texi: small fix
+
+	* doc/fftw.texi: Clarifications in the MPI section.
+
+	* doc/fftw.texi: bug fix.
+
+	* doc/fftw.texi: Fixed @uref tags.
+
+	* NEWS: Noted MPI updates.
+
+	* doc/fftw.texi: Added documentation reference to MPI FFTW in
+	parallel overview.
+
+	* mpi/Attic/README, doc/fftw.texi: Folded MPI documentation into
+	main manual.
+
+	* mpi/transpose_mpi.c: bug fix: when a process didn't have any
+	local data, we weren't able to distinguish between in-place and
+	out-of-place transposes, and were also incorrectly thinking that
+	all block sizes were equal.
+
+Sun Feb 14 20:21:50 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* tests/test_main.h, tests/test_main.c,
+	mpi/Attic/test_fftwnd_mpi.c, mpi/Attic/time_fftwnd_mpi.c,
+	mpi/fftw_mpi_test.c, configure.in, mpi/Makefile.am: Use standard
+	fftw test program template for MPI tests.
+
+	* fftw/malloc.c: Whoops!
+
+	* fftw/malloc.c: fixed omission from last checkin.
+
+	* configure.in: Fixed typo and updated version number to 2.1.
+
+	* mpi/transpose_mpi.c, mpi/Attic/time_fftwnd_mpi.c,
+	mpi/test_transpose_mpi.c, mpi/Attic/test_fftwnd_mpi.c,
+	mpi/fftwnd_mpi.c, mpi/fftw_mpi.h: Added option of doing
+	out-of-place transpose, so that we can take advantage of
+	MPI_Alltoall primitive if the user provides enough space.
+
+	* threads/fftw_threads.c: Don't require system to support
+	PTHREAD_SCOPE_SYSTEM (although we prefer this over
+	PTHREAD_SCOPE_PROCESS).
+
+	* gensrc/Makefile.fftw.am, gensrc/Makefile.rfftw.am: Include f77
+	wrapper files in sources.
+
+	* mpi/transpose_mpi.c, mpi/Attic/time_fftwnd_mpi.c,
+	mpi/test_transpose_mpi.c, mpi/Attic/fftwnd_mpi.h,
+	mpi/Attic/test_fftwnd_mpi.c, mpi/sched.c, mpi/fftw_mpi.h,
+	mpi/fftwnd_mpi.c, mpi/Makefile.am, mpi/TOMS_transpose.c,
+	mpi/TOMS_transpose.h, mpi/Attic/Makefile, Makefile.am,
+	configure.in: Integrated mpi stuff into automake/autoconf.
+
+	* threads/Makefile.am: Fixed typo in comment.
+
+Sat Feb 13 22:36:14 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* mpi/Attic/transpose_mpi.h, mpi/transpose_mpi.c,
+	mpi/Attic/time_fftwnd_mpi.c, mpi/test_transpose_mpi.c,
+	mpi/Attic/test_fftwnd_mpi.c, mpi/sched.h, mpi/test_sched.c,
+	mpi/Attic/fftwnd_mpi.h, mpi/sched.c, mpi/TOMS_transpose.c,
+	mpi/TOMS_transpose.h, mpi/fftwnd_mpi.c, mpi/Attic/Makefile:
+	Updated MPI routines.  The new implementation is almost completely
+	rewritten from before, and should (hopefully) be easier to manage
+	and (maybe) faster in some cases.
+
+	* configure.in: Check for pthread_create outside of -lpthread,
+	since some systems may have threads built into the standard C
+	libraries.
+
+	* fftw/malloc.c: Allow allocation/freeing of 0-size blocks/NULL
+	pointers (since that is ANSI-okay, after all).
+
+	* cilk/executor_cilk.cilk: Use ntwiddle instead of r-1 in case
+	twiddle policy changes.
+
+	* mpi/Attic/time_fftwnd_mpi.c: Whoops!  don't pass uninitialized
+	out parameter (shouldn't be a problem in any case since transform
+	is in-place, but better safe than sorry).
+
+Thu Feb 11 02:31:45 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Noted necessity of linking threads-using code
+	with -lpthread or whatever.
+
+	* rfftw/rfftwf77.c, fortran/Attic/rfftw_f77.c,
+	fortran/Attic/fortranize.h, fortran/Attic/fftw_f77.c,
+	fortran/fftw_f77.i, fortran/Attic/README, fortran/f77_test.F,
+	fftw/f77_func.h, fftw/fftwf77.c, fftw/config.h.in, configure.in,
+	doc/fftw.texi, NEWS, acinclude.m4: Fortran wrapper functions are
+	now automatically included in the main FFTW libraries, unless the
+	--without-fortran option is passed to configure.  They are also
+	documented in the main manual.
+
+	* doc/fftw.texi: Fixed broken cross-reference.
+
+Wed Feb 10 22:47:01 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Small fixes to multi-threaded FFTW section.
+
+	* threads/Attic/README, doc/fftw.texi, NEWS: Documented threads
+	routines in the main FFTW manual.
+
+	* threads/fftw_threads.c: Make sure spawn_loop handles nthreads ==
+	0.
+
+	* threads/fftw_threads-int.h, threads/rfftwnd_threads.c,
+	threads/executor_threads.c: Set things up so that we could pass
+	workspace to fftw_many_inplace_threads.
+
+	* threads/fftw_threads.c: Improved load-balancing of threads
+	slightly, although in practice it doesn't seem to make much
+	difference.
+
+	* threads/rfftwnd_threads.c, threads/rexec_threads.c,
+	threads/rfftw_threads.h, threads/rfftw_threads_test.c: For greater
+	consistency, make sure "threads" suffix always directly follows
+	rfftw or rfftwnd.
+
+	* threads/rfftwnd_threads.c, threads/rexec2_threads.c,
+	threads/rexec_threads.c, threads/rfftw_threads.h,
+	threads/fftw_threads-int.h, threads/fftw_threads.c,
+	threads/fftwnd_threads.c, threads/executor_threads.c: Cleaned up
+	loop-parallelizing interface considerably.
+
+	* threads/rfftwnd_threads.c, threads/rfftw_threads.h,
+	threads/rfftw_threads_test.c, threads/rexec2_threads.c,
+	threads/rexec_threads.c, threads/executor_threads.c,
+	threads/fftw_threads-int.h, threads/fftw_threads.h, configure.in,
+	threads/Makefile.am, NEWS: Added first stab at parallel (threads)
+	rfftw.
+
+	* rfftw/rfftwnd.c, rfftw/rexec.c: Slight stride/dist fix (to make
+	behavior in in-place transforms more in line with what the manual
+	says),
+
+Fri Feb  5 22:53:13 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* tests/test_main.c: Noted -x and -f options in -h help.
+
+	* threads/executor_threads.c: Yikes!  Use ntwiddle instead of r-1
+	in twiddle_thread.  (This would have been a problem if we ever
+	changed the twiddle policy.)
+
+	* threads/fftwnd_threads.c, threads/executor_threads.c,
+	threads/fftw_threads-int.h, fftw/config.h.in: Use autoconf to
+	determine if alloca is available and use malloc/free if it is not.
+
+	* threads/fftw_threads_test.c: Call fftw_threads_init when
+	starting up.
+
+	* threads/Attic/time_threads.c, threads/Attic/test_threads.c,
+	threads/fftwnd_threads.c, threads/fftw_threads.h,
+	threads/fftw_threads_test.c, threads/executor_threads.c,
+	threads/fftw_threads-int.h, threads/fftw_threads.c,
+	threads/Attic/README, threads/Makefile.am, tests/test_main.c,
+	tests/test_main.h, tests/rfftw_test.c, configure.in,
+	tests/fftw_test.c: Made the threads test program follow the model
+	of the uniprocessor test programs.
+
+	* doc/fftw.texi: Documented --with-threads configure option.
+
+	* threads/Attic/time_threads.c, threads/Attic/README,
+	threads/Attic/test_threads.c, threads/Makefile.am,
+	threads/fftw_threads.h, threads/Attic/Makefile, configure.in,
+	fftw/config.h.in, Makefile.am, NEWS: Autoconfiscated threads
+	stuff.
+
+Mon Feb  1 18:49:40 1999  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Added entry about VC++ 5.0
+
+Fri Jan 29 01:11:15 1999  Steven G. Johnson  <stevenj@fftw.org>
+
+	* NEWS: Noted improvements to <n> argument for test programs.
+
+	* tests/fftw_test.c: Removed unnecessary testing of both real and
+	imaginary impulses--this is unnecessary since we check linearity
+	under multiplication by complex scalars.
+
+	* tests/test_main.c: (Whoops!)  Turn interactive mode back off
+	when getopt is available.
+
+	* tests/test_main.c: Added support for new <n> format to
+	interactive mode.
+
+Fri Jan 29 00:09:00 1999  Matteo Frigo  <athena@fftw.org>
+
+	* tests/test_main.c, tests/test_main.h, tests/rfftw_test.c,
+	tests/fftw_test.c, tests/Makefile.am, tests/README, ChangeLog:
+	Allow specification of dimensions in ND test program.
+
+Fri Dec 11 23:03:47 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* fftw/malloc.c: Use typedefs consistently for fftw_*_hook.
+
+Wed Dec  9 17:27:42 1998  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/dag.ml: Changed to avoid warning from ocaml-2.01
+
+Tue Nov 17 18:01:13 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Updated Cilk URL.
+
+Wed Nov 11 05:51:16 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* tests/test_main.c: Print FFTW version on -v.
+
+	* tests/Makefile.am: Removed explicit -lm -- it is added
+	automatically by configure when it is available.
+
+Mon Oct 19 15:56:50 1998  Matteo Frigo  <athena@fftw.org>
+
+	* tests/test_main.c: Replaced 2x2 linear system with fib() in
+	timer iteration.  The linear system was converging to 0 in
+	floating point, and it caused underflow problems.
+
+Wed Oct  7 16:15:39 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* configure.in: Fixed usage of ` in echo.
+
+Tue Oct  6 04:46:04 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* configure.in: Got rid of message about enabling the x86 cycle
+	counter--why are we loudly suggesting a deprecated option?
+	Interested users can read the manual.
+
+Thu Oct  1 13:40:01 1998  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/genfft.ml: Changed <athfft.h> -> "athfft.h"
+
+Tue Sep 29 22:50:53 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* FAQ/fftw-faq.bfnn, README: Don't mention the current version
+	number, so that we don't have to keep updating these files with
+	each new version.
+
+	* README.hacks: Postponed computation of the phase of the moon
+	until FFTW 17.0.
+
+	* doc/fftw.texi: Explained "out of place" in tutorial.
+
+	* doc/fftw.texi: Added a couple of clarifications to the
+	installation on non-Unix section.
+
+	* NEWS: Fixed typo.
+
+Mon Sep 28 21:09:50 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* tests/test_main.c: Deleted some unused variables.
+
+Mon Sep 28 19:18:54 1998  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/wisdom.c, fftw/config.h.in, fftw/executor.c, Makefile.am,
+	configure.in: Moved version number to configure.in and tweaked
+	make dist to change config.h with the right version number.
+
+Sun Sep 27 01:18:27 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* FAQ/fftw-faq.bfnn, NEWS: Noted bug fixes for large rfftwnd
+	transforms in 2.0.1.
+
+	* tests/rfftw_test.c: Fixed bug in -s for large multi-dimensional
+	transforms.
+
+	* tests/test_main.c: Added -b flag for testing really large
+	transforms.
+
+	* fftw/fftwnd.c: Initialize nwork to zero (not really necessary,
+	but it doesn't hurt to make sure things are initialized).
+
+	* rfftw/rfftwnd.c: Fixed another parenthesization problem which
+	caused overflow problems with rank > 2 transforms.
+
+Sat Sep 26 19:57:25 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* rfftw/rfftwnd.c: Yeow!  Integer precision overflow occurs for
+	final dim. >= 2^16 due to inauspicious parenthesization.  Fixed.
+
+Fri Sep 25 21:55:28 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* NEWS: Some small changes to 2.0.1 release notes.
+
+Fri Sep 25 19:14:16 1998  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/Makefile.rfftw.am, gensrc/exprdag.ml,
+	gensrc/Makefile.fftw.am, NEWS, configure.in, ChangeLog: Changed
+	version numbers for 2.0.1 release.
+
+	* tests/fftw_test.c: Added FFTW_OUT_OF_PLACE to flags just in case
+	we forget it again in the header file.
+
+Fri Sep 25 16:29:21 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/magic.ml, gensrc/genfft.ml, gensrc/exprdag.ml: Added a
+	couple of hacks useful for athenafft
+
+Thu Sep 24 16:17:32 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/magic.ml, gensrc/genfft.ml: Added experimental `athena'
+	mode
+
+Wed Sep 23 14:55:02 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Fixed another typo.
+
+Wed Sep 23 14:08:36 1998  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/fftw.h.in, doc/fftw.texi: Added definition of
+	FFTW_OUT_OF_PLACE and fixed typo.
+
+Wed Sep 23 02:23:17 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Noted how to compile in single precision in
+	installation for non-unix section.
+
+Fri Sep 18 16:36:20 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* fftw/fftwnd.c: Modified buffered transforms to use a skew
+	(padding) between buffers, and also to do contigous writes instead
+	of reads when copying result from buffers back to array.  Thanks
+	to Geert van Kempen for the tips.
+
+	* fftw/fftw.h.in: Added Andrew Sterian's patch to allow FFTW to be
+	used as a shared library more easily on Win32.
+
+Thu Sep 17 20:42:14 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* tests/test_main.c, tests/test_main.h, tests/rfftw_test.c,
+	tests/fftw_test.c: Added -e flag to use FFTW_ESTIMATE in speed
+	tests.
+
+Wed Sep 16 01:10:11 1998  Matteo Frigo  <athena@fftw.org>
+
+	* rfftw/rplanner.c, fftw/planner.c: Do not use twiddle(1)
+	codelets, even if somebody (like me :-)) includes them
+	accidentally in [r]config.c.
+
+Tue Sep 15 21:48:07 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Fixed typo 0 <= i instead of 0 < i
+
+Tue Sep 15 19:01:47 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Added hyphen.
+
+Tue Sep 15 14:07:20 1998  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/variable.ml, gensrc/number.ml, gensrc/exprdag.ml: Better
+	hashing scheme for variables.  Removed caching of float value of
+	Numbers since it makes little difference with the new hashing
+	scheme.
+
+Tue Sep 15 13:14:18 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/number.ml, gensrc/exprdag.ml: Made oracle smarter (as it
+	was in 2.0)
+
+Mon Sep 14 23:10:58 1998  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/variable.mli, gensrc/number.ml, gensrc/variable.ml,
+	gensrc/Makefile.genfft, gensrc/exprdag.ml: Many, many speed
+	improvements
+
+Mon Sep 14 17:20:58 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/Makefile.genfft, gensrc/util.ml: Added timestamp to info
+	messages
+
+	* gensrc/util.ml, gensrc/util.mli, gensrc/genfft.ml,
+	gensrc/magic.ml, gensrc/exprdag.ml, gensrc/Makefile.genfft: Added
+	informative messages
+
+	* gensrc/variable.mli, gensrc/to_c.ml, gensrc/variable.ml,
+	gensrc/fft.ml, gensrc/exprdag.ml, gensrc/exprdag.mli,
+	gensrc/expr.ml, gensrc/expr.mli, gensrc/complex.mli,
+	gensrc/asched.ml, gensrc/complex.ml: Added LittleSimplifier to do
+	a first quick simplification pass.  This speeds up the algebraic
+	simplifier a lot.
+
+Mon Sep 14 02:06:24 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Fixed library ordering for -lrfftw.
+
+Sun Sep 13 19:09:19 1998  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/number.mli, gensrc/fft.ml, gensrc/number.ml,
+	gensrc/exprdag.mli, gensrc/complex.mli, gensrc/exprdag.ml,
+	gensrc/complex.ml: Improved speed of generator
+
+Fri Sep 11 17:33:16 1998  Matteo Frigo  <athena@fftw.org>
+
+	* acinclude.m4: Dec's compiler does not like -malign-double.
+
+Fri Sep 11 15:06:50 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* acinclude.m4: Make sure ACX_PROG_CC_EGCS is called.
+
+Fri Sep 11 14:15:46 1998  Matteo Frigo  <athena@fftw.org>
+
+	* Makefile.am: Added COPYRIGHT to distribution
+
+	* tests/Makefile.am: Added missing dependency
+
+	* threads/Attic/Makefile, cilk/Makefile, configure.in, ChangeLog,
+	acinclude.m4: Disabled egcs scheduler.
+
+Thu Sep 10 21:45:25 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* acinclude.m4: Added ppc/linux flags.
+
+Thu Sep 10 20:15:00 1998  Matteo Frigo  <athena@fftw.org>
+
+	* Makefile.am: Added bootstrap.sh to distributed files
+
+	* ChangeLog: Formatted The Right Way
+
+	* gensrc/to_c.mli, gensrc/fft.ml, gensrc/to_c.ml,
+	gensrc/exprdag.ml, gensrc/exprdag.mli, gensrc/Makefile.sources,
+	gensrc/codelet_prelude, gensrc/Makefile.genfft: Tweaked generator
+	to print fused mult/add count and more revision infos
+
+Wed Sep  9 16:32:37 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* threads/Attic/README, threads/fftw_threads.h,
+	threads/Attic/Makefile, doc/fftw.texi: Noted that Win32 threads
+	code has been reported as working.
+
+Wed Sep  9 12:20:52 1998  Matteo Frigo  <athena@fftw.org>
+
+	* threads/executor_threads.c, cilk/executor_cilk.cilk,
+	gensrc/magic.ml: Fixed parallel transform after X_codelet ->
+	fftw_X_codelet conversion
+
+Tue Sep  8 20:43:31 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* ChangeLog: Line-wrapped.
+
+Tue Sep  8 18:12:39 1998  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/magic.ml, gensrc/genfft.ml, gensrc/Makefile.sources,
+	gensrc/exprdag.ml, ChangeLog: More experiments with generation of
+	twiddloe factors (disable by default)
+
+Tue Sep  8 13:35:46 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Added reference to ocaml 2.00
+
+Mon Sep  7 22:21:01 1998  Matteo Frigo  <athena@fftw.org>
+
+	* gensrc/Makefile.sources: Disabled fused madd flags for now
+
+	* gensrc/magic.ml, gensrc/genfft.ml, gensrc/Makefile.sources,
+	gensrc/exprdag.ml: Added option to expand all FMA's explicitly,
+	even at the cost of increasing the operation count.
+
+	* gensrc/number.ml, gensrc/number.mli, gensrc/magic.ml,
+	gensrc/genfft.ml, gensrc/Makefile.sources, gensrc/exprdag.ml:
+	Implemented fused-multiply-add rules
+
+Mon Sep  7 16:10:44 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* fftw/malloc.c: Got rid of COMMA hack.
+
+Mon Sep  7 15:38:41 1998  Matteo Frigo  <athena@fftw.org>
+
+	* rfftw/rgeneric.c, rfftw/rplanner.c, rfftw/rexec2.c,
+	rfftw/rfftwnd.c, rfftw/.indent.pro, rfftw/rexec.c,
+	gensrc/genfft.ml, fftw/putils.c, gensrc/.indent.pro,
+	fftw/planner.c, fftw/fftw-int.h, fftw/fftw.h.in, fftw/.indent.pro,
+	fftw/executor.c: Alpha-converted X_codelet => fftw_X_codelet to
+	avoid namespace pollution.  Replaced ``for (i = 0; i < m; ++i)''
+	with ``for (i = m; i > 0; --i)'' in twiddle codelets.
+
+Sat Sep  5 21:49:24 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* configure.in: Removed redundant inclusion of acinclude.m4.
+
+	* acinclude.m4, configure.in: Moved max. optimization checking
+	into acinclude.m4.
+
+	* ChangeLog: Line-wrapped.
+
+	* gensrc/codelet_prelude, gensrc/Makefile.fftw.am,
+	gensrc/Makefile.rfftw.am: Changed from perfect to past tense in
+	notices about being automatically generated.
+
+	* FAQ/fftw-faq.bfnn: Slight change.
+
+	* fftw/putils.c, fftw/fftw.h.in: added fftw_sizeof_fftw_real().
+
+Thu Sep  3 21:51:19 1998  Steven G. Johnson  <stevenj@fftw.org>
+
+	* doc/fftw.texi: Fixed bug in documentation of how factors of 11
+	and 13 may be efficiently handled.
+
+Wed Sep  2 19:23:22 1998  fftw  <fftw@fftw.org>
+
+	* configure.in: Respect existing CFLAGS in the environment if any
+
+Wed Sep  2 15:23:20 1998  Matteo Frigo  <athena@fftw.org>
+
+	* cilk/Makefile, configure.in, acinclude.m4: Added -cpu=pentium et
+	al. for latest egcs
+
+Wed Sep  2 00:06:06 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Added FAQ antry about the darned ucbcc
+
+Tue Sep  1 14:07:46 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Mentioned that matlab computes normalized
+	FFTs
+
+	* fortran/f77_test.F: Used 'implicit none' to be sure to catch
+	Fortran compilers that don't call cpp.
+
+Mon Aug 31 17:38:38 1998  fftw  <fftw@fftw.org>
+
+	* ChangeLog: Updated changelog
+
+	* gensrc/Makefile.rfftw.am, gensrc/Makefile.fftw.am: Added
+	`automatically generated' notice
+
+	* rfftw/rplanner.c, rfftw/rgeneric.c, rfftw/rfftwnd.c,
+	rfftw/rexec2.c, rfftw/rexec.c, gensrc/rconfig_prelude,
+	gensrc/config_prelude, configure.in: Tried to be more tolerant of
+	systems with nonworking ``const''.
+
+Sun Aug 30 18:44:02 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/Makefile.rfftw.am, gensrc/Makefile.fftw.am: Switched
+	version number of shared library to 2.0.0.
+
+Fri Aug 28 21:42:01 1998  fftw  <fftw@fftw.org>
+
+	* fftw/fftwnd.c: Removed redundant include.
+
+	* doc/fftw.texi: Recommend using GNU make.
+
+	* cilk/Makefile: use rm -f for make clean.
+
+	* doc/fftw.texi: Various small changes.
+
+	* Makefile.am: Fixed bug: CVS dir was not removed from
+	distribution
+
+	* threads/Attic/Makefile, tests/Makefile.am, mpi/Attic/Makefile,
+	gensrc/Makefile.rfftw.am, gensrc/Makefile.fftw.am,
+	gensrc/Makefile, cilk/Makefile, Makefile.am: Minor fixes for
+	distribution
+
+	* Makefile.am: Polished `make dist'.
+
+	* doc/fftw.texi: Fixed missing word.
+
+	* doc/fftw.texi: Changed @detailmenu label.  There must be some
+	bug in emacs, I believe.
+
+	* doc/equation-4.gif: Grabbed equation-4.gif again
+
+	* fftw/fftwnd.c: Yikes!  Bug fix.
+
+	* doc/fftw.texi: Minor fixes.
+
+	* FAQ/fftw-faq.bfnn: Rewrote answer to "What is FFTW?" question.
+
+	* doc/fftw.texi: More fixes.
+
+	* doc/fftw.texi: Fixed messed-up equation.
+
+Thu Aug 27 23:51:32 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Slight changes.
+
+	* doc/fftw.texi: "What RFFTWND Really Computes" was missing a
+	complex conjugate in the description of Hermitian symmetry.
+
+	* threads/Attic/Makefile: Link libraries in the correct order.
+
+	* configure.in: Renamed 2.0 to 2.0-beta1 for the release
+
+	* doc/fftw.texi, doc/equation-4.gif, doc/Makefile.am: Added html
+	definition of rfftwnd.
+
+	* doc/fftw.texi: Fixed a few typos.
+
+	* fftw/putils.c: Fixed improper reference to planner.c (which
+	causes the whole complex package to be loaded for real transforms)
+
+	* ChangeLog: Line-wrapped.
+
+	* README.hacks, TODO, README, INSTALL: Updated README and similar
+	files for 2.0.
+
+	* threads/executor_threads.c: Align stack on Linux/x86 with gcc.
+
+	* doc/fftw.texi: Noted that complex-to-real transforms overwrite
+	their input arrays.
+
+	* gensrc/makemakefile.sh, gensrc/Makefile.fftw.am,
+	gensrc/Attic/Makefile.am: Makefile.am -> Makefile.fftw.am, for
+	consistency.
+
+	* gensrc/Makefile.rfftw.am: rfftwint.h is gone.
+
+	* doc/fftw.texi: More stylistic changes
+
+	* doc/fftw.texi: Stylistic changes
+
+	* doc/fftw.texi: Added What RFFTWND Really Computes section.
+
+	* rfftw/rplanner.c, rfftw/rgeneric.c, rfftw/rfftwnd.c,
+	rfftw/Attic/rfftwint.h, rfftw/rexec2.c, rfftw/rexec.c,
+	fftw/executor.c: Inlined i386 hacks.  This is almost completely
+	portable because of the new alloca() trick.  Code is much cleaner
+	now.
+
+	* doc/fftw.texi: Described rfftwnd complex format, and discussed
+	meaning of stride/dist for in-place transforms.
+
+Wed Aug 26 23:08:05 1998  fftw  <fftw@fftw.org>
+
+	* fftw/rader.c, fftw/planner.c, cilk/test_cilk.cilk,
+	cilk/executor_cilk.cilk, cilk/Makefile, ChangeLog: Upgraded Cilk
+	version to 2.0
+
+	* doc/fftw.texi: Fixed a couple of typos
+
+	* doc/fftw.texi: Added most of rfftwnd reference.
+
+	* NEWS: Noted FFTW_THREADSAFE and corresponding new section of the
+	manual.
+
+	* doc/fftw.texi: More changes in the introduction of the
+	halfcomplex format.
+
+	* doc/fftw.texi: Made it clear that halfcomplex applies to
+	one-dimensional rfftw only.
+
+	* doc/texi2html: There is no <MATH> tag in HTML 4.0.
+
+	* doc/fftw.texi: Fixed html versions of halfcomplex dfn.
+
+	* doc/texi2html, doc/fftw.texi: Added a few missing html formulas
+
+	* doc/fftw.texi: Some minor changes.  Removed mention of
+	"halfcomplex" in reference to rfftwnd outputs, since we define
+	that word in terms of the rfftw output format.
+
+	* doc/fftw.texi: Added What RFFTW Really Computes section
+
+	* doc/fftw.texi, doc/Makefile.am: Added index
+
+	* doc/fftw.texi: Added description of halfcomplex storage.
+
+	* tests/README: Noted rfftw_test, and pointed user to manual for
+	compilation instructions.
+
+Tue Aug 25 23:45:57 1998  fftw  <fftw@fftw.org>
+
+	* NEWS: Noted version 2.0.
+
+	* doc/fftw.texi: Slight change.
+
+	* doc/fftw.texi: Wrote non-Unix installation section and made a
+	few other minor changes.
+
+	* doc/fftw.texi: Fixed references to "What FFTWND Really
+	Computes".
+
+	* rfftw/rexec.c, fftw/fftw-int.h, fftw/executor.c,
+	fftw/config.h.in, configure.in: I386_HACK Done Right.  The hack
+	now should work across all generations of gcc/egcs, whether
+	building a shared library or not.
+
+	* doc/fftw.texi: Noted use of fast algorithm for prime sizes in
+	complex transforms.  Got rid of <MATH> tag everywhere (doesn't
+	seem to be well-defined in the HTML standard).
+
+	* rfftw/rfftw.h: Changed rfftw.h to reflect the manual.
+
+	* rfftw/rexec.c, fftw/fftw-int.h, fftw/executor.c,
+	fftw/config.h.in, configure.in: Changed the x86 hack to work also
+	with the shared library.
+
+	* doc/texi2html: @math used to translate to italics, which looked
+	ugly in HTML; now does nothing.
+
+	* doc/fftw.texi: Several small changes.  Gave uref's readable
+	titles.  Removed @inforef, which looked ugly in non-info docs.
+
+	* doc/fftw.texi: Fixed screwed-up master menu
+
+	* doc/fftw.texi: Worked on installation guide
+
+	* doc/fftw.texi: Added draft or real-complex reference.
+
+	* doc/texi2html, doc/fftw.texi: Upgraded to latest texi2html.
+
+	* configure.in: Use -qansialias on RS/6000 (seems to cause a
+	miniscule improvement).
+
+	* doc/fftw.texi: Several small changes.
+
+Mon Aug 24 23:55:51 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Separate wisdom is now used for real-complex.
+
+	* doc/fftw.texi: Fixed typo.
+
+	* doc/fftw.texi: Noted link requirements for rfftw.
+
+	* doc/fftw.texi: Quick Start -> Tutorial.  Updated introduction to
+	reflect extra sections.
+
+	* NEWS: Noted dropped op-count routines.
+
+	* threads/Attic/README: Updated; noted FFTW_THREADSAFE flag.
+
+	* threads/Attic/time_threads.c, threads/Attic/test_threads.c,
+	threads/fftwnd_threads.c, threads/executor_threads.c: Updated for
+	FFTW 2.0.
+
+	* doc/fftw.texi: Slight changes to introduction.
+
+	* doc/fftw.texi: Removed reference to operation counts from
+	manual.
+
+	* rfftw/rplanner.c, rfftw/rfftwnd.c, rfftw/rfftw.h,
+	gensrc/genfft.ml, fftw/rader.c, fftw/putils.c, fftw/fftwnd.c,
+	fftw/fftw.h.in, fftw/fftw-int.h: Removed op counts, until we find
+	a decent way to incorporate them back.
+
+	* FAQ/fftw-faq.bfnn: Added entry for broken linuxthreads.
+
+	* doc/fftw.texi: Updated introduction
+
+	* doc/fftw.texi: Written draft of reference section.
+
+Sun Aug 23 17:16:32 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: My middle initial is "G," not "J."
+
+Sat Aug 22 22:52:13 1998  fftw  <fftw@fftw.org>
+
+	* fftw/malloc.c: Added more paranoia to debugging malloc/free.
+
+	* doc/fftw.texi: Changed some wording in threads section and noted
+	that wisdom import/forget is not threadsafe.
+
+	* gensrc/fft.ml: More cosmetic changes
+
+	* gensrc/fft.ml, gensrc/complex.mli, gensrc/complex.ml: Cosmetic
+	changes
+
+	* doc/fftw.texi: Started re-adding installation section.
+
+	* doc/fftw.texi: Noted that plan destruction is not safe either.
+
+	* doc/fftw.texi: Cross-reference and line-length fixes.
+
+	* doc/fftw.texi: Updated menus and node references.  Emacs
+	texinfo-mode is great!
+
+	* doc/fftw.texi: Re-added "Words of Wisdom" and "Multi-Dimensional
+	Array Formats" chapters Added chapter on parallel transforms &
+	thread-safety.
+
+	* doc/texi2html: @url{} tags are now converted into hyperlinks.
+
+Fri Aug 21 17:24:36 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/util.mli, gensrc/util.ml, gensrc/symmetry.ml,
+	gensrc/fft.ml: Fixes to improve speed of generator and op count
+	for n not squarefree.
+
+Thu Aug 20 22:35:04 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Grammar fix.
+
+	* doc/fftw.texi: Don't need to say the number of args.
+
+	* doc/fftw.texi: Recommend that quick starts be read in order.
+
+	* rfftw/rfftwnd.c: dist parameter for in-place transforms now
+	works more closely like what you might expect.
+
+	* doc/fftw.texi: Various fixes and modifications.
+
+	* doc/fftw.texi: Added rfftwnd quick start.
+
+	* doc/fftw.texi: public-domain -> freely-available (FFTW, along
+	with many other FFT routines, is not "public-domain").
+
+	* doc/fftw.texi: Minor additions.
+
+	* doc/fftw.texi: Wrote rfftw quick start.
+
+	* fftw/twiddle.c, fftw/rader.c: Use FFTW_FORWARD instead of a
+	hard-coded negative sign, in case someone ever needs to change
+	this sign.
+
+	* rfftw/rfftw.h: Recreated rfftw_plan and rfftwnd_plan types.
+
+	* doc/fftw.texi: Some more changes to the multi-dimensional
+	quick-start.
+
+	* doc/fftw.texi: Added quick-start for multi-dimensional
+	transforms.
+
+	* doc/fftw.texi: Added 1d complex quick start.
+
+Wed Aug 19 23:55:39 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Changed reference in the introduction--an
+	introductory book is a better reference for people who don't know
+	anything about DFTs.  Also some minor changes.  Alluded to a
+	License and Copyright section.
+
+	* gensrc/symmetry.ml, gensrc/magic.ml, gensrc/fft.ml,
+	gensrc/exprdag.mli, gensrc/exprdag.ml, gensrc/expr.mli,
+	gensrc/expr.ml: Implemented three-phase simplifier.
+
+	* gensrc/symmetry.ml, gensrc/magic.ml, gensrc/fft.ml: Reset
+	rader_min to 13, until I understand how to simplify the code
+	properly.
+
+	* gensrc/number.ml, gensrc/magic.ml, gensrc/genfft.ml,
+	gensrc/fft.ml, gensrc/exprdag.mli, gensrc/exprdag.ml,
+	gensrc/Makefile.sources, gensrc/Makefile.genfft: Disabled new
+	convolution hack for n >= 17, since the naive algorithm is better.
+	The hack is similar to Rader's variant 4 in Tolimieri's book, and
+	the growth of the operation count is also documented in that book.
+
+	* TODO: Updated to reflect the fact that we have now rewritten
+	rfftw.
+
+	* fortran/Attic/README: Fixed erroneous listing of rfftwnd.
+
+	* fortran/Attic/fortranize.h, fortran/Attic/README: Various
+	improvements.
+
+	* NEWS: Added rfftw Fortran wrappers.
+
+	* fortran/Attic/fortranize.h, fortran/Attic/rfftw_f77.c,
+	fortran/fftw_f77.i, fortran/Attic/fftw_f77.c,
+	fortran/Attic/README: Added rfftw wrappers.
+
+Tue Aug 18 23:52:19 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/exprdag.ml, gensrc/expr.ml, gensrc/Makefile.genfft:
+	Another horrible hack in the generator speeds up n=13 by a lot.
+
+	* rfftw/Attic/rfftwint.h: Whoops!  Deleted extraneous characters.
+
+	* rfftw/rplanner.c, rfftw/rgeneric.c, rfftw/rfftwnd.c,
+	rfftw/Attic/rfftwint.h, rfftw/rfftw.h, rfftw/rexec2.c,
+	rfftw/rexec.c, gensrc/Makefile.rfftw.am: Added invoke_many routine
+	for rfftw, and split hacks into separate header file (rfftwint.h).
+
+	* gensrc/magic.ml, gensrc/genfft.ml, gensrc/fft.ml,
+	gensrc/exprdag.ml, gensrc/Makefile.sources: Implemented new way of
+	doing Rader's algorithm.
+
+	* NEWS: Noted fftw_one, etcetera.
+
+	* ChangeLog: Line-wrapped entries.
+
+	* tests/rfftw_test.c, rfftw/rfftwnd.c: Yikes!  Bug fix.  In the
+	future, be sure to try running the test program with the -m
+	option, since the rfftwnd specific planner operates signficantly
+	differently under FFTW_MEASURE than under FFTW_ESTIMATE.
+
+Mon Aug 17 23:27:23 1998  fftw  <fftw@fftw.org>
+
+	* tests/test_main.c: Also sprach g++: the `gets' function is
+	dangerous and should not be used.
+
+	* rfftw/rfftwnd.c, fftw/rader.c, fftw/malloc.c: Made g++ happy
+
+	* rfftw/rplanner.c, fftw/putils.c, ChangeLog: Fixed wrong
+	arguments in make_node_rgeneric. (Ouch!)
+
+	* tests/rfftw_test.c, tests/fftw_test.c, rfftw/rfftwnd.c,
+	fftw/fftwnd.c, fftw/fftw.h.in, fftw/fftw-int.h: Added
+	FFTW_THREADSAFE flag, which is intended to guarantee that the plan
+	be read-only, making it safe to use the same plan in parallel from
+	multiple threads.  Currently, it only has an effect in the
+	multi-dimensional transforms (the 1d plans are already read-only).
+
+	* tests/Makefile.am, rfftw/rfftw.h, rfftw/rexec2.c, rfftw/rexec.c,
+	fftw/executor.c: Optimized the aligned _many loop.  Fixed
+	alignments in rexec2.c
+
+	* rfftw/rexec.c, fftw/fftw-int.h, fftw/executor.c: Reorganized
+	alignment hacks to be more robust with different compilers and
+	compiler flags.
+
+	* tests/Makefile.am: automake TESTS variable expects the names of
+	actual executables, not simple 'make' dependencies.  Fixed by
+	overriding 'make check' behavior instead of using TESTS.
+
+	* tests/test_main.c, tests/Makefile.am: Added 'make check'
+	feature, along with flag to test programs to limit the number of
+	iterations.
+
+	* tests/test_main.h, tests/test_main.c, tests/rfftw_test.c,
+	tests/fftw_test.c, rfftw/rfftwnd.c, rfftw/rfftw.h, rfftw/rexec.c,
+	fftw/fftwnd.c, fftw/fftw.h.in, fftw/executor.c: Added fftw_one and
+	friends, and modified the test programs to check them.
+
+	* doc/fftw.texi: Capitalization changes, clarifications, and other
+	minor changes.
+
+	* doc/texi2html, doc/fftw.texi: Restructured manual (still
+	incomplete)
+
+	* rfftw/rplanner.c, rfftw/rgeneric.c, rfftw/rfftw.h,
+	rfftw/rexec.c, fftw/twiddle.c, fftw/timer.c, fftw/rader.c,
+	fftw/putils.c, fftw/planner.c, fftw/malloc.c, fftw/generic.c,
+	fftw/fftwnd.c, fftw/fftw-int.h, fftw/executor.c, fftw/config.h.in:
+	Many cosmetic changes.  ``optimized'' rexecutor slightly.
+
+	* fftw/rader.c: Calls fftw_executor_simple directly instead of
+	calling fftw().
+
+	* tests/test_main.h, tests/test_main.c, tests/rfftw_test.c: Fixed
+	(hopefully) a problem with roundoff errors sometimes exceeding the
+	tolerance.
+
+Sun Aug 16 22:55:43 1998  fftw  <fftw@fftw.org>
+
+	* rfftw/rgeneric.c: ``optimized'' rgeneric codelets (kind of)
+
+	* fftw/fftw-int.h, fftw/config.h.in, configure.in: Added separate
+	--enable-debug-alignment flags for debugging x86 alignments (the
+	--enable-debug flag also changes the compiler flags, which we
+	don't want to do).
+
+	* rfftw/rplanner.c, fftw/putils.c: Bug fix--make sure to only call
+	rgeneric codelets for odd n.
+
+	* rfftw/rexec2.c, gensrc/Makefile.sources: Fixed x86 alignments.
+
+	* tests/test_main.c: -s now interacts with -d 1 in the same way
+	that -c and -a do.
+
+	* NEWS: Slight clarification.
+
+	* rfftw/rplanner.c: Planner can now decide on the best place to
+	use generic codelets.
+
+	* fftw/planner.c: Planner now decides the best place to put
+	generic/Rader codelets.
+
+	* fftw/putils.c: Changed message for Rader print_plan.
+
+	* tests/rfftw_test.c, fftw/rader.c, fftw/putils.c, fftw/fftw.h.in:
+	Modified Rader to use only a single plan for forward and backward
+	transforms of the convolution.
+
+Sat Aug 15 22:35:05 1998  fftw  <fftw@fftw.org>
+
+	* NEWS: Noted the news.
+
+	* threads/Attic/Makefile, tests/Makefile.am, mpi/Attic/Makefile,
+	matlab/Makefile, gensrc/config, gensrc/README, fftw/fftw-int.h,
+	doc/fftw.texi, cilk/README, cilk/Makefile, FAQ/fftw-faq.bfnn,
+	configure.in, README.hacks, Makefile.am, INSTALL: The great
+	directory renaming: src -> fftw.
+
+	* fftw/twiddle.c, fftw/rader.c, fftw/putils.c, fftw/fftw.h.in,
+	fftw/fftw-int.h, fftw/executor.c: Added sharing of Rader data and
+	twiddles between different plans (and within the same plan).
+
+	* tests/test_main.c, fftw/malloc.c, fftw/fftw.h.in: When debugging
+	is enabled, keep track of the peak memory usage (and report it in
+	the test programs).
+
+	* fftw/rader.c: Rader is now prepared to share data between
+	forward and backward transforms.
+
+	* fftw/rader.c, fftw/fftw.h.in, fftw/fftw-int.h, fftw/executor.c:
+	Whoops, forgot to add rader.c to the repository.  Also got rid of
+	an unused variable and include prototypes for the *_ops functions
+	in fftw-int.h.
+
+	* fftw/twiddle.c, fftw/putils.c, fftw/planner.c, fftw/fftw.h.in,
+	fftw/fftw-int.h, fftw/executor.c, gensrc/Attic/Makefile.am: Added
+	Rader codelets to handle large prime factors.
+
+Fri Aug 14 23:37:20 1998  fftw  <fftw@fftw.org>
+
+	* rfftw/rgeneric.c: rgeneric seems to work!
+
+	* rfftw/rgeneric.c: Fixed yet another bug in rgeneric.
+
+	* rfftw/rexec.c: Fixed wrong union field.
+
+	* fftw/putils.c, fftw/planner.c, fftw/fftw.h.in, fftw/fftw-int.h,
+	rfftw/rplanner.c, rfftw/rgeneric.c, rfftw/rexec.c,
+	gensrc/Makefile.rfftw.am: Implemented generic codelet. (inverse
+	does not work yet)
+
+	* fftw/putils.c, fftw/generic.c, fftw/fftw.h.in, fftw/fftw-int.h,
+	rfftw/rplanner.c, rfftw/rfftw.h, rfftw/rexec2.c, rfftw/rexec.c:
+	Split NOTW from HC2REAL and TWIDDLE from HC2HC, to avoid horrible
+	type confusion and let me modify the various codelts type
+	separately
+
+	* tests/rfftw_test.c: Fixed bug in in-place testnd.  (It's working
+	now...hooray!)
+
+	* tests/test_main.h: CHECK now calls fftw_die instead of exit
+	(mainly to make it easier to breakpoint).
+
+	* fftw/wisdom.c, fftw/twiddle.c, fftw/timer.c, fftw/putils.c,
+	fftw/planner.c, fftw/malloc.c, fftw/generic.c, fftw/fftwnd.c,
+	fftw/fftw.h.in, fftw/fftw-int.h, fftw/config.h.in,
+	fftw/.indent.pro, rfftw/rplanner.c, rfftw/rfftwnd.c,
+	rfftw/rfftw.h, rfftw/.indent.pro, gensrc/.indent.pro: Moved code
+	around to avoid unnecessary linking dependencies.
+
+	* tests/rfftw_test.c, fftw/putils.c, fftw/planner.c,
+	fftw/generic.c, fftw/fftw-int.h, fftw/.indent.pro,
+	rfftw/rplanner.c, rfftw/rfftwnd.c, rfftw/rfftw.h, rfftw/rexec2.c,
+	rfftw/rexec.c, rfftw/.indent.pro, gensrc/Attic/Makefile.am,
+	gensrc/.indent.pro: Splitted planner.c into two files, so that the
+	liker does not load the complex codelets if only rfftw is used.
+	Renamed rfftw_plan->fftw_plan, since they are the same and we do
+	not seem able to maintain consistency internally.
+
+	* ChangeLog: Updated changelog
+
+	* fftw/executor.c, rfftw/rexec2.c: Removed redundant test
+
+	* tests/rfftw_test.c, rfftw/rfftwnd.c: Fixed more bugs in in-place
+	rfftwnd (not done yet...sigh).
+
+	* rfftw/rfftwnd.c, rfftw/rexec2.c, rfftw/rexec.c: Fixed bug in
+	rfftwnd for ((n+1)/2)%4 == 0.
+
+Thu Aug 13 23:56:16 1998  fftw  <fftw@fftw.org>
+
+	* rfftw/rexec2.c: Removed redundant statement.
+
+	* tests/test_main.c: test -d 1 -a now uses nd routines, consistent
+	with -d 1 -c <n>.
+
+	* fftw/malloc.c: Need to flush(stdout) before printing to stderr,
+	or messages sometimes come in the wrong order.  Also, should pass
+	EXIT_FAILURE instead of 1 to exit().
+
+	* fftw/executor.c, rfftw/rexec.c: Fixed those damned alignments.
+
+	* tests/test_main.h, tests/test_main.c, tests/rfftw_test.c,
+	tests/fftw_test.c: Multi-dimensional tests are getting closer to
+	working...
+
+	* rfftw/rfftwnd.c, rfftw/rexec2.c: Bug fixes.
+
+	* fftw/fftw-int.h, fftw/executor.c, rfftw/rexec.c, gensrc/to_c.ml,
+	gensrc/magic.ml, gensrc/genfft.ml, gensrc/Makefile.sources: Added
+	automatic alignment checker --- this will make life easier on the
+	x86
+
+	* fftw/wisdom.c: Fixed incorrect order of arguments.
+
+	* fftw/wisdom.c, fftw/twiddle.c, fftw/planner.c, fftw/fftw-int.h,
+	fftw/executor.c, fftw/.indent.pro, rfftw/rplanner.c,
+	rfftw/rfftwnd.c, rfftw/rexec2.c, rfftw/rexec.c, rfftw/.indent.pro,
+	configure.in: Added extra wisdom flag.  Renamed to V2.0.
+
+	* tests/Makefile.am: Registered testmain.h with automake, so that
+	it gets distributed
+
+	* Makefile.am: Compile rfftw before tests (otherwise make fails)
+
+	* tests/rfftw_test.c: Fixed in-place testing bug.
+
+	* tests/rfftw_test.c: Fixed bug in test.
+
+	* tests/rfftw_test.c: First version of rfftw_test (incomplete).
+
+	* tests/test_main.h, tests/test_main.c, tests/fftw_test.c,
+	tests/Makefile.am, rfftw/rfftwnd.c: Initial version of rfftw_test
+	(incomplete).
+
+	* gensrc/Makefile: 'make clean' now gets rid of files from aborted
+	make install.
+
+	* gensrc/Makefile.rfftw.am: Added rfftwnd & friends to makefile.
+
+	* tests/test_main.h, tests/test_main.c, tests/fftw_test.c,
+	tests/Makefile.am: Split off main portion of fftw_test.c so that
+	it can be reused for rfftw_test.
+
+	* fftw/fftwnd.c, fftw/fftw-int.h, rfftw/rfftwnd.c, rfftw/rfftw.h,
+	rfftw/rexec2.c, rfftw/rexec.c: Added preliminary rfftwnd.c,
+	modifying other files as necessary.
+
+	* gensrc/number.mli, gensrc/number.ml, gensrc/exprdag.ml,
+	gensrc/expr.mli, gensrc/expr.ml: Added post-optimization pass to
+	simplify K1*(K2*A+K3*B), where Ki is a number
+
+	* rfftw/rfftw.h, rfftw/rexec2.c, rfftw/rexec.c: Added rexec2 in
+	preparation for rfftwnd transforms.
+
+	* rfftw/Attic/README: Removed out-of-date rfftw/README.  We will
+	need to add a couple of sections to the main manual.
+
+Wed Aug 12 23:47:47 1998  fftw  <fftw@fftw.org>
+
+	* fftw/twiddle.c, fftw/planner.c, fftw/fftw.h.in, fftw/fftw-int.h,
+	fftw/executor.c, rfftw/Attic/test_rfftw.c,
+	rfftw/Attic/time_rfftw.c, rfftw/rfftw.h, rfftw/rplanner.c,
+	rfftw/Attic/rfftw.c, rfftw/rexec.c, rfftw/Attic/Makefile.am,
+	gensrc/rconfig_prelude, gensrc/makesources.sh,
+	gensrc/makerconfig.sh, gensrc/makemakefile.sh,
+	gensrc/makeconfig.sh, gensrc/install.sh, gensrc/config,
+	gensrc/config_prelude, gensrc/Makefile.rfftw.am,
+	gensrc/Attic/Makefile.am, gensrc/Makefile, configure.in: First
+	version of rfftw executor and friends.
+
+	* gensrc/config, gensrc/Makefile.sources: Updated for real
+	transforms
+
+	* gensrc/Attic/polygen.ml, gensrc/Attic/poly.ml,
+	gensrc/Attic/factorizer.ml, gensrc/Makefile.genfft: Removed old
+	unused files
+
+	* gensrc/variable.mli, gensrc/variable.ml, gensrc/symmetry.ml,
+	gensrc/genfft.ml, gensrc/fft.ml, gensrc/complex.mli,
+	gensrc/complex.ml, gensrc/Makefile.genfft: Added hc2hc_backward
+	codelets.
+
+	INCOMPATIBLE CHANGE: hc2hc codelets are marked FFTW_HC2HC instead
+	of FFTW_HC2HC_FORWARD and FFTW_HC2HC_BACKWARD.  The direction is
+	given by the dir flag.
+
+	* gensrc/schedule.ml: Added some comments
+
+	* gensrc/schedule.ml, gensrc/dag.mli, gensrc/dag.ml: Changed
+	scheduler to work properly with DIF codelets.
+
+	* gensrc/variable.mli, gensrc/variable.ml, gensrc/magic.ml,
+	gensrc/genfft.ml, gensrc/dag.ml, gensrc/Makefile.genfft: Removed
+	old junk code.
+
+	* gensrc/twiddle.ml, gensrc/genfft.ml, gensrc/fft.ml,
+	gensrc/Makefile.genfft: Separated twiddle policies into new file.
+	Added DIF twiddle code.
+
+Tue Aug 11 22:40:02 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/variable.mli, gensrc/variable.ml, gensrc/makeconfig.sh,
+	gensrc/genfft.ml, gensrc/fft.ml: Added hc2real codelets
+
+	* gensrc/variable.ml, gensrc/fft.ml: Fixed a couple of bugs in the
+	generator
+
+Mon Aug 10 22:57:14 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/variable.mli, gensrc/variable.ml, gensrc/to_c.mli,
+	gensrc/to_c.ml, gensrc/genfft.ml, gensrc/fft.ml,
+	gensrc/complex.mli, gensrc/complex.ml: Implemented hc2hc-forward
+	pass (not tested yet)
+
+	* gensrc/to_c.mli, gensrc/to_c.ml, gensrc/genfft.ml: renamed
+	confusing function `make_unparser'
+
+	* gensrc/variable.mli, gensrc/variable.ml, gensrc/genfft.ml,
+	gensrc/fft.ml, gensrc/.indent.pro: genfft now generates real2hc
+	codelets
+
+Sat Aug  8 18:38:05 1998  fftw  <fftw@fftw.org>
+
+	* threads/fftwnd_threads.c, tests/fftw_test.c, fftw/wisdom.c,
+	fftw/twiddle.c, fftw/planner.c, fftw/malloc.c,
+	rfftw/Attic/rfftw.c, gensrc/genfft.ml: Reverted NULL -> (foo *) 0
+
+	* threads/fftwnd_threads.c, tests/fftw_test.c, fftw/wisdom.c,
+	fftw/twiddle.c, fftw/planner.c, fftw/malloc.c,
+	rfftw/Attic/rfftw.c, gensrc/makeconfig.sh, gensrc/genfft.ml: (foo
+	*) 0 -> NULL, since the former is technically non-portable (it
+	assumes that a NULL pointer is equivalent to the cast of an
+	integer 0).
+
+Fri Aug  7 21:38:54 1998  fftw  <fftw@fftw.org>
+
+	* ChangeLog: Updated changelog
+
+	* configure.in: test $CC is incorrect if CC contains a space.
+	Fixed to test "$CC"
+
+	* doc/fftw.texi: configure -> ./configure
+
+Thu Aug  6 07:14:42 1998  fftw  <fftw@fftw.org>
+
+	* fftw/wisdomio.c, fftw/Attic/common_io.c,
+	gensrc/Attic/Makefile.am: Changed common_io.c -> wisdomio.c to
+	meet 8.3 filename restriction.  (sigh)
+
+Sun Aug  2 20:42:25 1998  fftw  <fftw@fftw.org>
+
+	* fftw/fftw-int.h: Got rid of PASTE(x,FFTW_REAL_SUFFIX) since
+	invoking macros with empty arguments (e.g. the default value of
+	FFTW_REAL_SUFFIX) produces undefined behavior in ANSI C (the 1989
+	ISO standard).  (The C9X standard will fix this.)
+
+Fri Jul 31 19:57:42 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: main() now returns 0 instead of calling
+	exit(0).
+
+Tue Jul 28 23:04:55 1998  fftw  <fftw@fftw.org>
+
+	* configure.in: Note default CFLAGS in configure message when
+	machine is unknown.
+
+	* doc/fftw.texi: Added more concrete example of how to save &
+	restore plans using wisdom.
+
+Fri Jul  3 22:26:37 1998  fftw  <fftw@fftw.org>
+
+	* threads/fftw_threads.h: Noted that nthreads is modified by the
+	spawn_loop macro.
+
+Thu Jun 25 20:56:10 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Noted that you shouldn't recreate the plan
+	before every transform.
+
+Mon Jun 15 18:22:07 1998  fftw  <fftw@fftw.org>
+
+	* fftw/fftw-int.h: Fixed bug in pentium timer runes
+
+Sun Jun 14 19:46:22 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Fixed em-dash bugs introduced in last revision.
+
+Sat Jun 13 06:31:20 1998  fftw  <fftw@fftw.org>
+
+	* AUTHORS: Added newline to end of file.
+
+Fri Jun 12 22:44:55 1998  fftw  <fftw@fftw.org>
+
+	* doc/Makefile.am, configure.in, Makefile.am: Minor fixes
+
+	* doc/fftw.texi, doc/Makefile.am, Makefile.am: Added html docs to
+	make dist
+
+	* doc/fftw.texi: Fixed for latest version of texinfo (3.12)
+
+	* bootstrap.sh: Fixed bootstrap.sh to interact properly with
+	automake
+
+	* doc/Makefile.am, Makefile.am, ChangeLog: Fixed distribution
+	policy
+
+	* doc/fftw.texi, doc/Makefile.am, doc/Attic/Makefile,
+	configure.in, Makefile.am: Put documentation under automake
+	control.
+
+Thu Jun 11 23:24:31 1998  fftw  <fftw@fftw.org>
+
+	* NEWS: V, V. -> Version
+
+	* INSTALL: Added FFTW-specific introduction.  I'm still not happy
+	with this file.
+
+	* Makefile.am: Added cilk/ to list of distributed directories
+
+	* doc/fftw.texi: Minor fixes.
+
+	* tests/fftw_test.c: Used the word "consistency" rather than
+	"accuracy" when describing the output of fftw_test -t.
+
+	* ChangeLog: Added ChangeLog entry.  You can update the ChangeLog
+	in emacs with M-x vc-update-change-log.  Then you can remove
+	trivial comments from the log manually.
+
+	* threads/Attic/time_threads.c, threads/Attic/test_threads.c,
+	threads/fftwnd_threads.c, threads/fftw_threads.h,
+	threads/executor_threads.c, threads/Attic/README,
+	tests/fftw_test.c, fftw/twiddle.c, fftw/timer.c, fftw/planner.c,
+	fftw/generic.c, fftw/fftwnd.c, fftw/fftw.h.in, fftw/fftw-int.h,
+	fftw/executor.c, rfftw/Attic/time_rfftw.c,
+	rfftw/Attic/test_rfftw.c, rfftw/rfftwnd.c, rfftw/Attic/rfftw.c,
+	rfftw/rfftw.h, rfftw/Attic/README, mpi/Attic/time_fftwnd_mpi.c,
+	mpi/Attic/test_fftwnd_mpi.c, mpi/Attic/fftwnd_mpi.h,
+	mpi/fftwnd_mpi.c, mpi/Attic/README, matlab/fftw.c, gensrc/to_c.ml,
+	gensrc/genfft.ml, fortran/Attic/fftw_f77.c, fortran/Attic/README,
+	doc/fftw.texi, cilk/time_cilk.cilk, cilk/test_cilk.cilk,
+	cilk/fftwnd_cilk.cilk, cilk/fftw_cilk.cilkh,
+	cilk/executor_cilk.cilk, NEWS: Renamed FFTW_COMPLEX, FFTW_REAL ->
+	fftw_complex, fftw_real.
+
+	* fftw/malloc.c, fftw/config.h.in, configure.in: Added
+	--enable-debug option; supercedes old MALLOC_DEBUG flag in
+	malloc.c.
+
+	* gensrc/Attic/Makefile.am: Fixed bug in makefile
+
+	* tests/Makefile.am, rfftw/Attic/Makefile.am, configure.in,
+	ChangeLog: Added libtool support
+
+Wed Jun 10 20:48:23 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c, configure.in: Changed configure.in for alpha
+
+	* gensrc/Attic/Makefile.am: Just another fix
+
+	* Makefile.am, bootstrap.sh: Yet another fix
+
+	* rfftw/Attic/Makefile.am, gensrc/Attic/Makefile.am,
+	Attic/build-distrib.sh, bootstrap.sh, Makefile.am: More GNU-lly
+	correct changes
+
+	* rfftw/Attic/Makefile.in, rfftw/Attic/Makefile.am,
+	gensrc/Attic/Makefile.am, configure.in: Completed switch to
+	automake.  Should work now
+
+	* tests/Attic/Makefile.in, tests/Makefile.am,
+	gensrc/makemakefile.sh, gensrc/install.sh,
+	gensrc/Attic/Makefile.in, gensrc/Attic/Makefile.am,
+	Attic/install.sh, Attic/config.sub, configure.in,
+	Attic/config.guess, Attic/build-distrib.sh, Attic/RELEASE-NOTES,
+	NEWS, Attic/Makefile.in, Makefile.am, INSTALL, ChangeLog, AUTHORS:
+	Switched to GNU automake (first attempt)
+
+Tue Jun  9 16:30:43 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/html.refs: Fixed broken link.
+
+Fri Jun  5 05:18:10 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Made nx and ny more explicit.
+
+	* configure.in: Guess -O3 for CFLAGS if none are known.
+
+Thu Jun  4 19:57:21 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c, fftw/twiddle.c, fftw/fftw-int.h: Modified
+	tests to use FFTW_TRIG_xxx.
+
+Fri May 29 18:29:06 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Emphasized that arrays of pointers are
+	incompatible with fftwnd.
+
+Wed May 20 16:09:52 1998  fftw  <fftw@fftw.org>
+
+	* Attic/RELEASE-NOTES: Noted changes to make long double,
+	etcetera, easier to support.
+
+Fri May  8 18:52:34 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Noted that we neither know nor care how to
+	decipher users' image and audio formats.
+
+Wed May  6 16:44:13 1998  fftw  <fftw@fftw.org>
+
+	* fftw/twiddle.c, fftw/fftw-int.h, gensrc/to_c.ml: Wrapped
+	constants in FFTW_KONST() and made a couple of other changes to
+	make it easier to use other floating point types.
+
+	* threads/Attic/time_threads.c, threads/Attic/test_threads.c,
+	threads/executor_threads.c, tests/fftw_test.c, rfftw/rfftwnd.c,
+	mpi/Attic/test_fftwnd_mpi.c: Replaced "illegal" with "invalid."
+
+	* fftw/twiddle.c, fftw/generic.c: Replaced double with FFTW_REAL
+	in twiddle generation (to make it easier to use long double, etc.)
+	Also removed spurious math.h inclusion from generic.c.
+
+Tue May  5 14:56:51 1998  fftw  <fftw@fftw.org>
+
+	* fftw/twiddle.c, fftw/executor.c: Replaced illegal->invalid.  To
+	hell with the laywers.
+
+Fri Apr 17 19:44:12 1998  fftw  <fftw@fftw.org>
+
+	* configure.in: Fixed HPUX case pattern.
+
+	* configure.in: Added HP-UX CFLAGS.
+
+	* fortran/Attic/fftw_f77.c: Added HP/UX case (no underscore, all
+	lower-case), and deleted Solaris case since it is the same as the
+	default.
+
+Wed Apr 15 16:01:03 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/number.ml: Added a few more digits to twopi constant.
+	(Not that it matters, since we will have to modify the
+	float_to_num function to get more than 9 digits of accuracy.
+
+Tue Apr 14 20:38:49 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Added new DARPA grant #.  Renamed arpa->darpa.
+	Maybe we should write a macro
+
+	\def\arpa{\ifnum\phaseofmoon1\then DARPA\else ARPA\fi}
+
+	* threads/Attic/time_threads.c: Eeep!  Fixed bug that didn't allow
+	you to call time_threads without passing a rank parameter.
+
+Sat Apr 11 04:38:06 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Slight change.
+
+	* FAQ/fftw-faq.bfnn: Added explanation of non-free licenses.
+
+	* fftw/fftw-int.h: Added missing extern "C" { ... } in case
+	someone compiles FFTW with a mix of C and C++ compilers.
+
+Fri Apr 10 23:14:54 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Fixed missing \}.
+
+	* FAQ/fftw-faq.bfnn: Small changes.  Fixed grammatical error.
+
+	* doc/fftw.texi: Small changes.
+
+Thu Apr  9 17:56:39 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Small fix
+
+	* fftw/config.h.in: Slight clarification in comments.
+
+	* rfftw/Attic/README.rfftw, rfftw/Attic/README: Renamed
+	README.rfftw -> README.
+
+Wed Apr  8 18:40:09 1998  fftw  <fftw@fftw.org>
+
+	* fftw/fftw.h.in, fftw/fftw-int.h: Minor fix
+
+	* Attic/build-distrib.sh: Used a little awk script to comment out
+	#undef's in config.h and fftw.h.
+
+	* doc/fftw.texi, FAQ/fftw-faq.bfnn: Fixed instructions for
+	compiling in single precision.
+
+	* FAQ/fftw-faq.bfnn: Added (abbreviated) Sun SC4.0 warning back
+	into the FAQ.
+
+	* fftw/timer.c: Removed cast (void *)0 in gettimezone.
+	Technically, this should be (struct timezone *)0.  ANSI C++
+	forbids conversion from void * to other pointers in function
+	arguments.  Just 0 should be fine, since 0 is valid syntax for the
+	null pointer of any type.
+
+	* tests/fftw_test.c, fftw/fftwnd.c, fftw/fftw.h.in: Fixed couple
+	of spurious warnings
+
+	* tests/fftw_test.c: Wording change in joke.
+
+	* tests/fftw_test.c: Reduced maximum size for random 1D tests.
+
+	* tests/fftw_test.c: Some new jokes.  Removed redundant
+	Windows-specific joke.  (Why beat a dead horse?)
+
+Tue Apr  7 22:58:04 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi, FAQ/fftw-faq.bfnn: Many small changes.
+
+	* doc/fftw.texi: Made clear that windoze is not supported.
+
+	* doc/Attic/Makefile, FAQ/fftw-faq.bfnn: Small changes.
+
+	* doc/fftw.texi: Some slight changes.  Added a link to the GPL
+	copy on the GNU home page.
+
+	* tests/fftw_test.c: Added more meaningful please_wait message for
+	infinite tests.
+
+	* FAQ/fftw-faq.bfnn: Fixed typo.
+
+	* COPYING: Fixed up header formatting a little and replaced tabs
+	with spaces (which are a poor way to do formatting since different
+	programs interpret them differently).
+
+	* Attic/RELEASE-NOTES: Noted wisdom import/export format change.
+
+	* threads/Attic/test_threads.c, threads/Attic/time_threads.c,
+	threads/fftwnd_threads.c, threads/fftw_threads.h,
+	threads/fftw_threads.c, threads/executor_threads.c,
+	tests/fftw_test.c, fftw/wisdom.c, fftw/twiddle.c, fftw/timer.c,
+	fftw/planner.c, fftw/generic.c, fftw/malloc.c, fftw/fftwnd.c,
+	fftw/fftw.h.in, fftw/fftw-int.h, fftw/executor.c,
+	fftw/config.h.in, fftw/Attic/common_io.c,
+	rfftw/Attic/time_rfftw.c, rfftw/Attic/test_rfftw.c,
+	rfftw/rfftwnd.c, rfftw/rfftw.h, rfftw/Attic/rfftw.c,
+	mpi/Attic/time_fftwnd_mpi.c, mpi/Attic/test_fftwnd_mpi.c,
+	mpi/Attic/fftwnd_mpi.h, mpi/fftwnd_mpi.c, matlab/fftw.c,
+	gensrc/variable.mli, gensrc/variable.ml, gensrc/util.mli,
+	gensrc/util.ml, gensrc/to_c.mli, gensrc/to_c.ml,
+	gensrc/schedule.mli, gensrc/schedule.ml, gensrc/Attic/poly.ml,
+	gensrc/Attic/polygen.ml, gensrc/number.mli, gensrc/number.ml,
+	gensrc/magic.ml, gensrc/genfft.ml, gensrc/fft.ml,
+	gensrc/Attic/factorizer.ml, gensrc/exprdag.mli, gensrc/exprdag.ml,
+	gensrc/expr.mli, gensrc/expr.ml, gensrc/dag.mli, gensrc/dag.ml,
+	gensrc/complex.mli, gensrc/complex.ml, gensrc/ast.ml,
+	gensrc/asched.mli, gensrc/asched.ml, fortran/Attic/fftw_f77.c,
+	fortran/f77_test.F, doc/fftw.texi, cilk/time_cilk.cilk,
+	cilk/test_cilk.cilk, cilk/fftwnd_cilk.cilk, cilk/fftw_cilk.cilkh,
+	cilk/executor_cilk.cilk, FAQ/fftw-faq.bfnn, COPYRIGHT, COPYING:
+	Completed transition to GNU
+
+	* rfftw/Attic/test_rfftw.c, rfftw/rfftwnd.c: Got rid of warnings.
+
+	* tests/fftw_test.c: Minor fix
+
+	* tests/fftw_test.c: rand() wasn't being random enough; I just
+	gave up and used a counter.
+
+	* tests/fftw_test.c, fftw/wisdom.c, fftw/fftw-int.h,
+	doc/fftw.texi: A few small fixes.  Also, cleaned up the
+	please_wait routine and called it in more places.
+
+Mon Apr  6 23:29:21 1998  fftw  <fftw@fftw.org>
+
+	* TODO: fixed typo
+
+	* tests/fftw_test.c: minor fix
+
+	* tests/fftw_test.c, fftw/fftw-int.h, fftw/config.h.in,
+	doc/fftw.texi, configure.in: Added pentium timer and jokes
+
+	* fftw/wisdom.c, fftw/fftw.h.in, fftw/fftw-int.h,
+	gensrc/genfft.ml, configure.in: Minor fixes
+
+	* tests/fftw_test.c, fftw/wisdom.c, tests/Attic/Makefile.in,
+	fftw/planner.c, fftw/fftw.h.in, fftw/executor.c,
+	rfftw/Attic/test_rfftw.c, rfftw/Attic/Makefile.in,
+	gensrc/genfft.ml, gensrc/Attic/Makefile.in, configure.in, TODO:
+	fixed wisdom + minor details
+
+Sun Apr  5 17:28:03 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: In Quick Start, reminded readers that they need
+	to compile and install FFTW.
+
+	* doc/fftw.texi: Casted malloc results in example code for C++
+	compatibility.
+
+	* Attic/RELEASE-NOTES: Noted threads improvements.
+
+	* threads/fftw_threads.h: Fixed missing close paren in comment.
+
+	* threads/fftw_threads.h, threads/Attic/README: Added experimental
+	Win32 threads support.
+
+	* threads/fftwnd_threads.c: Used recursive fftwnd, adapted from
+	new serial version.  (Improves locality, resulting in higher
+	performance and parallelization when rank >= 3.)
+
+	* threads/executor_threads.c, threads/Attic/test_threads.c: A
+	couple of small fixes.
+
+Sat Apr  4 18:42:24 1998  fftw  <fftw@fftw.org>
+
+	* fftw/fftwnd.c: Slight change.
+
+	* threads/fftwnd_threads.c, threads/fftw_threads.c, fftw/fftwnd.c,
+	fftw/fftw.h.in, fftw/fftw-int.h, rfftw/Attic/rfftw.c,
+	cilk/fftwnd_cilk.cilk, cilk/executor_cilk.cilk: Moved a number of
+	"private" functions into fftw-int.h.
+
+	* threads/Attic/time_threads.c, threads/Attic/Makefile: Rewritten
+	timing program (much improved).
+
+	* doc/fftw.texi: Expanded discussion of what we really compute,
+	since this topic seems to confuse many people.
+
+Fri Apr  3 22:45:40 1998  fftw  <fftw@fftw.org>
+
+	* fftw/twiddle.c: Reverted to old twiddle scheme.
+
+	* Attic/RELEASE-NOTES: Noted changes since beta1 (especially
+	performance improvements in multi-dimensional transforms).
+
+	* fftw/twiddle.c: Improved twiddle generator (?)
+
+	* fftw/executor.c: Yet another p6 hack
+
+	* fftw/fftwnd.c: Improved handling of howmany loop when dist <
+	stride.
+
+	* tests/fftw_test.c: Added checks for howmany parameter.
+
+	* tests/fftw_test.c: Modified speed tests to allow benchmarking of
+	multiple fields (i.e.  howmany != 1), with new '-f' option.
+
+	* fftw/fftwnd.c: Used recursive processing of hyperslabs to
+	improve locality.  (On stern, I am seeing 20-30% speed gains.)
+
+	* tests/fftw_test.c, tests/README: Improved options for random
+	tests.
+
+Thu Apr  2 18:33:06 1998  fftw  <fftw@fftw.org>
+
+	* tests/Attic/Makefile.in, fftw/timer.c, fftw/fftw-int.h,
+	rfftw/Attic/Makefile.in, doc/fftw.texi, configure.in: Implemented
+	Wolfgang Reimer's extensions
+
+Wed Apr  1 04:31:16 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/variable.mli, gensrc/variable.ml, gensrc/asched.ml: Added
+	hack to keep together load(re) and load(im) when the scheduler is
+	indifferent.
+
+Tue Mar 31 22:20:08 1998  fftw  <fftw@fftw.org>
+
+	* fftw/timer.c, fftw/fftw-int.h, fftw/config.h.in: Added
+	Mac/Windows symbols to config.h.in, and renamed them.
+
+	* gensrc/codelet_prelude: Minor fix (not really necessary)
+
+	* fftw/malloc.c, fftw/fftw.h.in: Added fftw_die_hook (it is
+	necessary to modify the exit behavior in some cases, e.g. in
+	multi-processor situations).
+
+	* FAQ/fftw-faq.bfnn: Noted that Numerical Recipes uses the
+	opposite sign convention.
+
+Sun Mar 29 18:46:42 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Added single precision FAQ.
+
+	* fftw/fftw-int.h: Removed win32 ifdef
+
+Sat Mar 28 21:18:42 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Removed wrong relic #undef HAVE_GETOPT
+
+	* gensrc/fft.ml: Minor tweak that will simplify Bernstein's trick
+	when we implement it.
+
+	* gensrc/Attic/Makefile.in: Minor fix
+
+	* doc/fftw.texi: Rewrote part of the introduction.  Several other
+	small changes.
+
+Fri Mar 27 23:17:46 1998  fftw  <fftw@fftw.org>
+
+	* Attic/RELEASE-NOTES: Noted specifically which routines were
+	changed.
+
+	* fftw/planner.c: Noted that *_OPTIMAL_SIZE constants are only
+	used by FFTW_ESTIMATE (this was confusing some people).
+
+	* fftw/fftw-int.h: Made sure to define __WIN32__ even for other
+	compilers (e.g. VC++) that define variants of this symbol.
+
+	* Attic/build-distrib.sh: Create default config.h file for
+	non-UNIX platforms.
+
+	* Attic/RELEASE-NOTES: Noted gcc/x86 hack.
+
+	* rfftw/Attic/time_rfftw.c, gensrc/fft.ml: Minor fix
+
+	* rfftw/Attic/time_rfftw.c: Fixed bug and cleaned up code.
+
+	* rfftw/Attic/time_rfftw.c: Removed extra printf.
+
+	* threads/Attic/README: Noted existence of (untested) MacOS MP
+	code.
+
+	* Attic/RELEASE-NOTES: Noted MPI bug fix.
+
+Thu Mar 26 23:42:19 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Fixed command-line-less version (added access
+	to -d and -r options).
+
+	* mpi/Attic/test_fftwnd_mpi.c: Turned off USE_RANDOM by default.
+
+	* mpi/Attic/time_fftwnd_mpi.c, gensrc/genfft.ml: Fixed MPI bug and
+	AIX warning
+
+	* doc/fftw.texi: Changed COMPLEX -> FFTW_COMPLEX in (I think) the
+	last remaining place.
+
+	* tests/fftw_test.c: Removed redundant print statement
+
+	* tests/fftw_test.c: Added printout of specificity of the plan.
+
+	* tests/fftw_test.c: Fixed: FFTW_MEASURE | FFTW_SPECIFIC destroyed
+	input
+
+	* tests/fftw_test.c: Added another silly comment
+
+	* tests/Attic/small_test.c, tests/Attic/Makefile.in: Deleted
+	small_test.
+
+	* configure.in: Fixed -lm library check.
+
+	* threads/Attic/time_threads.c, threads/Attic/test_threads.c,
+	mpi/Attic/time_fftwnd_mpi.c, mpi/Attic/test_fftwnd_mpi.c,
+	matlab/fftw.c: Made sure to cast all malloc return values to
+	prevent C++ problems.
+
+	* Attic/RELEASE-NOTES: Noted C++ bug fixes.
+
+	* tests/fftw_test.c, fftw/fftwnd.c, fftw/fftw.h.in: Made sure
+	fftwnd variants are all tested.
+
+	* tests/Attic/testnd.c, tests/Attic/go_fft.c, tests/fftw_test.c,
+	tests/README, tests/Attic/Makefile.in: Consolidated one- and
+	multi-dimensional transforms.  (Actually, multi-dimensional tests
+	have been completely rewritten.)
+
+	* tests/fftw_test.c: Combined error computations.
+
+Wed Mar 25 23:08:06 1998  fftw  <fftw@fftw.org>
+
+	* configure.in: Added missing ".
+
+	* FAQ/fftw-faq.bfnn: Noted that scaling applies to
+	multi-dimensional transforms as well.
+
+	* doc/fftw.texi: Noted that -lfftw is Unix-specific, and pointed
+	to specific planners from non-specific planners in reference
+	section.
+
+	* doc/fftw.texi: Minor fix
+
+	* configure.in: Minor change
+
+	* tests/Attic/Makefile.in: Minor fix
+
+	* gensrc/fft.ml: Implemented Bernstein's trick
+
+	* tests/Attic/testnd.c, tests/Attic/go_fft.c, fftw/twiddle.c,
+	fftw/planner.c, fftw/fftw.h.in, rfftw/Attic/time_rfftw.c,
+	rfftw/Attic/test_rfftw.c, rfftw/rfftwnd.c, rfftw/Attic/rfftw.c,
+	gensrc/makeconfig.sh, gensrc/genfft.ml: C++-ified (had to cast
+	mallocs and other crap)
+
+Tue Mar 24 23:32:09 1998  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Fixed small texinfo idiosyncrasy
+
+	* Attic/RELEASE-NOTES: Noted new testing algorithm.
+
+	* Attic/RELEASE-NOTES: Added more change notes.
+
+	* doc/fftw.texi: Documented specific planners and count_plan_ops.
+
+	* README.hacks, README: Minor changes
+
+	* rfftw/Attic/test_rfftw.c, configure.in: Minor fixes
+
+	* matlab/README: Noted that users can use FFTW_ESTIMATE.
+
+	* doc/fftw.texi: Asked people to send in good CFLAGS.
+
+	* doc/fftw.texi, configure.in: Removed SGI CFLAGS and added note
+	to manual about the occasional necessity to manually set CFLAGS.
+
+	* FAQ/fftw-faq.bfnn, configure.in: Minor changes
+
+	* FAQ/fftw-faq.bfnn: Added item about conventions, and made a few
+	other small changes.
+
+	* doc/fftw.texi: Updated installation section for non-unix
+	systems, and made a few other small changes.
+
+	* fftw/wisdom.c: Changes wisdom format #
+
+	* TODO, Attic/RELEASE-NOTES: Updated release notes
+
+	* tests/Attic/small_test.c, tests/Attic/Makefile.in: Added
+	small_test
+
+	* threads/Attic/time_threads.c, threads/Attic/test_threads.c,
+	threads/fftwnd_threads.c, threads/fftw_threads.h,
+	threads/fftw_threads.c, threads/executor_threads.c,
+	tests/Attic/testnd.c, tests/fftw_test.c, fftw/wisdom.c,
+	fftw/twiddle.c, fftw/timer.c, fftw/planner.c, fftw/malloc.c,
+	fftw/generic.c, fftw/fftwnd.c, fftw/fftw.h.in, fftw/fftw-int.h,
+	fftw/executor.c, fftw/config.h.in, fftw/Attic/common_io.c,
+	rfftw/Attic/time_rfftw.c, rfftw/Attic/test_rfftw.c,
+	rfftw/rfftwnd.c, rfftw/rfftw.h, rfftw/Attic/rfftw.c,
+	mpi/Attic/time_fftwnd_mpi.c, mpi/Attic/test_fftwnd_mpi.c,
+	mpi/Attic/fftwnd_mpi.h, mpi/fftwnd_mpi.c, matlab/fftw.c,
+	gensrc/variable.mli, gensrc/variable.ml, gensrc/util.mli,
+	gensrc/util.ml, gensrc/to_c.mli, gensrc/to_c.ml,
+	gensrc/schedule.mli, gensrc/schedule.ml, gensrc/Attic/polygen.ml,
+	gensrc/Attic/poly.ml, gensrc/number.mli, gensrc/number.ml,
+	gensrc/magic.ml, gensrc/genfft.ml, gensrc/fft.ml,
+	gensrc/Attic/factorizer.ml, gensrc/exprdag.mli, gensrc/exprdag.ml,
+	gensrc/expr.mli, gensrc/expr.ml, gensrc/dag.mli, gensrc/dag.ml,
+	gensrc/complex.mli, gensrc/complex.ml, gensrc/ast.ml,
+	gensrc/asched.mli, gensrc/asched.ml, fortran/Attic/fftw_f77.c,
+	fortran/f77_test.F, doc/fftw.texi, cilk/time_cilk.cilk,
+	cilk/test_cilk.cilk, cilk/fftwnd_cilk.cilk, cilk/fftw_cilk.cilkh,
+	cilk/executor_cilk.cilk, FAQ/html.refs, FAQ/fftw-faq.bfnn,
+	configure.in, COPYRIGHT: Many changes to the manual.  Changed
+	copyright.  Updated FAQ.  Changed Free Software discussion.
+
+	* fftw/fftw.h.in: Changed plan structure to support whatever
+	idiotic alignments compilers could require.
+
+Mon Mar 23 22:58:46 1998  fftw  <fftw@fftw.org>
+
+	* threads/Attic/time_threads.c, tests/Attic/testnd.c,
+	tests/fftw_test.c, fftw/wisdom.c, fftw/twiddle.c, fftw/timer.c,
+	fftw/planner.c, fftw/malloc.c, fftw/generic.c, fftw/fftwnd.c,
+	fftw/fftw.h.in, fftw/fftw-int.h, fftw/executor.c,
+	fftw/config.h.in, fftw/Attic/common_io.c,
+	rfftw/Attic/time_rfftw.c, gensrc/codelet_prelude,
+	gensrc/Attic/Makefile.in, cilk/Makefile, configure.in: Separated
+	timers and config.h from fftw.h
+
+Fri Mar 20 22:48:35 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/exprdag.mli, gensrc/exprdag.ml: Added arithmetic op
+	counter (unused)
+
+	* gensrc/magic.ml, gensrc/genfft.ml, gensrc/exprdag.ml: Hacked
+	optimizer
+
+	* tests/fftw_test.c: Added paranoid test options
+
+	* gensrc/genfft.ml, gensrc/fft.ml, gensrc/complex.mli,
+	gensrc/complex.ml: Minor changes
+
+	* gensrc/fft.ml: Implemented trick to add input 0 in the FFT for
+	Rader.
+
+Wed Mar 18 20:47:12 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/fft.ml, gensrc/complex.mli, gensrc/complex.ml: Added
+	explicit symmetries in fftgen
+
+Tue Mar 17 15:09:33 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Fixed linearity test
+
+	* tests/fftw_test.c: Removed legacy (crappy) computation of
+	relative error.
+
+	* tests/fftw_test.c: Minor changes
+
+Mon Mar 16 21:56:23 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Fixed bug in plan verifier: both real and
+	imaginary unit impulses must be checked.  Also made output less
+	verbose, and computed verified plans only once.  Some other slight
+	changes.
+
+	* tests/fftw_test.c, gensrc/Attic/Makefile.in: Fixed makefile
+
+	* tests/fftw_test.c, fftw/Attic/naive.c, fftw/fftw.h.in:
+	Implemented Funda's verification procedure
+
+	* gensrc/fft.ml, gensrc/exprdag.mli, gensrc/exprdag.ml: Perfected
+	optimizer to convert a*v + b*v -> (a+b)*v.  (I had to merge CSE
+	and Algsimp in order to achieve this effect.  The code is sligtly
+	messier but faster)
+
+Fri Mar 13 23:51:06 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/fft.ml: Added DIF split radix
+
+Fri Mar  6 16:12:06 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/util.mli, gensrc/util.ml, gensrc/to_c.ml,
+	gensrc/magic.ml, gensrc/genfft.ml: Minor tweaks
+
+Thu Mar  5 22:34:27 1998  fftw  <fftw@fftw.org>
+
+	* fftw/fftw.h.in, gensrc/genfft.ml: Fixed unorthodox cast
+
+	* gensrc/exprdag.ml, gensrc/asched.ml: More tweaks and cosmetic
+	changes
+
+	* gensrc/exprdag.ml: Extended capabilities of monads.  This will
+	make it easier for me to merge CSE and simplification, if I ever
+	want to do that.
+
+Wed Mar  4 17:03:48 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/number.ml, gensrc/exprdag.ml: Minor changes
+
+	* gensrc/asched.ml: Minor aesthetic change.
+
+Tue Mar  3 23:24:21 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/fft.ml: Exposed common subexpressions for odd primes
+
+	* gensrc/asched.ml: More hacks to generate better code
+
+	* gensrc/exprdag.mli: Added forgotten exprdag.mli
+
+	* gensrc/to_c.ml, gensrc/number.ml, gensrc/magic.ml,
+	gensrc/genfft.ml, gensrc/fft.ml, gensrc/exprdag.ml: Veni.  Vidi.
+	Vici.
+
+Mon Mar  2 21:39:50 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/fft.ml: Added split radix
+
+	* gensrc/Makefile.genfft: Fixed dependencies
+
+	* gensrc/fft.ml, gensrc/exprdag.ml, gensrc/complex.mli,
+	gensrc/complex.ml: Solved the uminus problem
+
+	* gensrc/Attic/simplify.mli, gensrc/Attic/simplify.ml,
+	gensrc/Attic/assign.mli, gensrc/Attic/assign.ml: Removed unused
+	files
+
+	* gensrc/variable.mli, gensrc/variable.ml, gensrc/util.mli,
+	gensrc/util.ml, gensrc/to_c.ml, gensrc/schedule.mli,
+	gensrc/schedule.ml, gensrc/number.ml, gensrc/magic.ml,
+	gensrc/genfft.ml, gensrc/fft.ml, gensrc/exprdag.ml,
+	gensrc/expr.mli, gensrc/expr.ml, gensrc/complex.mli,
+	gensrc/complex.ml, gensrc/ast.ml, gensrc/asched.mli,
+	gensrc/asched.ml, gensrc/Makefile.sources, gensrc/Makefile.genfft:
+	Switched to functional approach (as opposed to assignment-based)
+
+Sat Feb 28 21:32:04 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/schedule.ml, gensrc/magic.ml, gensrc/genfft.ml,
+	gensrc/dag.mli, gensrc/dag.ml, gensrc/Makefile.sources: Now we
+	have the right scheduler, I believe.  (And much simpler than
+	before.)  Added another vodoo parameter
+
+	* tests/fftw_test.c: Added a comma.
+
+	* gensrc/makesources.sh: Put parallel mode back in
+
+	* gensrc/schedule.ml, gensrc/makesources.sh, gensrc/dag.ml: More
+	improvements to the scheduler
+
+	* gensrc/schedule.ml, gensrc/dag.mli, gensrc/dag.ml,
+	gensrc/asched.ml, gensrc/Makefile.sources: Improved generator
+
+Fri Feb 27 22:25:20 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/schedule.ml: Small adjustment to scheduler
+
+	* gensrc/util.mli, gensrc/util.ml, gensrc/to_c.ml,
+	gensrc/schedule.ml, gensrc/dag.mli, gensrc/dag.ml,
+	gensrc/asched.ml, gensrc/Makefile.sources: Completely rewritten
+	the scheduler
+
+	* gensrc/to_c.ml, gensrc/schedule.mli, gensrc/schedule.ml,
+	gensrc/magic.ml, gensrc/genfft.ml, gensrc/ast.ml,
+	gensrc/asched.mli, gensrc/asched.ml, gensrc/Makefile.sources:
+	Changes to the scheduler that should ease the right thing, if I
+	ever find it.
+
+Thu Feb 26 18:55:11 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/variable.mli, gensrc/variable.ml, gensrc/magic.ml,
+	gensrc/genfft.ml, gensrc/exprdag.ml, gensrc/dag.ml,
+	gensrc/Makefile.genfft: Added more magic options to change the
+	order of loads and stores
+
+Wed Feb 25 22:18:28 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Enhanced test_planner and added some crazy
+	remarks.
+
+Tue Feb 24 19:23:23 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/exprdag.ml: Aesthetic changes to the optimizer
+
+	* gensrc/magic.ml, gensrc/genfft.ml, gensrc/exprdag.ml,
+	gensrc/dag.mli, gensrc/dag.ml, gensrc/Makefile.genfft: Removed
+	unused code and added more options
+
+Mon Feb 23 23:09:24 1998  fftw  <fftw@fftw.org>
+
+	* fftw/twiddle.c: Minor fix
+
+	* gensrc/makesources.sh, gensrc/exprdag.ml: Added inlining of
+	variables used only once
+
+	* gensrc/expr.ml: Fixed is_one and is_mone, which were screwing up
+	the polynomial convolution generator.
+
+	* gensrc/exprdag.ml: Fixed bug
+
+	* gensrc/exprdag.ml: Minor change
+
+	* gensrc/makesources.sh: Added PARALLEL back
+
+	* gensrc/exprdag.ml: Added exprdag.ml
+
+	* gensrc/variable.mli: Removed relic
+
+	* gensrc/variable.mli, gensrc/to_c.ml, gensrc/schedule.ml,
+	gensrc/makesources.sh, gensrc/expr.mli, gensrc/expr.ml,
+	gensrc/complex.ml, gensrc/Attic/assign.mli,
+	gensrc/Attic/assign.ml, gensrc/Makefile.genfft: Changed simplifier
+	completely
+
+Thu Feb 19 16:37:21 1998  fftw  <fftw@fftw.org>
+
+	* mpi/Attic/README: Noted transposed dimensions for inverse
+	transform.
+
+Wed Feb 18 18:25:59 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/variable.mli, gensrc/Attic/simplify.ml, gensrc/dag.mli,
+	gensrc/dag.ml, gensrc/Attic/assign.ml, gensrc/Makefile.sources:
+	Addec common subexpression elimination and other tricks
+
+	* gensrc/util.mli, gensrc/Attic/polygen.ml, gensrc/util.ml,
+	gensrc/Attic/poly.ml, gensrc/number.ml, gensrc/fft.ml,
+	gensrc/Attic/factorizer.ml, gensrc/expr.mli, gensrc/complex.mli,
+	gensrc/expr.ml, gensrc/complex.ml, gensrc/Makefile.sources,
+	gensrc/Makefile.genfft, gensrc/Makefile: Added functions for
+	implementing polynomial-based algorithms, and implemented
+	convolution by recursive factorization of z^n - 1.
+
+Sun Feb 15 20:33:26 1998  fftw  <fftw@fftw.org>
+
+	* fftw/twiddle.c: Fixed silly comment
+
+	* fftw/twiddle.c, fftw/planner.c, fftw/fftw.h.in,
+	rfftw/Attic/rfftw.c, gensrc/makeconfig.sh, gensrc/genfft.ml:
+	const-qualified codelet_desc structure.
+
+	* fftw/twiddle.c: Fixed bug in twiddle.c
+
+	* fftw/twiddle.c, fftw/planner.c, fftw/fftw.h.in,
+	rfftw/Attic/rfftw.c, gensrc/to_c.mli, gensrc/to_c.ml,
+	gensrc/makeconfig.sh, gensrc/genfft.ml, gensrc/fft.ml,
+	gensrc/config_prelude: Added codelet descriptions.  Changed
+	everything else
+
+Sat Feb 14 22:58:27 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/util.mli, gensrc/util.ml, gensrc/fft.ml,
+	gensrc/complex.mli, gensrc/complex.ml: Added Rader algorithm for
+	prime sizes, with FFTs for the convolutions.
+
+	* fftw/twiddle.c, fftw/planner.c, fftw/fftw.h.in,
+	gensrc/makeconfig.sh, gensrc/genfft.ml, gensrc/fft.ml,
+	gensrc/config_prelude: Modified to pack twiddle array according to
+	twiddle generation technique.
+
+	* tests/Attic/testnd.c: Make sure that compiler knows isnan takes
+	a double arg.
+
+	* fftw/planner.c, fftw/fftwnd.c, fftw/fftw.h.in, gensrc/to_c.ml,
+	gensrc/makeconfig.sh: Changed fftw_op_count vars to const.
+
+Fri Feb 13 21:05:36 1998  fftw  <fftw@fftw.org>
+
+	* tests/Attic/testnd.c, tests/fftw_test.c, fftw/fftw.h.in,
+	configure.in: Checked for isnan() and, if it is available, use it
+	to check for NaN's in the test programs.
+
+	* gensrc/schedule.ml, gensrc/dag.mli, gensrc/dag.ml,
+	gensrc/Attic/assign.ml: Made scheduler policy more rational.
+
+	* gensrc/magic.ml, gensrc/genfft.ml, gensrc/fft.ml: Added more
+	twiddle policies
+
+	* gensrc/to_c.ml, gensrc/genfft.ml: Removed redundant brackets
+
+	* gensrc/to_c.ml, gensrc/README: Added README.
+
+Thu Feb 12 23:47:23 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/variable.ml, gensrc/to_c.ml, gensrc/Attic/simplify.ml,
+	gensrc/schedule.ml, gensrc/number.ml, gensrc/genfft.ml,
+	gensrc/fft.ml, gensrc/expr.ml, gensrc/dag.ml, gensrc/ast.ml,
+	gensrc/Attic/assign.ml, gensrc/asched.ml: Added a little
+	documentation to the beginning of each file.
+
+	* gensrc/magic.ml, gensrc/genfft.ml, gensrc/fft.ml: Added yet
+	another twiddle policy
+
+	* gensrc/number.ml: Cosmetic changes.  Increased margin of safety
+	in almost_equal_cnum.  Got rid of unnecessary call to
+	Arith_status.set_normalize_ratio (we were setting it to the
+	default value).
+
+	* gensrc/number.ml: Used the "right" algorithm for cexp.
+
+	* gensrc/magic.ml, gensrc/genfft.ml, gensrc/fft.ml,
+	gensrc/complex.mli, gensrc/complex.ml, gensrc/Makefile.sources:
+	Added twiddle policies back
+
+	* gensrc/number.ml, gensrc/Makefile.sources: Improved speed and
+	clarity of the multiprecision complex exponential calculator.
+
+	* gensrc/to_c.ml: No parentheses around FFTW_K*.
+
+	* gensrc/number.ml: Increased default precision.
+
+	* gensrc/to_c.ml, gensrc/number.mli, gensrc/number.ml,
+	gensrc/complex.ml, gensrc/Makefile.sources: Implemented multiple
+	precision library
+
+Wed Feb 11 19:42:54 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/variable.ml, gensrc/variable.mli, gensrc/util.mli,
+	gensrc/util.ml, gensrc/to_c.mli, gensrc/to_c.ml,
+	gensrc/Attic/simplify.mli, gensrc/Attic/simplify.ml,
+	gensrc/schedule.mli, gensrc/schedule.ml, gensrc/number.mli,
+	gensrc/Attic/makekonst.sh, gensrc/number.ml, gensrc/magic.ml,
+	gensrc/install.sh, gensrc/genfft.ml, gensrc/fft.ml,
+	gensrc/expr.mli, gensrc/expr.ml, gensrc/dag.mli, gensrc/dag.ml,
+	gensrc/complex.mli, gensrc/complex.ml, gensrc/codelet_prelude,
+	gensrc/ast.ml, gensrc/Attic/assign.mli, gensrc/Attic/assign.ml,
+	gensrc/asched.mli, gensrc/asched.ml, gensrc/Makefile.sources,
+	gensrc/Attic/Makefile.in, gensrc/Makefile: Switched to new codelet
+	generator
+
+	* fftw/fftwnd.c: Print op count with plan.
+
+	* fftw/fftwnd.c: Modified comment.
+
+	* tests/fftw_test.c: Updated to test speed and planner for
+	multi-dimensional transforms.
+
+	* fftw/timer.c, fftw/fftwnd.c, fftw/fftw.h.in: Added specific
+	planner for fftwnd, along with the possibility of buffered fftwnd
+	transforms.  Also added fftwnd_print_plan.
+
+Sun Feb  8 00:20:22 1998  fftw  <fftw@fftw.org>
+
+	* fftw/malloc.c: Prepend "fftw: " to fftw_die messages.
+
+Wed Feb  4 19:32:50 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/genfft.ml: Added twiddle generate/load policy
+
+	* gensrc/genfft.ml: Improved command-line parsing
+
+	* gensrc/Attic/makekonst.sh: Removed reference to ~stevenj/calc
+
+	* fftw/Attic/konst.h, gensrc/Attic/makekonst.sh,
+	gensrc/install.sh, gensrc/genfft.ml, gensrc/Makefile: Implemented
+	automatic generation of konst constants via the calc program.
+
+	* gensrc/genfft.ml: Some (many) stylistic changes
+
+	* gensrc/genfft.ml: Added computation of operation counts.
+
+	* fftw/fftw.h.in, fftw/executor.c, configure.in: Added the 386
+	stack hack
+
+Tue Feb  3 23:46:04 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/genfft.ml: Printed out konst expressions, and got rid of
+	all the extra damn parentheses.
+
+	* gensrc/genfft.ml: Keep track of generating expressions along
+	with real numbers.
+
+	* gensrc/genfft.ml: Minor cosmetic changes
+
+	* tests/fftw_test.c: Benchmark specific planner in speed tests.
+
+Mon Feb  2 23:52:42 1998  fftw  <fftw@fftw.org>
+
+	* fftw/timer.c, fftw/planner.c, fftw/fftw.h.in: Added
+	fftw_create_plan_specific.
+
+	* fftw/malloc.c, fftw/fftw.h.in, configure.in: Removed stupid
+	memalign
+
+	* fftw/malloc.c, fftw/fftw.h.in, gensrc/genfft.ml,
+	gensrc/Makefile.sources, gensrc/Attic/Makefile.in, configure.in:
+	Added hooks for general dag node rewriting.  Added support for
+	-mdouble-align on Pentia.  Added support for memalign on systems
+	that have it.
+
+	* gensrc/genfft.ml: Fixed bug in genfft.ml
+
+Sun Feb  1 00:25:42 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/genfft.ml: Improved speed of generator (but not of
+	resulting program)
+
+Fri Jan 30 22:01:17 1998  fftw  <fftw@fftw.org>
+
+	* gensrc/makesources.sh, gensrc/makemakefile.sh: Fixed bug in
+	makesources
+
+	* gensrc/makemakefile.sh: Fixed bug in makemakefile
+
+	* gensrc/makesources.sh, gensrc/genfft.ml,
+	gensrc/Makefile.sources, gensrc/Makefile: Added new codelet
+	generator.
+
+Wed Jan 28 22:15:05 1998  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Noted that tests have been fixed so that they
+	now work in single-precision.
+
+	* rfftw/Attic/README.rfftw: By popular demand, added explanation
+	of howmany, stride, and dist.
+
+Mon Jan 26 15:39:42 1998  fftw  <fftw@fftw.org>
+
+	* configure.in, Attic/Makefile.in: Minor fixes to makefile
+
+	* tests/fftw_test.c, fftw/fftw.h.in, configure.in: Added
+	--enable-float
+
+Sun Jan 25 20:10:26 1998  fftw  <fftw@fftw.org>
+
+	* fftw/timer.c, fftw/fftw.h.in, configure.in: Support
+	BSDgettimeofday.
+
+	* Attic/build-distrib.sh: Updated to run autoconf and also to copy
+	fftw.h.in to fftw.h for non-UNIX systems.
+
+	* tests/fftw_test.c: Fixed askuser function (matching function in
+	benchfft).
+
+	* fftw/fftw.h.in: Used #ifdef HAVE_UNISTD_H, etc.
+
+	For fftw_time definitions, used #if..#elif...#else...#endif
+	instead of #ifdef...#endif...#if...#endif...etc.
+
+	* Attic/configure: Removed configure from repository since it is
+	generated by autoconf.
+
+Sat Jan 24 19:25:06 1998  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c, fftw/fftw.h.in, configure.in,
+	Attic/configure: Checked for getopt for fftw_test with autoconf.
+
+	* tests/fftw_test.c: Printed out tmin/tmax for fftw_test -v -t
+
+	* Attic/RELEASE-NOTES: Noted changes.
+
+	* README: Referred users to manual for installation instructions.
+
+	* fftw/fftw.h.in: Fixed grammar in comment.
+
+	* fftw/timer.c: Fixed sourious struct timezone
+
+	* configure.in, Attic/configure: Added --with-gcc configure option
+
+Fri Jan 23 22:50:48 1998  fftw  <fftw@fftw.org>
+
+	* configure.in, Attic/configure: Hacker better linux cflags
+
+	* tests/Attic/Makefile.in, rfftw/Attic/Makefile.in,
+	doc/Attic/Makefile, Attic/Makefile.in: Fixed install target in
+	makefiles
+
+	* fftw/timer.c, fftw/fftw.h.in, gensrc/Attic/Makefile.in: Fixed
+	more typos
+
+	* fftw/timer.c, fftw/fftw.h.in, Attic/install.sh,
+	Attic/install-sh, configure.in, Attic/configure: Fixed various
+	typos
+
+	* Attic/Makefile.in: Added forgotten Makefile.in
+
+	* Attic/install-sh: Added forgotten install-sh
+
+	* tests/fftw_test.c, tests/Attic/Makefile,
+	tests/Attic/Makefile.in, fftw/timer.c, fftw/fftw.h.in,
+	fftw/Attic/fftw.h, rfftw/Attic/Makefile.in, gensrc/install.sh,
+	rfftw/Attic/Makefile, gensrc/Attic/Makefile.in, configure.in,
+	Attic/configure, Attic/config.sub, Attic/config.guess: Converted
+	to `configure' automatic configuration.  Converted to new timer.
+
+	* fortran/Attic/fftw_f77_param.f, fortran/fftw_f77.i,
+	fortran/f77_test.F, fortran/Attic/README: fftw_f77_param.f ->
+	fftw_f77.i
+
+Tue Jan 20 23:52:21 1998  fftw  <fftw@fftw.org>
+
+	* fftw/timer.c, fftw/Attic/fftw.h: Fixed timer logic and constants
+
+Mon Jan 19 19:08:46 1998  fftw  <fftw@fftw.org>
+
+	* tests/Attic/Makefile, fftw/Attic/fftw.h,
+	gensrc/Attic/Makefile.in: Fixed alpha timing constants
+
+	* tests/Attic/Makefile: Fixed makefile
+
+	* tests/Attic/Makefile, fftw/timer.c, fftw/Attic/fftw.h,
+	gensrc/Attic/Makefile.in: Added support for timeval systems
+
+	* fftw/timer.c: Oops, I forgot to remove a debugging flag
+
+	* gensrc/Attic/Makefile.in: Fixed Makefile
+
+	* fftw/timer.c, fftw/planner.c, fftw/Attic/fftw.h,
+	fftw/executor.c, rfftw/Attic/time_rfftw.c, rfftw/Attic/rfftw.c:
+	Removed COPY_TWIDDLE and added new timer policy
+
+Fri Jan 16 04:13:05 1998  fftw  <fftw@fftw.org>
+
+	* matlab/README: Noted requirement of MATLAB 5.0 or later.
+
+	* matlab/fftw.m, matlab/fftw.c, matlab/README, matlab/Makefile,
+	Attic/RELEASE-NOTES, README: Added MATLAB wrappers.
+
+Thu Jan 15 20:27:36 1998  fftw  <fftw@fftw.org>
+
+	* fftw/planner.c, fftw/fftwnd.c, fftw/Attic/fftw.h: Added
+	fftwnd_count_plan_ops.
+
+Tue Dec 16 00:12:52 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/common_io.c: Explicit cast of void* to char*.
+
+Mon Dec 15 18:03:19 1997  fftw  <fftw@fftw.org>
+
+	* fortran/Attic/fftw_f77.c, fortran/Attic/README: Fixed up &
+	documented -DUSING_G77.
+
+	* fortran/Attic/fftw_f77.c: Added Fortranize macro for g77.
+
+Tue Dec  9 19:47:34 1997  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Mentined precision-specificity of MPI
+	routines.
+
+	* FAQ/fftw-faq.bfnn: 1.2 -> 1.2.1
+
+	* mpi/Attic/README: Noted type specialization of transpose_mpi.
+
+Thu Dec  4 22:40:09 1997  fftw  <fftw@fftw.org>
+
+	* Attic/RELEASE-NOTES: Noted new MPI bug fix, 1.2.1 maintenance
+	release.
+
+Tue Dec  2 19:59:28 1997  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Changed wording.
+
+	* FAQ/fftw-faq.bfnn: Reorganized & added question/answer on
+	shifting the origin to the center.
+
+Sat Nov 29 20:12:07 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Removed documentation for fftw_malloc/fftw_free,
+	which the user should never call anyway.
+
+Fri Nov 21 18:04:09 1997  fftw  <fftw@fftw.org>
+
+	* gensrc/Attic/Makefile.in: Added -IPA to SGI Added alpha CFLAGS
+
+Thu Nov 20 00:46:41 1997  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Made speed test more like benchmark.
+
+Mon Nov 17 20:46:47 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/fftw.h: Added support for Nanosecond timer routines
+	available on some PowerMacs.
+
+Mon Nov 10 16:17:14 1997  fftw  <fftw@fftw.org>
+
+	* Attic/RELEASE-NOTES, README: Mentioned Fortran wrapper routines.
+
+	* fortran/Attic/fftw_f77_param.f, fortran/Attic/fftw_f77.c,
+	fortran/f77_test.F, fortran/Attic/README: Added Fortran wrapper
+	routines.
+
+Wed Nov  5 20:44:30 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/fftw.h: Removed joke.
+
+	* FAQ/fftw-faq.bfnn: Noted problems with test programs in single
+	precision.
+
+Tue Nov  4 23:27:41 1997  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Documented FFTW 1.2 MPI bugs.
+
+	* Attic/RELEASE-NOTES: Mentioned fix for latest MPI bug.
+
+	* mpi/Attic/time_fftwnd_mpi.c, mpi/fftwnd_mpi.c: Made sure
+	fftw_malloc/fftw_free were used everywhere.
+
+Sun Nov  2 05:11:12 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Excised "small fee."
+
+Sat Nov  1 00:02:22 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Added ref. to paper.
+
+Fri Oct 31 05:29:11 1997  fftw  <fftw@fftw.org>
+
+	* tests/Attic/testnd.c, rfftw/Attic/time_rfftw.c,
+	rfftw/Attic/test_rfftw.c: void main -> int main
+
+Wed Oct 29 02:15:16 1997  fftw  <fftw@fftw.org>
+
+	* fftw/planner.c: Fixed copy_twiddle bug
+
+	* doc/fftw.texi: Added more multi-dimensional array comments.
+
+Mon Oct 27 21:47:06 1997  fftw  <fftw@fftw.org>
+
+	* fftw/timer.c, fftw/Attic/fftw.h: Added verbose timer output
+	option in timer.c (via the FFTW_OUTPUT_TIMING preprocessor
+	symbol).
+
+Thu Oct 23 22:15:59 1997  fftw  <fftw@fftw.org>
+
+	* fftw/planner.c, fftw/Attic/fftw.h, gensrc/makeconfig.sh,
+	gensrc/genfft.ml, gensrc/config_prelude: Added fftw_count_plan_ops
+	capability.
+
+	* gensrc/genfft.ml: Added Rader method for prime sizes (currently
+	only used for N >= 13).
+
+Mon Oct 20 18:21:07 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Qualified comparison of multiplication to load
+	for in-cache access.
+
+Sun Oct 19 05:09:26 1997  fftw  <fftw@fftw.org>
+
+	* gensrc/genfft.ml: Cleaned things up a bit and fixed another case
+	where minus signs weren't propagating properly.
+
+	* gensrc/genfft.ml: Fixed two bugs in simplifier:
+
+	#simplify (Plus [Real (-. 0.5) ; Real 0.0]);; - : Expr = Real -0.5
+
+	instead of Uminus (Real 0.5)
+
+	#simplify (Times (Uminus (Real 0.5), Plus [Var "v1" ; Uminus (Var
+	"v2")]));; - : Expr = Uminus (Times (Real 0.5, Plus [Var "v1";
+	Uminus (Var "v2")]))
+
+	instead of Times (Real 0.5, Plus [Var "v2"; Uminus (Var "v1")])
+
+Wed Oct 15 20:26:22 1997  fftw  <fftw@fftw.org>
+
+	* Attic/RELEASE-NOTES: Mentioned MPI bug fix.
+
+Wed Oct  8 22:36:30 1997  fftw  <fftw@fftw.org>
+
+	* gensrc/Attic/Makefile.in: Removed redundant codelets definition.
+
+Tue Oct  7 19:08:50 1997  fftw  <fftw@fftw.org>
+
+	* gensrc/genfft.ml: Used FFTW_COMPLEX instead of COMPLEX in
+	twiddle codelets.
+
+	* fftw/wisdom.c, fftw/timer.c, fftw/planner.c, fftw/Attic/naive.c,
+	fftw/malloc.c, fftw/Attic/konst.h, fftw/generic.c, fftw/fftwnd.c,
+	fftw/Attic/fftw.h, fftw/executor.c, fftw/Attic/common_io.c,
+	fftw/.indent.pro, gensrc/.indent.pro: Hacked the COPY_TWIDDLE
+	thing in
+
+Mon Sep 22 23:37:53 1997  fftw  <fftw@fftw.org>
+
+	* fftw/executor.c: Updated version number
+
+	* gensrc/.indent.pro: Added indent.pro
+
+Sat Sep 20 16:00:20 1997  fftw  <fftw@fftw.org>
+
+	* gensrc/config: Fixed typo in comment.
+
+	* gensrc/config: Added more words of explanation.
+
+Thu Sep 18 16:16:44 1997  fftw  <fftw@fftw.org>
+
+	* gensrc/makesources.sh: Minor change
+
+	* gensrc/genfft.ml: New genfft cost model
+
+	* gensrc/genfft.ml, gensrc/Makefile: Improved (?) codelet
+	generator
+
+Wed Sep 17 16:37:07 1997  fftw  <fftw@fftw.org>
+
+	* gensrc/config_prelude: Added config_prelude
+
+	* fftw/Attic/config.c, gensrc/Attic/prelude, gensrc/makeconfig.sh,
+	gensrc/codelet_prelude, gensrc/Makefile.sources, gensrc/Makefile:
+	Added codelet_prelude/config_prelude mechanism
+
+Tue Sep 16 15:38:55 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Updated docs
+
+	* gensrc/config: Minor fix
+
+	* gensrc/install.sh, gensrc/config: Minor fixes
+
+	* gensrc/makesources.sh, gensrc/makeconfig.sh,
+	gensrc/makemakefile.sh: Minor fix
+
+	* fftw/Attic/prelude, fftw/Attic/genfft.ml, fftw/Attic/config.c,
+	fftw/Attic/Makefile, fftw/Attic/Makefile.sources,
+	gensrc/Attic/prelude, gensrc/makesources.sh,
+	gensrc/makemakefile.sh, gensrc/makeconfig.sh, gensrc/install.sh,
+	gensrc/genfft.ml, gensrc/config, gensrc/Makefile.sources,
+	gensrc/Attic/Makefile.in, gensrc/Makefile, Attic/build-distrib.sh:
+	Restructured the way configuration work.  Now there is a single
+	configuration file, and everything that depends on it is
+	automatically generated.
+
+	* fftw/Attic/Makefile: Made Makefile smarter
+
+Sun Sep 14 17:10:23 1997  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Added answer to question about scale factor.
+
+Fri Sep 12 20:26:12 1997  fftw  <fftw@fftw.org>
+
+	* README.hacks: Fixed left<->right
+
+Sun Sep  7 04:01:48 1997  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Alluded to the Fortran-accessible wrapper
+	code that I wrote.
+
+Thu Sep  4 19:14:21 1997  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Added more timer paranoia.
+
+	* tests/fftw_test.c: Added paranoid test
+
+Tue Sep  2 20:34:54 1997  fftw  <fftw@fftw.org>
+
+	* mpi/Attic/README: Now distributed as a part of the normal FFTW
+	package.
+
+	* doc/fftw.texi: Updated fee information.
+
+Sun Aug 31 17:59:56 1997  fftw  <fftw@fftw.org>
+
+	* doc/texi2html, FAQ/m-html.pl: Fixed to produce correct HTML 3.2
+	output (there had been some technical errors in the HTML code).
+
+Fri Aug 29 15:25:15 1997  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Oops fixed }
+
+	* tests/Attic/testnd.c, tests/fftw_test.c: Using rand() by
+	default.  More verbose messages.
+
+Thu Aug 28 00:22:04 1997  fftw  <fftw@fftw.org>
+
+	* FAQ/fftw-faq.bfnn: Removed unnecessary ellipsis.
+
+	* doc/fftw.texi: Fix two minor typos.
+
+	* FAQ/fftw-faq.bfnn: Minor style changes.
+
+Wed Aug 27 23:41:36 1997  fftw  <fftw@fftw.org>
+
+	* Attic/RELEASE-NOTES: Fixed typo in v1.1 notes.
+
+	* cilk/time_cilk.cilk, cilk/test_cilk.cilk: Minor cilk fix
+
+	* fftw/twiddle.c, fftw/planner.c, fftw/malloc.c,
+	fftw/Attic/config.c: Removed memory-leak test in non-debug
+	version, to avoid problems in parallel version.  (This sounds like
+	the only possibility.  I could put a cilk lock around the counter,
+	but then it becomes slow, and locks are nonportable, etc)
+
+	* tests/fftw_test.c: Removed DOS vestigia from test program
+
+	* fftw/Attic/genfft.ml: Added Nussbaumer N=5 code (disabled).
+
+	* doc/fftw.texi: Minor wording change.
+
+	* Attic/RELEASE-NOTES, README: Mentioned FAQ.
+
+	* fftw/malloc.c: Silenced compiler warning (required hack)
+
+	* doc/fftw.texi: Acknowledged the BFNN author
+
+	* FAQ/bfnnconv.pl: Removed useless lout/post output
+
+	* Attic/build-distrib.sh: oops build-distrib was wrong :-)
+
+	* Attic/build-distrib.sh: Added build-distrib.sh that creates
+	sources/manuals for the distribution
+
+	* fftw/Attic/genfft.ml: Removed nussbaumer for now.
+
+	* fftw/malloc.c: Added to the paranoia.
+
+	* FAQ/fftw-faq.bfnn: Fixed formatting (and a typo).
+
+	* FAQ/fftw-faq.bfnn: Fixed typo
+
+	* FAQ/fftw-faq.bfnn: Updated FAQ
+
+	* fftw/malloc.c: Made malloc a bit more paranoid
+
+	* FAQ/fftw-faq.bfnn: Removed snide comments about Visual C++.
+	Readers can draw their own conclusions.
+
+	* tests/fftw_test.c: unix symbol is not defined on all UNIX
+	systems (e.g. AIX).
+
+	* fftw/malloc.c: Added more NULL checks to debugging code.
+
+	* Attic/RELEASE-NOTES: Updated to note rfftwnd bug fix (yikes!).
+
+	* fftw/malloc.c: Fixed macro bug.
+
+	* rfftw/rfftwnd.c: Fixed bug where data structure allocated was
+	too small (yikes!!!).
+
+Tue Aug 26 23:15:27 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/konst.h, fftw/Attic/genfft.ml: Used Nussbaumer size 3
+	FFT.
+
+	* threads/Attic/test_threads.c: Used fftw_malloc/fftw_free.
+
+	* mpi/Attic/test_fftwnd_mpi.c: Used fftw_malloc/fftw_free &
+	checked for leaks with fftw_check_memory_leaks.
+
+	* cilk/test_cilk.cilk, threads/Attic/test_threads.c: Checked for
+	memory leaks with fftw_check_memory_leaks().
+
+	* rfftw/Attic/test_rfftw.c, tests/Attic/testnd.c,
+	tests/fftw_test.c: Used fftw_check_memory_leaks().
+
+	* fftw/Attic/fftw.h: Added fftw_check_memory_leaks().
+
+	* fftw/malloc.c: Included fftw_check_memory_leaks() function.
+
+	* fftw/malloc.c: Put more paranoia into debug versions of
+	fftw_malloc and fftw_free.
+
+	* rfftw/Attic/Makefile: Put gcc first.
+
+	* rfftw/Attic/time_rfftw.c, rfftw/Attic/test_rfftw.c: Fixed
+	malloc->fftw_malloc.
+
+	* threads/Attic/Makefile: Fixed threads lossage
+
+	* rfftw/Attic/time_rfftw.c: Fixed rfftw lossage
+
+	* cilk/Makefile: Fixed cilk port
+
+	* FAQ/fftw-faq.bfnn: Added FAQ on VC++
+
+	* FAQ/html.refs, FAQ/fftw-faq.bfnn: Linked to our Windows
+	installation notes.
+
+	* FAQ/m-html.pl: More small fixes.
+
+	* FAQ/m-html.pl: Fixed forward/back.
+
+	* FAQ/fftw-faq.bfnn: Formatted "wisdom" correctly in all cases.
+
+	* FAQ/fftw-faq.bfnn: Fixed date
+
+	* FAQ/Makefile: Whoops!  Fixed install-html (~ -> $(HOME)).
+
+	* FAQ/Makefile: Included install-html option.
+
+	* FAQ/m-html.pl, FAQ/fftw-faq.bfnn: Touched up FAQ & HTML
+	conversion.
+
+	* Attic/RELEASE-NOTES: Mentioned header-file changes.
+
+	* tests/fftw_test.c: Minor tweaks to test program.
+
+	* README: Updated (included mention of mpi/ directory).
+
+	* FAQ/Makefile: Fixed makefile
+
+	* doc/fftw.texi, FAQ/m-lout.pl, FAQ/m-post.pl, FAQ/m-info.pl,
+	FAQ/m-html.pl, FAQ/m-ascii.pl, FAQ/fftw-faq.bfnn, FAQ/html.refs,
+	FAQ/bfnnconv.pl, FAQ/Makefile, Attic/RELEASE-NOTES, README: Added
+	FAQ.  Changed docs in minor ways.
+
+Mon Aug 25 21:28:30 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Deleted unsatisfying quotations.
+
+Sun Aug 24 15:46:21 1997  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Explained comment.
+
+	* doc/fftw.texi: Updated node structure.  Fixed bug (EOF == -1,
+	not 4)
+
+Sat Aug 23 20:37:21 1997  fftw  <fftw@fftw.org>
+
+	* doc/texi2html: Touched up a bit.
+
+	* doc/texi2html: Used HTML copyright entity (&copy;) for
+	@copyright.
+
+	* doc/fftw.texi: Made licensing requirements for commercial users
+	explicit.
+
+	* TODO: Changed indenting.
+
+	* TODO: Updated.
+
+	* Attic/RELEASE-NOTES: Listed timer changes.
+
+	* fftw/Attic/fftw.h: Added documentation to each FFTW_TIME_MIN
+	definition, to help prevent users from modifying the wrong one.
+
+	* doc/fftw.texi: Updated installation notes.
+
+	* tests/README: Updated documentation for fftw_test.
+
+Fri Aug 22 23:12:14 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Finished draft of wisdom documentation.
+
+	* doc/fftw.texi: Fixed { -> @{
+
+	* doc/texi2html: Don't use </P> tag.
+
+	* doc/fftw.texi: Added quotation format.
+
+	* doc/fftw.texi: Inserted quotes.
+
+	* tests/fftw_test.c: Fixed typo in comment.
+
+	* fftw/Attic/fftw.h: Changed solaris time constant
+
+	* Attic/RELEASE-NOTES: Updated.
+
+	* fftw/malloc.c, fftw/Attic/common_io.c: Checked for NULL
+	pointers.
+
+	* doc/fftw.texi: Added wisdom example code, plus some other slight
+	changes.
+
+	* fftw/Attic/common_io.c: Added `const' to pointer to shut up
+	compiler
+
+	* tests/fftw_test.c, fftw/malloc.c: Removed unused memory-leak
+	hack
+
+	* doc/fftw.texi: Changes to manual
+
+	* doc/fftw.texi: Made some changes; documented import/export
+	functions.
+
+	* fftw/Attic/fftw.h: Defined FFTW_HAS_WISDOM symbol.
+
+	* tests/fftw_test.c: Added another wisdom check.
+
+	* tests/fftw_test.c: Updated to use fftw_forget_wisdom().
+
+	* fftw/wisdom.c, fftw/Attic/fftw.h: Added fftw_forget_wisdom().
+
+	* doc/fftw.texi: Started writing wisdom documentation.
+
+Thu Aug 21 23:23:43 1997  fftw  <fftw@fftw.org>
+
+	* tests/fftw_test.c: Fixed syntax error (had to put Mac and
+	Windows on the same line...ugh!).
+
+	* tests/fftw_test.c: Can't use getopt on Mac or Windows.
+
+	* tests/fftw_test.c: removed relics
+
+	* tests/fftw_test.c: Iterate backwards through times to find first
+	inaccurate time.
+
+	* tests/fftw_test.c: Made test_timer use non-diverging
+	computation.
+
+	* fftw/Attic/fftw.h: Decreased min. time for Mac (although I don't
+	understand why the results aren't consistent for shorter times).
+
+	* tests/fftw_test.c: Polished timer test
+
+	* tests/fftw_test.c: In timer test, print minimum measured time
+	interval (> 0).
+
+	* fftw/Attic/config.c: Fixed bug in structure initialization.
+
+	* tests/fftw_test.c: %ul -> %u
+
+	* tests/fftw_test.c: Two things:
+
+	* Added -t option to test timer accuracy.
+
+	* Added interactive mode so that fftw_test will work on machines
+	(e.g. Macs) without a command-line.
+
+	* threads/Attic/time_threads.c: Used fftw_time_diff.
+
+	* mpi/Attic/time_fftwnd_mpi.c: Used fftw_time_diff for init_t.
+
+	* rfftw/Attic/time_rfftw.c: Used fftw_time instead of clock().
+
+	* tests/fftw_test.c: Used fftw_time_diff.
+
+	* tests/README: Updated documentation.
+
+	* mpi/Attic/time_fftwnd_mpi.c: Use fftw_time_diff.
+
+	* fftw/timer.c, fftw/Attic/fftw.h: Use fftw_time_diff and
+	fftw_time_to_sec combo.
+
+	* fftw/Attic/fftw.h, fftw/timer.c: Fixed timer code to handle more
+	abstract fftw_time.
+
+Wed Aug 20 23:59:37 1997  fftw  <fftw@fftw.org>
+
+	* fftw/wisdom.c, fftw/planner.c: New wisdom now replaces old
+	wisdom
+
+	* fftw/planner.c: Added some macrology to polish planner
+
+	* tests/fftw_test.c: Don't pass "t" flag to fopen.
+
+	* fftw/planner.c: Restructured planner.
+
+	* fftw/planner.c: Fixed bug (from last modification).
+
+	* fftw/planner.c: Fixed behavior when invalid wisdom is
+	encountered (ignore it and plan normally instead of using the
+	generic twiddle, as it had been doing).
+
+	* fftw/wisdom.c: Fixed typo.
+
+	* fftw/wisdom.c: Don't save FFTW_ESTIMATE "wisdom" (only
+	measurements produce wisdom), and always use FFTW_MEASURE wisdom.
+
+	* tests/fftw_test.c: Test & save accumulated wisdom.
+
+	* fftw/Attic/common_io.c: Fixed typo.
+
+	* fftw/wisdom.c: Ate more blanks.  Allowed empty wisdom.
+
+	* fftw/Attic/common_io.c: Used char** instead of struct.
+
+	* fftw/Attic/common_io.c, fftw/planner.c, fftw/Attic/fftw.h,
+	fftw/Attic/Makefile, fftw/Attic/oracle.c, fftw/wisdom.c: Changed
+	oracle -> wisdom.
+
+	* tests/fftw_test.c: Used repeated doubling to get number of
+	iterations in speed test.  Printed out MFLOPS.
+
+	* fftw/Attic/oracle.c, fftw/Attic/fftw.h, fftw/Attic/common_io.c:
+	Added void *data to import/export functions for passing data to
+	the i/o hook functions.  Also, wrote routines for the common cases
+	of i/o from/to files and strings.
+
+	* fftw/planner.c, fftw/Attic/oracle.c, fftw/Attic/hints.c,
+	fftw/Attic/fftw.h, fftw/Attic/Makefile: Renamed hints->oracle
+
+	* fftw/Attic/hints.c: Fixed bug in expect_int()
+
+	* fftw/planner.c: Added sanity checks for hints.
+
+	* rfftw/Attic/test_rfftw.c, rfftw/rfftwnd.c, rfftw/Attic/rfftw.c:
+	Used fftw_malloc & fftw_free, checked for leaks.
+
+Fri Aug 15 13:44:56 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/hints.c: Oops, forgot to add hints.c
+
+Wed Aug 13 14:44:26 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/fftw.h: Added prototypes for hints to fftw.h
+
+	* fftw/planner.c, fftw/malloc.c, fftw/Attic/fftw.h,
+	fftw/Attic/config.c, fftw/Attic/Makefile: Implemented the new hint
+	mechanism
+
+Mon Aug 11 03:34:13 1997  fftw  <fftw@fftw.org>
+
+	* fftw/planner.c, fftw/Attic/fftw.h: Added capability to
+	save/restore plans to/from strings.
+
+Sun Aug 10 19:16:57 1997  fftw  <fftw@fftw.org>
+
+	* fftw/planner.c: Changed use_node so that it doesn't croak an a
+	null pointer (this may be useful in the future, although it
+	doesn't matter now).
+
+	* fftw/planner.c: When working on a plan for size n, don't bother
+	checking twiddle by n followed by no_twiddle of size 1 (unless
+	there is no other plan yet).  (There is no way that this is going
+	to be faster than no_twiddle of size n, for example.)
+
+Fri Aug  8 22:45:39 1997  fftw  <fftw@fftw.org>
+
+	* fftw/timer.c, fftw/Attic/fftw.h: Adopted doubling scheme tor
+	timers
+
+	* fftw/Attic/Makefile.sources: Changed echo to @echo to prevent
+	the echo command itself from being echoed.
+
+	* fftw/Attic/fftw.h: Changed some FFTW_TIME_MIN settings.
+
+	* fftw/timer.c, fftw/Attic/fftw.h: Documented timers in fftw.h
+
+	* fftw/timer.c: Made sure that iteration counter really
+	increases/decreases
+
+Thu Aug  7 19:11:04 1997  fftw  <fftw@fftw.org>
+
+	* fftw/timer.c, fftw/Attic/fftw.h: Taken care of boundary case
+	plan_iter == 0
+
+	* fftw/timer.c, fftw/Attic/fftw.h, TODO: Improved timers
+
+Fri Aug  1 17:59:48 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Minor elucidation in installation notes.
+
+Tue Jul 29 03:26:30 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Explicitly documented common case where howmany
+	and strides are 1.
+
+	* doc/fftw.texi: More nit-picking.
+
+	* doc/fftw.texi: Nit-picking, as usual.
+
+	* doc/fftw.texi: Clarified optimal sizes.
+
+Mon Jul 28 17:52:01 1997  fftw  <fftw@fftw.org>
+
+	* rfftw/Attic/README.rfftw: Fixed typo.
+
+Mon Jul 21 19:33:21 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Fixed a couple of typos, and nit-picked some
+	more.
+
+	* doc/fftw.texi: Me, nit-picking as usual.
+
+Fri Jul 18 05:07:39 1997  fftw  <fftw@fftw.org>
+
+	* fftw/timer.c: Fixed possible compiler difficulty with Mac timing
+	routines.
+
+Sun Jul 13 20:00:18 1997  fftw  <fftw@fftw.org>
+
+	* TODO: Added a couple of items.
+
+	* fftw/Attic/fftw.h: Added joke.
+
+Tue Jul  8 05:53:54 1997  fftw  <fftw@fftw.org>
+
+	* fftw/planner.c: Whoops!  Fixed typo in fftw_fprint_plan stuff.
+
+	* fftw/planner.c, fftw/Attic/fftw.h: Added fftw_fprint_plan
+	(prints plan to file) (needed in benchmark program).
+
+Mon Jul  7 15:25:11 1997  fftw  <fftw@fftw.org>
+
+	* tests/Attic/test.c, tests/fftw_test.c, tests/Attic/Makefile:
+	Rewritten test program.
+
+Tue Jul  1 20:37:03 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Fixed info version of manual
+
+Fri Jun 27 12:06:01 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/Makefile: Added definition for $(MAKE)
+
+Thu Jun 26 23:08:07 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Fixed minor typo
+
+Fri Jun 20 22:41:11 1997  fftw  <fftw@fftw.org>
+
+	* mpi/Attic/README: Added README for fftwnd_mpi.
+
+	* mpi/Attic/time_fftwnd_mpi.c: Added MPI_Finalize call.
+
+Tue Jun 17 19:00:03 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Added warning for IN_PLACE transforms
+
+	* Attic/RELEASE-NOTES: Fixed release notes
+
+	* tests/Attic/testnd.c, tests/Attic/test.c, fftw/fftwnd.c: Fixed
+	memory leak
+
+Mon May 26 19:48:43 1997  fftw  <fftw@fftw.org>
+
+	* threads/fftw_threads.h, fftw/Attic/fftw.h, rfftw/rfftw.h,
+	mpi/Attic/fftwnd_mpi.h: Added extern "C" { ... } directive for
+	C/C++ compatibility.
+
+	* threads/fftw_threads.h: Protected against multiple inclusions of
+	header file.
+
+	* rfftw/rfftw.h: Protected against multiple inclusions of rfftw.h.
+
+	* fftw/Attic/fftw.h: Protected against multiple inclusions of
+	fftw.h.
+
+Sun May 25 20:06:56 1997  fftw  <fftw@fftw.org>
+
+	* threads/fftw_threads.h, threads/Attic/README,
+	threads/fftw_threads.c, threads/Attic/Makefile: Modified BeOS docs
+	to reflect fact that it has been tested. Added untested support
+	for MP MacOS machines.
+
+	* doc/fftw.texi: Fixed a couple of typos and spruced up things
+	here and there.
+
+Tue May 20 00:17:11 1997  fftw  <fftw@fftw.org>
+
+	* mpi/Attic/time_fftwnd_mpi.c: Removed extra barriers.
+
+Sat May 17 07:48:32 1997  fftw  <fftw@fftw.org>
+
+	* mpi/Attic/fftwnd_mpi.h, mpi/fftwnd_mpi.c: Inserted copyright
+	notice.
+
+	* fftw/Attic/fftw.h: Added Cray MPP timing support.
+
+	* mpi/Attic/time_fftwnd_mpi.c, mpi/Attic/test_fftwnd_mpi.c,
+	mpi/Attic/fftwnd_mpi.h, mpi/fftwnd_mpi.c, mpi/Attic/Makefile:
+	Added experimental MPI version (multi-dimensional transforms
+	only).
+
+Sat May 10 19:05:05 1997  fftw  <fftw@fftw.org>
+
+	* threads/Attic/README: Added warning about timer routines for
+	time_threads.
+
+Mon May  5 18:46:19 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Changed manual to remove incorrect performance
+	claims against libsunperf
+
+	* fftw/Attic/Makefile, Attic/RELEASE-NOTES: Converted to 8.3
+	filenames
+
+	* doc/fftw.texi: 'tied or faster' than ESSL (as opposed to faster)
+
+	* cilk/Makefile: Removed makefile hacks
+
+	* tests/Attic/Makefile: Changed to -xO2 on solaris to get around
+	compiler's bug.
+
+	* fftw/Attic/Makefile: Fixed bug in Makefile
+
+	* threads/Attic/README: Spruced up the docs a bit.
+
+	* cilk/time_cilk.cilk, threads/Attic/time_threads.c: Printed out
+	speedup factor in addition to times.
+
+	* threads/fftw_threads.h: Removed duplicate typedef.
+
+	* cilk/Makefile: Explicitely linked executor_cilk.o and
+	fftwnd_cilk.o into the test programs.  This shouldn't be
+	necessary--the files should be in libfftw_cilk.a, but for some
+	reason the linker isn't recognizing this.
+
+Sun May  4 19:02:35 1997  fftw  <fftw@fftw.org>
+
+	* threads/Attic/README: Explained which libraries to link in more
+	clearly.
+
+	* threads/fftw_threads.h, threads/Attic/Makefile: Put BeOS threads
+	support in (untested).
+
+Sat May  3 19:39:40 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Added documentation of hooks and some publicity
+
+	* threads/Attic/README: Made one sentence more polite.
+
+	* threads/Attic/README: Lowered estimate of minimum size array for
+	good parallelization.
+
+	* threads/executor_threads.c: Fixed bug.
+
+	* threads/fftw_threads.h: Cleaned up comments.
+
+	* threads/Attic/README: Documented fftw_threads_init.
+
+Fri May  2 23:42:15 1997  fftw  <fftw@fftw.org>
+
+	* Attic/RELEASE-NOTES, README: Removed the word "supported" in
+	associated with the threads code.
+
+	* Attic/RELEASE-NOTES, README: Mentioned parallel software in
+	README and RELEASE-NOTES.
+
+	* threads/Attic/time_threads.c, threads/Attic/test_threads.c,
+	threads/fftwnd_threads.c, threads/fftw_threads.h,
+	threads/fftw_threads.c, threads/executor_threads.c,
+	threads/Attic/README, threads/Attic/Makefile: Added parallel
+	version of FFTW that uses threads.
+
+	* cilk/Makefile: Fixed make clean to delete time_cilk and removed
+	redundant listing of test_cilk.
+
+	* tests/Attic/testnd.c: Fixed incorrect RANDOM_MAX (off by 1).
+
+	* cilk/test_cilk.cilk: fixed incorrect RANDOM_MAX (off by 1)
+
+	* cilk/time_cilk.cilk: Don't print out critical path & work
+	timings if compiled with those measurements turned off.
+
+	* cilk/time_cilk.cilk, cilk/executor_cilk.cilk: Restructured
+	executor (partially)
+
+	* doc/fftw.texi, fftw/fftwnd.c, fftw/Attic/fftw.h: Changed int *n
+	to const int *n in fftwnd_create_plan.
+
+	* cilk/time_cilk.cilk: Fixed time_scale.
+
+Thu May  1 22:03:16 1997  fftw  <fftw@fftw.org>
+
+	* cilk/Makefile: Removed spurious stuff.
+
+	* tests/Attic/testnd.c: Changed >> 1 to / 2.
+
+Wed Apr 30 20:51:34 1997  fftw  <fftw@fftw.org>
+
+	* README.hacks: fixed typos
+
+	* cilk/README: Added README file.
+
+	* README.hacks, README: Added README.hacks
+
+	* doc/fftw.texi, Attic/README.win32: Removed README.win32 and
+	added an ack instead
+
+	* fftw/planner.c, fftw/Attic/naive.c, fftw/malloc.c,
+	fftw/fftwnd.c, fftw/Attic/fftw.h, fftw/executor.c: Indented code
+
+	* fftw/executor.c: More minor fixes to comments
+
+	* fftw/planner.c: Fixed wrong comment
+
+	* cilk/time_cilk.cilk, cilk/executor_cilk.cilk: Made executor
+	consistent with new in-place method (new fftw_strided_copy) and
+	spruced up the benchmark a bit.
+
+	* fftw/executor.c: Hacked in-place transform so transforms in->tmp
+	then copies tmp->in instead of the other way around...this gives a
+	speed gain for large multi-dim.  transforms (I think...still need
+	to run the regular benchmark on various platforms).
+
+	* cilk/executor_cilk.cilk: Trying some optimizations.
+
+	* cilk/time_cilk.cilk, cilk/Makefile: Got benchmark working.
+
+	* cilk/time_cilk.cilk: Program to benchmark Cilk FFT against
+	normal FFTW.
+
+	* cilk/test_cilk.cilk, cilk/fftw_cilk.cilkh, cilk/Makefile: Added
+	Makefile, test program, and header file.
+
+	* cilk/fftwnd_cilk.cilk, cilk/executor_cilk.cilk: Got them
+	working!
+
+	* cilk/Attic/fftw_cilk.h: Renamed (should end in .cilkh).
+
+Tue Apr 29 22:09:07 1997  fftw  <fftw@fftw.org>
+
+	* fftw/twiddle.c, fftw/planner.c, fftw/malloc.c,
+	fftw/Attic/config.c: Added preprocessor stuff to make it easy to
+	recompile with Cilk.
+
+	* fftw/fftwnd.c: Changed calloc to fftw_malloc and initialized to
+	zero "manually."
+
+	* fftw/planner.c: Removed stupid comment
+
+	* fftw/malloc.c, fftw/Attic/fftw.h, fftw/executor.c,
+	fftw/Attic/Makefile: Insulated malloc.c, and added debugging
+	version of malloc()
+
+	* cilk/Attic/fftw_cilk.h: Added copyright and prototype for
+	fftwnd_cilk.
+
+	* tests/Attic/testnd.c: Previous modification caused over 100MB of
+	RAM to be required by the test.  Changed it so that test sizes are
+	smaller, but can be easily modified to be bigger by changing a
+	single #define at the top.
+
+	* cilk/fftwnd_cilk.cilk, cilk/Attic/fftw_cilk.h,
+	cilk/executor_cilk.cilk: Experimental parallel transforms using
+	Cilk.
+
+	* fftw/Attic/fftw.h, fftw/executor.c: Changed names of
+	executor_simple and copy routines, and made them externally
+	visible, so that I can call them from my Cilk code.
+
+Mon Apr 28 22:45:19 1997  fftw  <fftw@fftw.org>
+
+	* fftw/fftwnd.c: hacked free -> ffte_free
+
+	* tests/Attic/testnd.c, tests/Attic/go_fft.c: Made testnd nastier.
+	Hacked go to support bigger weird numbers
+
+	* fftw/planner.c, fftw/Attic/fftw.h: Minor fixes
+
+	* fftw/planner.c: Fixed probable bug
+
+	* fftw/fftwnd.c, TODO: Updated TODO
+
+	* fftw/executor.c, fftw/Attic/Makefile: Added -pedantic -ansi to
+	gcc options.
+
+	* fftw/planner.c, fftw/Attic/fftw.h: Fixed fftw_plan definition
+
+Sat Apr 26 23:36:53 1997  fftw  <fftw@fftw.org>
+
+	* tests/Attic/Makefile, fftw/Attic/Makefile: Added
+	-fomit-frame-pointer to gcc
+
+	* doc/fftw.texi: Added more jokes about Charles.
+
+Fri Apr 25 23:13:18 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Updated the manual a bit
+
+	* Attic/RELEASE-NOTES: Fixed typo
+
+	* rfftw/rfftwnd.c, rfftw/Attic/rfftw.c: Fixed to use new
+	fftw_create_twiddle.  Also, added parentheses to remove
+	(unnecessary) gcc compiler warning.
+
+	* rfftw/Attic/Makefile: Changed compiler options to use -O6.
+
+	* rfftw/Attic/time_rfftw.c, rfftw/Attic/test_rfftw.c,
+	rfftw/rfftwnd.c, rfftw/rfftw.h, rfftw/Attic/rfftw.c,
+	rfftw/Attic/README.rfftw, rfftw/Attic/Makefile: Added RFFTW
+	directory to FFTW distribution.
+
+	* fftw/planner.c: Changed insert() function to not use variables
+	named "this" (a C++ keyword that causes problems with some
+	compilers).
+
+Thu Apr 24 18:45:40 1997  fftw  <fftw@fftw.org>
+
+	* tests/Attic/Makefile, fftw/Attic/Makefile: Fixed makefiles
+
+	* fftw/Attic/Makefile: Fixed Makefile
+
+	* tests/Attic/Makefile.bcc: Removed useles Makefile.bcc
+
+	* tests/Attic/Makefile, fftw/Attic/genfft.ml, fftw/Attic/config.c,
+	fftw/Attic/Makefile: Minor fixes.  Added radix-64
+
+	* fftw/planner.c: fixed small typo
+
+	* tests/Attic/Makefile, fftw/Attic/Makefile: Fixed Makefiles
+
+	* tests/Attic/Makefile, fftw/Attic/Makefile: Fixed Makefile
+
+	* tests/Attic/test.c, tests/Attic/Makefile, fftw/Attic/genfft.ml,
+	fftw/Attic/fftw.h, fftw/executor.c, fftw/Attic/Makefile: Back to
+	old looping scheme.
+
+Wed Apr 23 22:03:14 1997  fftw  <fftw@fftw.org>
+
+	* Attic/RELEASE-NOTES, README: Changed release notes
+
+	* fftw/planner.c, fftw/fftwnd.c, fftw/executor.c,
+	fftw/.indent.pro: Redone indentation (I screwed up the first time)
+
+	* fftw/twiddle.c, fftw/timer.c, fftw/planner.c, fftw/generic.c,
+	fftw/Attic/fftw.h, fftw/executor.c: Indented code.
+
+	* fftw/Attic/fftw.h: Added backward compatibility by default
+
+	* tests/Attic/test.c, fftw/Attic/genfft.ml,
+	fftw/Attic/Makefile.sources, fftw/Attic/Makefile: Put old hacks
+	for odd factors back in.
+
+	* Attic/RELEASE-NOTES: Added release notes
+
+	* doc/fftw.texi: Minor fixes to the manual
+
+	* tests/Attic/testnd.c, tests/Attic/test.c, tests/Attic/go_fft.c,
+	tests/Attic/Makefile, fftw/twiddle.c, fftw/timer.c,
+	fftw/planner.c, fftw/Attic/genfft.ml, fftw/Attic/fftw_rader.c,
+	fftw/generic.c, fftw/Attic/fftw.h, fftw/executor.c,
+	fftw/Attic/config.c, fftw/Attic/Makefile.sources,
+	fftw/Attic/Makefile, doc/fftw.texi: Massive rewriting of
+	everything
+
+Fri Apr  4 16:16:26 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/genfft.ml: Cosmetic changes
+
+Thu Apr  3 22:55:11 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/genfft.ml: Improved genfft.
+
+	* fftw/planner.c, fftw/Attic/genfft.ml: Implemented prime factor
+	in genfft.ml
+
+	* fftw/Attic/genfft.ml: New improved code generator
+
+	* fftw/planner.c, fftw/Attic/fftw_rader.c, fftw/Attic/fftw.h,
+	fftw/executor.c: Made sure that Rader subroutines are not even
+	considered when built-in base/bfly cases exist for a given factor.
+	Oh, and added FFTW_DESTROY_INPUT undocumented flag (currently is
+	only used by Rader subroutine).
+
+	* fftw/planner.c: Fixed crashing bug...yikes!  We really need a
+	better structure for recursive plans...
+
+Wed Apr  2 14:57:57 1997  fftw  <fftw@fftw.org>
+
+	* fftw/twiddle.c, fftw/timer.c, fftw/planner.c,
+	fftw/Attic/naive.c, fftw/Attic/konst.h, fftw/generic.c,
+	fftw/fftwnd.c, fftw/Attic/fftw_rader.c, fftw/Attic/fftw.h,
+	fftw/executor.c, fftw/.indent.pro: Cosmetic changes
+
+	* fftw/planner.c, fftw/Attic/fftw_rader.c, fftw/Attic/fftw.h,
+	fftw/executor.c, fftw/Attic/Makefile: Modified FFTW routines to
+	automatically use Rader routines for base blocks and butterflies
+	when no pre-built routine for a prime factor is available.  This
+	required numerous changes to the planner and the executor.
+	Changes were designed so that, when Rader routines are not used,
+	execution is unaffected.
+
+	* fftw/Attic/fftw_rader.c: Implemented Rader transform for large
+	prime sizes or factors.
+
+Tue Apr  1 14:05:24 1997  fftw  <fftw@fftw.org>
+
+	* tests/Attic/testnd.c, tests/Attic/test.c, fftw/twiddle.c,
+	fftw/timer.c, fftw/planner.c, fftw/Attic/naive.c,
+	fftw/Attic/genfft.ml, fftw/generic.c, fftw/fftwnd.c,
+	fftw/Attic/fftw.h, fftw/executor.c, doc/fftw.texi: Great Rename
+	COMPLEX->FFTW_COMPLEX
+
+Mon Mar 31 22:05:59 1997  fftw  <fftw@fftw.org>
+
+	* fftw/fftwnd.c: Did some CSE that the compiler won't be able to
+	do.  (Probably won't make much performance difference, but it
+	can't hurt.)
+
+	* tests/Attic/testnd.c: Use random() instead of rand().  Also
+	fixed small bug in error reporting.
+
+Thu Mar 27 20:50:32 1997  fftw  <fftw@fftw.org>
+
+	* fftw/twiddle.c: Changed pi constant to use more digits (more in
+	keeping with konst.h).
+
+	* doc/fftw.texi: Fixed a typo and added a comment explaining how
+	to change FFTW to single precision.
+
+Wed Mar 26 15:57:12 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/Makefile: Added ranlib to Makefile
+
+	* fftw/Attic/Makefile: Changed standard prefix from "fftw_fly_"
+	(looked like a typo) to "fftw_bfly_".
+
+	* tests/Attic/go_fft.c, tests/Attic/testnd.c: Fixed fftwnd test so
+	that it works if REAL is not double.
+
+Tue Mar 25 21:27:41 1997  fftw  <fftw@fftw.org>
+
+	* tests/Attic/testnd.c: Fixed indentation.
+
+	* fftw/planner.c: Changed name of "this" variable to "this_plan".
+	("this" has special meaning for C++ compilers...I just wanted to
+	head off any possibility of trouble.)
+
+	* fftw/Attic/Makefile: Minor cosmetic change.
+
+	* fftw/Attic/Makefile.bcc, fftw/Attic/Makefile.sources,
+	fftw/Attic/Makefile: File names can now be short or long
+
+	* tests/Attic/Makefile.bcc, fftw/timer.c, fftw/Attic/fftw.h,
+	fftw/Attic/Makefile.bcc, Attic/README.win32: Added win32
+	contribution
+
+Mon Mar 24 14:59:19 1997  fftw  <fftw@fftw.org>
+
+	* doc/texi2html, doc/fftw.texi: Fixed hyphenation, and hacked
+	texi2html to understand @-
+
+	* doc/fftw.texi: After Nicole proofread docs, made some changes,
+	bug fixes, and wording modifications.
+
+Sun Mar 23 22:33:28 1997  fftw  <fftw@fftw.org>
+
+	* TODO, README: Added README and TODO
+
+Sat Mar 22 02:10:09 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Added a couple of comments to the installation
+	notes.
+
+	* doc/fftw.texi: Fixed incorrect article.
+
+	* doc/fftw.texi: Fixed a glitch and modified a wording.
+
+	* doc/fftw.texi: Fixed typo (PDA -> PFA).
+
+Fri Mar 21 23:35:29 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Used a more felicitous wording for one sentence.
+
+	* doc/fftw.texi: Fixed some typos.
+
+	* doc/fftw.texi: Added ack of the pari calculator, used to compute
+	konst.h
+
+	* fftw/Attic/prelude, fftw/Attic/konst.h, fftw/Attic/genfft.ml,
+	fftw/Attic/Makefile: Changed constant-generation stategy
+
+	* fftw/planner.c: Changed fftw_destroy_plan so that it doesn't
+	croak if you give it a NULL plan.
+
+	* fftw/Attic/genfft.ml: Fixed precision (again)
+
+	* fftw/Attic/genfft.ml: Increased precision of constants
+
+Thu Mar 20 16:43:02 1997  fftw  <fftw@fftw.org>
+
+	* fftw/Attic/genfft.ml: Reduced precision of genfft.ml
+
+	* doc/fftw.texi, doc/equation-3.gif: Added equation 3 in the HTML
+	output. Ugly
+
+	* fftw/Attic/genfft.ml: Fixed precision of floting point numbers
+
+	* tests/README: Added README
+
+	* doc/fftw.texi: Minor fixes in the acknowledgements.
+
+	* doc/texi2html, doc/fftw.texi: Fixed links in the info version.
+	Fixed overfull hboxes in TeX
+
+	* doc/fftw.texi: Put in links to the home page and benchmark
+	results.
+
+Wed Mar 19 23:46:27 1997  fftw  <fftw@fftw.org>
+
+	* doc/fftw.texi: Added @node labels to Multidimensional Array
+	Format section.
+
+	* doc/fftw.texi: Modified fftw.texi; fixed a couple of typos.
+	Changed subsections in Multi-dimensional Array Format chapter to
+	sections.
+
+	* doc/texi2html, doc/Attic/Makefile: More hacks to texi2html
+
+	* doc/Attic/Makefile: Added install-html target
+
+	* doc/texi2html: Hacked texi2html
+
+	* tests/Attic/testnd.c, tests/Attic/test.c, fftw/Attic/fftw.h:
+	fixed prototypes
+
+	* doc/Attic/Makefile: Fixed makefile
+
+	* doc/fftw.texi: Fixed 'factors' -> 'factor'
+
+Sat Mar 15 18:19:00 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/executor.c: Updated version number
+
+	* doc/fftw.texi: More fixes.  (REAL) added in front of all
+	constants.
+
+	* fftw/Attic/genfft.ml: Added '(REAL)' in front of constants.
+
+	* fftw/planner.c, fftw/timer.c, fftw/twiddle.c, fftw/Attic/fftw.h,
+	fftw/executor.c, fftw/fftwnd.c, fftw/generic.c, doc/fftw.texi:
+	Some cleanup
+
+Fri Mar 14 21:55:53 1997  Matteo Frigo  <athena@fftw.org>
+
+	* tests/Attic/testnd.c: Fixed test program
+
+	* fftw/fftwnd.c: Fixed bug in 3d code
+
+	* doc/Attic/Makefile: Fixed makefile
+
+	* fftw/executor.c: Fixed ID
+
+	* doc/Attic/Makefile: Fixed makefile
+
+	* tests/Attic/Makefile, tests/Attic/go_fft.c, tests/Attic/test.c,
+	tests/Attic/testnd.c, fftw/Attic/Makefile, fftw/Attic/test.c,
+	doc/Attic/Makefile: Added tests + other changes
+
+	* doc/Attic/Makefile: Fixed makefile
+
+	* doc/equation-2.gif, doc/fftw.texi, doc/texi2html,
+	doc/equation-1.gif: Many changes
+
+	* fftw/fftwnd.c: Added fftwnd
+
+	* fftw/Attic/fftw-complex.h, fftw/Attic/fftw.h, fftw/Attic/test.c,
+	fftw/Attic/Makefile, fftw/executor.c: *** empty log message ***
+
+Thu Mar 13 00:29:38 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/Attic/test.c, fftw/planner.c, fftw/timer.c,
+	fftw/Attic/fftw.h, fftw/executor.c: Fixed user interface
+
+	* doc/equation-2.gif, doc/fftw.texi, doc/texi2html,
+	doc/Attic/Makefile, doc/equation-1.gif: Some editing and hacks
+
+Wed Mar 12 21:02:23 1997  Matteo Frigo  <athena@fftw.org>
+
+	* doc/fftw.texi, fftw/planner.c, Attic/.indent.pro, COPYRIGHT:
+	Minor fixes
+
+Tue Mar 11 23:54:45 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/executor.c: updated id
+
+	* fftw/Attic/fftw.h, fftw/planner.c: Added optimal planner
+
+Sat Mar  8 17:43:55 1997  Matteo Frigo  <athena@fftw.org>
+
+	* doc/texi2html, doc/Attic/Makefile, doc/fftw.texi: Added doc
+
+	* fftw/Attic/test.c: Fixed bug in test.c
+
+Fri Mar  7 18:07:56 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/Attic/genfft.ml: Added cost model
+
+	* fftw/planner.c, fftw/timer.c, fftw/Attic/fftw.h,
+	fftw/executor.c: Minor fixes.
+
+	* fftw/timer.c, fftw/planner.c: Polished planner
+
+	* fftw/planner.c, fftw/Attic/fftw.h, fftw/executor.c: Now the
+	planner uses a table ADT instead of an array (less memory used)
+
+Thu Mar  6 01:35:29 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/Attic/fftw.h: Removed fftw_init
+
+Wed Mar  5 22:45:31 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/Attic/genfft.ml: Fixed small bug in cgen
+
+	* fftw/executor.c, fftw/Attic/genfft.ml: Even better code
+	generator
+
+	* fftw/Attic/genfft.ml, fftw/executor.c: Improved code generator
+	for odd n
+
+	* fftw/Attic/genfft.ml, fftw/executor.c: Fixed bug
+
+	* fftw/executor.c: Changed id in executor
+
+	* fftw/Attic/genfft.ml, fftw/.indent.pro: Much improved code
+	generator
+
+Tue Mar  4 14:21:15 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/Attic/genfft.ml: Improved genfft
+
+	* fftw/executor.c: Fixed executor
+
+Mon Mar  3 23:54:47 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/executor.c: Fixed executor
+
+	* fftw/planner.c, fftw/Attic/config.c, fftw/Attic/fftw.h,
+	fftw/executor.c, fftw/Attic/Makefile: Improved executor
+
+	* fftw/Attic/config.c, fftw/Attic/Makefile: Removed base-128 code
+
+	* fftw/Attic/test.c, fftw/Attic/fftw.h, fftw/planner.c,
+	fftw/Attic/config.c, fftw/executor.c, fftw/Attic/Makefile: Added
+	in-place operations.
+
+	* fftw/Attic/genfft.ml: Nothing.
+
+	* fftw/Attic/genfft.ml: Added more CVS id here and there
+
+	* fftw/Attic/fftw.h, fftw/executor.c: Added Id to executor
+
+	* fftw/executor.c: Added release information to the executor
+
+Sun Mar  2 18:37:35 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/Attic/genfft.ml: Improved code generator
+
+Sat Mar  1 22:53:54 1997  Matteo Frigo  <athena@fftw.org>
+
+	* fftw/Attic/genfft.ml, fftw/.indent.pro: Improved code generator
+	(collector)
+
+	* fftw/Attic/test.c, fftw/timer.c, fftw/twiddle.c,
+	fftw/Attic/naive.c, fftw/Attic/prelude, fftw/planner.c,
+	fftw/Attic/genfft.ml, fftw/generic.c, fftw/Attic/fftw-complex.h,
+	fftw/Attic/fftw.h, fftw/executor.c, fftw/Attic/Makefile.sources,
+	fftw/Attic/complex.h, fftw/Attic/config.c, fftw/Attic/Makefile:
+	Reorganization of the code
+
+	* fftw/Attic/test.c, fftw/timer.c, fftw/twiddle.c,
+	fftw/Attic/naive.c, fftw/planner.c, fftw/Attic/fftw.h,
+	fftw/Attic/genfft.ml, fftw/executor.c, fftw/generic.c,
+	fftw/Attic/Makefile, fftw/Attic/complex.h, fftw/Attic/config.c,
+	Attic/timer.c, Attic/twiddle.c, Attic/naive.c, Attic/planner.c,
+	Attic/test.c, Attic/fftw.h, Attic/generic.c, Attic/genfft.ml,
+	Attic/complex.h, Attic/config.c, Attic/executor.c, Attic/Makefile:
+	Reorganized directory structure
+
+	* Attic/executor.c: Changed executor
+
+Fri Feb 28 23:42:30 1997  Matteo Frigo  <athena@fftw.org>
+
+	* Attic/twiddle.c, Attic/test.c, Attic/timer.c, Attic/fftw.h,
+	Attic/planner.c, Attic/executor.c, Attic/Makefile, Attic/config.c:
+	Added garbage collector and other niceties.  Removed base_128
+
+	* Attic/timer.c, Attic/twiddle.c, Attic/naive.c, Attic/planner.c,
+	Attic/test.c, Attic/generic.c, Attic/genfft.ml, Attic/config.c,
+	Attic/fftw.h, Attic/Makefile: Added support for inverses.
+
+	* Attic/executor.c: Steven's modified executor
+
+	* Attic/test.c: Fixed test program
+
+	* Attic/timer.c, Attic/test.c, Attic/generic.c, Attic/genfft.ml,
+	Attic/executor.c, Attic/fftw.h: Reverted back to old code
+	generator.  Added howmany
+
+Thu Feb 27 01:56:02 1997  Matteo Frigo  <athena@fftw.org>
+
+	* Attic/executor.c, Attic/fftw.h, Attic/generic.c: Fixed generic
+	solver
+
+	* Attic/genfft.ml, Attic/executor.c, Attic/fftw.h: Improved speed
+
+	* Attic/genfft.ml: Improved code generator
+
+Wed Feb 26 23:56:52 1997  Matteo Frigo  <athena@fftw.org>
+
+	* Attic/genfft.ml, Attic/config.c, Attic/executor.c, Attic/fftw.h:
+	New, smarter code generator
+
+	* Attic/naive.c, Attic/planner.c, Attic/test.c, Attic/timer.c,
+	Attic/executor.c, Attic/fftw.h, Attic/generic.c, Attic/genfft.ml,
+	Attic/.indent.pro: New simplifier
+
+Sat Feb 22 23:41:27 1997  Matteo Frigo  <athena@fftw.org>
+
+	* Attic/genfft.ml, Attic/complex.h: Fixed complex.h.  Back to old
+	indexing scheme.
+
+	* Attic/generic.c: Fixed bug
+
+	* Attic/test.c, Attic/timer.c, Attic/genfft.ml, Attic/executor.c,
+	Attic/fftw.h, Attic/generic.c: Added support for arbitrary strides
+
+	* Attic/test.c: fixed test pgm
+
+	* Attic/fftw.h, Attic/generic.c, Attic/complex.h,
+	Attic/executor.c, Attic/Makefile: Added support for generic
+	factors
+
+	* Attic/genfft.ml, Attic/Makefile: Back to good old [k * m]
+	indexing scheme
+
+Fri Feb 21 22:46:40 1997  Matteo Frigo  <athena@fftw.org>
+
+	* Attic/test.c, Attic/genfft.ml, Attic/planner.c,
+	Attic/executor.c, Attic/fftw.h, Attic/Makefile, Attic/config.c:
+	Much, *much* faster program.
+
+	* Attic/planner.c: Fixed bug
+
+	* Attic/genfft.ml: Changed code generator to do less load/stores
+
+	* Attic/test.c, Attic/timer.c, Attic/planner.c, Attic/executor.c,
+	Attic/fftw.h, Attic/generic.c, Attic/config.c, Attic/Makefile:
+	Added generic routines
+
+Thu Feb 20 00:45:34 1997  Matteo Frigo  <athena@fftw.org>
+
+	* Attic/test.c: fixed typo
+
+Wed Feb 19 22:20:17 1997  Matteo Frigo  <athena@fftw.org>
+
+	* Attic/config.c: FIxed other bug
+
+	* Attic/config.c: FIxed bug in config.c
+
+	* Attic/timer.c, Attic/test.c: Fixed timers
+
+	* Attic/test.c, Attic/fftw.h, Attic/genfft.ml: Minor changes
+
+	* Attic/timer.c, Attic/fftw.h, Attic/genfft.ml: Improved code
+	generator
+
+Tue Feb 18 19:22:48 1997  Matteo Frigo  <athena@fftw.org>
+
+	* Attic/test.c, Attic/executor.c: Added Steven's suggestions
+
+	* Attic/planner.c, Attic/timer.c: Minor fixes
+
+	* Attic/timer.c, Attic/planner.c, Attic/Makefile: Minor tweaks
+
+	* Attic/planner.c, Attic/test.c, Attic/Makefile: Fixed bug in
+	planner
+
+	* Attic/timer.c, Attic/planner.c, Attic/test.c, Attic/executor.c,
+	Attic/fftw.h, Attic/Makefile: Better timers, etc
+
+	* Attic/test.c: Fixed bug in test program.
+
+	* Attic/Makefile, Attic/genfft.ml: Added copyright and stuff
+
+	* Attic/timer.c, Attic/test.c, Attic/executor.c, Attic/fftw.h,
+	Attic/planner.c, Attic/Makefile, Attic/config.c: Improved planner
+
+Mon Feb 17 23:12:47 1997  Matteo Frigo  <athena@fftw.org>
+
+	* Attic/Makefile, Attic/config.c, Attic/executor.c, Attic/fftw.h,
+	Attic/genfft.ml, Attic/naive.c, Attic/planner.c, Attic/test.c,
+	Attic/timer.c, Attic/twiddle.c, COPYRIGHT: Initial revision
+
+	* Attic/Makefile, Attic/config.c, Attic/executor.c, Attic/fftw.h,
+	Attic/genfft.ml, Attic/naive.c, Attic/planner.c, Attic/test.c,
+	Attic/timer.c, Attic/twiddle.c, COPYRIGHT: Optimal fft

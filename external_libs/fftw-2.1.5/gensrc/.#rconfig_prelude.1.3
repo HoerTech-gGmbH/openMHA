@@ -1,0 +1,37 @@
+/*
+ * Copyright (c) 1997-1999, 2003 Massachusetts Institute of Technology
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/* rconfig.c -- this file contains all the real-complex codelets
+                the system knows about */
+
+#include "fftw-int.h"
+#include "rfftw.h"
+
+#define NOTW_CODELET(x) \
+	 &fftw_real2hc_##x##_desc
+#define NOTWI_CODELET(x) \
+	 &fftw_hc2real_##x##_desc
+
+#define TWIDDLE_CODELET(x) \
+	 &fftw_hc2hc_forward_##x##_desc
+#define TWIDDLEI_CODELET(x) \
+	 &fftw_hc2hc_backward_##x##_desc
+
+/* automatically-generated list of codelets */
+
