@@ -1,6 +1,6 @@
 # Site Settings
 title: "openMHA"
-email: "hendrik.kayser@openMHA.org"
+email: "hendrikkayser@openMHA.org"
 description: "Open tools for hearing aid development."
 baseurl: ""
 url: "localhost:4000"

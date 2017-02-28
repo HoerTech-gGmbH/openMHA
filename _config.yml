@@ -1,10 +1,9 @@
 # Site Settings
 title: "openMHA"
-email: "hendrik.kayser@openMHA.org"
+email: "hendrikkayser@openMHA.org"
 description: "Open tools for hearing aid development."
 baseurl: "http://www.openMHA.org"
 url: "http://www.openMHA.org"
-repository: "HoerTech-gGmbH/openMHA"
 # Build Settings
 sass:
   sass_dir: _sass

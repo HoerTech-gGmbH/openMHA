@@ -9,7 +9,7 @@ The project *Open community platform for hearing aid algorithm research* funded 
 [Project Overview (pdf)](./docs/ProjectOverview.pdf)
 
 **openMHA** is an open-source software platform for real-time audio signal processing.
-For download instructions see [News](./news/2017/02/27/openMHA-prerelease_available.html).
+For download instructions see [Download](/download).
 
 
 

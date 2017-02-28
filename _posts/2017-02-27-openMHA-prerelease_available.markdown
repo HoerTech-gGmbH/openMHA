@@ -7,13 +7,6 @@ categories: news
 
 A prerelease of the openMHA is available for download!
 
-You can download the package from GitHub [here](https://github.com/HoerTech-gGmbH/openMHA/archive/master.zip)
-
-
-... or clone the git repository:
-
-``` 
-git clone https://github.com/HoerTech-gGmbH/openMHA.git
-```
+See [Download](/Download) for details.
 
   
