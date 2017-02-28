@@ -7,6 +7,6 @@ categories: news
 
 A prerelease of the openMHA is available for download!
 
-See [Download](/Download) for details.
+See [Download](/download) for details.
 
   
