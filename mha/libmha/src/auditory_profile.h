@@ -35,9 +35,9 @@ namespace AuditoryProfile {
      */
     class fmap_t : public std::map<mha_real_t,mha_real_t> {
     public:
-	std::vector<mha_real_t> get_frequencies() const; ///< \brief Return configured frequencies.
-	std::vector<mha_real_t> get_values() const; ///< \brief Return stored values corresponding to the frequencies.
-	bool isempty() const {return size() == 0;}; ///< \brief Test against emptyness.
+        std::vector<mha_real_t> get_frequencies() const; ///< \brief Return configured frequencies.
+        std::vector<mha_real_t> get_values() const; ///< \brief Return stored values corresponding to the frequencies.
+        bool isempty() const {return size() == 0;}; ///< \brief Test against emptyness.
     };
 
     /**
@@ -51,25 +51,25 @@ namespace AuditoryProfile {
      */
     class profile_t {
     public:
-	/**
-	   \brief Class for ear-dependent parameters, e.g., audiograms or unilateral loudness scaling.
-	 */
-	class ear_t {
-	public:
-	    AuditoryProfile::fmap_t HTL;
-	    AuditoryProfile::fmap_t UCL;
-	    void convert_empty2normal();
-	};
-	AuditoryProfile::profile_t::ear_t L; ///< \brief Left ear data.
-	AuditoryProfile::profile_t::ear_t R; ///< \brief Right ear data.
-	/**
-	   \brief Return ear information of channel number
-	*/
-	AuditoryProfile::profile_t::ear_t get_ear(unsigned int channel) const { 
-	    if( channel==0 ) return L;
-	    if( channel==1 ) return R;
-	    throw MHA_Error(__FILE__,__LINE__,"No support for more than two ears!");
-	};
+        /**
+           \brief Class for ear-dependent parameters, e.g., audiograms or unilateral loudness scaling.
+         */
+        class ear_t {
+        public:
+            AuditoryProfile::fmap_t HTL;
+            AuditoryProfile::fmap_t UCL;
+            void convert_empty2normal();
+        };
+        AuditoryProfile::profile_t::ear_t L; ///< \brief Left ear data.
+        AuditoryProfile::profile_t::ear_t R; ///< \brief Right ear data.
+        /**
+           \brief Return ear information of channel number
+        */
+        AuditoryProfile::profile_t::ear_t get_ear(unsigned int channel) const { 
+            if( channel==0 ) return L;
+            if( channel==1 ) return R;
+            throw MHA_Error(__FILE__,__LINE__,"No support for more than two ears!");
+        };
     };
 
     /**
@@ -77,31 +77,31 @@ namespace AuditoryProfile {
      */
     class parser_t : public MHAParser::parser_t {
     public:
-	class fmap_t : public MHAParser::parser_t
-	{
-	public:
-	    fmap_t(const std::string& name, const std::string& help);
-	    AuditoryProfile::fmap_t get_fmap() const;
-	private:
-	    void validate();
-	    MHAEvents::patchbay_t<AuditoryProfile::parser_t::fmap_t> patchbay;
-	    MHAParser::vfloat_t f;
-	    MHAParser::vfloat_t value;
-	    std::string name_;
-	};
-	class ear_t : public MHAParser::parser_t {
-	public:
-	    ear_t();
-	    AuditoryProfile::profile_t::ear_t get_ear() const;
-	private:
-	    AuditoryProfile::parser_t::fmap_t HTL;
-	    AuditoryProfile::parser_t::fmap_t UCL;
-	};
-	parser_t();
-	AuditoryProfile::profile_t get_current_profile();
+        class fmap_t : public MHAParser::parser_t
+        {
+        public:
+            fmap_t(const std::string& name, const std::string& help);
+            AuditoryProfile::fmap_t get_fmap() const;
+        private:
+            void validate();
+            MHAEvents::patchbay_t<AuditoryProfile::parser_t::fmap_t> patchbay;
+            MHAParser::vfloat_t f;
+            MHAParser::vfloat_t value;
+            std::string name_;
+        };
+        class ear_t : public MHAParser::parser_t {
+        public:
+            ear_t();
+            AuditoryProfile::profile_t::ear_t get_ear() const;
+        private:
+            AuditoryProfile::parser_t::fmap_t HTL;
+            AuditoryProfile::parser_t::fmap_t UCL;
+        };
+        parser_t();
+        AuditoryProfile::profile_t get_current_profile();
     private:
-	AuditoryProfile::parser_t::ear_t L;
-	AuditoryProfile::parser_t::ear_t R;
+        AuditoryProfile::parser_t::ear_t L;
+        AuditoryProfile::parser_t::ear_t R;
     };
 
 
@@ -113,5 +113,7 @@ namespace AuditoryProfile {
 // Local Variables:
 // mode: c++
 // compile-command: "make -C .."
+// c-basic-offset: 4
 // coding: utf-8-unix
+// indent-tabs-mode: nil
 // End:

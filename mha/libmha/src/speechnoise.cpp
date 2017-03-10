@@ -80,76 +80,76 @@ void speechnoise_t::creator(speechnoise_t::noise_type_t noise_type, float srate)
     unsigned int kfbin(0);
     switch( noise_type ){
     case speechnoise_t::mha :
-	yfun = NULL;
-	interp.set_xfun(NULL);
-	interp.set_yfun(MHASignal::db2lin);
-	interp.add_entry(vMHAOrigFreq,vMHAOrigSpec,NUM_ENTR_MHAORIG);
-	interp.add_entry(0.0f,-100.0f);
-	break;
+        yfun = NULL;
+        interp.set_xfun(NULL);
+        interp.set_yfun(MHASignal::db2lin);
+        interp.add_entry(vMHAOrigFreq,vMHAOrigSpec,NUM_ENTR_MHAORIG);
+        interp.add_entry(0.0f,-100.0f);
+        break;
     case speechnoise_t::olnoise :
-	interp.set_xyfun(bandw_correction);
-	interp.add_entry(vOlnoiseFreq,vOlnoiseLev,NUM_ENTR_OLNOISE);
-	interp.add_entry( 0.5*vOlnoiseFreq[0], vOlnoiseLev[0]-extrap_slope );
-	interp.add_entry( 2.0*vOlnoiseFreq[NUM_ENTR_OLNOISE-1], vOlnoiseLev[NUM_ENTR_OLNOISE-1]-extrap_slope );
-	break;
+        interp.set_xyfun(bandw_correction);
+        interp.add_entry(vOlnoiseFreq,vOlnoiseLev,NUM_ENTR_OLNOISE);
+        interp.add_entry( 0.5*vOlnoiseFreq[0], vOlnoiseLev[0]-extrap_slope );
+        interp.add_entry( 2.0*vOlnoiseFreq[NUM_ENTR_OLNOISE-1], vOlnoiseLev[NUM_ENTR_OLNOISE-1]-extrap_slope );
+        break;
     case speechnoise_t::LTASS_combined :
-	interp.set_xyfun(bandw_correction);
-	interp.add_entry( vLTASS_freq, vLTASS_combined_lev, NUM_ENTR_LTASS );
-	interp.add_entry( 0.5*vLTASS_freq[0], vLTASS_combined_lev[0]-extrap_slope );
-	interp.add_entry( 2.0*vLTASS_freq[NUM_ENTR_LTASS-1], vLTASS_combined_lev[NUM_ENTR_LTASS-1]-extrap_slope );
-	break;
+        interp.set_xyfun(bandw_correction);
+        interp.add_entry( vLTASS_freq, vLTASS_combined_lev, NUM_ENTR_LTASS );
+        interp.add_entry( 0.5*vLTASS_freq[0], vLTASS_combined_lev[0]-extrap_slope );
+        interp.add_entry( 2.0*vLTASS_freq[NUM_ENTR_LTASS-1], vLTASS_combined_lev[NUM_ENTR_LTASS-1]-extrap_slope );
+        break;
     case speechnoise_t::LTASS_female :
-	interp.set_xyfun(bandw_correction);
-	interp.add_entry( vLTASS_freq, vLTASS_female_lev, NUM_ENTR_LTASS );
-	interp.add_entry( 0.5*vLTASS_freq[0], vLTASS_female_lev[0]-extrap_slope );
-	interp.add_entry( 2.0*vLTASS_freq[NUM_ENTR_LTASS-1], vLTASS_female_lev[NUM_ENTR_LTASS-1]-extrap_slope );
-	break;
+        interp.set_xyfun(bandw_correction);
+        interp.add_entry( vLTASS_freq, vLTASS_female_lev, NUM_ENTR_LTASS );
+        interp.add_entry( 0.5*vLTASS_freq[0], vLTASS_female_lev[0]-extrap_slope );
+        interp.add_entry( 2.0*vLTASS_freq[NUM_ENTR_LTASS-1], vLTASS_female_lev[NUM_ENTR_LTASS-1]-extrap_slope );
+        break;
     case speechnoise_t::LTASS_male :
-	interp.set_xyfun(bandw_correction);
-	interp.add_entry( vLTASS_freq, vLTASS_male_lev, NUM_ENTR_LTASS );
-	interp.add_entry( 0.5*vLTASS_freq[0], vLTASS_male_lev[0]-extrap_slope );
-	interp.add_entry( 2.0*vLTASS_freq[NUM_ENTR_LTASS-1], vLTASS_male_lev[NUM_ENTR_LTASS-1]-extrap_slope );
-	break;
+        interp.set_xyfun(bandw_correction);
+        interp.add_entry( vLTASS_freq, vLTASS_male_lev, NUM_ENTR_LTASS );
+        interp.add_entry( 0.5*vLTASS_freq[0], vLTASS_male_lev[0]-extrap_slope );
+        interp.add_entry( 2.0*vLTASS_freq[NUM_ENTR_LTASS-1], vLTASS_male_lev[NUM_ENTR_LTASS-1]-extrap_slope );
+        break;
     case speechnoise_t::white :
-	interp.add_entry( 100.0f, 0.0f );
-	interp.add_entry( 1000.0f, 0.0f );
-	break;
+        interp.add_entry( 100.0f, 0.0f );
+        interp.add_entry( 1000.0f, 0.0f );
+        break;
     case speechnoise_t::pink :
-	interp.add_entry(25.0f, 0.0f);
-	interp.add_entry(50.0f, 0.0f);
-	interp.add_entry(100.0f,-3.0f);
-	break;
+        interp.add_entry(25.0f, 0.0f);
+        interp.add_entry(50.0f, 0.0f);
+        interp.add_entry(100.0f,-3.0f);
+        break;
     case speechnoise_t::brown :
-	interp.add_entry(25.0f, 0.0f);
-	interp.add_entry(50.0f, 0.0f);
-	interp.add_entry(100.0f,-6.0f);
-	break;
+        interp.add_entry(25.0f, 0.0f);
+        interp.add_entry(50.0f, 0.0f);
+        interp.add_entry(100.0f,-6.0f);
+        break;
     case speechnoise_t::TEN_SPL :
-	interp.set_xfun(NULL);
-	yfun = NULL;
-	for(float f=20.0f;f<20000.0f;f *= 1.059463094f)
-	    interp.add_entry(f,1.0f/sqrt(erb_hz_f_hz(f)));
-	break;
+        interp.set_xfun(NULL);
+        yfun = NULL;
+        for(float f=20.0f;f<20000.0f;f *= 1.059463094f)
+            interp.add_entry(f,1.0f/sqrt(erb_hz_f_hz(f)));
+        break;
     case speechnoise_t::TEN_SPL_250_8k :
-	interp.set_xfun(NULL);
-	yfun = NULL;
-	for(float f=250.0f;f<8000.0f;f *= 1.059463094f)
-	    interp.add_entry(f,1.0f/sqrt(erb_hz_f_hz(f)));
-	for(float f=250.0f;f>10.0f;f /= 1.059463094f)
-	    interp.add_entry(f,powf(f/250.0f,4.0f)/sqrt(erb_hz_f_hz(250.0f)));
-	for(float f=8000.0f;f<64000.0f;f *= 1.059463094f)
-	    interp.add_entry(f,powf(8000.0f/f,4.0f)/sqrt(erb_hz_f_hz(8000.0f)));
-	break;
+        interp.set_xfun(NULL);
+        yfun = NULL;
+        for(float f=250.0f;f<8000.0f;f *= 1.059463094f)
+            interp.add_entry(f,1.0f/sqrt(erb_hz_f_hz(f)));
+        for(float f=250.0f;f>10.0f;f /= 1.059463094f)
+            interp.add_entry(f,powf(f/250.0f,4.0f)/sqrt(erb_hz_f_hz(250.0f)));
+        for(float f=8000.0f;f<64000.0f;f *= 1.059463094f)
+            interp.add_entry(f,powf(8000.0f/f,4.0f)/sqrt(erb_hz_f_hz(8000.0f)));
+        break;
     case speechnoise_t::TEN_SPL_50_16k :
-	interp.set_xfun(NULL);
-	yfun = NULL;
-	for(float f=50.0f;f<16000.0f;f *= 1.059463094f)
-	    interp.add_entry(f,1.0f/sqrt(erb_hz_f_hz(f)));
-	for(float f=50.0f;f>10.0f;f /= 1.059463094f)
-	    interp.add_entry(f,powf(f/50.0f,4.0f)/sqrt(erb_hz_f_hz(50.0f)));
-	for(float f=16000.0f;f<64000.0f;f *= 1.059463094f)
-	    interp.add_entry(f,powf(16000.0f/f,4.0f)/sqrt(erb_hz_f_hz(16000.0f)));
-	break;
+        interp.set_xfun(NULL);
+        yfun = NULL;
+        for(float f=50.0f;f<16000.0f;f *= 1.059463094f)
+            interp.add_entry(f,1.0f/sqrt(erb_hz_f_hz(f)));
+        for(float f=50.0f;f>10.0f;f /= 1.059463094f)
+            interp.add_entry(f,powf(f/50.0f,4.0f)/sqrt(erb_hz_f_hz(50.0f)));
+        for(float f=16000.0f;f<64000.0f;f *= 1.059463094f)
+            interp.add_entry(f,powf(16000.0f/f,4.0f)/sqrt(erb_hz_f_hz(16000.0f)));
+        break;
     case speechnoise_t::sin125 :
     case speechnoise_t::sin250 :
     case speechnoise_t::sin500 :
@@ -157,50 +157,50 @@ void speechnoise_t::creator(speechnoise_t::noise_type_t noise_type, float srate)
     case speechnoise_t::sin2k :
     case speechnoise_t::sin4k :
     case speechnoise_t::sin8k :
-	interp.set_xfun(NULL);
-	yfun = NULL;
-	interp.add_entry(1.0f,0.0f);
-	interp.add_entry(100000.0f,0.0f);
-	break;
+        interp.set_xfun(NULL);
+        yfun = NULL;
+        interp.add_entry(1.0f,0.0f);
+        interp.add_entry(100000.0f,0.0f);
+        break;
     }
     switch( noise_type ){
     case speechnoise_t::sin125 :
-	kfbin = static_cast<unsigned>(125.f*num_frames/srate);
-	break;
+        kfbin = static_cast<unsigned>(125.f*num_frames/srate);
+        break;
     case speechnoise_t::sin250 :
-	kfbin = static_cast<unsigned>(250.f*num_frames/srate);
-	break;
+        kfbin = static_cast<unsigned>(250.f*num_frames/srate);
+        break;
     case speechnoise_t::sin500 :
-	kfbin = static_cast<unsigned>(500.f*num_frames/srate);
-	break;
+        kfbin = static_cast<unsigned>(500.f*num_frames/srate);
+        break;
     case speechnoise_t::sin1k :
-	kfbin = static_cast<unsigned>(1000.f*num_frames/srate);
-	break;
+        kfbin = static_cast<unsigned>(1000.f*num_frames/srate);
+        break;
     case speechnoise_t::sin2k :
-	kfbin = static_cast<unsigned>(2000.f*num_frames/srate);
-	break;
+        kfbin = static_cast<unsigned>(2000.f*num_frames/srate);
+        break;
     case speechnoise_t::sin4k :
-	kfbin = static_cast<unsigned>(4000.f*num_frames/srate);
-	break;
+        kfbin = static_cast<unsigned>(4000.f*num_frames/srate);
+        break;
     case speechnoise_t::sin8k :
-	kfbin = static_cast<unsigned>(8000.f*num_frames/srate);
-	break;
+        kfbin = static_cast<unsigned>(8000.f*num_frames/srate);
+        break;
     default:
-	break;
+        break;
     }
     for(ch=0;ch<num_channels;ch++)
-	temp_spec.value(0,ch) = mha_complex(0,0);
+        temp_spec.value(0,ch) = mha_complex(0,0);
     mha_real_t amplitude(0);
     for(k=1;k<temp_spec.num_frames;k++){
-	freq = k*srate/num_frames;
-	amplitude = interp.interp(freq);
-	if( yfun )
-	    amplitude = yfun(amplitude);
-	expi(temp_spec.value(k,0),2.0*M_PI*rand()/RAND_MAX,amplitude);
-	if( k==kfbin )
-	    temp_spec.value(k,0) = mha_complex(1,0);
-	for(ch=1;ch<num_channels;ch++)
-	    temp_spec.value(k,ch) = temp_spec.value(k,0);
+        freq = k*srate/num_frames;
+        amplitude = interp.interp(freq);
+        if( yfun )
+            amplitude = yfun(amplitude);
+        expi(temp_spec.value(k,0),2.0*M_PI*rand()/RAND_MAX,amplitude);
+        if( k==kfbin )
+            temp_spec.value(k,0) = mha_complex(1,0);
+        for(ch=1;ch<num_channels;ch++)
+            temp_spec.value(k,ch) = temp_spec.value(k,0);
     }
     mha_fft_t fft = mha_fft_new(num_frames);
     mha_fft_spec2wave(fft, &temp_spec, this );
@@ -208,5 +208,8 @@ void speechnoise_t::creator(speechnoise_t::noise_type_t noise_type, float srate)
 }
 
 // Local Variables:
+// compile-command: "make -C .."
 // coding: utf-8-unix
+// c-basic-offset: 4
+// indent-tabs-mode: nil
 // End:

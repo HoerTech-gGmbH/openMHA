@@ -26,7 +26,7 @@ std::vector<mha_real_t> convert_f2logf(const std::vector<mha_real_t>& vF)
 {
     std::vector<mha_real_t> ret;
     for(std::vector<mha_real_t>::const_iterator it=vF.begin();it!=vF.end();++it)
-	ret.push_back(log(*it));
+        ret.push_back(log(*it));
     return ret;
 }
 
@@ -40,12 +40,12 @@ gaintable_t::gaintable_t(const std::vector<mha_real_t>& LInput,const std::vector
 {
     data.resize(num_channels);
     for(unsigned int ch=0;ch<num_channels;ch++){
-	data[ch].resize(num_F);
-	for(unsigned int kf=0;kf<num_F;kf++){
-	    data[ch][kf].resize(num_L);
-	    for(unsigned int kl=0;kl<num_L;kl++)
-		data[ch][kf][kl] = 0;
-	}
+        data[ch].resize(num_F);
+        for(unsigned int kf=0;kf<num_F;kf++){
+            data[ch][kf].resize(num_L);
+            for(unsigned int kl=0;kl<num_L;kl++)
+                data[ch][kf][kl] = 0;
+        }
     }
 }
 
@@ -57,8 +57,8 @@ std::vector<std::vector<mha_real_t> > gaintable_t::get_iofun() const
 {
     std::vector<std::vector<mha_real_t> > retv;
     for(unsigned int ch=0;ch<num_channels;ch++)
-	for(unsigned int kf=0;kf<num_F;kf++)
-	    retv.push_back(data[ch][kf]);
+        for(unsigned int kf=0;kf<num_F;kf++)
+            retv.push_back(data[ch][kf]);
     return retv;
 }
 
@@ -79,43 +79,43 @@ void gaintable_t::get_gain(const mha_wave_t& Lin,mha_wave_t& Gain)
     MHA_assert_equal(Lin.num_channels,Gain.num_channels);
     MHA_assert_equal(Lin.num_frames,Gain.num_frames);
     for(unsigned int ch=0;ch<num_channels;ch++)
-	for(unsigned int kf=0;kf<num_F;kf++)
-	    for(unsigned int kt=0;kt<Lin.num_frames;kt++)
-		value(Gain,kt,num_F*ch+kf) = get_gain(value(Lin,kt,num_F*ch+kf),kf,ch);
+        for(unsigned int kf=0;kf<num_F;kf++)
+            for(unsigned int kt=0;kt<Lin.num_frames;kt++)
+                value(Gain,kt,num_F*ch+kf) = get_gain(value(Lin,kt,num_F*ch+kf),kf,ch);
 }
 
 bool isempty(const std::vector<std::vector<mha_real_t> > & arg)
 {
     if( !arg.size() )
-	return true;
+        return true;
     if( (arg.size() == 1) && (!arg[0].size()) )
-	return true;
+        return true;
     return false;
 }
 
 void gaintable_t::update(std::vector<std::vector<std::vector<mha_real_t> > > newGain)
 {
     if( data.size() != newGain.size() )
-	throw MHA_Error(__FILE__,__LINE__,
-			"The gain table size cannot change (expected %d channels, got %d).",
-			data.size(),newGain.size());
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The gain table size cannot change (expected %d channels, got %d).",
+                        data.size(),newGain.size());
     for(unsigned int ch=0;ch<num_channels;ch++){
-	if( isempty(newGain[ch]) ){
-	    newGain[ch].resize(data[ch].size());
-	    for( unsigned int kf=0;kf<data[ch].size();kf++){
-		newGain[ch][kf].resize(data[ch][kf].size());
-	    }
-	}
-	if( data[ch].size() != newGain[ch].size() )
-	    throw MHA_Error(__FILE__,__LINE__,
-			    "The gain table size cannot change (expected %d frequencies in channel %d, got %d).",
-			    data[ch].size(),ch,newGain[ch].size());
-	for( unsigned int kf=0;kf<num_F;kf++){
-	    if( data[ch][kf].size() != newGain[ch][kf].size() )
-		throw MHA_Error(__FILE__,__LINE__,
-				"The gain table size cannot change (expected %d levels in band %d channel %d, got %d).",
-				data[ch][kf].size(),kf,ch,newGain[ch][kf].size());
-	}
+        if( isempty(newGain[ch]) ){
+            newGain[ch].resize(data[ch].size());
+            for( unsigned int kf=0;kf<data[ch].size();kf++){
+                newGain[ch][kf].resize(data[ch][kf].size());
+            }
+        }
+        if( data[ch].size() != newGain[ch].size() )
+            throw MHA_Error(__FILE__,__LINE__,
+                            "The gain table size cannot change (expected %d frequencies in channel %d, got %d).",
+                            data[ch].size(),ch,newGain[ch].size());
+        for( unsigned int kf=0;kf<num_F;kf++){
+            if( data[ch][kf].size() != newGain[ch][kf].size() )
+                throw MHA_Error(__FILE__,__LINE__,
+                                "The gain table size cannot change (expected %d levels in band %d channel %d, got %d).",
+                                data[ch][kf].size(),kf,ch,newGain[ch][kf].size());
+        }
     }
     data = newGain;
 }
@@ -123,31 +123,31 @@ void gaintable_t::update(std::vector<std::vector<std::vector<mha_real_t> > > new
 mha_real_t DynComp::interp1(const std::vector<mha_real_t>& vX, const std::vector<mha_real_t>& vY, mha_real_t X)
 {
     if( vX.size() != vY.size() )
-	throw MHA_ErrorMsg("Mismatching size.");
+        throw MHA_ErrorMsg("Mismatching size.");
     if( vX.size() == 0 )
-	throw MHA_ErrorMsg("Empty data (interp1).");
+        throw MHA_ErrorMsg("Empty data (interp1).");
     if( vX.size() == 1 )
-	return vY[0];
+        return vY[0];
     // first search for optimal X:
     std::vector<mha_real_t>::const_iterator itX = vX.begin();
     std::vector<mha_real_t>::const_iterator itY = vY.begin();
     while( (itX < vX.end()) && (*itX < X) ){
-	++itX;
-	++itY;
+        ++itX;
+        ++itY;
     }
     if( itX == vX.end() ){
-	--itX;
-	--itY;
+        --itX;
+        --itY;
     }
     // search neighbour of optimal X:
     std::vector<mha_real_t>::const_iterator itXn = itX;
     std::vector<mha_real_t>::const_iterator itYn = itY;
     if( itXn == vX.begin() ){
-	++itYn;
-	++itXn;
+        ++itYn;
+        ++itXn;
     }else{
-	--itXn;
-	--itYn;
+        --itXn;
+        --itYn;
     }
     // interpolate between optimal and neighbour:
     return *itYn + (*itY - *itYn)*(X - *itXn)/(*itX - *itXn);
@@ -157,63 +157,63 @@ mha_real_t DynComp::interp1(const std::vector<mha_real_t>& vX, const std::vector
 mha_real_t DynComp::interp2(const std::vector<mha_real_t>& vX, const std::vector<mha_real_t>& vY, const std::vector<std::vector<mha_real_t> >& mZ, mha_real_t X, mha_real_t Y)
 {
     if( (!vX.size()) || (!vY.size()) )
-	throw MHA_ErrorMsg("Empty data (interp2).");
+        throw MHA_ErrorMsg("Empty data (interp2).");
     if( vX.size() != mZ.size() )
-	throw MHA_ErrorMsg("Mismatching size.");
+        throw MHA_ErrorMsg("Mismatching size.");
     // return if singular data point in database:
     if( mZ.size() == 1 ){
-	if( mZ[0].size() == 1 )
-	    return mZ[0][0];
-	else
-	    return DynComp::interp1(vY,mZ[0],Y);
+        if( mZ[0].size() == 1 )
+            return mZ[0][0];
+        else
+            return DynComp::interp1(vY,mZ[0],Y);
     }
     // first search for optimal X:
     std::vector<mha_real_t>::const_iterator itX = vX.begin();
     std::vector<std::vector<mha_real_t> >::const_iterator itZY = mZ.begin();
     while( (itX < vX.end()) && (*itX < X) ){
-	++itX;
-	++itZY;
+        ++itX;
+        ++itZY;
     }
     if( itX == vX.end() ){
-	--itX;
-	--itZY;
+        --itX;
+        --itZY;
     }
     // check size of optimal entry:
     if( vY.size() != itZY->size() )
-	throw MHA_ErrorMsg("Mismatching size.");
+        throw MHA_ErrorMsg("Mismatching size.");
     // search neighbour of optimal X:
     std::vector<mha_real_t>::const_iterator itXn = itX;
     std::vector<std::vector<mha_real_t> >::const_iterator itZYn = itZY;
     if( itXn == vX.begin() ){
-	++itXn;
-	++itZYn;
+        ++itXn;
+        ++itZYn;
     }else{
-	--itXn;
-	--itZYn;
+        --itXn;
+        --itZYn;
     }
     // check size of neighbour entry:
     if( vY.size() != itZYn->size() )
-	throw MHA_ErrorMsg("Mismatching size.");
+        throw MHA_ErrorMsg("Mismatching size.");
     // now search for optimal Y:
     std::vector<mha_real_t>::const_iterator itY = vY.begin();
     std::vector<mha_real_t>::const_iterator itZ_rt = itZY->begin();
     std::vector<mha_real_t>::const_iterator itZ_lt = itZYn->begin();
     while( (itY < vY.end()) && (*itY < Y) ){
-	++itY;
-	++itZ_rt;
-	++itZ_lt;
+        ++itY;
+        ++itZ_rt;
+        ++itZ_lt;
     }
     std::vector<mha_real_t>::const_iterator itYn = itY;
     std::vector<mha_real_t>::const_iterator itZ_rb = itZ_rt;
     std::vector<mha_real_t>::const_iterator itZ_lb = itZ_lt;
     if( itYn == vY.begin() ){
-	++itYn;
-	++itZ_rb;
-	++itZ_lb;
+        ++itYn;
+        ++itZ_rb;
+        ++itZ_lb;
     }else{
-	--itYn;
-	--itZ_rb;
-	--itZ_lb;
+        --itYn;
+        --itZ_rb;
+        --itZ_lb;
     }
     // now calculate the average, spanned by the four points rt, rb, lt, lb
     mha_real_t rel_Xpos = (X - *itXn)/(*itX - *itXn);
@@ -225,6 +225,7 @@ mha_real_t DynComp::interp2(const std::vector<mha_real_t>& vX, const std::vector
 
 
 // Local Variables:
+// compile-command: "make -C .."
 // coding: utf-8-unix
 // c-basic-offset: 4
 // indent-tabs-mode: nil

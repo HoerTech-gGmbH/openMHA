@@ -45,17 +45,17 @@ MHAMultiSrc::channels_t::channels_t(const std::vector<std::string>& route,int in
     MHAMultiSrc::channel_t chn;
     for(unsigned int ch=0;ch<route.size();ch++){
         MHAParser::expression_t src(route[ch],":");
-	chn.name = src.lval;
-	MHAParser::StrCnv::str2val(src.rval,chn.channel);
-	if( chn.channel < 0 )
-	    throw MHA_Error(__FILE__,__LINE__,
-			    "Channel number must be zero ore more (%s).",
-			    route[ch].c_str());
-	if( (src.lval.size() == 0) && (chn.channel >= in_channels) )
-	    throw MHA_Error(__FILE__,__LINE__,
-			    "Channel number is out of range (%s, %d channels).",
-			    route[ch].c_str(), in_channels);
-	push_back(chn);
+        chn.name = src.lval;
+        MHAParser::StrCnv::str2val(src.rval,chn.channel);
+        if( chn.channel < 0 )
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Channel number must be zero ore more (%s).",
+                            route[ch].c_str());
+        if( (src.lval.size() == 0) && (chn.channel >= in_channels) )
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Channel number is out of range (%s, %d channels).",
+                            route[ch].c_str(), in_channels);
+        push_back(chn);
     }
 }
 
@@ -79,9 +79,9 @@ void MHAMultiSrc::base_t::select_source(const std::vector<std::string>& src, int
 }
 
 MHAMultiSrc::waveform_t::waveform_t(algo_comm_t ac,
-				    std::string name,
-				    unsigned int frames,
-				    unsigned int channels)
+                                    std::string name,
+                                    unsigned int frames,
+                                    unsigned int channels)
     : MHA_AC::waveform_t(ac,name,frames,channels,false),
       MHAMultiSrc::base_t(ac)
 {
@@ -100,33 +100,33 @@ mha_wave_t* MHAMultiSrc::waveform_t::update(mha_wave_t* s)
     unsigned int k, ch;
     mha_wave_t win;
     if( num_channels != cfg->size() )
-	throw MHA_Error(__FILE__,__LINE__,
-			"Mismatching dimension: route data has %d entries, output signal %d.",
-			cfg->size(),num_channels);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Mismatching dimension: route data has %d entries, output signal %d.",
+                        cfg->size(),num_channels);
     for(ch=0;ch<num_channels;ch++){
-	win = *s;
-	if( (*cfg)[ch].name.size() )
-	    win = MHA_AC::get_var_waveform( MHAMultiSrc::base_t::ac, (*cfg)[ch].name );
-	if( win.num_frames != num_frames )
-	    throw MHA_Error(__FILE__,__LINE__,
-			    "Invalid number of frames in source \"%s\" (got %d, expected %d)",
-			    (*cfg)[ch].name.c_str(),win.num_frames,num_frames);
-	if( ((*cfg)[ch].channel >= (int)win.num_channels) || ((*cfg)[ch].channel < 0) )
-	    throw MHA_Error(__FILE__,__LINE__,
-			    "Source channel is out of range (%s, %d channels available).",
-			    (*cfg)[ch].name.c_str(),win.num_channels);
-	for(k=0;k<num_frames;k++)
-	    value(k,ch) = ::value(win,k,(*cfg)[ch].channel);
+        win = *s;
+        if( (*cfg)[ch].name.size() )
+            win = MHA_AC::get_var_waveform( MHAMultiSrc::base_t::ac, (*cfg)[ch].name );
+        if( win.num_frames != num_frames )
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Invalid number of frames in source \"%s\" (got %d, expected %d)",
+                            (*cfg)[ch].name.c_str(),win.num_frames,num_frames);
+        if( ((*cfg)[ch].channel >= (int)win.num_channels) || ((*cfg)[ch].channel < 0) )
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Source channel is out of range (%s, %d channels available).",
+                            (*cfg)[ch].name.c_str(),win.num_channels);
+        for(k=0;k<num_frames;k++)
+            value(k,ch) = ::value(win,k,(*cfg)[ch].channel);
     }
     if( num_channels )
-	insert();
+        insert();
     return this;
 }
 
 MHAMultiSrc::spectrum_t::spectrum_t(algo_comm_t ac,
-				    std::string name,
-				    unsigned int frames,
-				    unsigned int channels)
+                                    std::string name,
+                                    unsigned int frames,
+                                    unsigned int channels)
     : MHA_AC::spectrum_t(ac,name,frames,channels,false),
       MHAMultiSrc::base_t(ac)
 {
@@ -145,26 +145,26 @@ mha_spec_t* MHAMultiSrc::spectrum_t::update(mha_spec_t* s)
     unsigned int k, ch;
     mha_spec_t win;
     if( num_channels != cfg->size() )
-	throw MHA_Error(__FILE__,__LINE__,
-			"Mismatching dimension: route data has %d entries, output signal %d.",
-			cfg->size(),num_channels);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Mismatching dimension: route data has %d entries, output signal %d.",
+                        cfg->size(),num_channels);
     for(ch=0;ch<num_channels;ch++){
-	win = *s;
-	if( (*cfg)[ch].name.size() )
-	    win = MHA_AC::get_var_spectrum( MHAMultiSrc::base_t::ac, (*cfg)[ch].name );
-	if( win.num_frames != num_frames )
-	    throw MHA_Error(__FILE__,__LINE__,
-			    "Invalid number of frames in source \"%s\" (got %d, expected %d)",
-			    (*cfg)[ch].name.c_str(),win.num_frames,num_frames);
-	if( ((*cfg)[ch].channel >= (int)win.num_channels) || ((*cfg)[ch].channel < 0) )
-	    throw MHA_Error(__FILE__,__LINE__,
-			    "Source channel is out of range (%s, %d channels available).",
-			    (*cfg)[ch].name.c_str(),win.num_channels);
-	for(k=0;k<num_frames;k++)
-	    value(k,ch) = ::value(win,k,(*cfg)[ch].channel);
+        win = *s;
+        if( (*cfg)[ch].name.size() )
+            win = MHA_AC::get_var_spectrum( MHAMultiSrc::base_t::ac, (*cfg)[ch].name );
+        if( win.num_frames != num_frames )
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Invalid number of frames in source \"%s\" (got %d, expected %d)",
+                            (*cfg)[ch].name.c_str(),win.num_frames,num_frames);
+        if( ((*cfg)[ch].channel >= (int)win.num_channels) || ((*cfg)[ch].channel < 0) )
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Source channel is out of range (%s, %d channels available).",
+                            (*cfg)[ch].name.c_str(),win.num_channels);
+        for(k=0;k<num_frames;k++)
+            value(k,ch) = ::value(win,k,(*cfg)[ch].channel);
     }
     if( num_channels )
-	insert();
+        insert();
     return this;
 }
 

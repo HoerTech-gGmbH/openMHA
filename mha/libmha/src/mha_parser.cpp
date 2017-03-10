@@ -465,7 +465,7 @@ character array.  This base class implementation delegates to
 
 \param cmd  Command to be parsed
 \param retv Buffer for the result
-\param len	Length of buffer
+\param len      Length of buffer
 */
 void MHAParser::base_t::parse( const char *cmd, char *retv, unsigned int len )
 {
@@ -2760,23 +2760,23 @@ template<> void MHAParser::StrCnv::str2val<mha_real_t>( const std::string & s, s
         std::string fv;
         std::istringstream tmp(s.substr(1,s.size()-2) + std::string(" "));
         while( tmp >> fv ) {
-	    if( fv.find(":") < fv.size() ){
-		MHAParser::expression_t exp1( fv, ":");
-		MHAParser::expression_t exp2( exp1.rval, ":" );
-		mha_real_t tmp_start;
-		mha_real_t tmp_inc;
-		mha_real_t tmp_end;
-		MHAParser::StrCnv::str2val( exp1.lval, tmp_start );
-		MHAParser::StrCnv::str2val( exp2.lval, tmp_inc );
-		MHAParser::StrCnv::str2val( exp2.rval, tmp_end );
-		if( (tmp_inc > 0) && (tmp_end > tmp_start) ){
-		    for( mha_real_t tmp_value=tmp_start;tmp_value<=tmp_end;tmp_value+=tmp_inc)
-			val.push_back(tmp_value);
-		}else throw MHA_Error(__FILE__,__LINE__,"Invalid start:inc:end expression (%g:%g:%g).",tmp_start,tmp_inc,tmp_end);
-	    }else{
-		MHAParser::StrCnv::str2val( fv, tmpval );
-		val.push_back( tmpval );
-	    }
+            if( fv.find(":") < fv.size() ){
+                MHAParser::expression_t exp1( fv, ":");
+                MHAParser::expression_t exp2( exp1.rval, ":" );
+                mha_real_t tmp_start;
+                mha_real_t tmp_inc;
+                mha_real_t tmp_end;
+                MHAParser::StrCnv::str2val( exp1.lval, tmp_start );
+                MHAParser::StrCnv::str2val( exp2.lval, tmp_inc );
+                MHAParser::StrCnv::str2val( exp2.rval, tmp_end );
+                if( (tmp_inc > 0) && (tmp_end > tmp_start) ){
+                    for( mha_real_t tmp_value=tmp_start;tmp_value<=tmp_end;tmp_value+=tmp_inc)
+                        val.push_back(tmp_value);
+                }else throw MHA_Error(__FILE__,__LINE__,"Invalid start:inc:end expression (%g:%g:%g).",tmp_start,tmp_inc,tmp_end);
+            }else{
+                MHAParser::StrCnv::str2val( fv, tmpval );
+                val.push_back( tmpval );
+            }
         }
         v = val;
         break;

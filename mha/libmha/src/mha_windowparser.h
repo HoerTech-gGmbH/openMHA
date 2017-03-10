@@ -44,28 +44,28 @@ namespace MHAParser {
     {
     public:
         typedef enum { wnd_rect=0,
-		       wnd_hann=1,
-		       wnd_hamming=2,
-		       wnd_blackman=3,
-		       wnd_bartlett=4,
-		       wnd_user=5 } wtype_t;
-	/// \brief Constructor to create parser class.
-	window_t(const std::string& help="Window type configuration.");
-	/// \brief Create a window instance, use default parameters.
-	MHAWindow::base_t get_window(unsigned int len) const;
-	/// \brief Create a window instance.
-	MHAWindow::base_t get_window(unsigned int len,float xmin) const;
-	/// \brief Create a window instance.
-	MHAWindow::base_t get_window(unsigned int len,float xmin,float xmax) const;
-	/// \brief Create a window instance.
-	MHAWindow::base_t get_window(unsigned int len,float xmin,float xmax,bool minincluded) const;
-	/// \brief Create a window instance.
-	MHAWindow::base_t get_window(unsigned int len,float xmin,float xmax,bool minincluded,bool maxincluded) const;
-	/// \brief Return currently selected window type.
-	MHAParser::window_t::wtype_t get_type() const;
+                       wnd_hann=1,
+                       wnd_hamming=2,
+                       wnd_blackman=3,
+                       wnd_bartlett=4,
+                       wnd_user=5 } wtype_t;
+        /// \brief Constructor to create parser class.
+        window_t(const std::string& help="Window type configuration.");
+        /// \brief Create a window instance, use default parameters.
+        MHAWindow::base_t get_window(unsigned int len) const;
+        /// \brief Create a window instance.
+        MHAWindow::base_t get_window(unsigned int len,float xmin) const;
+        /// \brief Create a window instance.
+        MHAWindow::base_t get_window(unsigned int len,float xmin,float xmax) const;
+        /// \brief Create a window instance.
+        MHAWindow::base_t get_window(unsigned int len,float xmin,float xmax,bool minincluded) const;
+        /// \brief Create a window instance.
+        MHAWindow::base_t get_window(unsigned int len,float xmin,float xmax,bool minincluded,bool maxincluded) const;
+        /// \brief Return currently selected window type.
+        MHAParser::window_t::wtype_t get_type() const;
     private:
-	MHAParser::kw_t wtype;
-	MHAParser::vfloat_t user;
+        MHAParser::kw_t wtype;
+        MHAParser::vfloat_t user;
     };
 
 }

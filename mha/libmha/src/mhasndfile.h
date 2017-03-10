@@ -13,6 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef MHASNDFILE_H
+#define MHASNDFILE_H
+
 #include <sndfile.h>
 #include "mha.h"
 #include "mha_signal.hh"
@@ -22,12 +25,12 @@
 #include <limits>
 
 void write_wave(const mha_wave_t& sig,
-		const char* fname,
-		const float& srate = 44100,
-		const int& format = 
-		SF_FORMAT_WAV | 
-		SF_FORMAT_FLOAT | 
-		SF_ENDIAN_FILE);
+                const char* fname,
+                const float& srate = 44100,
+                const int& format = 
+                SF_FORMAT_WAV | 
+                SF_FORMAT_FLOAT | 
+                SF_ENDIAN_FILE);
 
 namespace MHASndFile {
 
@@ -50,6 +53,7 @@ namespace MHASndFile {
 
 }
 
+#endif
 #endif
 
 /*

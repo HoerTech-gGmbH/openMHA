@@ -51,23 +51,23 @@ namespace MHAEvents {
         before the receiver, usually by declaring the patchbay as a
         member of the receiver.
 
-	The receiver can be any claas or structure; the event callback
-	can be either a member function without arguments or with
-	const std::string& argument.
+        The receiver can be any claas or structure; the event callback
+        can be either a member function without arguments or with
+        const std::string& argument.
         
     */
     template<class receiver_t> class patchbay_t {
     public:
         ~patchbay_t();
-	/**
-	   \brief Connect a receiver member function void
-	   (receiver_t::*)() with an event emitter.
-	 */
+        /**
+           \brief Connect a receiver member function void
+           (receiver_t::*)() with an event emitter.
+         */
         void connect(emitter_t*,receiver_t*,void (receiver_t::*)());
-	/**
-	   \brief Connect a receiver member function void
-	   (receiver_t::*)(const std::string&) with an event emitter.
-	 */
+        /**
+           \brief Connect a receiver member function void
+           (receiver_t::*)(const std::string&) with an event emitter.
+         */
         void connect(emitter_t*,receiver_t*,void (receiver_t::*)(const std::string&));
         void connect(emitter_t*,receiver_t*,void (receiver_t::*)(const std::string&,unsigned int,unsigned int));
     private:
@@ -180,6 +180,9 @@ template<class receiver_t> void MHAEvents::patchbay_t<receiver_t>::connect(emitt
 /*
   Local Variables:
   mode: c++
-  coding: undecided-unix
+  coding: utf-8-unix
+  c-basic-offset: 4
+  compile-command: "make -C .."
+  indent-tabs-mode: nil
   End:
 */

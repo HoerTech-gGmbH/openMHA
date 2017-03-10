@@ -35,8 +35,8 @@
 #include "mha_defs.h"
 
 #ifdef _MSC_VER
-	#define vsnprintf _vsnprintf
-	#define snprintf _snprintf
+        #define vsnprintf _vsnprintf
+        #define snprintf _snprintf
 #endif
 
 /**
@@ -71,7 +71,7 @@ static unsigned digits(unsigned n)
     // return (n<10) ? 1 : (1+digits(n/10));
     unsigned digits;
     for (digits = 1; n>9; ++digits, n/=10)
-	{}
+        {}
     return digits;
 }
 
@@ -105,21 +105,22 @@ MHA_Error::MHA_Error(const char* s_file,int l,const char* fmt,...)
 
     FILE * f = fopen("NUL","wb"); // may fail if there are too many open files.
     if (f != 0) {
-	len = vfprintf(f, fmt, ap);
-	fclose(f);
+        len = vfprintf(f, fmt, ap);
+        fclose(f);
     }
     else {
-	// Too many open files. We don't care about accuracy in this case:
-	len = 65535;
+        // Too many open files. We don't care about accuracy in this case:
+        len = 65535;
     }
 #endif
     std::string module(s_file);
     if( module.find_last_of("/\\") < module.size() )
-	module.erase(0,module.find_last_of("/\\")+1);
+        module.erase(0,module.find_last_of("/\\")+1);
     if( module.find_first_of(".") < module.size() )
-	module.erase(module.find_first_of("."),module.size()-module.find_first_of("."));
-	module.insert(0,"(");
-	module += ") ";
+        module.erase(module.find_first_of("."),
+                     module.size()-module.find_first_of("."));
+    module.insert(0,"(");
+    module += ") ";
     len += module.size();
     msg = new char[len+1];
     vsnprintf(msg,len+1,fmt,ap);

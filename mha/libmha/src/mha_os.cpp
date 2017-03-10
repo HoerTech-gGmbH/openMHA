@@ -164,9 +164,9 @@ std::list<std::string> list_dir(const std::string& path,const std::string& patte
     HANDLE hFind;
     hFind = FindFirstFile((path + pattern).c_str(), &FindFileData);
     if (hFind == INVALID_HANDLE_VALUE)
-	return search_result;
+        return search_result;
     do {
-	search_result.push_back(FindFileData.cFileName);
+        search_result.push_back(FindFileData.cFileName);
     } while (FindNextFile(hFind, &FindFileData) != 0);
     FindClose(hFind);
 #else
@@ -174,21 +174,22 @@ std::list<std::string> list_dir(const std::string& path,const std::string& patte
     int n;
     std::string dir(path);
     if( !dir.size() )
-	dir = ".";
+        dir = ".";
     n = scandir(dir.c_str(), &namelist, NULL, alphasort );
     if( n >= 0 ){
-	for(int k=0;k<n;k++){
-	    if( fnmatch(pattern.c_str(),namelist[k]->d_name,0)==0 )
-		search_result.push_back(namelist[k]->d_name);
-	    free(namelist[k]);
-	}
-	free(namelist);
+        for(int k=0;k<n;k++){
+            if( fnmatch(pattern.c_str(),namelist[k]->d_name,0)==0 )
+                search_result.push_back(namelist[k]->d_name);
+            free(namelist[k]);
+        }
+        free(namelist);
     }
 #endif
     return search_result;
 }
 
 // Local Variables:
+// compile-command: "make -C .."
 // coding: utf-8-unix
 // c-basic-offset: 4
 // indent-tabs-mode: nil

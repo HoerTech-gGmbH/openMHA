@@ -443,7 +443,7 @@ mha_spec_t channels(mha_spec_t s,unsigned int ch_start,unsigned int nch);
   
     \param s    Waveform structure
     \param fr   Frame number
-    \param ch	Channel number
+    \param ch   Channel number
     \return Reference to element
 */
 inline mha_real_t& value(mha_wave_t* s,unsigned int fr,unsigned int ch)
@@ -456,7 +456,7 @@ inline mha_real_t& value(mha_wave_t* s,unsigned int fr,unsigned int ch)
   
     \param s    Waveform structure
     \param fr   Frame number
-    \param ch	Channel number
+    \param ch   Channel number
     \return Reference to element
 */
 inline const mha_real_t& value(const mha_wave_t* s,unsigned int fr,unsigned int ch)
@@ -479,7 +479,7 @@ inline mha_complex_t& value(mha_spec_t* s,unsigned int k)
   
     \param s    Spectrum structure
     \param fr   Bin number
-    \param ch	Channel number
+    \param ch   Channel number
     \return Reference to element
 */
 inline mha_complex_t& value(mha_spec_t* s,unsigned int fr,unsigned int ch)
@@ -492,7 +492,7 @@ inline mha_complex_t& value(mha_spec_t* s,unsigned int fr,unsigned int ch)
   
     \param s    Spectrum structure
     \param fr   Bin number
-    \param ch	Channel number
+    \param ch   Channel number
     \return Reference to element
 */
 inline const mha_complex_t& value(const mha_spec_t* s,unsigned int fr,unsigned int ch)
@@ -505,7 +505,7 @@ inline const mha_complex_t& value(const mha_spec_t* s,unsigned int fr,unsigned i
   
     \param s    Waveform structure
     \param fr   Frame number
-    \param ch	Channel number
+    \param ch   Channel number
     \return Reference to element
 */
 inline mha_real_t& value(mha_wave_t& s,unsigned int fr,unsigned int ch)
@@ -518,7 +518,7 @@ inline mha_real_t& value(mha_wave_t& s,unsigned int fr,unsigned int ch)
   
     \param s    Waveform structure
     \param fr   Frame number
-    \param ch	Channel number
+    \param ch   Channel number
     \return Reference to element
 */
 inline const mha_real_t& value(const mha_wave_t& s,unsigned int fr,unsigned int ch)
@@ -531,7 +531,7 @@ inline const mha_real_t& value(const mha_wave_t& s,unsigned int fr,unsigned int 
   
     \param s    Spectrum structure
     \param fr   Bin number
-    \param ch	Channel number
+    \param ch   Channel number
     \return Reference to element
 */
 inline mha_complex_t& value(mha_spec_t& s,unsigned int fr,unsigned int ch)
@@ -544,7 +544,7 @@ inline mha_complex_t& value(mha_spec_t& s,unsigned int fr,unsigned int ch)
   
     \param s    Spectrum structure
     \param fr   Bin number
-    \param ch	Channel number
+    \param ch   Channel number
     \return Reference to element
 */
 inline const mha_complex_t& value(const mha_spec_t& s,unsigned int fr,unsigned int ch)
@@ -751,36 +751,36 @@ namespace MHASignal {
     */
     class spectrum_t : public mha_spec_t {
     public:
-	spectrum_t(const unsigned int& frames,const unsigned int& channels);
+        spectrum_t(const unsigned int& frames,const unsigned int& channels);
         explicit spectrum_t(const mha_spec_t&);
         spectrum_t(const MHASignal::spectrum_t&);
         spectrum_t(const std::vector<mha_complex_t>&);
-	virtual ~spectrum_t(void);
+        virtual ~spectrum_t(void);
         /**
            \brief Access to element
            \param f Bin number
            \param ch Channel number
            \return Reference to element
         */
-	inline mha_complex_t& operator()(unsigned int f,unsigned int ch){return buf[num_frames*ch+f];};
+        inline mha_complex_t& operator()(unsigned int f,unsigned int ch){return buf[num_frames*ch+f];};
         /**
            \brief Access to a single element, direct index into data buffer
            \param k Buffer index
            \return Reference to element
         */
-	inline mha_complex_t& operator[](unsigned int k) {return buf[k];};
+        inline mha_complex_t& operator[](unsigned int k) {return buf[k];};
         /**
            \brief Access to element
            \param f Bin number
            \param ch Channel number
            \return Reference to element
         */
-	inline mha_complex_t& value(unsigned int f,unsigned int ch){return buf[num_frames*ch+f];};
-	void copy(const mha_spec_t&);
+        inline mha_complex_t& value(unsigned int f,unsigned int ch){return buf[num_frames*ch+f];};
+        void copy(const mha_spec_t&);
         void copy_channel(const mha_spec_t & s, unsigned sch, unsigned dch);
-	void export_to(mha_spec_t&);
-	void scale(const unsigned int&,const unsigned int&,const unsigned int&,const mha_real_t&);
-	void scale_channel(const unsigned int&,const mha_real_t&);
+        void export_to(mha_spec_t&);
+        void scale(const unsigned int&,const unsigned int&,const unsigned int&,const mha_real_t&);
+        void scale_channel(const unsigned int&,const mha_real_t&);
     };
 
     /** 
@@ -795,7 +795,7 @@ namespace MHASignal {
         explicit waveform_t(const mha_wave_t& src);
         waveform_t(const MHASignal::waveform_t& src);
         waveform_t(const std::vector<mha_real_t>& src);
-	virtual ~waveform_t(void);
+        virtual ~waveform_t(void);
         inline void operator=(const mha_real_t& v){assign(v);};
         inline mha_real_t& operator[](unsigned int k) {return buf[k];};
         inline const mha_real_t& operator[](unsigned int k) const {return buf[k];};
@@ -805,7 +805,7 @@ namespace MHASignal {
            \param ch Channel number
            \return Reference to element
         */
-	inline mha_real_t& value(unsigned int t,unsigned int ch)
+        inline mha_real_t& value(unsigned int t,unsigned int ch)
             { return buf[num_channels*t+ch]; }
         /**
            \brief Element accessor
@@ -813,7 +813,7 @@ namespace MHASignal {
            \param ch Channel number
            \return Reference to element
         */
-	inline mha_real_t& operator()(unsigned int t,unsigned int ch)
+        inline mha_real_t& operator()(unsigned int t,unsigned int ch)
             { return buf[num_channels*t+ch]; }
         /**
            \brief Constant element accessor
@@ -821,7 +821,7 @@ namespace MHASignal {
            \param ch Channel number
            \return Reference to element
         */
-	inline const mha_real_t& value(unsigned int t,unsigned int ch) const
+        inline const mha_real_t& value(unsigned int t,unsigned int ch) const
             { return buf[num_channels*t+ch]; }
         /**
            \brief Constant element accessor
@@ -829,22 +829,22 @@ namespace MHASignal {
            \param ch Channel number
            \return Reference to element
         */
-	inline const mha_real_t& operator()(unsigned int t,unsigned int ch) const
+        inline const mha_real_t& operator()(unsigned int t,unsigned int ch) const
             { return buf[num_channels*t+ch]; }
-	mha_real_t sum(const unsigned int &a, const unsigned int &b);
-	mha_real_t sum(const unsigned int &a, const unsigned int &b,
+        mha_real_t sum(const unsigned int &a, const unsigned int &b);
+        mha_real_t sum(const unsigned int &a, const unsigned int &b,
                        const unsigned int &ch);
-	mha_real_t sum();
-	mha_real_t sumsqr();
-	mha_real_t sum_channel(const unsigned int&);
-	void assign(const unsigned int &k, const unsigned int &ch,
+        mha_real_t sum();
+        mha_real_t sumsqr();
+        mha_real_t sum_channel(const unsigned int&);
+        void assign(const unsigned int &k, const unsigned int &ch,
                     const mha_real_t &val);
-	void assign(const mha_real_t&);
-	void assign_frame(const unsigned int &k, const mha_real_t &val);
-	void assign_channel(const unsigned int &c, const mha_real_t &val);
+        void assign(const mha_real_t&);
+        void assign_frame(const unsigned int &k, const mha_real_t &val);
+        void assign_channel(const unsigned int &c, const mha_real_t &val);
         void copy(const std::vector<mha_real_t>& v);
-	void copy(const mha_wave_t&);
-	void copy(const mha_wave_t*);
+        void copy(const mha_wave_t&);
+        void copy(const mha_wave_t*);
         void copy_channel(const mha_wave_t&,unsigned int,unsigned int);
         void copy_from_at(unsigned int,unsigned int,const mha_wave_t&,unsigned int);
         void export_to(mha_wave_t&);
@@ -906,7 +906,7 @@ namespace MHASignal {
     private:
         inline unsigned int min(unsigned int a,unsigned int b){if(a<b)return a;return b;};
         waveform_t outer_out;
-	mha_wave_t this_outer_out;
+        mha_wave_t this_outer_out;
         waveform_t inner_in;
         waveform_t inner_out;
         unsigned int k_inner;
@@ -1673,12 +1673,12 @@ namespace MHASignal {
     class hilbert_t {
     public:
         /** \param len Length of waveform segment */
-	hilbert_t(unsigned int len);
-	~hilbert_t();
+        hilbert_t(unsigned int len);
+        ~hilbert_t();
         /** \brief Apply Hilbert transformation on a waveform segment */
-	void operator()(const mha_wave_t*,mha_wave_t*);
+        void operator()(const mha_wave_t*,mha_wave_t*);
     private:
-	void* h;
+        void* h;
     };
 
     /**
@@ -1699,14 +1699,14 @@ namespace MHASignal {
            \param fftlen FFT length
            \param ch Number of channels
         */
-	minphase_t(unsigned int fftlen,unsigned int ch);
+        minphase_t(unsigned int fftlen,unsigned int ch);
         /**
            \brief Transform input spectrum to a minimal-phase spectrum, discarding the original phase.
            \param s Spectrum to operate on.
         */
-	void operator()(mha_spec_t* s);
+        void operator()(mha_spec_t* s);
     private:
-	MHASignal::waveform_t phase;
+        MHASignal::waveform_t phase;
     };
 }
 
@@ -1725,14 +1725,14 @@ namespace MHAWindow {
             \brief Constructor
             \param len Window length in samples.
         */
-	base_t(unsigned int len);
+        base_t(unsigned int len);
         /**
            \brief Copy constructor
            \param src Source to be copied
         */
-	base_t(const MHAWindow::base_t& src);
-	void operator()(mha_wave_t&) const;/**< \brief Apply window to waveform segment (reference) */
-	void operator()(mha_wave_t*) const;/**< \brief Apply window to waveform segment (pointer) */
+        base_t(const MHAWindow::base_t& src);
+        void operator()(mha_wave_t&) const;/**< \brief Apply window to waveform segment (reference) */
+        void operator()(mha_wave_t*) const;/**< \brief Apply window to waveform segment (pointer) */
         void ramp_begin(mha_wave_t&) const;/**< \brief Apply a ramp at the begining */
         void ramp_end(mha_wave_t&) const;/**< \brief Apply a ramp at the end */
     };
@@ -1766,31 +1766,31 @@ namespace MHAWindow {
     /** \brief Rectangular window */
     class rect_t : public MHAWindow::fun_t {
     public:
-	rect_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::rect){};
+        rect_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::rect){};
     };
 
     /** \brief Bartlett window */
     class bartlett_t : public MHAWindow::fun_t {
     public:
-	bartlett_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::bartlett){};
+        bartlett_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::bartlett){};
     };
 
     /** \brief von-Hann window */
     class hanning_t : public MHAWindow::fun_t {
     public:
-	hanning_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::hanning){};
+        hanning_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::hanning){};
     };
 
     /** \brief Hamming window */
     class hamming_t : public MHAWindow::fun_t {
     public:
-	hamming_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::hamming){};
+        hamming_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::hamming){};
     };
 
     /** \brief Blackman window */
     class blackman_t : public MHAWindow::fun_t {
     public:
-	blackman_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::blackman){};
+        blackman_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::blackman){};
     };
 
     /** \brief User defined window */
@@ -1799,7 +1799,7 @@ namespace MHAWindow {
         /** \brief Constructor
             \param wnd User defined window
         */
-	user_t(const std::vector<mha_real_t>& wnd);
+        user_t(const std::vector<mha_real_t>& wnd);
     };
 
 }
@@ -1808,45 +1808,45 @@ namespace MHASignal {
     
     class stat_t {
     public:
-	stat_t(const unsigned int& frames, const unsigned int& channels);
-	void mean(mha_wave_t& m);
-	void mean_std(mha_wave_t& m,mha_wave_t& s);
-	void push(const mha_wave_t&);
-	void push(const mha_real_t& x,
-		  const unsigned int& k,
-		  const unsigned int& ch);
+        stat_t(const unsigned int& frames, const unsigned int& channels);
+        void mean(mha_wave_t& m);
+        void mean_std(mha_wave_t& m,mha_wave_t& s);
+        void push(const mha_wave_t&);
+        void push(const mha_real_t& x,
+                  const unsigned int& k,
+                  const unsigned int& ch);
     private:
-	MHASignal::waveform_t n;
-	MHASignal::waveform_t sum;
-	MHASignal::waveform_t sum2;
+        MHASignal::waveform_t n;
+        MHASignal::waveform_t sum;
+        MHASignal::waveform_t sum2;
     };
 
     class delay_wave_t 
     {
     public:
-	delay_wave_t(unsigned int delay,
-		     unsigned int frames,
-		     unsigned int channels);
-	~delay_wave_t();
-	mha_wave_t* process(mha_wave_t*);
+        delay_wave_t(unsigned int delay,
+                     unsigned int frames,
+                     unsigned int channels);
+        ~delay_wave_t();
+        mha_wave_t* process(mha_wave_t*);
     private:
-	unsigned int delay;
-	MHASignal::waveform_t** buffer;
-	unsigned int pos;
+        unsigned int delay;
+        MHASignal::waveform_t** buffer;
+        unsigned int pos;
     };
 
     class delay_spec_t 
     {
     public:
-	delay_spec_t(unsigned int delay,
-		     unsigned int frames,
-		     unsigned int channels);
-	~delay_spec_t();
-	mha_spec_t* process(mha_spec_t*);
+        delay_spec_t(unsigned int delay,
+                     unsigned int frames,
+                     unsigned int channels);
+        ~delay_spec_t();
+        mha_spec_t* process(mha_spec_t*);
     private:
-	unsigned int delay;
-	MHASignal::spectrum_t** buffer;
-	unsigned int pos;
+        unsigned int delay;
+        MHASignal::spectrum_t** buffer;
+        unsigned int pos;
     };
 
     class async_rmslevel_t : private MHASignal::waveform_t
@@ -2165,13 +2165,13 @@ namespace MHASignal {
         mha_wave_t* process(mha_wave_t* s);
         ~delay_t();
         std::string inspect() const {
-        	std::ostringstream o;
-        	o << "<delay_t:" << ((void*)this)
-        	  << " channels=" << channels
-        	  << " delays=" << MHAParser::StrCnv::val2str(std::vector<int>(delays,delays+channels))
-        	  << " pos=" << MHAParser::StrCnv::val2str(std::vector<int>(pos,pos+channels))
-        	  << " buffer=###>";
-        	return o.str();
+                std::ostringstream o;
+                o << "<delay_t:" << ((void*)this)
+                  << " channels=" << channels
+                  << " delays=" << MHAParser::StrCnv::val2str(std::vector<int>(delays,delays+channels))
+                  << " pos=" << MHAParser::StrCnv::val2str(std::vector<int>(pos,pos+channels))
+                  << " buffer=###>";
+                return o.str();
         }
     private:
         unsigned int channels;
@@ -2306,7 +2306,7 @@ namespace MHASignal {
     {
         std::vector<elem_type> retv;
         retv.resize(p.size());
-	std::sort(data.begin(),data.end());
+        std::sort(data.begin(),data.end());
         for(unsigned int k=0;k<p.size();k++){
             retv[k] = data[std::min((size_t)(p[k] * (data.size()-1)),(data.size()-1))];
         }

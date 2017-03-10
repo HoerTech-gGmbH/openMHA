@@ -103,7 +103,7 @@ namespace MHAPlugin {
 
     /** 
         \ingroup plugif
-	\brief The template class for C++ MHA plugins
+        \brief The template class for C++ MHA plugins
 
         \todo Describe all services provided by this class, so that the reason
         why it is recommended that all plugins use this class as their base is
@@ -127,45 +127,45 @@ namespace MHAPlugin {
         virtual ~plugin_t();
         virtual void prepare( mhaconfig_t & ) = 0;
         virtual void release();
-	void prepare_( mhaconfig_t& );
-	void release_();
-	/**
-	   \brief Flag, if the prepare method is successfully called (or currently evaluated)
-	*/
-	bool is_prepared() const { return is_prepared_; };
-	/**
-	   \brief Current input channel configuration.
-	*/
-	mhaconfig_t input_cfg() const { return input_cfg_; };
-	/**
-	   \brief Current output channel configuration.
-	*/
-	mhaconfig_t output_cfg() const { return output_cfg_; };
+        void prepare_( mhaconfig_t& );
+        void release_();
+        /**
+           \brief Flag, if the prepare method is successfully called (or currently evaluated)
+        */
+        bool is_prepared() const { return is_prepared_; };
+        /**
+           \brief Current input channel configuration.
+        */
+        mhaconfig_t input_cfg() const { return input_cfg_; };
+        /**
+           \brief Current output channel configuration.
+        */
+        mhaconfig_t output_cfg() const { return output_cfg_; };
     protected:
-	/**
-	   \brief Member for storage of plugin interface configuration.
+        /**
+           \brief Member for storage of plugin interface configuration.
 
-	   This member is defined for convenience of the
-	   developer. Typically, the actual contents of mhaconfig_t
-	   are stored in this member in the prepare() method.
+           This member is defined for convenience of the
+           developer. Typically, the actual contents of mhaconfig_t
+           are stored in this member in the prepare() method.
 
-	   \note This member is likely to be removed in later versions, use input_cfg() and output_cfg() instead.
-	*/
+           \note This member is likely to be removed in later versions, use input_cfg() and output_cfg() instead.
+        */
         mhaconfig_t tftype;
-	/**
-	   \brief AC handle of the chain.
+        /**
+           \brief AC handle of the chain.
 
-	   This variable is initialized in the constructor and can be
-	   used by derived plugins to access the AC space. Its
-	   contents should not be modified.
-	*/
+           This variable is initialized in the constructor and can be
+           used by derived plugins to access the AC space. Its
+           contents should not be modified.
+        */
         algo_comm_t ac;
     private:
-	bool is_prepared_;
-	mhaconfig_t input_cfg_;
-	mhaconfig_t output_cfg_;
-	MHAParser::mhaconfig_mon_t mhaconfig_in;
-	MHAParser::mhaconfig_mon_t mhaconfig_out;
+        bool is_prepared_;
+        mhaconfig_t input_cfg_;
+        mhaconfig_t output_cfg_;
+        MHAParser::mhaconfig_mon_t mhaconfig_in;
+        MHAParser::mhaconfig_mon_t mhaconfig_out;
     };
 
 }
@@ -355,131 +355,131 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
         mhaconfig_out.update(output_cfg_);
     }
     catch(...){
-	is_prepared_ = false;
-	memset(&input_cfg_,0,sizeof(input_cfg_));
-	memset(&output_cfg_,0,sizeof(output_cfg_));
-	throw;
+        is_prepared_ = false;
+        memset(&input_cfg_,0,sizeof(input_cfg_));
+        memset(&output_cfg_,0,sizeof(output_cfg_));
+        throw;
     }
 }
 
 #ifndef MHAPLUGIN_OVERLOAD_OUTDOMAIN
-#define MHAPLUGIN_PROC_CALLBACK_PREFIX(prefix,classname,indom,outdom)	\
-    extern "C" {							\
-	__declspec(dllexport) int prefix ## MHAProc_ ## indom ## 2 ## outdom (void* handle,mha_ ## indom ## _t* s,mha_ ## outdom ## _t** out) \
-	{								\
-	    if(handle){							\
-		try{							\
-		    *out = ((classname*)handle)->process(s);		\
-		    return MHA_ERR_SUCCESS;				\
-		}							\
-		catch(MHA_Error& e){					\
-		    mha_set_user_error(Getmsg(e));			\
-		    return MHA_ERR_USER;				\
-		}							\
-	    }								\
-	    return MHA_ERR_INVALID_HANDLE;				\
-	}}
+#define MHAPLUGIN_PROC_CALLBACK_PREFIX(prefix,classname,indom,outdom)   \
+    extern "C" {                                                        \
+        __declspec(dllexport) int prefix ## MHAProc_ ## indom ## 2 ## outdom (void* handle,mha_ ## indom ## _t* s,mha_ ## outdom ## _t** out) \
+        {                                                               \
+            if(handle){                                                 \
+                try{                                                    \
+                    *out = ((classname*)handle)->process(s);            \
+                    return MHA_ERR_SUCCESS;                             \
+                }                                                       \
+                catch(MHA_Error& e){                                    \
+                    mha_set_user_error(Getmsg(e));                      \
+                    return MHA_ERR_USER;                                \
+                }                                                       \
+            }                                                           \
+            return MHA_ERR_INVALID_HANDLE;                              \
+        }}
 #else
-#define MHAPLUGIN_PROC_CALLBACK_PREFIX(prefix,classname,indom,outdom)		\
-    extern "C" {							\
-	__declspec(dllexport) int prefix ## MHAProc_ ## indom ## 2 ## outdom (void* handle,mha_ ## indom ## _t* s,mha_ ## outdom ## _t** out) \
-	{								\
-	    if(handle){							\
-		try{							\
-		    ((classname*)handle)->process(s,out);		\
-		    return MHA_ERR_SUCCESS;				\
-		}							\
-		catch(MHA_Error& e){					\
-		    mha_set_user_error(Getmsg(e));			\
-		    return MHA_ERR_USER;				\
-		}							\
-	    }								\
-	    return MHA_ERR_INVALID_HANDLE;				\
-	}}
+#define MHAPLUGIN_PROC_CALLBACK_PREFIX(prefix,classname,indom,outdom)           \
+    extern "C" {                                                        \
+        __declspec(dllexport) int prefix ## MHAProc_ ## indom ## 2 ## outdom (void* handle,mha_ ## indom ## _t* s,mha_ ## outdom ## _t** out) \
+        {                                                               \
+            if(handle){                                                 \
+                try{                                                    \
+                    ((classname*)handle)->process(s,out);               \
+                    return MHA_ERR_SUCCESS;                             \
+                }                                                       \
+                catch(MHA_Error& e){                                    \
+                    mha_set_user_error(Getmsg(e));                      \
+                    return MHA_ERR_USER;                                \
+                }                                                       \
+            }                                                           \
+            return MHA_ERR_INVALID_HANDLE;                              \
+        }}
 #endif
 
-#define MHAPLUGIN_INIT_CALLBACKS_PREFIX(prefix,classname)		\
-    extern "C" {							\
-	__declspec(dllexport) int prefix ## MHAInit(algo_comm_t algo_comm,const char* chain, const char*algo,void** handle) \
-	{								\
-	    try{							\
-		*handle = new classname(algo_comm,chain,algo);		\
-		return MHA_ERR_SUCCESS;					\
-	    }								\
-	    catch(MHA_Error& e){					\
-		mha_set_user_error(Getmsg(e));				\
-		return MHA_ERR_USER;					\
-	    }								\
-	}								\
-									\
-	__declspec(dllexport) void prefix ## MHADestroy(void* data)		\
-	{								\
-	    if( data ){							\
-		classname* plug=(classname*)data;			\
-		delete plug;						\
-	    }								\
-	}								\
-	__declspec(dllexport) const char* prefix ## MHAStrError(void* data,int err) \
-	{								\
-	    (void) data;						\
-	    return mha_strerror( err );					\
-	}								\
-									\
-	__declspec(dllexport) unsigned int prefix ## MHAGetVersion(void)		\
-	{								\
-	    return MHA_VERSION;						\
-	}								\
-									\
-	__declspec(dllexport) const char* prefix ## MHAGetCommitHash(void)		\
-	{								\
-	    return mha_git_commit_hash;					\
-	}								\
-									\
-	__declspec(dllexport) int prefix ## MHASet(void* handle,const char *command,char *retval,unsigned int maxretlen) \
-	{								\
-	    if( handle ){						\
-		try{							\
-		    ((classname*)handle)->parse(command,retval,maxretlen); \
-		    return MHA_ERR_SUCCESS;				\
-		}							\
-		catch(MHA_Error& e){					\
-		    mha_set_user_error(Getmsg(e));			\
-		    if( retval && maxretlen )				\
-			strncpy(retval,"",maxretlen);			\
-		    return MHA_ERR_USER;				\
-		}							\
-	    }								\
-	    return MHA_ERR_INVALID_HANDLE;				\
-	}								\
-									\
-	__declspec(dllexport) int prefix ## MHAPrepare(void* handle,mhaconfig_t* cfg) \
-	{								\
-	    if( handle ){						\
-		try{							\
-		    ((classname*)handle)->prepare_(*cfg);		\
-		    return MHA_ERR_SUCCESS;				\
-		}							\
-		catch(MHA_Error& e){					\
-		    mha_set_user_error(Getmsg(e));			\
-		    return MHA_ERR_USER;				\
-		}							\
-	    }								\
-	    return MHA_ERR_INVALID_HANDLE;				\
-	}								\
-	__declspec(dllexport) int prefix ## MHARelease(void* handle)		\
-	{								\
-	    if( handle ){						\
-		try{							\
-		    ((classname*)handle)->release_();			\
-		    return MHA_ERR_SUCCESS;				\
-		}							\
-		catch(MHA_Error& e){					\
-		    mha_set_user_error(Getmsg(e));			\
-		    return MHA_ERR_USER;				\
-		}							\
-	    }								\
-	    return MHA_ERR_INVALID_HANDLE;				\
-	}}
+#define MHAPLUGIN_INIT_CALLBACKS_PREFIX(prefix,classname)               \
+    extern "C" {                                                        \
+        __declspec(dllexport) int prefix ## MHAInit(algo_comm_t algo_comm,const char* chain, const char*algo,void** handle) \
+        {                                                               \
+            try{                                                        \
+                *handle = new classname(algo_comm,chain,algo);          \
+                return MHA_ERR_SUCCESS;                                 \
+            }                                                           \
+            catch(MHA_Error& e){                                        \
+                mha_set_user_error(Getmsg(e));                          \
+                return MHA_ERR_USER;                                    \
+            }                                                           \
+        }                                                               \
+                                                                        \
+        __declspec(dllexport) void prefix ## MHADestroy(void* data)             \
+        {                                                               \
+            if( data ){                                                 \
+                classname* plug=(classname*)data;                       \
+                delete plug;                                            \
+            }                                                           \
+        }                                                               \
+        __declspec(dllexport) const char* prefix ## MHAStrError(void* data,int err) \
+        {                                                               \
+            (void) data;                                                \
+            return mha_strerror( err );                                 \
+        }                                                               \
+                                                                        \
+        __declspec(dllexport) unsigned int prefix ## MHAGetVersion(void)                \
+        {                                                               \
+            return MHA_VERSION;                                         \
+        }                                                               \
+                                                                        \
+        __declspec(dllexport) const char* prefix ## MHAGetCommitHash(void)              \
+        {                                                               \
+            return mha_git_commit_hash;                                 \
+        }                                                               \
+                                                                        \
+        __declspec(dllexport) int prefix ## MHASet(void* handle,const char *command,char *retval,unsigned int maxretlen) \
+        {                                                               \
+            if( handle ){                                               \
+                try{                                                    \
+                    ((classname*)handle)->parse(command,retval,maxretlen); \
+                    return MHA_ERR_SUCCESS;                             \
+                }                                                       \
+                catch(MHA_Error& e){                                    \
+                    mha_set_user_error(Getmsg(e));                      \
+                    if( retval && maxretlen )                           \
+                        strncpy(retval,"",maxretlen);                   \
+                    return MHA_ERR_USER;                                \
+                }                                                       \
+            }                                                           \
+            return MHA_ERR_INVALID_HANDLE;                              \
+        }                                                               \
+                                                                        \
+        __declspec(dllexport) int prefix ## MHAPrepare(void* handle,mhaconfig_t* cfg) \
+        {                                                               \
+            if( handle ){                                               \
+                try{                                                    \
+                    ((classname*)handle)->prepare_(*cfg);               \
+                    return MHA_ERR_SUCCESS;                             \
+                }                                                       \
+                catch(MHA_Error& e){                                    \
+                    mha_set_user_error(Getmsg(e));                      \
+                    return MHA_ERR_USER;                                \
+                }                                                       \
+            }                                                           \
+            return MHA_ERR_INVALID_HANDLE;                              \
+        }                                                               \
+        __declspec(dllexport) int prefix ## MHARelease(void* handle)            \
+        {                                                               \
+            if( handle ){                                               \
+                try{                                                    \
+                    ((classname*)handle)->release_();                   \
+                    return MHA_ERR_SUCCESS;                             \
+                }                                                       \
+                catch(MHA_Error& e){                                    \
+                    mha_set_user_error(Getmsg(e));                      \
+                    return MHA_ERR_USER;                                \
+                }                                                       \
+            }                                                           \
+            return MHA_ERR_INVALID_HANDLE;                              \
+        }}
 
 /** \ingroup plugif
 
@@ -501,25 +501,25 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
     messages.
 
 */
-#define MHAPLUGIN_CALLBACKS_PREFIX(prefix,classname,indom,outdom)	\
-								\
-    MHAPLUGIN_INIT_CALLBACKS_PREFIX(prefix,classname)		\
-    MHAPLUGIN_PROC_CALLBACK_PREFIX(prefix,classname,indom,outdom)	\
-								\
-    void prefix ## dummy_interface_test(void){				\
-        MHA_CALLBACK_TEST_PREFIX(prefix,MHAGetVersion);		\
-	MHA_CALLBACK_TEST_PREFIX(prefix,MHAInit);		\
-	MHA_CALLBACK_TEST_PREFIX(prefix,MHAPrepare);		\
-	MHA_CALLBACK_TEST_PREFIX(prefix,MHARelease);		\
-	MHA_CALLBACK_TEST_PREFIX(prefix,MHASet);		\
-	MHA_CALLBACK_TEST_PREFIX(prefix,MHADestroy);		\
-    }								\
-								\
-    int WINAPI prefix ## DllEntryPoint(HINSTANCE,unsigned long,void*)	\
-    {								\
-	return 1;						\
-    }								\
-								\
+#define MHAPLUGIN_CALLBACKS_PREFIX(prefix,classname,indom,outdom)       \
+                                                                \
+    MHAPLUGIN_INIT_CALLBACKS_PREFIX(prefix,classname)           \
+    MHAPLUGIN_PROC_CALLBACK_PREFIX(prefix,classname,indom,outdom)       \
+                                                                \
+    void prefix ## dummy_interface_test(void){                          \
+        MHA_CALLBACK_TEST_PREFIX(prefix,MHAGetVersion);         \
+        MHA_CALLBACK_TEST_PREFIX(prefix,MHAInit);               \
+        MHA_CALLBACK_TEST_PREFIX(prefix,MHAPrepare);            \
+        MHA_CALLBACK_TEST_PREFIX(prefix,MHARelease);            \
+        MHA_CALLBACK_TEST_PREFIX(prefix,MHASet);                \
+        MHA_CALLBACK_TEST_PREFIX(prefix,MHADestroy);            \
+    }                                                           \
+                                                                \
+    int WINAPI prefix ## DllEntryPoint(HINSTANCE,unsigned long,void*)   \
+    {                                                           \
+        return 1;                                               \
+    }                                                           \
+                                                                \
 /** \ingroup plugif
 
     \brief Wrapper macro for the plugin documentation interface
@@ -539,15 +539,15 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
     LaTeX.
 
 */
-#define MHAPLUGIN_DOCUMENTATION_PREFIX(prefix,cat,doc)			\
+#define MHAPLUGIN_DOCUMENTATION_PREFIX(prefix,cat,doc)                  \
   extern "C" __declspec(dllexport) const char* prefix ## MHAPluginDocumentation(){MHA_CALLBACK_TEST_PREFIX(prefix,MHAPluginDocumentation);return doc;} \
   extern "C" __declspec(dllexport) const char* prefix ## MHAPluginCategory(){MHA_CALLBACK_TEST_PREFIX(prefix,MHAPluginCategory);return cat;} 
 
 
 #ifdef MHA_STATIC_PLUGINS
-#define MHAPLUGIN_PROC_CALLBACK(plugname,classname,indom,outdom)	\
+#define MHAPLUGIN_PROC_CALLBACK(plugname,classname,indom,outdom)        \
   MHAPLUGIN_PROC_CALLBACK_PREFIX(MHA_STATIC_ ## plugname ## _,classname,indom,outdom)
-#define MHAPLUGIN_INIT_CALLBACKS(plugname,classname)		\
+#define MHAPLUGIN_INIT_CALLBACKS(plugname,classname)            \
   MHAPLUGIN_INIT_CALLBACKS_PREFIX(MHA_STATIC_ ## plugname ## _,classname)
 /** \ingroup plugif
 
@@ -570,7 +570,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
     messages.
 
 */
-#define MHAPLUGIN_CALLBACKS(plugname,classname,indom,outdom)	\
+#define MHAPLUGIN_CALLBACKS(plugname,classname,indom,outdom)    \
   MHAPLUGIN_CALLBACKS_PREFIX(MHA_STATIC_ ## plugname ## _,classname,indom,outdom)    
 /** \ingroup plugif
 
@@ -592,18 +592,18 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
     LaTeX.
 
 */
-#define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)			\
+#define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)                       \
   MHAPLUGIN_DOCUMENTATION_PREFIX(MHA_STATIC_ ## plugname ## _,cat,doc)
 
 #else // MHA_STATIC_PLUGINS
 
-#define MHAPLUGIN_PROC_CALLBACK(plugname,classname,indom,outdom)	\
+#define MHAPLUGIN_PROC_CALLBACK(plugname,classname,indom,outdom)        \
   MHAPLUGIN_PROC_CALLBACK_PREFIX(MHA_DYNAMIC_,classname,indom,outdom)
-#define MHAPLUGIN_INIT_CALLBACKS(plugname,classname)		\
+#define MHAPLUGIN_INIT_CALLBACKS(plugname,classname)            \
   MHAPLUGIN_INIT_CALLBACKS_PREFIX(MHA_DYNAMIC_,classname)
-#define MHAPLUGIN_CALLBACKS(plugname,classname,indom,outdom)	\
+#define MHAPLUGIN_CALLBACKS(plugname,classname,indom,outdom)    \
   MHAPLUGIN_CALLBACKS_PREFIX(MHA_DYNAMIC_,classname,indom,outdom)    
-#define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)			\
+#define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)                       \
   MHAPLUGIN_DOCUMENTATION_PREFIX(MHA_DYNAMIC_,cat,doc)
 
 #endif // MHA_STATIC_PLUGINS
@@ -614,4 +614,5 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 // coding: utf-8-unix
 // c-basic-offset: 4
 // indent-tabs-mode: nil
+// compile-command: "make -C .."
 // End:

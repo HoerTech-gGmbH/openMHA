@@ -254,24 +254,24 @@ public:
 class mha_fifo_thread_platform_t {
 public:
     /** Calling thread waits until it aquires the lock.
-	Must not be called when	the lock is already aquired. */
+        Must not be called when the lock is already aquired. */
     virtual void aquire_mutex() = 0;
     /** Calling thread releases the lock.
-	May only be called when lock is owned. */
+        May only be called when lock is owned. */
     virtual void release_mutex() = 0;
     /** Calling producer thread must own the lock. Method releases lock, and
-	waits for consumer thread to call decrease(). Then reaquires lock and
-	returns */
+        waits for consumer thread to call decrease(). Then reaquires lock and
+        returns */
     virtual void wait_for_decrease() = 0;
     /** Calling consumer thread must own the lock. Method releases lock, and
-	waits for producer thread to call increase(). Then reaquires lock and
-	returns */
+        waits for producer thread to call increase(). Then reaquires lock and
+        returns */
     virtual void wait_for_increase() = 0;
     /** To be called by producer thread after producing. Producer thread needs
-	to own the lock to call this method. */
+        to own the lock to call this method. */
     virtual void increment() = 0;
     /** To be called by consumer thread after consuming. Consumer thread needs
-	to own the lock to call this method. */
+        to own the lock to call this method. */
     virtual void decrement() = 0;
     /** Make destructor virtual */
     virtual ~mha_fifo_thread_platform_t() {}
@@ -371,11 +371,11 @@ class mha_fifo_thread_guard_t {
     mha_fifo_thread_platform_t * sync;
 public:
     mha_fifo_thread_guard_t(mha_fifo_thread_platform_t * sync) {
-	this->sync = sync;
-	sync->aquire_mutex();
+        this->sync = sync;
+        sync->aquire_mutex();
     }
     ~mha_fifo_thread_guard_t() {
-	sync->release_mutex();
+        sync->release_mutex();
     }
 };
 
@@ -539,9 +539,9 @@ public:
     /// Pointer to user data
     T *data;
     /** Constructor. This element assumes ownership of user data.
-	@param data User data. Has to be allocated on the heap with standard
-	            operator new, because it will be deleted in this element's
-		    destructor. */
+        @param data User data. Has to be allocated on the heap with standard
+                    operator new, because it will be deleted in this element's
+                    destructor. */
     mha_rt_fifo_element_t(T * data)
     { next = 0; abandonned = false; this->data = data; }
     ~mha_rt_fifo_element_t()
@@ -573,80 +573,80 @@ public:
     /// Destructor will delete all data currently in the fifo.
     ~mha_rt_fifo_t() { remove_all(); } 
     /** Retrieve the latest element in the Fifo. Will skip fifo elements
-	if more than one element has been added since last poll invocation.
-	Will return the same element as on last call if no elements have been
-	added in the mean time.  Marks former elements as abandonned.
-	@return The latest element in this Fifo.
+        if more than one element has been added since last poll invocation.
+        Will return the same element as on last call if no elements have been
+        added in the mean time.  Marks former elements as abandonned.
+        @return The latest element in this Fifo.
                 Returns NULL if the Fifo is empty. */
     T * poll() {
-	if (root == 0) return 0;
-	if (current == 0) current = root;
-	while (current->next) {
-	    volatile mha_rt_fifo_element_t<T> * volatile oldcurrent = current;
-	    current = current->next;
-	    oldcurrent->abandonned = true;
-	}
-	return current->data;
+        if (root == 0) return 0;
+        if (current == 0) current = root;
+        while (current->next) {
+            volatile mha_rt_fifo_element_t<T> * volatile oldcurrent = current;
+            current = current->next;
+            oldcurrent->abandonned = true;
+        }
+        return current->data;
     }
     /** Retrieve the next element in the Fifo, if there is one, and
-	mark the previous element as abandonned.  Else, if there is no
-	newer element, returns the same element as on last #poll() or
-	#poll_1() invocation.
-	@return The next element in this Fifo, if there is one, or the same
+        mark the previous element as abandonned.  Else, if there is no
+        newer element, returns the same element as on last #poll() or
+        #poll_1() invocation.
+        @return The next element in this Fifo, if there is one, or the same
                 as before.  Returns NULL if the Fifo is empty. */
     T * poll_1() {
-	if (root == 0) return 0;
-	if (current == 0) 
-	    current = root;
-	else if (current->next) {
-	    volatile mha_rt_fifo_element_t<T> * volatile oldcurrent = current;
-	    current = current->next;
-	    oldcurrent->abandonned = true;
-	}
-	return current->data;
+        if (root == 0) return 0;
+        if (current == 0) 
+            current = root;
+        else if (current->next) {
+            volatile mha_rt_fifo_element_t<T> * volatile oldcurrent = current;
+            current = current->next;
+            oldcurrent->abandonned = true;
+        }
+        return current->data;
     }
 
     /** Add element to the Fifo. Deletes abandonned elements in the fifo.
-	@param data The new user data to place at the end of the fifo. After
+        @param data The new user data to place at the end of the fifo. After
                     this invocation, the fifo is the owner of this object
                     and will delete it when it is no longer used. data must
                     have been allocated on the heap with standard operator new.
     */
     void push(T * data) {
-	mha_rt_fifo_element_t<T> * element = new mha_rt_fifo_element_t<T>(data);
-	if (root == 0)
-	    root = element;
-	else {
-	    mha_rt_fifo_element_t<T> * previous = current;
-	    if (previous == 0) previous = root;
-	    while (previous->next) previous = previous->next;
-	    previous->next = element;
-	}
-	remove_abandonned();
+        mha_rt_fifo_element_t<T> * element = new mha_rt_fifo_element_t<T>(data);
+        if (root == 0)
+            root = element;
+        else {
+            mha_rt_fifo_element_t<T> * previous = current;
+            if (previous == 0) previous = root;
+            while (previous->next) previous = previous->next;
+            previous->next = element;
+        }
+        remove_abandonned();
     }
 
 private:
     /// The first element in the fifo.  Deleting elements starts here.
     mha_rt_fifo_element_t<T> * root;
     /** The element most recently returned by #poll or #poll_1.
-	Searching for new elements starts here. */
+        Searching for new elements starts here. */
     mha_rt_fifo_element_t<T> * current;
     /// Deletes abandonned elements
     void remove_abandonned() {
-	while (root && root->abandonned) {
-	    mha_rt_fifo_element_t<T> * oldroot = root;
-	    root = root->next;
-	    delete oldroot; oldroot = 0;
-	}
+        while (root && root->abandonned) {
+            mha_rt_fifo_element_t<T> * oldroot = root;
+            root = root->next;
+            delete oldroot; oldroot = 0;
+        }
     }
     /// Deletes all elements
     void remove_all() {
-	current = 0;
-	while (root) {
-	    mha_rt_fifo_element_t<T> * oldroot = root;
-	    root = root->next;
-	    delete oldroot; oldroot = 0;
-	}
+        current = 0;
+        while (root) {
+            mha_rt_fifo_element_t<T> * oldroot = root;
+            root = root->next;
+            delete oldroot; oldroot = 0;
+        }
     }
 };
 
@@ -757,9 +757,9 @@ template <class T>
 mha_fifo_t<T>& mha_fifo_t<T>::operator=(const mha_fifo_t<T>& src)
 {
     if( src.max_fill_count != max_fill_count )
-	throw MHA_Error(__FILE__,__LINE__,"Expected same size (this %d, src %d)",max_fill_count,src.max_fill_count);
+        throw MHA_Error(__FILE__,__LINE__,"Expected same size (this %d, src %d)",max_fill_count,src.max_fill_count);
     for (unsigned i = 0; i <= max_fill_count; ++i) {
-	buf[i] = src.buf[i];
+        buf[i] = src.buf[i];
     }
     read_ptr = src.read_ptr - src.buf + buf;
     write_ptr = src.write_ptr - src.buf + buf;
@@ -905,5 +905,6 @@ mha_drifter_fifo_t<T>::mha_drifter_fifo_t(unsigned min_fill_count,
  * c-basic-offset: 4
  * compile-command: "make -C .."
  * coding: utf-8-unix
+ * indent-tabs-mode: nil
  * End:
  */
