@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "openMHA prerelease available"
+title:  "openMHA pre-release available"
 date:   2017-02-27 08:00:00
 categories: news
 ---
