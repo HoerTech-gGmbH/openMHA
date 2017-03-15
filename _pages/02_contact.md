@@ -5,5 +5,5 @@ permalink: /contact/
 menu: main
 ---
 
-<hendrikkayser@openMHA.org>
+<info@openMHA.org>
 
