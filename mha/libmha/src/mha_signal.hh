@@ -31,7 +31,6 @@
 #include <vector>
 #include <numeric>
 #include <algorithm>
-#include <math.h>
 #include "mha_parser.hh"
 
 // some platforms do not define M_PI in <cmath>
