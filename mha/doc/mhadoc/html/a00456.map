@@ -1,9 +1,0 @@
-<map id="mhasndfile.h" name="mhasndfile.h">
-<area shape="rect" id="node3" href="$a00250.html" title="mha.h" alt="" coords="464,229,523,256"/>
-<area shape="rect" id="node5" href="$a00283.html" title="Header file for audio signal handling and processing classes. " alt="" coords="824,80,931,107"/>
-<area shape="rect" id="node6" href="$a00258.html" title="mha_error.hh" alt="" coords="1411,155,1509,181"/>
-<area shape="rect" id="node15" href="$a00275.html" title="mha_os.h" alt="" coords="253,229,331,256"/>
-<area shape="rect" id="node24" href="$a00277.html" title="mha_parser.hh" alt="" coords="531,155,639,181"/>
-<area shape="rect" id="node26" href="$a00261.html" title="mha_events.h" alt="" coords="672,229,776,256"/>
-<area shape="rect" id="node27" href="$a00259.html" title="mha_event_emitter.h" alt="" coords="632,304,776,331"/>
-</map>

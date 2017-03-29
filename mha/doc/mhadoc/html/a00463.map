@@ -1,9 +1,0 @@
-<map id="speechnoise.h" name="speechnoise.h">
-<area shape="rect" id="node2" href="$a00283.html" title="Header file for audio signal handling and processing classes. " alt="" coords="1112,80,1219,107"/>
-<area shape="rect" id="node3" href="$a00250.html" title="mha.h" alt="" coords="464,229,523,256"/>
-<area shape="rect" id="node5" href="$a00258.html" title="mha_error.hh" alt="" coords="976,155,1075,181"/>
-<area shape="rect" id="node14" href="$a00275.html" title="mha_os.h" alt="" coords="264,229,342,256"/>
-<area shape="rect" id="node23" href="$a00277.html" title="mha_parser.hh" alt="" coords="668,155,776,181"/>
-<area shape="rect" id="node25" href="$a00261.html" title="mha_events.h" alt="" coords="670,229,774,256"/>
-<area shape="rect" id="node26" href="$a00259.html" title="mha_event_emitter.h" alt="" coords="630,304,774,331"/>
-</map>

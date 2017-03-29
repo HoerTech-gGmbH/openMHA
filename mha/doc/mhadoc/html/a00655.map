@@ -1,7 +1,0 @@
-<map id="MHAFilter::o1flt_lowpass_t" name="MHAFilter::o1flt_lowpass_t">
-<area shape="rect" id="node5" href="$a00114.html" title="First order maximum tracker. " alt="" coords="5,304,192,331"/>
-<area shape="rect" id="node6" href="$a00115.html" title="First order minimum tracker. " alt="" coords="217,304,399,331"/>
-<area shape="rect" id="node2" href="$a00112.html" title="First order attack&#45;release lowpass filter. " alt="" coords="121,155,285,181"/>
-<area shape="rect" id="node3" href="$a00206.html" title="signal processing class for waveform data (based on mha_wave_t) " alt="" coords="121,80,285,107"/>
-<area shape="rect" id="node4" href="$a00091.html" title="Waveform signal structure. " alt="" coords="155,5,251,32"/>
-</map>

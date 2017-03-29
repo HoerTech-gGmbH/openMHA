@@ -1,7 +1,0 @@
-<map id="MHAOvlFilter::fspacing_t" name="MHAOvlFilter::fspacing_t">
-<area shape="rect" id="node2" href="$a00140.html" title="FFT based overlapping filter bank. " alt="" coords="83,80,226,107"/>
-<area shape="rect" id="node3" href="$a00020.html" title="coherence::cohflt_t" alt="" coords="5,162,139,189"/>
-<area shape="rect" id="node4" href="$a00146.html" title="A time&#45;domain minimal phase filter bank with frequency shapes from MHAOvlFilter::fftfb_t. " alt="" coords="163,155,314,196"/>
-<area shape="rect" id="node5" href="$a00145.html" title="MHAOvlFilter::overlap\l_save_filterbank_analytic_t" alt="" coords="149,244,329,285"/>
-<area shape="rect" id="node6" href="$a00040.html" title="fftfilterbank::fftfb\l_plug_t" alt="" coords="179,333,298,375"/>
-</map>

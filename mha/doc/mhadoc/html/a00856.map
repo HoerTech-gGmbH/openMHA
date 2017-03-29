@@ -1,7 +1,0 @@
-<map id="PluginLoader::mhapluginloader_t" name="PluginLoader::mhapluginloader_t">
-<area shape="rect" id="node6" href="$a00227.html" title="pluginloader_t" alt="" coords="677,71,780,98"/>
-<area shape="rect" id="node2" href="$a00224.html" title="PluginLoader::config\l_file_splitter_t" alt="" coords="211,5,351,47"/>
-<area shape="rect" id="node3" href="$a00153.html" title="MHAParser::c_ifc_parser_t" alt="" coords="191,71,371,98"/>
-<area shape="rect" id="node4" href="$a00149.html" title="Base class for all parser items. " alt="" coords="5,71,143,98"/>
-<area shape="rect" id="node5" href="$a00225.html" title="PluginLoader::fourway\l_processor_t" alt="" coords="205,123,356,164"/>
-</map>

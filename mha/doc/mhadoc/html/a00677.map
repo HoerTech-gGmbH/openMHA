@@ -1,5 +1,0 @@
-<map id="MHAJack::client_t" name="MHAJack::client_t">
-<area shape="rect" id="node2" href="$a00124.html" title="Main class for JACK IO. " alt="" coords="5,80,160,107"/>
-<area shape="rect" id="node3" href="$a00125.html" title="Generic JACK client for averaging a system response across time. " alt="" coords="185,80,343,107"/>
-<area shape="rect" id="node4" href="$a00126.html" title="Generic client for synchronous playback and recording of waveform fragments. " alt="" coords="367,80,550,107"/>
-</map>

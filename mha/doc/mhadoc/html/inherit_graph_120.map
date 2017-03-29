@@ -1,6 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$a00052.html" title="MHA_AC::ac2matrix_helper_t" alt="" coords="224,5,420,32"/>
-<area shape="rect" id="node2" href="$a00053.html" title="Copy AC variable to a matrix. " alt="" coords="468,31,623,57"/>
-<area shape="rect" id="node3" href="$a00205.html" title="Vector of unsigned values, used for size and index description of n&#45;dimensional matrixes. " alt="" coords="5,56,176,83"/>
-<area shape="rect" id="node4" href="$a00197.html" title="n&#45;dimensional matrix with real or complex floating point values. " alt="" coords="251,56,393,83"/>
-</map>

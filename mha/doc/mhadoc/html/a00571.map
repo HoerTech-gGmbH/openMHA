@@ -1,6 +1,0 @@
-<map id="dc::wideband_inhib_vars_t" name="dc::wideband_inhib_vars_t">
-<area shape="rect" id="node2" href="$a00172.html" title="Parser node class. " alt="" coords="5,117,151,143"/>
-<area shape="rect" id="node3" href="$a00149.html" title="Base class for all parser items. " alt="" coords="9,13,147,39"/>
-<area shape="rect" id="node4" href="$a00025.html" title="MHAPlugin::config_t\l\&lt; wb_inhib_cfg_t \&gt;" alt="" coords="175,109,317,151"/>
-<area shape="rect" id="node5" href="$a00025.html" title="Template class for thread safe configuration. " alt="" coords="175,5,317,47"/>
-</map>

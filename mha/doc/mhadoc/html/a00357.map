@@ -1,7 +1,0 @@
-<map id="auditory_profile.h" name="auditory_profile.h">
-<area shape="rect" id="node2" href="$a00277.html" title="mha_parser.hh" alt="" coords="238,80,346,107"/>
-<area shape="rect" id="node9" href="$a00261.html" title="mha_events.h" alt="" coords="45,155,149,181"/>
-<area shape="rect" id="node11" href="$a00258.html" title="mha_error.hh" alt="" coords="456,80,555,107"/>
-<area shape="rect" id="node7" href="$a00250.html" title="mha.h" alt="" coords="379,155,437,181"/>
-<area shape="rect" id="node10" href="$a00259.html" title="mha_event_emitter.h" alt="" coords="5,229,149,256"/>
-</map>

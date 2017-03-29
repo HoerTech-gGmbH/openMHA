@@ -1,7 +1,0 @@
-<map id="MHAEvents::connector_base_t" name="MHAEvents::connector_base_t">
-<area shape="rect" id="node2" href="$a00026.html" title="MHAEvents::connector\l_t\&lt; mhachain::mhachain\l::plugs_t \&gt;" alt="" coords="666,125,831,181"/>
-<area shape="rect" id="node3" href="$a00026.html" title="MHAEvents::connector\l_t\&lt; MHAOvlFilter::fscale\l_bw_t \&gt;" alt="" coords="665,5,832,61"/>
-<area shape="rect" id="node4" href="$a00026.html" title="MHAEvents::connector\l_t\&lt; MHAOvlFilter::fscale_t \&gt;" alt="" coords="653,306,844,347"/>
-<area shape="rect" id="node5" href="$a00026.html" title="MHAEvents::connector\l_t\&lt; MHAParser::mhapluginloader_t \&gt;" alt="" coords="629,217,868,258"/>
-<area shape="rect" id="node6" href="$a00026.html" title="MHAEvents::connector\l_t\&lt; receiver_t \&gt;" alt="" coords="213,174,372,215"/>
-</map>

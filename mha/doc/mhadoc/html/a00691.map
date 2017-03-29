@@ -1,8 +1,0 @@
-<map id="MHAMultiSrc::waveform_t" name="MHAMultiSrc::waveform_t">
-<area shape="rect" id="node2" href="$a00060.html" title="Insert a MHASignal::waveform_t class into the AC space. " alt="" coords="29,200,183,227"/>
-<area shape="rect" id="node3" href="$a00206.html" title="signal processing class for waveform data (based on mha_wave_t) " alt="" coords="5,117,169,143"/>
-<area shape="rect" id="node4" href="$a00091.html" title="Waveform signal structure. " alt="" coords="39,13,135,39"/>
-<area shape="rect" id="node5" href="$a00131.html" title="Base class for source selection. " alt="" coords="209,200,355,227"/>
-<area shape="rect" id="node6" href="$a00025.html" title="MHAPlugin::config_t\l\&lt; MHAMultiSrc::channels_t \&gt;" alt="" coords="194,109,389,151"/>
-<area shape="rect" id="node7" href="$a00025.html" title="Template class for thread safe configuration. " alt="" coords="220,5,363,47"/>
-</map>
