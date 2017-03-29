@@ -35,8 +35,11 @@ all: $(MODULES)
 
 .PHONY : $(MODULES)
 
-$(MODULES):
+$(MODULES:external_libs=):
 	$(MAKE) -C $@
+
+external_libs:
+	$(MAKE) -j 1 -C $@
 
 clean:
 	for m in $(MODULES); do $(MAKE) -C $$m clean; done
