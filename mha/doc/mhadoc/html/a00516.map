@@ -1,0 +1,4 @@
+<map id="mha_fifo_t&lt; T &gt;" name="mha_fifo_t&lt; T &gt;">
+<area shape="rect" id="node2" href="$a00067.html" title="mha_drifter_fifo_t\&lt; T \&gt;" alt="" coords="5,80,160,107"/>
+<area shape="rect" id="node3" href="$a00069.html" title="This FIFO uses locks to synchronize access. " alt="" coords="185,80,319,107"/>
+</map>

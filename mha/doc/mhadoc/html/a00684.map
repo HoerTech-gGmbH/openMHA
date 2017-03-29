@@ -1,0 +1,6 @@
+<map id="MHAMultiSrc::base_t" name="MHAMultiSrc::base_t">
+<area shape="rect" id="node4" href="$a00134.html" title="MHAMultiSrc::spectrum_t" alt="" coords="5,276,179,303"/>
+<area shape="rect" id="node5" href="$a00135.html" title="MHAMultiSrc::waveform_t" alt="" coords="203,276,379,303"/>
+<area shape="rect" id="node2" href="$a00025.html" title="MHAPlugin::config_t\l\&lt; MHAMultiSrc::channels_t \&gt;" alt="" coords="93,109,288,151"/>
+<area shape="rect" id="node3" href="$a00025.html" title="Template class for thread safe configuration. " alt="" coords="119,5,262,47"/>
+</map>

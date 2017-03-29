@@ -1,0 +1,5 @@
+<map id="MHAFilter::fftfilterbank_t" name="MHAFilter::fftfilterbank_t">
+<area shape="rect" id="node2" href="$a00146.html" title="A time&#45;domain minimal phase filter bank with frequency shapes from MHAOvlFilter::fftfb_t. " alt="" coords="20,80,171,121"/>
+<area shape="rect" id="node3" href="$a00145.html" title="MHAOvlFilter::overlap\l_save_filterbank_analytic_t" alt="" coords="5,169,185,211"/>
+<area shape="rect" id="node4" href="$a00040.html" title="fftfilterbank::fftfb\l_plug_t" alt="" coords="36,259,155,300"/>
+</map>

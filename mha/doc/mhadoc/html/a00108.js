@@ -1,0 +1,25 @@
+var a00108 =
+[
+    [ "gamma_flt_t", "a00108.html#a2e9cd602324746888519b6c9531d7d4a", null ],
+    [ "~gamma_flt_t", "a00108.html#aa5d302787aef558b09d4ef58ee530936", null ],
+    [ "operator()", "a00108.html#acd48d33dedeb1d6d33880a62e94fedab", null ],
+    [ "operator()", "a00108.html#a604313f2cfc4164bab8683bc5a637856", null ],
+    [ "operator()", "a00108.html#a76a4b38023883c75bfd9f654f0aba912", null ],
+    [ "phase_correction", "a00108.html#ad1c9343c5c2c65ac3db3d7c7b4de26c9", null ],
+    [ "set_weights", "a00108.html#a5c2e0328c6ebd205724a0aa5dbfb9409", null ],
+    [ "set_weights", "a00108.html#a891f0ab853a85985e81135b224e79c89", null ],
+    [ "get_weights", "a00108.html#acf2f04f81ed0e83ded4d5693785e82eb", null ],
+    [ "get_weights", "a00108.html#a079061e054690ae194dadca643b3c7b9", null ],
+    [ "get_resynthesis_gain", "a00108.html#abf3c0de17387e35b0dc778d96a609a54", null ],
+    [ "reset_state", "a00108.html#ac51030b57612a5624898d6f341540824", null ],
+    [ "get_A", "a00108.html#ae5c40931fccb48c6c9917f258fe7efca", null ],
+    [ "inspect", "a00108.html#a67bdb4b3bd7d117fd3124cf25b11b622", null ],
+    [ "A", "a00108.html#a33dfb44e1776f2e5829652c9bc321311", null ],
+    [ "GF", "a00108.html#a273923740088ac3de06a783ea7c17d41", null ],
+    [ "delay", "a00108.html#a0f8a8662f69d18814670041902be9968", null ],
+    [ "envelope_delay", "a00108.html#a17d1e5611d3eb664dddbd69e3ddef3db", null ],
+    [ "resynthesis_gain", "a00108.html#aa34767e6d464e39ece65b46468cefcb0", null ],
+    [ "cf_", "a00108.html#ae5df356aab1a2d93ce605ffb2d5c5c57", null ],
+    [ "bw_", "a00108.html#a89cd7b62ba00f0cc6f358f7156637789", null ],
+    [ "srate_", "a00108.html#af08314513187ef00d6d1b98b27d93e0f", null ]
+];

@@ -1,0 +1,7 @@
+<map id="MHA_TCP::Wakeup_Event" name="MHA_TCP::Wakeup_Event">
+<area shape="rect" id="node2" href="$a00077.html" title="Portable Multiplexable cross&#45;thread notification. " alt="" coords="245,5,418,32"/>
+<area shape="rect" id="node3" href="$a00083.html" title="MHA_TCP::Sockaccept\l_Event" alt="" coords="250,57,413,98"/>
+<area shape="rect" id="node4" href="$a00084.html" title="MHA_TCP::Sockread_Event" alt="" coords="236,123,427,149"/>
+<area shape="rect" id="node5" href="$a00085.html" title="MHA_TCP::Sockwrite\l_Event" alt="" coords="255,174,407,215"/>
+<area shape="rect" id="node6" href="$a00087.html" title="MHA_TCP::Timeout_Event" alt="" coords="240,240,423,267"/>
+</map>

@@ -1,0 +1,17 @@
+<map id="mha_generic_chain.cpp" name="mha_generic_chain.cpp">
+<area shape="rect" id="node2" href="$a00269.html" title="mha_generic_chain.h" alt="" coords="162,80,307,107"/>
+<area shape="rect" id="node3" href="$a00254.html" title="Preprocessor definitions common to all MHA components. " alt="" coords="5,155,96,181"/>
+<area shape="rect" id="node4" href="$a00278.html" title="mha_plugin.hh" alt="" coords="1248,155,1355,181"/>
+<area shape="rect" id="node15" href="$a00261.html" title="mha_events.h" alt="" coords="521,453,625,480"/>
+<area shape="rect" id="node32" href="$a00280.html" title="mha_profiling.h" alt="" coords="1595,155,1706,181"/>
+<area shape="rect" id="node34" href="$a00303.html" title="mhapluginloader.h" alt="" coords="171,229,298,256"/>
+<area shape="rect" id="node5" href="$a00250.html" title="mha.h" alt="" coords="1385,453,1444,480"/>
+<area shape="rect" id="node7" href="$a00258.html" title="mha_error.hh" alt="" coords="1481,379,1580,405"/>
+<area shape="rect" id="node9" href="$a00256.html" title="mha_errno.h" alt="" coords="1605,379,1699,405"/>
+<area shape="rect" id="node10" href="$a00277.html" title="mha_parser.hh" alt="" coords="1247,379,1355,405"/>
+<area shape="rect" id="node17" href="$a00252.html" title="Header file for Algorithm Communication. " alt="" coords="803,229,935,256"/>
+<area shape="rect" id="node16" href="$a00259.html" title="mha_event_emitter.h" alt="" coords="853,528,997,555"/>
+<area shape="rect" id="node18" href="$a00283.html" title="Header file for audio signal handling and processing classes. " alt="" coords="816,304,923,331"/>
+<area shape="rect" id="node25" href="$a00275.html" title="mha_os.h" alt="" coords="418,453,497,480"/>
+<area shape="rect" id="node35" href="$a00289.html" title="mha_toolbox.h" alt="" coords="1387,304,1493,331"/>
+</map>

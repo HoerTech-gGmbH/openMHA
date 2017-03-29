@@ -1,0 +1,7 @@
+<map id="The MHA Toolbox library" name="The MHA Toolbox library">
+<area shape="rect" id="node1" href="$a00348.html" title="The vector and matrix processing toolbox consists of a number of classes defined in the namespace MHA..." alt="" coords="331,5,523,47"/>
+<area shape="rect" id="node2" href="$a00349.html" title="Complex aithmetics\l in the MHA" alt="" coords="357,71,496,112"/>
+<area shape="rect" id="node4" href="$a00345.html" title="Errors are reported to the user via the MHA_Error exception. " alt="" coords="341,137,513,163"/>
+<area shape="rect" id="node5" href="$a00350.html" title="Fast Fourier Transform\l functions" alt="" coords="349,188,504,229"/>
+<area shape="rect" id="node6" href="$a00344.html" title="Algorithms within one chain can share variables for communication with other algorithms. " alt="" coords="343,253,510,295"/>
+</map>

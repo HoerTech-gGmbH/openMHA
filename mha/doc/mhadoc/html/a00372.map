@@ -1,0 +1,9 @@
+<map id="gaintable.h" name="gaintable.h">
+<area shape="rect" id="node2" href="$a00254.html" title="Preprocessor definitions common to all MHA components. " alt="" coords="70,80,161,107"/>
+<area shape="rect" id="node3" href="$a00258.html" title="mha_error.hh" alt="" coords="141,155,239,181"/>
+<area shape="rect" id="node5" href="$a00236.html" title="auditory_profile.h" alt="" coords="251,80,372,107"/>
+<area shape="rect" id="node6" href="$a00277.html" title="mha_parser.hh" alt="" coords="264,155,372,181"/>
+<area shape="rect" id="node13" href="$a00261.html" title="mha_events.h" alt="" coords="463,229,567,256"/>
+<area shape="rect" id="node11" href="$a00250.html" title="mha.h" alt="" coords="170,229,229,256"/>
+<area shape="rect" id="node14" href="$a00259.html" title="mha_event_emitter.h" alt="" coords="247,304,391,331"/>
+</map>

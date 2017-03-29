@@ -1,0 +1,58 @@
+\documentclass[a4paper]{book}
+\usepackage{a4wide}
+\usepackage{makeidx}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{alltt}
+\usepackage{times}
+\ifx\pdfoutput\undefined
+\usepackage[ps2pdf,
+            pagebackref=true,
+            colorlinks=true,
+            linkcolor=blue
+           ]{hyperref}
+\usepackage{pspicture}
+\else
+\usepackage[pdftex,
+            pagebackref=true,
+            colorlinks=true,
+            linkcolor=blue
+           ]{hyperref}
+\fi
+\usepackage{doxygen}
+\makeindex
+\setcounter{tocdepth}{1}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\familydefault}{phv}
+\begin{document}
+\begin{titlepage}
+\vspace*{2cm}
+\begin{center}
+{\Huge\bf Internal MHA documentation\\[1ex]\large MHA-Version 4.1 }\\
+\vfill
+{\includegraphics[width=7cm]{../../flowcharts/fmt_png/hoertechlogo.png}}\\
+\vspace*{0.5cm}
+{\small \copyright{} 2005 by H\"orTech gGmbH, Marie-Curie-Str. 2,
+  D--26129 Oldenburg, Germany}\\
+\end{center}
+\end{titlepage}
+\thispagestyle{empty}
+~
+
+\vfill
+
+{\bf Internal MHA documentation}\\
+(generated from the MHA sources with Doxygen)\\
+\\
+H\"orTech gGmbH\\
+Marie-Curie-Str. 2\\
+D--26129 Oldenburg
+\newpage
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+

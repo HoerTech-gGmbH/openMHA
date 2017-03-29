@@ -1,0 +1,8 @@
+<map id="MHAMultiSrc::spectrum_t" name="MHAMultiSrc::spectrum_t">
+<area shape="rect" id="node2" href="$a00058.html" title="Insert a MHASignal::spectrum_t class into the AC space. " alt="" coords="29,200,180,227"/>
+<area shape="rect" id="node3" href="$a00202.html" title="a signal processing class for spectral data (based on mha_spec_t) " alt="" coords="5,117,167,143"/>
+<area shape="rect" id="node4" href="$a00076.html" title="Spectrum signal structure. " alt="" coords="39,13,133,39"/>
+<area shape="rect" id="node5" href="$a00131.html" title="Base class for source selection. " alt="" coords="206,200,353,227"/>
+<area shape="rect" id="node6" href="$a00025.html" title="MHAPlugin::config_t\l\&lt; MHAMultiSrc::channels_t \&gt;" alt="" coords="191,109,386,151"/>
+<area shape="rect" id="node7" href="$a00025.html" title="Template class for thread safe configuration. " alt="" coords="217,5,360,47"/>
+</map>

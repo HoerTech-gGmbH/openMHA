@@ -28,6 +28,7 @@ MODULES = \
 	mha/libmha \
 	mha/frameworks \
 	mha/plugins \
+        mha/doc \
 	external_libs \
 
 all: $(MODULES)

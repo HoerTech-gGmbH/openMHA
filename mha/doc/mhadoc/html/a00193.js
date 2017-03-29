@@ -1,0 +1,26 @@
+var a00193 =
+[
+    [ "fft_t", "a00193.html#ac5cef19888c09ad5edbc8149255b7045", null ],
+    [ "~fft_t", "a00193.html#a253b9ed62ec0cc67134316c083045834", null ],
+    [ "wave2spec", "a00193.html#afc113ae2d91c73b7446274faaec95bb7", null ],
+    [ "spec2wave", "a00193.html#a391c56adec98657211d47d4dda8fa271", null ],
+    [ "spec2wave", "a00193.html#a50dafdb9c3dc468656ec6f49569cd2c4", null ],
+    [ "forward", "a00193.html#a309a8d6f832b9340c081245d2f11f49e", null ],
+    [ "backward", "a00193.html#a1b7268a8a85e7cb030e6a51291b55c25", null ],
+    [ "wave2spec_scale", "a00193.html#a3be158757c5e17809bf0293fe788a05e", null ],
+    [ "spec2wave_scale", "a00193.html#af0c87404b4607a83369d7541386a9f12", null ],
+    [ "forward_scale", "a00193.html#a4336ffd3499937361356dea8fc4ce973", null ],
+    [ "backward_scale", "a00193.html#ad636894089be3ebcf0cb1c35079b41c2", null ],
+    [ "sort_fftw2spec", "a00193.html#a94c1a75b25311bc3df486c01b8f20505", null ],
+    [ "sort_spec2fftw", "a00193.html#ab8e27edbc92822e3021d24bf2e4b1c24", null ],
+    [ "nfft", "a00193.html#ace5037d15fc77aa8ed8675a5c487c95a", null ],
+    [ "n_re", "a00193.html#ab77a44affc38da55f610fa61dbe22f9e", null ],
+    [ "n_im", "a00193.html#a38fbfed3445ed0eb4ac44b9c5dd02c51", null ],
+    [ "scale", "a00193.html#a67d5775e0dcf13c7a78829e801a7e89f", null ],
+    [ "buf_in", "a00193.html#a8f5d6be0fafe8ba33d0ee29330873759", null ],
+    [ "buf_out", "a00193.html#a22d0fa78fe35a2b1f752c67731d73d4a", null ],
+    [ "fftw_plan_wave2spec", "a00193.html#a2c21a03052652b1ae73220f7d77091db", null ],
+    [ "fftw_plan_spec2wave", "a00193.html#a265d811b430d844e9fbd69b7bf11e7ff", null ],
+    [ "fftw_plan_fft", "a00193.html#a549764fabc40110ff83414e081200138", null ],
+    [ "fftw_plan_ifft", "a00193.html#aee223a5356e9aad7d11ec857ddac95a4", null ]
+];
