@@ -1,0 +1,43 @@
+graph openmha {
+
+  margin = "0";
+  splines = "line";
+
+  subgraph cluster_openmha {
+
+    margin = "8";
+    label = "openMHA";
+
+    {
+      node [shape="box",width="1",height="0.5"];
+
+      plugins;
+      IO;
+      MHAhost;
+      libMHAToolbox [style="dashed"];
+    };
+
+    //libMHAToolbox -- MHAhost:w [style="dashed"];
+    //libMHAToolbox -- plugins:w [style="dashed"];
+    //libMHAToolbox -- IO:w [style="dashed"];
+
+  };
+
+  config [label="control applications\n(e.g., Octave)"];
+
+  
+  audiobackend [label="audio backend\n(Jack, File, TCP)"];
+
+
+  MHAhost -- IO [dir="both"];
+  config -- MHAhost [style="dashed"];
+  MHAhost -- plugins [dir="both"];
+  
+
+  IO -- audiobackend [dir="both"];
+
+}
+
+// Local Variables:
+// mode: c
+// End:
