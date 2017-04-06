@@ -8,7 +8,8 @@ Tobias, Frasher, Giso, Hendrik
 
 2. Release numbers   
 	- Options: 
-		- do it manually (Hendrik checks out mechanism in github
+		- do it manually (Hendrik checks out mechanism in github)  
+			> github simply uses ````git tag```` [HK, 06.04.2017] 
 		- Giso has written a half-automated release number generation script for TASCAR
 		- It is important to store release number in data logging 
 	- Release number format: x.yz
