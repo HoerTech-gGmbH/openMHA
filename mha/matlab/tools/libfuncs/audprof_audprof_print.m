@@ -60,5 +60,9 @@ function audprof_audprof_print( sAud )
     title(sprintf('%s - %s',[sAud.client_id,' ',sAud.id],csSide{k}),...
 	  'Interpreter','none');
   end
-  printdlg(fh);
+  if(exist('printdlg')==2)
+    printdlg(fh);
+  else
+    print(fh);
+  end
   close(fh);
