@@ -1,8 +1,7 @@
 /**
 * \mainpage Overview
 *\section str Structure
-* The openMHA can be split into four major components (see
-* Figure for an overview):
+* The openMHA can be split into four major components :
 * 	- The openMHA command line application
 * 	- Signal processing plugins
 * 	- Audio input-output (IO) plugins
@@ -17,23 +16,15 @@
 * Additionally, it provides the command line configuration interface and
 * a TCP/IP based configuration interface.
 * Several IO plugins exist:
-* For real-time signal processing, commonly the ``MHAIOJack'' plugin is
-* used, which provides an interface to the Jack Audio Connection Kit (JACK)
+* For real-time signal processing, commonly the MHA \ref MHAIOJack "MHAIOJack" plugin is
+* used, which provides an interface to the Jack Audio Connection Kit (JACK).
 * Other IO plugins provide audio file access or TCP/IP-based processing.
 *
-* openMHA plugins provide the audio signal processing capabilities and
+* \ref plugindoc "openMHA plugins" provide the audio signal processing capabilities and
 * audio signal handling.
 * Typically, one openMHA plugin implements one specific algorithm.
 * The complete virtual hearing aid signal processing can be achieved by
-* a combination of several openMHA plugins.
-*
-* The openMHA toolbox library ``libMHAToolbox'' provides reusable data
-* structures and signal processing classes.
-* Examples are class templates for the implementation of openMHA plugins,
-* and container classes for audio data.
-* Furthermore, several filter classes in temporal or spectral domain,
-* filter banks, and hearing aid specific classes are provided in this
-* library.
+* a combination of several openMHA plugins. 
 *
 * \section pltf Platroform Services and Conventions
 *
@@ -58,10 +49,10 @@
 * the complete processing has to be as short as possible.
 *
 * Similar to some other platforms, the openMHA allows also arbitrary data to be
-* exchanged between plugins through a mechanism called
-* ``algorithm communication variables''
+* exchanged between plugins through a mechanism called \ref algocomm
+* "algorithm communication variables"
 * or short
-* ``AC vars''.
+* "AC vars".
 * This mechanism is commonly used to share data such as filter
 * coefficients or filter states.
 *
@@ -155,6 +146,4 @@
 * necessary signal adjustments in most situations.
 *
 *
-* You can find detailed explanation of plugins in \ref plugindoc page. A detailed 
-* step by step explanation of plugin development is given in \ref example_tut.
 */
