@@ -105,8 +105,7 @@ mha_wave_t * example2_t::process(mha_wave_t * signal)
 {
     unsigned int frame;
     for(frame = 0; frame < signal->num_frames; frame++)
-        signal->buf[signal->num_channels * frame + scale_ch.data] *= 
-            factor.data;
+        value(signal,frame,scale_ch.data) *= factor.data;
     return signal;
 }
 
