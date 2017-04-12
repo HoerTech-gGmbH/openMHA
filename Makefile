@@ -28,7 +28,9 @@ MODULES = \
 	mha/libmha \
 	mha/frameworks \
 	mha/plugins \
-        mha/doc \
+	mha/doc/images \
+	mha/doc/flowcharts \
+	mha/doc \
         mha/mhatest \
 	external_libs \
 

@@ -141,8 +141,7 @@
 * of the user of the openMHA to perform calibration
 * measurements and adapt the openMHA settings to make sure that this
 * calibration convention is met.
-* We provide the plugin \emph{transducers} (cf. section
-* \ref{sec:transducers}) which can be configured to perform the
+* We provide the plugin \c transducers which can be configured to perform the
 * necessary signal adjustments in most situations.
 *
 *
