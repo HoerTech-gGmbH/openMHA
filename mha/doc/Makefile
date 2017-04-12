@@ -25,3 +25,7 @@ doxy:
 	$(DOXYGEN) $(FILES)
 
 include ../../rules.mk
+
+# Local Variables:
+# coding: utf-8-unix
+# End:
