@@ -93,7 +93,7 @@ d) prerelease_allplugins.cfg
 
 For example, we can start the example d) above by the following command: 
 
-mha ?read:configuration/prerelease_allplugins.cfg cmd=start cmd=quit 
+mha ?read:configurations/prerelease_allplugins.cfg cmd=start cmd=quit 
 
 Together with these configuration files we provide also example audio data from 
 a binaural four-channel hearing aid setup in an anechoic environment:
