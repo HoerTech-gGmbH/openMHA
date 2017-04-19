@@ -17,7 +17,7 @@
 ## Created: 2017-04-06
 
 ## This function tests plugin test_delaysum by comparing 
-## the delay and sum of two random arrays with the plugin 
+## the delay and sum of two cosine arrays with the plugin 
 ## output
 function [retval] = test_delaysum 
     dsc.instance = 'test_delaysum';
@@ -25,8 +25,8 @@ function [retval] = test_delaysum
     dsc.fragsize = 200;
     
     dsc.mhalib = 'delaysum';
-    % randon mumber from 1 to 20
-    dl = floor(1+19*rand);
+    % fixed delay of 15 samples
+    dl = 15;
     dsc.mha.delay = [0 dl];
     
     mha = mha_start();
@@ -37,9 +37,12 @@ function [retval] = test_delaysum
     mha_set(mha, 'iolib', 'MHAIOParser'); %load iolib
     mha_set(mha, 'cmd', 'start');
     
-    % random sequence with values from -0.5 to 0.5
-    ch1_input = (rand(1,200)-0.5);
-    ch2_input = (rand(1,200)-0.5);
+    % range
+    x = [1:dsc.fragsize];
+    
+    % cosine input sequences
+    ch1_input = 0.5*cos(pi*0.1*x);
+    ch2_input = 0.5*cos(pi*0.2*x);
     
     % two-channel delta at 10 - input signal
     in_sig = [ch1_input; ch2_input];
@@ -49,5 +52,5 @@ function [retval] = test_delaysum
     
     mha_set(mha, 'io.input', in_sig);
     output_signal = mha_get(mha, 'io.output');
-    assert_equal(round(output_signal)/100000, round(out_sig)/100000);
+    assert_equal(num2str(output_signal,5),num2str(out_sig,5));
 endfunction
