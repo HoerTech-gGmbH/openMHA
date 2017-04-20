@@ -32,7 +32,7 @@ function configdb_writefile( filename, varname, value )
   eval(sprintf('data.%s=value;',varname));
   get_config_file_cache.(tname) = data;
   if ~exist(filename,'file')
-    save(filename,'-struct','data',basename);
+  save(filename,'-struct','-binary','data',basename);
   else
-    save(filename,'-append','-struct','data',basename);
+    save(filename,'-struct','data',basename);
   end
