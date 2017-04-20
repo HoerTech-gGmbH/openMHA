@@ -8,9 +8,10 @@ function sFT = finetuning_updategui( sFT )
   else
     sFT = finetuning_sFT;
   end
+  cf_children = get(gcf,'children');
+  cf_tags = get(cf_children,'tag');
   for ch='lr'
     for k=1:length(finetuning_sFT.f)
-      h = findobj('tag',sprintf('finetuning_val_%s_%d',ch,k));
-      set(h,'String',sprintf('%g',finetuning_get_val(ch,k)));
+      set(cf_children(strcmp(cf_tags,sprintf('finetuning_val_%s_%d',ch,k))),'String',sprintf('%g',finetuning_get_val(ch,k)));
     end
   end

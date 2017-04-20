@@ -369,7 +369,7 @@ function upload_current_fit( sFT )
     configdb.fit_upload_current( mha_basic_cfg.mha );
   end
   update_current_fit_gui;
-  
+
 function create_gainrule_selector( fh, pos, first_fit_cb )
   global mha_basic_cfg;
   libmultifit();
@@ -616,6 +616,8 @@ function update_current_fit_gui
   libconfigdb();
   libaudprof();
   sPlug = configdb.fit_get_current( mha_basic_cfg.mha );
+  cf_children = get(gcf,'children');
+  cf_tags = get(cf_children,'tag');
   if isfield(sPlug,'final_gaintable')
     sPlugFinal = sPlug;
     %% todo: target returns final gaintable automatically if available
@@ -624,7 +626,7 @@ function update_current_fit_gui
     % update plots:
     [vXTick,csXTickLabel] = freq_xtick;
     for ch=setdiff('lr',sPlugFinal.fitmodel.side)
-      ax = findobj('tag',['target_gain_',ch]);
+      ax = cf_children(strcmp(cf_tags,['target_gain_',ch]));
       delete(get(ax,'Children'));
       set(ax,'XScale','log',...
       	     'XLim',minmax(sTarget.f),...
@@ -635,7 +637,7 @@ function update_current_fit_gui
       axes(ax);
       xlabel('frequency / Hz');
       ylabel('3rd octave level / dB SPL');
-      set(findobj(gcf,'tag',['mhagui_fitting_checkbox_select_side_',ch]),'Value',0);
+      set(cf_children(strcmp(cf_tags,['mhagui_fitting_checkbox_select_side_',ch])),'Value',0);
     end
     for ch=sPlugFinal.fitmodel.side
       sHTL = audprof.threshold_get( sPlugFinal.audprof, ch, ...
@@ -643,9 +645,9 @@ function update_current_fit_gui
       vaudF = [sHTL.data.f];
       vaudH = [sHTL.data.hl] + isothr(vaudF);
       vFAudP = [sTarget.f(1),sTarget.f(1),vaudF,sTarget.f(end),sTarget.f(end)];
-      set(findobj(gcf,'tag',['mhagui_fitting_checkbox_select_side_',ch]),'Value',1);
+      set(cf_children(strcmp(cf_tags,['mhagui_fitting_checkbox_select_side_',ch])),'Value',1);
       idxmid = round(length(sTarget.f)/2);
-      ax = findobj('tag',['target_gain_',ch]);
+      ax = cf_children(strcmp(cf_tags,['target_gain_',ch]));
       axes(ax);
       hold off;
       if strcmp(ch,'l')
