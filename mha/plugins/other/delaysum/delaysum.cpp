@@ -162,7 +162,7 @@ void delaysum_if_t::update_cfg()
 void delaysum_if_t::release(){
 }
 }
-MHAPLUGIN_CALLBACKS(delaysum,delaysum_if_t,wave,wave)
+MHAPLUGIN_CALLBACKS(delaysum,delaysum::delaysum_if_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION(delaysum,"delay and sum ","")
 
 // Local Variables:
