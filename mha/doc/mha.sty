@@ -1,0 +1,621 @@
+%
+% 
+%
+% Copyright (C) 1997-2009 by Dimitri van Heesch.
+%
+% Permission to use, copy, modify, and distribute this software and its
+% documentation under the terms of the GNU General Public License is hereby 
+% granted. No representations are made about the suitability of this software 
+% for any purpose. It is provided "as is" without express or implied warranty.
+% See the GNU General Public License for more details.
+%
+% Documents produced by Doxygen are derivative works derived from the
+% input used in their production; they are not affected by this license.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mha}
+
+% Packages used by this style file
+\RequirePackage{a4wide}
+\RequirePackage{alltt}
+\RequirePackage{array}
+\RequirePackage{calc}
+\RequirePackage{color}
+\RequirePackage{fancyhdr}
+\RequirePackage{longtable}
+\RequirePackage{verbatim}
+\RequirePackage{ifthen}
+\RequirePackage[table]{xcolor}
+
+% Use helvetica font instead of times roman
+\RequirePackage{helvet}
+\RequirePackage{sectsty}
+\RequirePackage{tocloft}
+\providecommand{\rmdefault}{phv}
+\providecommand{\bfdefault}{bc}
+
+
+% Setup fancy headings
+\pagestyle{fancyplain}
+\newcommand{\clearemptydoublepage}{%
+  \newpage{\pagestyle{empty}\cleardoublepage}%
+}
+\renewcommand{\sectionmark}[1]{%
+  \markright{\thesection\ #1}%
+}
+\fancyhead[LE]{\fancyplain{}{\bfseries\thepage}}
+\fancyhead[CE]{\fancyplain{}{}}
+\fancyhead[RE]{\fancyplain{}{\bfseries\leftmark}}
+\fancyhead[LO]{\fancyplain{}{\bfseries\rightmark}}
+\fancyhead[CO]{\fancyplain{}{}}
+\fancyhead[RO]{\fancyplain{}{\bfseries\thepage}}
+\fancyfoot[LE]{\fancyplain{}{}}
+\fancyfoot[CE]{\fancyplain{}{}}
+\fancyfoot[RE]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2013 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[LO]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2013 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[CO]{\fancyplain{}{}}
+\fancyfoot[RO]{\fancyplain{}{}}
+%---------- Internal commands used in this style file ----------------
+
+% Generic environment used by all paragraph-based environments defined
+% below. Note that the command \title{...} needs to be defined inside
+% those environments!
+\newenvironment{DoxyDesc}[1]{%
+  \begin{list}{}%
+  {%
+    \settowidth{\labelwidth}{40pt}%
+    \setlength{\leftmargin}{\labelwidth}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\itemsep}{-4pt}%
+    \renewcommand{\makelabel}{\entrylabel}%
+  }%
+  \item[#1]%
+}{%
+  \end{list}%
+}
+
+%---------- Commands used by doxygen LaTeX output generator ----------
+
+% Used by <pre> ... </pre>
+\newenvironment{DoxyPre}{%
+  \small%
+  \begin{alltt}%
+}{%
+  \end{alltt}%
+  \normalsize%
+}
+
+% Used by @code ... @endcode
+\newenvironment{DoxyCode}{%
+  \footnotesize%
+  \verbatim%
+}{%
+  \endverbatim%
+  \normalsize%
+}
+
+% Used by @example, @include, @includelineno and @dontinclude
+\newenvironment{DoxyCodeInclude}{%
+  \DoxyCode%
+}{%
+  \endDoxyCode%
+}
+
+% Used by @verbatim ... @endverbatim
+\newenvironment{DoxyVerb}{%
+  \footnotesize%
+  \verbatim%
+}{%
+  \endverbatim%
+  \normalsize%
+}
+
+% Used by @verbinclude
+\newenvironment{DoxyVerbInclude}{%
+  \DoxyVerb%
+}{%
+  \endDoxyVerb%
+}
+
+% Used by numbered lists (using '-#' or <ol> ... </ol>)
+\newenvironment{DoxyEnumerate}{%
+  \enumerate%
+}{%
+  \endenumerate%
+}
+
+% Used by bullet lists (using '-', @li, @arg, or <ul> ... </ul>)
+\newenvironment{DoxyItemize}{%
+  \itemize%
+}{%
+  \enditemize%
+}
+
+% Used by description lists (using <dl> ... </dl>)
+\newenvironment{DoxyDescription}{%
+  \description%
+}{%
+  \enddescription%
+}
+
+% Used by @image, @dotfile, and @dot ... @enddot
+% (only if caption is specified)
+\newenvironment{DoxyImage}{%
+  \begin{figure}[H]%
+  \begin{center}%
+}{%
+  \end{center}%
+  \end{figure}%
+}
+
+% Used by @image, @dotfile, @dot ... @enddot, and @msc ... @endmsc
+% (only if no caption is specified)
+\newenvironment{DoxyImageNoCaption}{%
+}{%
+}
+
+% Used by @attention
+\newenvironment{DoxyAttention}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @author and @authors
+\newenvironment{DoxyAuthor}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @date
+\newenvironment{DoxyDate}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @invariant
+\newenvironment{DoxyInvariant}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @note
+\newenvironment{DoxyNote}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @post
+\newenvironment{DoxyPostcond}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @pre
+\newenvironment{DoxyPrecond}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @remark
+\newenvironment{DoxyRemark}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @return
+\newenvironment{DoxyReturn}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @since
+\newenvironment{DoxySince}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @see
+\newenvironment{DoxySeeAlso}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @version
+\newenvironment{DoxyVersion}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @warning
+\newenvironment{DoxyWarning}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @internal
+\newenvironment{DoxyInternal}[1]{%
+  \paragraph*{#1}%
+}{%
+}
+
+% Used by @par and @paragraph
+\newenvironment{DoxyParagraph}[1]{%
+  \begin{list}{}%
+  {%
+    \settowidth{\labelwidth}{40pt}%
+    \setlength{\leftmargin}{\labelwidth}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\itemsep}{-4pt}%
+    \renewcommand{\makelabel}{\entrylabel}%
+  }%
+  \item[#1]%
+}{%
+  \end{list}%
+}
+
+% Used by parameter lists
+\newenvironment{DoxyParams}[2][]{%
+  \begin{DoxyDesc}{#2}%
+    \begin{description}%
+      \item[] \hspace{\fill} \vspace{-25pt}%
+      \definecolor{tableShade}{HTML}{F8F8F8}%
+      \rowcolors{1}{white}{tableShade}%
+      \arrayrulecolor{gray}%
+      \setlength{\tabcolsep}{0.01\textwidth}%
+      \ifthenelse{\equal{#1}{}}
+      {\begin{longtable}{|>{\raggedleft\hspace{0pt}}p{0.15\textwidth}|%
+                          p{0.87\textwidth}|}}%
+      {\ifthenelse{\equal{#1}{1}}%
+       {\begin{longtable}{|>{\centering}p{0.10\textwidth}|%
+                          >{\raggedleft\hspace{0pt}}p{0.15\textwidth}|%
+                          p{0.75\textwidth}|}}%
+       {\begin{longtable}{|>{\centering}p{0.10\textwidth}|%
+                          >{\centering\hspace{0pt}}p{0.15\textwidth}|%
+                          >{\raggedleft\hspace{0pt}}p{0.15\textwidth}|%
+                          p{0.58\textwidth}|}}%
+       }\hline%
+}{%
+      \end{longtable}%
+    \end{description}%
+  \end{DoxyDesc}%
+}
+
+% is used for parameters within a detailed function description
+\newenvironment{DoxyParamCaption}{%
+  \renewcommand{\item}[2][]{##1 {\em ##2}}%
+  }{%
+}
+
+% Used by return value lists
+\newenvironment{DoxyRetVals}[1]{%
+  \begin{DoxyDesc}{#1}%
+    \begin{description}%
+      \item[] \hspace{\fill} \vspace{-25pt}%
+      \definecolor{tableShade}{HTML}{F8F8F8}%
+      \rowcolors{1}{white}{tableShade}%
+      \arrayrulecolor{gray}%
+      \setlength{\tabcolsep}{0.01\textwidth}%
+      \begin{longtable}{|>{\raggedleft\hspace{0pt}}p{0.25\textwidth}|%
+                          p{0.77\textwidth}|}%
+      \hline%
+}{%
+      \end{longtable}%
+    \end{description}%
+  \end{DoxyDesc}%
+}
+
+% Used by exception lists
+\newenvironment{DoxyExceptions}[1]{%
+  \begin{DoxyDesc}{#1}%
+    \begin{description}%
+      \item[] \hspace{\fill} \vspace{-25pt}%
+      \definecolor{tableShade}{HTML}{F8F8F8}%
+      \rowcolors{1}{white}{tableShade}%
+      \arrayrulecolor{gray}%
+      \setlength{\tabcolsep}{0.01\textwidth}%
+      \begin{longtable}{|>{\raggedleft\hspace{0pt}}p{0.25\textwidth}|%
+                          p{0.77\textwidth}|}%
+      \hline%
+}{%
+      \end{longtable}%
+    \end{description}%
+  \end{DoxyDesc}%
+}
+
+% Used by template parameter lists
+\newenvironment{DoxyTemplParams}[1]{%
+  \begin{DoxyDesc}{#1}%
+    \begin{description}%
+      \item[] \hspace{\fill} \vspace{-25pt}%
+      \definecolor{tableShade}{HTML}{F8F8F8}%
+      \rowcolors{1}{white}{tableShade}%
+      \arrayrulecolor{gray}%
+      \setlength{\tabcolsep}{0.01\textwidth}%
+      \begin{longtable}{|>{\raggedleft\hspace{0pt}}p{0.25\textwidth}|%
+                          p{0.77\textwidth}|}%
+      \hline%
+}{%
+      \end{longtable}%
+    \end{description}%
+  \end{DoxyDesc}%
+}
+
+\newcommand{\doxyref}[3]{\textbf{#1} (\textnormal{#2}\,\pageref{#3})}
+\newenvironment{DoxyCompactList}
+{\begin{list}{}{
+  \setlength{\leftmargin}{0.5cm}
+  \setlength{\itemsep}{0pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\topsep}{0pt}
+  \renewcommand{\makelabel}{\hfill}}}
+{\end{list}}
+\newenvironment{DoxyCompactItemize}
+{
+  \begin{itemize}
+  \setlength{\itemsep}{-3pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\topsep}{0pt}
+  \setlength{\partopsep}{0pt}
+}
+{\end{itemize}}
+\newcommand{\PBS}[1]{\let\temp=\\#1\let\\=\temp}
+\newlength{\tmplength}
+\newenvironment{TabularC}[1]
+{
+\setlength{\tmplength}
+     {\linewidth/(#1)-\tabcolsep*2-\arrayrulewidth*(#1+1)/(#1)}
+      \par\begin{tabular*}{\linewidth}
+             {*{#1}{|>{\PBS\raggedright\hspace{0pt}}p{\the\tmplength}}|}
+}
+{\end{tabular*}\par}
+\newcommand{\entrylabel}[1]{
+   {\parbox[b]{\labelwidth-4pt}{\makebox[0pt][l]{\textbf{#1}}\vspace{1.5\baselineskip}}}}
+\newenvironment{Desc}
+{\begin{list}{}
+  {
+    \settowidth{\labelwidth}{40pt}
+    \setlength{\leftmargin}{\labelwidth}
+    \setlength{\parsep}{0pt}
+    \setlength{\itemsep}{-4pt}
+    \renewcommand{\makelabel}{\entrylabel}
+  }
+}
+{\end{list}}
+\newenvironment{Indent}
+  {\begin{list}{}{\setlength{\leftmargin}{0.5cm}}
+      \item[]\ignorespaces}
+  {\unskip\end{list}}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0.2cm}
+\addtocounter{secnumdepth}{2}
+\usepackage[T1]{fontenc}
+\makeatletter
+\renewcommand{\paragraph}{\@startsection{paragraph}{4}{0ex}%
+   {-1.0ex}%
+   {1.0ex}%
+   {\usefont{OT1}{phv}{bc}{n}\color{darkgray}}}
+\renewcommand{\subparagraph}{\@startsection{subparagraph}{5}{0ex}%
+   {-1.0ex}%
+   {1.0ex}%
+   {\usefont{OT1}{phv}{bc}{n}\color{darkgray}}}
+\makeatother
+\allsectionsfont{\usefont{OT1}{phv}{bc}{n}\selectfont\color{darkgray}}
+\stepcounter{secnumdepth}
+\stepcounter{tocdepth}
+\definecolor{comment}{rgb}{0.5,0.0,0.0}
+\definecolor{keyword}{rgb}{0.0,0.5,0.0}
+\definecolor{keywordtype}{rgb}{0.38,0.25,0.125}
+\definecolor{keywordflow}{rgb}{0.88,0.5,0.0}
+\definecolor{preprocessor}{rgb}{0.5,0.38,0.125}
+\definecolor{stringliteral}{rgb}{0.0,0.125,0.25}
+\definecolor{charliteral}{rgb}{0.0,0.5,0.5}
+\definecolor{vhdldigit}{rgb}{1.0,0.0,1.0}
+\definecolor{vhdlkeyword}{rgb}{0.43,0.0,0.43}
+\definecolor{vhdllogic}{rgb}{1.0,0.0,0.0}
+\definecolor{vhdlchar}{rgb}{0.0,0.0,0.0}
+\sloppy
+%
+% MHA things
+%
+\usepackage{makeidx}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{alltt}
+\usepackage{times}
+\ifx\pdfoutput\undefined
+\usepackage[ps2pdf,
+            pagebackref=true,
+            colorlinks=true,
+            linkcolor=blue
+           ]{hyperref}
+\DeclareGraphicsExtensions{.eps,.ps}
+\usepackage{pspicture}
+\else
+\usepackage[pdftex,
+            pagebackref=true,
+            colorlinks=true,
+            linkcolor=blue
+           ]{hyperref}
+\DeclareGraphicsExtensions{.pdf,.png}
+\fi
+\usepackage{calc}
+\usepackage{array}
+\pagestyle{fancyplain}
+\usepackage[round]{natbib}
+\bibliographystyle{plainnat}
+\addtocounter{secnumdepth}{1}
+
+
+
+\newcommand{\mhavar}[1]{{\tt #1}\index{#1@\texttt{#1}}}
+\newcommand{\mhavardesc}[2]{\item\mhavar{#1}\\#2}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\lhead[\fancyplain{}{\bfseries\thepage}]
+        {\fancyplain{}{\bfseries\rightmark}}
+\rhead[\fancyplain{}{\bfseries\leftmark}]
+        {\fancyplain{}{\bfseries\thepage}}
+\rfoot[\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2013 H\"orTech gGmbH, Oldenburg }]{}
+\lfoot[]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2013 H\"orTech gGmbH, Oldenburg }}
+\cfoot{}
+%
+%
+\usepackage[T1]{fontenc}
+\makeindex
+\setcounter{tocdepth}{2}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\familydefault}{phv}
+\renewcommand{\paragraph}[1]{\par\medskip\penalty-100{\bf #1}\par}
+\pagenumbering{roman}
+\usepackage{optparams}
+\long\def\MHAfigurex[#1][#2][#3]#4#5{\begin{figure}[#3]\centering\includegraphics[width=#2]{#5}\caption[#1]{#4}\label{fig:#5}\end{figure}}
+
+\newcommand{\MHAfigure}{\optparams{\MHAfigurex}{[][75mm][htbp]}}
+
+\newcommand{\figref}[1]{Fig.\ \ref{fig:#1}}
+
+\newcommand{\MHAtitle}[1]{
+\begin{titlepage}
+\vspace*{2cm}
+\begin{center}
+{\Huge\bf The Master Hearing Aid (MHA)\\[1ex]\large MHA-Version 4.4 }\\
+\vfill
+
+{\Huge 
+
+#1
+
+\bigskip
+
+{\Large
+
+%Special Edition for use in
+%
+%EU FP6, project 004171 HearCom
+
+}
+}
+\vfill
+{\includegraphics[width=7cm]{hoertechlogo}}\\
+\vspace*{0.5cm}
+{\small \copyright{} 2005-2013 by H\"orTech gGmbH, Marie-Curie-Str. 2,
+  D--26129 Oldenburg, Germany}\\
+\end{center}
+\end{titlepage}
+\thispagestyle{empty}
+~
+
+\vfill
+
+G. Grimm, Dr. D. Berg, Dr. V. Hohmann and T. Herzke:\\
+{\bf The Master Hearing Aid (MHA) -- #1}\\
+Copyright \copyright{} 2005-2013\\
+H\"orTech gGmbH\\
+Marie-Curie-Str. 2\\
+D--26129 Oldenburg
+
+All trademarks mentioned in the text are property of their respective
+owners.
+
+}
+
+\newcommand{\MHAcopyright}{
+{\large LICENSE AGREEMENT}
+
+IMPORTANT- PLEASE READ CAREFULLY: 
+
+BY INSTALLING THE SOFTWARE (AS DEFINED BELOW), COPYING THE SOFTWARE OR
+OTHERWISE USING THE SOFTWARE ON YOUR COMPUTER, YOU (EITHER ON BEHALF
+OF YOURSELF AS AN INDIVIDUAL OR ON BEHALF OF AN ENTITY AS ITS
+AUTHORIZED REPRESENTATIVE) AGREE TO ALL OF THE TERMS OF THIS END USER
+LICENSE AGREEMENT ("AGREEMENT") REGARDING YOUR USE OF THE SOFTWARE.
+
+IF YOU DO NOT AGREE WITH ALL OF THE TERMS OF THIS AGREEMENT,
+DO NOT INSTALL, COPY OR OTHERWISE USE THE SOFTWARE.
+
+\medskip
+
+{\large DEFINITIONS:}
+
+In the following, software means the software provided by this
+distribution including all source code that is part of the
+distribution, all documentation and the source code provided in the
+documentation.
+
+\medskip
+
+{\large OWNERSHIP AND COPYRIGHT:}
+
+Copyright of this software \copyright{} 2005-2013 HoerTech gGmbH, Oldenburg,
+Germany.
+
+All rights reserved. All ownership and intellectual property rights in
+and to this software are owned by HoerTech gGmbH or its suppliers and
+may be protected by applicable copyright or other intellectual
+property laws and treaties. No distribution of this software is
+authorized unless approved in writing by the owner or copyright
+holder.
+
+\medskip
+
+{\large DISCLAIMER OF WARRANTY:}
+
+This software is provided on an "as is" basis, without warranty of any
+kind, either expressed or implied, including, without limitation,
+warranties that this software is free of defects, merchantable, fit
+for a particular purpose or non-infringing. The entire risk as to the
+quality and performance of this software is with the user of the
+software. Should any of this software prove defective in any respect,
+the user of that software (not the initial developer or any other
+contributor) assume the cost of any necessary servicing, repair or
+correction. No use of any of this software is authorized by the owner
+or copyright holder except under this disclaimer.
+
+\medskip
+
+{\large LIMITATION OF LIABILITY:}
+
+Under no circumstances and under no legal theory, whether tort
+(including negligence), contract, or otherwise, shall the owner or
+copyright holder, the initial developer, any other contributor, or any
+distributor of this software, or any supplier of any of such parties,
+be liable to any person for any indirect, special, incidental, or
+consequential damages of any character including, without limitation,
+damages for loss of goodwill, work stoppage, computer failure or
+malfunction, or any and all other commercial damages or losses, even
+if such party shall have been informed of the possibility of such
+damages. This limitation of liability shall not apply to liability for
+death or personal injury resulting from such party's negligence to the
+extent applicable law prohibits such limitation.
+}
+
+%\newcommand{\Matlab}{MATLAB$^{\textrm{\textregistered{}}}$}
+%\newcommand{\Windows}{MS Windows$^{\textrm{\textregistered{}}}$}
+%\newcommand{\Linux}{Linux$^{\textrm{\textregistered{}}}$}
+\newcommand{\Matlab}{MATLAB}
+\newcommand{\Windows}{MS Windows}
+\newcommand{\Linux}{Linux}
+\newcommand{\mhad}{MHA host application}
+\newcommand{\secpageref}[1]{section \ref{#1} on page \pageref{#1}}
+\definecolor{monitorcolor}{rgb}{0.5,0.5,0.6}
+
+% TOC subsection number >= 100 overlap text without this
+\makeatletter
+  \renewcommand\l@subsection{\@dottedtocline{2}{1.5em}{3em}}
+\makeatother
+

@@ -1,0 +1,107 @@
+\section{The MHA Kernel}
+\label{sec:kernel}
+
+The MHA kernel is responsible for the signal flow management in the MHA and
+for the communication between MHA plugins (processing blocks). The kernel is
+loaded and controlled by the framework application. Processing plugins can be
+inserted into processing chains. Multiple chains can be configured if
+switching between complex configurations is required. The inactive processing
+chains can optionally be calculated to reduce switching noise or for pure
+signal analysis. Time domain (waveform) and frequency domain (STFT) processing
+is supported. The MHA plugins can process in a single domain or as a domain
+transformation (e.g. FFT).
+
+The MHA kernel provides a multichannel environment. Any number of input and
+output channels can be configured (although some standard hearing aid
+algorithms make sense only with two channels).
+%
+Down-mixing and up-mixing in the plugins is possible.
+%
+This is highly relevant for processing of microphone arrays.
+%
+At the moment, multichannel processing is available in the \mhad{}
+only; the \Windows{} version is restricted to two channels.
+%
+The \mhad{} optionally provides monitoring of all signal processing
+chain outputs.
+
+\subsection{Configuration variables of the MHA Kernel}
+
+\begin{description}
+  \mhavardesc{disable\_inactive}{Disable inactive chains. If set to {\tt yes}
+    then only the selected chain is calculated.}
+  
+  \mhavardesc{chains}{The list of signal processing chains which will be
+    configured. Each entry will appear as a sub-parser which holds the chain
+    specific configuration including the configuration of the algorithms.}
+  
+  \mhavardesc{chain}{Name of the selected chain. Setting this variable will
+    select one of the previously configured chains.}
+    
+  \mhavardesc{chainname.inputdomain}{The domain which will be passed to
+    the first plugin in a chain ({\tt waveform} or {\tt spectrum}).}
+  
+  \mhavardesc{chainname.algos}{Assuming that {\tt chainname} is an entry of
+    the variable {\tt chains}, then this is a list of algorithms to run in
+    this chain. Each entry of this variable is the basename of a MHA Plugin.
+    The plugin configuration will appear as a sub-parser of {\tt chainname}.
+    The plugin basename is used as a sub-parser name except when explicitly
+    specified by typing {\tt basename:parsername}. This is especially
+    relevant when using multiple instances of the same algorithm in one chain.
+    The order of algorithms in this list determines the processing order (from
+    left to right).}
+
+\mhavardesc{fftname}{name of the FFT library without extension (e.g.\
+  {\tt wave2spec}).}
+
+\mhavardesc{ifftname}{name of the inverse FFT library without
+  extension (e.g.\ {\tt spec2wave}).}
+  
+\mhavardesc{fft}{subparser containing the configuration of the FFT
+  plugin, see section \ref{sec:wave2spec} for details.}
+
+\mhavardesc{ifft}{subparser containing the configuration of the
+  inverse FFT plugin, see section \ref{sec:spec2wave} for details.}
+\end{description}
+
+%% \subsection{Monitor variables of the MHA Kernel (profiling)}
+%% 
+%% The MHA Kernel provides a system to watch the time spend in the
+%% configured chains and in each algorithm/plugin processing
+%% callback. This profiling method can be used to roughly estimate the
+%% relative processing power of an algorithm if the system is not loaded
+%% by other processes. These monitor variables are available:
+%% 
+%% \begin{description}
+%% \mhavardesc{mhatime}{This variable holds the run time in seconds since
+%%   the last call of the prepare function. If the framework is prepared
+%%   just before entering the running state this variable is comparable
+%%   to the real running time (real time).}
+%% 
+%% \mhavardesc{mhaprof}{The cumulative time used by the MHA Kernel
+%%   processing callback in seconds. This includes the time spent in the
+%%   MHA Plugins.}
+%% 
+%% \mhavardesc{chainprof}{The cumulative processing time used by the
+%%   chains in seconds. Each entry is the time used by one chain. See the
+%%   {\tt chains} variable for the corresponding chain names.}
+%% 
+%% \mhavardesc{chainname.algoprof}{The cumulative processing time used by
+%%   the algorithms of one chain of name {\tt chainname}. Each entry is
+%%   the time used by one algorithm (MHA Plugin). See the {\tt algos}
+%%   variable for the corresponding plugin names.}
+%% 
+%% \mhavardesc{prof.mha}{Cumulative processing time in seconds of MHA
+%%   Kernel.}
+%% 
+%% \mhavardesc{prof.fft}{Cumulative processing time in seconds of FFT
+%%   library.}
+%% 
+%% \mhavardesc{prof.ifft}{Cumulative processing time in seconds of
+%%   inverse FFT library.}
+%% \end{description}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "MHA_manual"
+%%% End: 

@@ -1,0 +1,78 @@
+\section{Introduction}
+ 
+The HörTech Master Hearing Aid (MHA) is a software development
+platform for signal processing algorithms and a software solution of a
+hearing aid prototype.
+%
+The Master Hearing Aid has a layered structure as shown in 
+\figref{mha_structure_now}.
+
+\MHAfigure[][0.7\linewidth]{Layered structure of the master hearing aid}{mha_structure_now}
+
+\begin{itemize}
+
+\item The \textbf{audio backbone} is external to the master hearing
+aid.
+It is an abstraction for a source and a sink for audio data. 
+The MHA can use different audio backbones by selecting the corresponding
+MHA IO library.
+Usable audio backbones are: 
+The file system\footnote{several sound file formats are supported through 
+the use of the libsndfile library}, 
+sound card drivers (Windows MME, Windows ASIO, Linux Alsa, Linux OSS), 
+the Jack low latency sound server and router, 
+and network audio streams. 
+
+\item The {\bf MHA Framework}: selects the MHA IO library
+and passes the fragmented signal to the MHA plugins. The
+frameworks are platform dependant programs or libraries. Towards the
+user, a control interface is provided.
+ 
+\item A {\bf MHA Plugin} generally performs the
+signal processing, but plugins for signal flow management also exist.
+Each plugin forms one
+processing block; algorithms can consist of one or more plugins. MHA
+plugins communicate with the framework and with other plugins 
+through a simple ANSI-C interface. Plugins can work on waveform data
+(time domain) or STFT (frequency domain). 
+Plugins can implement domain translations, 
+e.g. FFT (fast fourier transform) and iFFT (inverse FFT) plugins exist.
+\end{itemize}
+
+Additionally, many tools of different kind are part of the MHA
+software development platform: A toolbox library for easy development
+of real-time capable algorithms, many MHA Plugins for signal analysis
+and basic signal modification, and applications to access the
+configuration space (e.g.\ GUI configurator, \Matlab{} access).
+
+An example of the possible signal flow in the MHA is shown in
+\figref{multilayer}. The multi-channel input signal, symbolised by a
+set of microphones, is read by the framework and passed to the plugin
+'concurrentchains'. There, the data is duplicated and passed to all
+chains as a waveform stream, or if requested by a processing chain, as
+short time Fourier transform (STFT) data. The user can select the chain to be
+played back; switching is allowed at any time.  If the last algorithm
+in the selected chain returns STFT, an inverse Fourier-transform is
+applied to the data.
+
+\medskip
+
+The structure of this user manual is as follows: First (section
+\ref{sec:variables}), the variable concept is described for
+clarification of the nomenclature. Then, the MHA frameworks (section
+\ref{sec:frameworks}), followed by some example scenarios and a
+step-by-step description on how to start the MHA (section
+\ref{sec:scenarios}). Afterwards, a description of some \Matlab{}
+tools is given (section \ref{sec:matlab}). Finally, a section on
+tuning a low latency signal processing environment is added (section
+\ref{sec:system}). The Programmers Reference Handbook describes the
+programming interface of the MHA and the toolbox. MHA plugins are
+documented in a separate document.
+
+\MHAfigure[][0.7\linewidth]{Schematic typical signal flow in
+  the Master Hearing Aid}{multilayer}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "MHA_manual"
+%%% End: 

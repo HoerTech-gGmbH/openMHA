@@ -1,0 +1,104 @@
+\documentclass[11pt,a4paper,twoside]{article}
+\usepackage{mha}
+\begin{document}
+\MHAtitle{The auditory profile library 'libaudprof'}
+\newpage
+\MHAcopyright{}
+\newpage
+\tableofcontents
+\newpage
+\renewcommand{\leftmark}{\rightmark}
+\pagenumbering{arabic}
+
+\section{Introduction}
+
+The MHA uses the concept of auditory profile based fitting. An
+auditory profile is a collection of clinical data related to hearing
+disabilities. Components which are used at time of writing are air and
+bone conduction hearing thresholds, uncomfortable threshold and
+categorical loudness scaling data. Although most fitting rules utilize
+only the hearing threshold, and only few use the loudness scaling
+data, the underlying library functions offer ways for extension to
+more parameters.
+
+Typically, the fitting is controlled via the graphical interface
+\verb!mhacontrol!. This document decribes solutions for selecting
+auditory profiles from the data base manually and to upload fittings
+to an MHA instance.
+
+\section{Accessing the auditory profile database}
+
+Auditory profiles in the MHA are stored in MATLAB format in a file
+called \verb!audprofdb.mat!. A graphical interface to this data base
+is the MATLAB program \verb!clientdb!.
+
+To access the auditory profile data base directly, the MATLAB library
+\verb!libaudprof! can be used, to return a structure with function
+handles:
+\begin{verbatim}
+h = libaudprof();
+\end{verbatim}
+To get help to any sub function, e.g., \verb!db_load!, the help
+function can be called with:
+\begin{verbatim}
+h.help.db_load()
+\end{verbatim}
+The function to load the auditory profile 'slope' from the client with
+ID 'TT123456' is
+\begin{verbatim}
+cDB = h.db_load();
+sClientID = 'TT123456';
+sAudID = 'slope';
+sAud = h.audprof_get( sClientID, sAudID, cDB );
+\end{verbatim}
+A shortcut for loading all auditory profiles, and a solution to load
+only the last one in list, is
+\begin{verbatim}
+csAud = h.audprof_getall( sClientID );
+sAud = csAud{end};
+\end{verbatim}
+Here, the data base is automatically loaded.
+
+To import air conduction thresholds from an XLS sheet, one can use
+\begin{verbatim}
+xlsname = 'myaud.xls';
+h.db_xlsimport( xlsname );
+% verify the imported data:
+clientdb();
+\end{verbatim}
+The xls file needs to follow a special formatting: The first row is
+interpreted as a header row. The field A1 may contain any text, the
+fields B1, C1, D1, etc. need to specify the side and frequency in a
+string, e.g., ``l125''. The fields are not case sensitiv and may
+contain spaces. The frequencies must be given in Hz. The side
+identifier can be 'l' or 'r'. The first column must contain the client
+identifier, which are converted into upper case during the import
+process. The auditory profile identifiers are set to the xls file
+name. Auditory profiles of the same identifier and client ID, which
+existed before in the database, are overwritten.
+
+To fit a running MHA (either in 'running' or in 'prepared' state, see
+user manual for details), one function from the \verb!libmultifit!
+library can be used:
+\begin{verbatim}
+hMF = libmultifit();
+sGainrule = 'NALRP';
+sSide = 'lr';
+csPlugs = hMF.uploadallfirstfit( mha, sGainrule, sAud, sSide );
+\end{verbatim}
+For bilateral fittings, the side string must be 'lr', otherwise the
+side to be fitted should be selected ('l' or 'r').
+
+If an auditory profile contains any Inf or NaN values, they should be
+removed before creating hearing aid fittings:
+\begin{verbatim}
+sAud = h.audprof_cleanup( sAud );
+\end{verbatim}
+
+\bibliography{MHA}
+
+\printindex
+
+\end{document}
+
+% LocalWords:  audiogram MHA LTASS

@@ -1,0 +1,190 @@
+\section{Hints and links for tuning the realtime environment}%
+\label{sec:system}%
+
+Low delay real-time signal processing is a task which depends highly on
+the operation system performance. For low latency audio processing
+with a total delay of 4-6 ms, the maximal system latency needs to be
+as low as 1 or 2 ms.  On a single processor high level operating
+system (e.g. Linux, \Windows{}), multitasking is usually reached by
+sequentially processing each task only for a limited period of time
+and than switching to the next task. This method is obviously not
+suitable for real-time signal processing since the execution of code
+can be delayed by an unpredictable amount of time. Low latency
+real-time processing tasks therefore have to be started in a special
+mode which grants the execution of its code. Furthermore, the system
+has to be manipulated in way which reduces the maximal interruption
+time by low level system tasks (e.g. accesses to hard disks or graphic
+cards) or reduces their priority below the priority of the real-time
+process. For Linux operating systems, a modified kernel is available
+which provides these features.
+
+\subsection{Linux audio distributions}
+
+To manually patch a Linux kernel and configure the operating system
+for optimal audio processing is a long and difficult task. We rather
+recommend to use a Linux distribution which is prepared and optimised
+for audio processing. At least two audio distributions are freely
+available, one of those is used by H\"orTech for low delay audio
+processing.
+
+A widely used audio distribution is 'Planet CCRMA'\index{audio distribution}
+which is built on top of a RedHat or Fedora Linux distribution. It is easy to
+maintain and includes all software packages required for low latency\index{low
+  latency} signal processing with the MHA (mainly the JACK\index{JACK} sound
+server, ALSA\index{ALSA} sound card drivers and a low latency kernel). System
+updates including security fixes are available. This distribution is actively
+maintained. This distribution is used by H\"orTech.  More information and
+download sites can be found here:
+
+\url{http://ccrma.stanford.edu/planetccrma/software/}
+
+Another audio distribution developed and compiled as an IST project
+is 'AGNULA'. Two versions of this distribution exists, one built on
+top of a Debian distribution, the other on top of RedHat Linux. This
+audio distribution contains all packages required to run the low
+latency realtime MHA (JACK sound server, ALSA sound card drivers and a
+low latency kernel). Watching the project in the last months it seems
+that the maintenance is only performed at a low rate. H\"orTech has no
+direct experience with this distribution. More information and
+download sites can be found following this link:
+
+\url{http://www.agnula.org/}
+
+Both distributions provide a detailed discussion on low latency signal
+processing in general and on system tuning. We strongly recommend to
+have a lock at these sites before starting to work with low latency
+processing. Another source of information about low latency audio
+processing can be found here:
+
+\url{http://www.Linuxdj.com/audio/quality/}
+
+Information on the ALSA (Advanced Linux Sound Architecture) sound
+drivers and supported audio devices can be found in the web:
+
+\url{http://www.alsa-project.org/}
+
+
+\subsection{The JACK low latency sound server}
+\label{sec:jack}
+
+`JACK is a low-latency audio server, written for POSIX-conforming
+operating systems such as GNU/Linux and Apple's OS X. It can connect a
+number of different applications to an audio device, as well as
+allowing them to share audio between themselves. Its clients can run
+in their own processes (ie. as normal applications), or they can run
+within the JACK server (ie. as a plugin).'
+
+`JACK was designed from the ground up for professional audio work, and
+its design focuses on two key areas: synchronous execution of all
+clients, and low latency operation.' (citation from the JACK web site).
+
+The \mhad{} can use the JACK\index{JACK} low latency sound
+server for audio input and output.
+%
+The advantage of using JACK in opposite to directly using the sound
+driver layer IO is the possibility to connect to many (almost any)
+audio clients.
+%
+At the same time it passes low latency features of the driver layer
+(namely ALSA, but other drivers are supported as well) to the client.
+%
+JACK is available for Linux and Mac OS X. Documentation and download
+sites can be found at this address:
+
+\url{http://www.jackaudio.org/}
+
+A JACK client can be added to a running sound server. While the client
+is active, it can be connected to other clients or hardware ports
+through API functions, command line tools or graphical user
+interfaces. Multiple connections to or from a client port are
+possible. Links to many useful tools, e.g. mixing
+tools, graphical control interfaces, signal analysis tools, can be
+found on the JACK website.
+
+\subsubsection{Invocation of JACK}
+
+The JACK\index{JACK} sound server has to be started before the MHA. Once
+started, the configuration (fragment size, sampling rate) of JACK is fixed. To
+change these parameters, please close all JACK clients and restart the server.
+Details on the invocation of JACK are given in the \verb!jackd!  manual page
+and in the package documentation. Here only MHA specific items will be
+discussed.
+
+Best performance will be reached if JACK uses direct hardware access
+with its native parameters. Usually this is provided by the ALSA 'hw'
+device. Sometimes it is necessary to add device and subdevice number
+to the device name, e.g. in case of an RME Digi 96 configured as the
+second sound card use \verb!hw:1,1! to address its eight channel ADAT
+mode. When using the hardware device \verb!hw!, only native parameters
+are supported. This means that only a restricted set of fragment sizes
+(JACK: \verb!--period!, \verb!-p!), number of hardware buffers (JACK:
+\verb!--nperiods!, \verb!-n!) and sampling rates (JACK: \verb!--rate!,
+\verb!-r!)  can be configured.
+
+If it is required to use non-native sampling rate some problems may
+occur. Due to buffer size restrictions (JACK allows only powers of
+two, ALSA requires the ratio between native and user sampling rate to be
+the same as the ratio between hardware period size and user period
+size) only down-sampling by a power of two is supported with the ALSA
+plugin driver. Therefore a sampling rate of 16 kHz can only be reached
+when using sound cards which support 32 kHz or 64 kHz sampling rate
+(e.g. not supported by the ALSA driver for RME Digi 96). The following
+entry might be needed in your \verb!~/.asoundrc! file in order to
+work properly with your card:
+\begin{verbatim}
+pcm.mhadev {
+    type plug
+    slave {
+        pcm "hw:1,1"
+        rate 32000
+    }
+}
+\end{verbatim}
+Please replace \verb!hw:1,1! by the correct device name of your sound
+card. The JACK daemon now can be started using the \verb!mhadev! sound
+device:
+\begin{verbatim}
+jackd -d alsa -d mhadev -r 16000 -p 128 -n 2
+\end{verbatim}
+This will use the sound card \verb!hw:1,1! with the native sampling
+rate 32 kHz, a hardware buffer length of 256 samples and two hardware
+buffers. Warning messages about using the ALSA software "plug" layer 
+will be shown when not using the hardware device \verb!hw!.
+
+However, if all this doesn't work it is still possible to use the OSS
+driver interface of JACK for sound card access. With OSS it should be
+possible to configure non-native sampling rates more easily, with the
+disadvantage of possibly working with longer delays and without direct
+control of the audio hardware parameters.
+
+If a JACK plugin for ALSA is installed (e.g.\ included in the Planet
+CCRMA distribution), it might be useful to define a virtual ALSA
+device, which automatically connects to the MHA JACK client:
+\begin{verbatim}
+pcm.mha {
+    type plug
+    slave { 
+        pcm {
+            type jack
+            playback_ports {
+                0 MHA:in_1
+                1 MHA:in_2
+            }
+            capture_ports {
+                0 MHA:out_1
+                1 MHA:out_2
+            }
+        }
+    }
+}
+\end{verbatim}
+When JACK and the MHA are running, a sound file can be played through
+the MHA by typing:
+\begin{verbatim}
+aplay -D plug:mha soundfile.wav
+\end{verbatim}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "MHA_manual"
+%%% End: 

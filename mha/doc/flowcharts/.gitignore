@@ -1,2 +1,5 @@
-*.png
-*.pdf
+fmt_eps
+fmt_pdf
+fmt_png
+#*.png
+#*.pdf

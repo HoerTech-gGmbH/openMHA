@@ -1,0 +1,281 @@
+\documentclass[11pt,a4paper,twoside]{article}
+\usepackage{mha}
+\begin{document}
+\MHAtitle{HearCom WP9: Correction of the Siemens Acuris P receiver frequency response in the MHA}
+\newpage
+\MHAcopyright{}
+\newpage
+\tableofcontents
+\newpage
+\renewcommand{\leftmark}{\rightmark}
+\pagenumbering{arabic}
+
+\section{Introduction}
+
+Calibration of a hearing aid is a non-trivial task.
+%
+The concept of the MHA calibration is as follows:
+%
+Within the MHA the signal is available as free field sound pressure
+level in Pascal.
+%
+To obtain these levels, the frequency response of the microphones has
+to be corrected, and a broadband scaling is applied to the microphone
+signal.
+%
+Since internally all levels are assumed to be free field level, the
+receiver response has to be equalized at the output of the MHA, and a
+broad band gain is applied to the signal to convert back from sound
+pressure level to DA-converter levels.
+%
+In this documentation the procedure to receive a receiver correction
+is described.
+%
+The correction of the microphone response is less complex, since it
+does not depend on the individual ear plug and ear canal.
+%
+Additionally, most microphones can be assumed to have a flat frequency
+response in a large frequency range.
+%
+This often allows to ommit the correction of the microphone response
+in the MHA calibration.
+%
+The broadband calibration of the MHA is described in the 'mhacontrol'
+control surface manual.
+
+\section{Determining the receiver response}
+
+The average normal hearing threshold for free field representation is
+defined in ISO 226.
+%
+An ideal system (and any audiometer) must be able to reproduce this
+threshold.
+%
+Thus a system which can reproduce the normal hearing threshold can be
+assumed to have a flat receiver response.
+%
+This defines a way to receive a receiver correction:
+%
+The hearing threshold of a large number of normal hearing subjects is
+recorded with the hearing aid receiver without equalization.
+%
+The difference between the recorded average normal hearing threshold
+and the ISO normal hearing threshold defines the frequency dependent
+gain to be applied to the receiver.
+
+\paragraph{Note:} 
+%
+The resulting frequency response of the MHA system is not flat when
+measured with a receiver coupler (e.g., B\&K ear simulator, see
+below).
+%
+All data are valid for the system (amplifier, gain settings,
+transducer type) used for the measurement of the thresholds.
+%
+A correction for the binaural advantage of 2~dB has been taken into
+account in the broadband calibration value.
+
+
+\section{In-situ audiometry without receiver correction}
+
+For measurement of the average hearing threshold on the system without
+receiver correction, the pure tone audiogram eight normal hearing
+subjects was recorded using the MHA in-situ audiometer.
+%
+All data are gathered with the Siemens Acuris P headset attached to
+the Behringer ADA8000 DA-converter, without receiver correction, and
+at a broadband calibration value of 137.2~dB (sine wave with -10~dB
+RMS relative full scale correspondes to an internal level of 127.2~dB
+SPL).
+%% new peaklevel: 137.2-13.5 = 1
+%
+The hearing threshold was measured at the standard audiometric
+frequencies (125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000
+and 8000 Hz).
+%
+The step size was set to 2~dB, to allow a high level resolution.
+%
+At each level step, a hanning ramp of 125~ms was applied to the
+signal.
+%
+In the audiometer display, the level relative to the ISO normal
+hearing threshold was displayed (hearing level, dB HL).
+
+Before averaging of the hearing thresholds, it was individually
+corrected by the standard audiometry pure tone audiogram, to reduce
+interindividual differences.
+%
+The individual results are shown in \figref{acuris_calib_aud_indiv}.
+%
+The median of these hearing thresholds as well as the 25\% and 75\%
+quantiles are displayed in \figref{acuris_calib_aud_median}.
+%
+The median value was directly used as receiver correction.
+
+\MHAfigure[][\linewidth]{Individual in-situ audiograms of 8 normal hearing test
+  subjects (16 ears), individually corrected by their standard
+  audiogram. The receiver correction was set to a flat response.
+}{acuris_calib_aud_indiv}
+
+\MHAfigure[][\linewidth]{Median of in-situ audiograms (thick solid
+  line), with 25\% and 75\% quantile (dashed lines).
+}{acuris_calib_aud_median}
+
+\section{FIR coefficients}
+
+The calibration wizard which is part of 'mhacontrol' creates an FIR
+filter for receiver equalization, based on a coarsely sampled receiver
+correction (here the median audiogram was taken as sampled receiver
+correction).
+%
+For a minimal delay and better match of the absolute frequency
+response, a minimal phase filter was designed:
+%
+First, a high resolution frequency response $X(f)$ (resolution 1~Hz)
+was interpolated, using cubic spline interpolation.
+%
+Above 100~Hz the interpolation was performed on a logarithmic
+frequency scale.
+%
+Below 100~Hz, the frequency response was interpolated on a linear
+frequency scale, to avoid extreme numerical values near zero.
+%
+The length of the filter was chosen to match the block size $P$ of the
+MHA setup, to allow an effective FFT-based convolution.
+%
+The minimal phase filter spectrum $H(f)$ is
+%
+\begin{equation}
+  H(f) = |X(f)| e^{i \mathcal{H}\left\{\log|X(f)|\right\}},
+\end{equation}
+%
+with the interpolated input response $X(f)$ and the Hilbert
+transformation $\mathcal{H}\{\cdots\}$.
+%
+The impulse response was calculated by applying an inverse FFT to the
+minimal phase filter spectrum.
+%
+The first $P+1$ taps of the impulse response where chosen for receiver
+equalization, and windowed using a half hanning window, to avoid a
+signal step at the end of the filter.
+
+The resulting FIR filter coefficients with the corresponding frequency
+response is shown in \figref{acuris_calib_behringer_irs}.
+%
+Note that the correction at 1~kHz was set to zero by shifting the
+frequency response by 13.5~dB.
+%
+The broadband calibration factor was changed by the same amount from
+137.2~dB to 123.7~dB in order to fully implement the desired
+correction.
+%
+Additionally, a 2~dB correction for the binaural advantage in the
+measurement of the ISO 226 thresholds has been applied to the
+broadband calibration factor, resulting in a broadband calibration
+factor 125.7~dB.
+
+\MHAfigure{FIR filter coefficients (upper panel) and
+  corresponding frequency response (lower panel, solid line) of the
+  Acuris P receiver equalization connected to a Behringer
+  ADA8000. With a dashed line and circles the median of the normal
+  hearing threshold is plotted. The offset between the frequency
+  response and the hearing threshold is corrected by the broadband
+  calibration value.}{acuris_calib_behringer_irs}
+
+
+\section{Coupler level}
+
+To allow a verification of the calibration, the sound pressure level
+in a coupler has been measured as a function of frequency.
+%
+A Br\"ul \& Kj\ae{}r Ear Simulator Type 4157 with the ear mould
+simulator DP 0370 and a tube length of 25~mm has been used.
+%
+The hearing aid has been mounted on the ear simulator according to the
+B\&K technical documentation, see
+\figref{b_k_ear_simulator_ear_mould_simulator} for details.
+%
+Additionally, the 2~cm\textsuperscript{3} coupler level according to
+IEC 60318-5:2006 has been measured.
+
+\MHAfigure{B\&K ear and ear mould simulator (plot taken from technical
+  information of the B\&K ear
+  simulator).}{b_k_ear_simulator_ear_mould_simulator}
+
+The level has been measured using a B\&K 2610 level meter.
+%
+In the calibrated MHA running the receiver correction for the Acuris P
+and a Multiface II DA converter, a sine wave with an RMS level of
+85~dB SPL free field has been created.
+%
+The coupler level was measured at three test frequencies per octave,
+between 50 and 6400~Hz.
+
+\figref{coupler_level_multiface} shows the measured coupler levels for
+the ear and ear-mould simulator (dashed blue line with open circles),
+and for the 2~cm\textsuperscript{3} coupler (solid black line with
+dots). The data was measured using the Multiface II DA converter.
+%
+
+\MHAfigure[][\linewidth]{Coupler level for a calibrated MHA, displayed
+  using the B\&K ear simulator 4157 and the B\&K ear mould simulator
+  DP 0370 (dashed blue line with open circles). The level measured
+  using the 2~cm\textsuperscript{3} coupler (IEC 60318-5:2006) is
+  plotted with a solid black line and filled
+  dots.}{coupler_level_multiface}
+
+\section{Voltage at receiver input}
+
+If a B\&K ear simulator is not available, the receiver correction can
+be verified by measuring the voltage at the receiver, for a given
+internal signal level.
+%
+In \figref{acuris_calib_receiver_voltage} the RMS voltage at the
+receiver for a sine wave with an internal free field level of 85~dB
+SPL is given.
+%
+During the measurement, the receiver correction was active.
+
+\MHAfigure[][\linewidth]{Voltage in mV RMS at the receiver, at an
+  internal sound pressure level of 85~dB free field. The voltage was
+  measured while the receiver was mounted on the B\&K ear and ear plug
+  simulator.}{acuris_calib_receiver_voltage}
+
+\section{Frequency response of the PHS}
+
+The frequency response from a free field loudspeaker to the head set
+microphones mounted in a free field position (i.e, no HRTF) has been
+measured.
+%
+The response was measured in a sound booth for free field testing.
+%
+The frequency responses are shown in \figref{response_ls_mics.png}.
+%
+The ripple is probably caused by the room acoustics of the sound booth.
+%
+A resonance at 5~kHz is visible for all microphones.
+
+In \figref{response_phs.png} the frequency response from
+the loudspeaker to the 2~cm\textsuperscript{3} coupler via the
+calibrated PHS (red line) and the digital gain of the PHS (blue line)
+is shown.
+%
+The high gain between 2.5 and 5~kHz reflects the REUG gain derived
+from the normal hearing threshold measurement.
+
+The frequency response measurements were performed with the 'Jack/Alsa
+perceptual analyser' (japa) application developed by Fons Adriaensen.
+
+\MHAfigure[][\linewidth]{Frequency response from loudspeaker to the
+  front microphone (red line), middle microphone (blue line) and rear
+  microphone (green line). On the $x$-axis the frequency in Hz is
+  plotted, the $y$-axis shows relative gain in
+  dB.}{response_ls_mics.png}
+
+\MHAfigure[][\linewidth]{Frequency response from loudspeaker to the
+  2~cm\textsuperscript{3} coupler via the calibrated PHS (red line),
+  and digital gain of the PHS (blue line). On the $x$-axis the
+  frequency in Hz is plotted, the $y$-axis shows relative gain in
+  dB.}{response_phs.png}
+
+\end{document}

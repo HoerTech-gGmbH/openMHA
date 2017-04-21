@@ -1,0 +1,237 @@
+\section{\Matlab{} tools}%
+\label{sec:matlab}%
+
+Officially, \Matlab{} is not supported by the MHA.
+%
+However, in this
+package several MHA related tools for \Matlab{} are included.
+%
+No support
+is granted for these modules, nor give we any warranty for usage of
+these tools.
+%
+The Linux Mex files have been developed and tested with \Matlab{} 7.0
+(R14SP2), using GCC-3.3.
+%
+To solve a compiler incompatibility with \Matlab{} R14SP2, a
+work-around had to be applied%
+\footnote{%
+%
+This problem and a workaround is described in the support website of
+Mathworks, see e.g.\
+\url{http://www.mathworks.com/support/solutions/data/1-QBCS1.html?1-QBCS1}.
+%
+}.
+%
+Mathworks stated that this problem has been fixed with \Matlab{} R14SP3.
+
+
+The \mhad{} can be controlled through a simple \Matlab{}
+interface (mhactl). This tool opens a TCP connection to a \mhad{} and
+communicates with the framework configuration interface.
+%
+For data exchange with the MHA, a \Matlab{} client to the JACK low
+latency sound server (see section \ref{sec:jack} on page
+\pageref{sec:jack}) is provided within this distribution.
+%
+This interface gives direct access to the low latency real time
+processing system from \Matlab{} without requiring special toolboxes.
+
+Algorithm communication variables can be exported to \Matlab{} files
+using the 'acsave' algorithm.
+
+\subsection{"mhactl" - MHA control interface for \Matlab{}}
+\label{sec:mhactl}
+
+The \Matlab{} mex-function \verb!mhactl! communicates with the \mhad{}
+through a TCP network connection.
+%
+For correct operation, the \mhad{} has to be started with the
+default acknowledge/prompt strings.
+%
+It is not required that the MHA process runs as the same user or on
+the same machine as \Matlab{}.
+
+The mex function 'mhactl' accepts three arguments, the command to be
+processed, and the port number and host name of the \mhad{}:
+\begin{verbatim}handle = mhactl( cmd, port, host )\end{verbatim}
+If the port number and the host name are omitted, the default values
+(port: 33337, host: 'localhost') will be used. The command argument
+\verb!cmd! can contain exactly one MHA command string or an empty
+string.
+%
+The 'mhactl' function opens a network connection to the \mhad{},
+and sends the command string to the MHA and waits for an acknowledge
+prompt.
+%
+On success, the MHA response (without the acknowledge prompt) is
+returned, otherwise an error is reported.
+
+\subsection{\Matlab{} wrapper functions for "mhactl"}
+\label{sec:mhactl_wrapper}
+
+While 'mhactl' provides direct access to the MHA control interface,
+some wrapper functions are implemented which utilize 'mhactl' to
+convert MHA control commands into \Matlab{} values and back.
+
+\subsubsection{"mha\_get" - read contents of a MHA configuration}
+
+The function 'mha\_get' reads the contents of a MHA configuration
+entry and returns them in a \Matlab{} type, i.e., a type dependent
+conversion from the MHA string representation is performed. The
+command syntax is
+\begin{verbatim}[answer, info] = mha_get(handle, field, perm )\end{verbatim}
+The MHA handle 'handle' is a structure containing the fields 'host'
+and 'port' defining the host name and port number of the \mhad{}.
+%
+'field' is the name of the MHA configuration entry.
+%
+It can be either a variable or a parser node -- in the first case, the
+content of the variable is returned in 'answer' and the help comment
+of the variable is returned in 'info', if available.
+%
+If 'field' denotes a parser node, 'answer' will hold a \Matlab{}
+structure, with each field holding the contents of a MHA variable or a
+sub-parser.
+%
+In this situation, it is possible to restrict the query only to
+entries with a specific permission, which can be given in 'perm'.
+%
+'perm' can be either a character string, or a cell array of string.
+%
+To receive the complete writable configuration of a \mhad{}, type
+\begin{verbatim}cfg = mha_get( handle, '', 'writable' )\end{verbatim}
+%
+
+\subsubsection{"mha\_set" - set contents of MHA configuration entries}
+
+\Matlab{} values can be assigned to MHA configuration entries via the
+'mha\_set' function.
+%
+The syntax of this function is:
+\begin{verbatim}mha_set( handle, field, value )\end{verbatim}
+%
+As in 'mha\_get', 'handle' is a structure containing the fields 'host'
+and 'port' defining the host name and port number of the \mhad{}, and
+'field' is the name of the MHA configuration entry.
+%
+The parameter 'value' is a \Matlab{} representation to be assigned to
+the variable 'field'.
+%
+The \Matlab{} representation is converted to the correct MHA string
+representation by first retrieving the type of the configuration entry
+'field' through the control interface.
+%
+If the \Matlab{} value cannot be converted, an error is reported.
+%
+To setup a complete MHA, it is possible to assign a \Matlab{}
+configuration structure 'cfg' to the MHA by typing
+\begin{verbatim}mha_set( handle, '', cfg )\end{verbatim}
+
+\subsection{"mhagui\_generic" - Generic graphical user interface}
+\label{sec:mhagui_generic}
+
+A generic graphical user interface (GUI) to the \mhad{} is available
+via the function \verb!mhagui_generic! and the helper functions
+\verb!mhagui_*.m!.
+%
+The syntax of the GUI function is:
+\begin{verbatim}
+h = mhagui_generic( handle, base )
+\end{verbatim}
+%
+As before, 'handle' is a structure containing the fields 'host' and
+'port' defining the host name and port number of the \mhad{}. The
+default values are 'localhost' and 33337.
+%
+'base' is the name of the MHA parser node (default: '', i.e.\ root level).
+%
+A control panel is created in a \Matlab{} figure, and the figure
+handle is returned.
+%
+A control element for each entry in the parser 'base' is created.
+%
+Numeric scalars are represented as sliders, keyword lists as select
+boxes and boolean entries as toggle buttons.
+%
+For vectors of floating point values, a window with a slider array can
+be opened.
+%
+Sub-parser can be opened as a new window, containing an own control
+panel.
+%
+Other types can be edited in a text editing field.
+
+If the MHA is running on the same host as the \Matlab{} control
+interface, it is possible to read and save MHA configuration files by
+clicking the 'read' or 'save' button. The read/save command operates
+relative to the MHA parser level displayed in the control panel, i.e.,
+the complete configuration should be read or saved from the root level
+panel.
+
+\MHAfigure[][\linewidth]{Generic graphical user interface of a
+\mhad{}, created by the \Matlab{} function
+'mhagui\_generic'. See text for details.}{mhagui_generic}
+
+\subsection{"jackiomex" - \Matlab{} interface to JACK}
+\label{sec:jackiomex}
+
+The \Matlab{} mex-function \verb!jackiomex! plays and records a
+\Matlab{} buffer. Playback and capture are synchronized with sample
+resolution. The buffer can have any number of channels; the output
+buffer will have the same dimension as the input buffer. The JACK
+ports to which the playback/capture channels should be connected are
+given by the cell string arrays \verb!csInPorts! and
+\verb!csOutPorts!. If an entry is empty or less entries are given than
+channels in the buffer, then the port will not be connected
+automatically (please use external connection tools if more complex
+connections are required).
+
+Three transport modes are supported. The first one immediately starts
+the recording. The first recorded samples might be zero if the
+connections are not established when recording the first frames, even
+with automatic connections. Other transport modes make use of the JACK
+transport system and therefore allow synchronization with external
+JACK clients at sample resolution.
+
+The resolution of the recorded data and the delay between input and
+output depends on your hardware settings. Using a professional audio
+device you can reach delays below 2 ms at 24 bit resolution. The input
+and output buffers are internally stored as double precision floats
+and are normalized to one.
+
+\begin{verbatim}
+[y, r] = jackiomex( x, csInPorts, csOutPorts [, JackTransport ] )
+\end{verbatim}
+
+\paragraph{Parameters:}
+\begin{description}
+\item{\tt x} input matrix (one column for each channel)
+\item{\tt csInPorts} cell string array with input port names
+\item{\tt csOutPorts} cell string array with output port names
+\item{\tt JackTransport} optional transport mode flag:\\
+0 = start immediately (default)\\
+1 = play/record while JACK transport is rolling\\
+2 = as 1, but transport is started and stopped by jackiomex
+\end{description}
+\paragraph{Return values:}
+\begin{description}
+\item{\tt y} output signal (same dimension as input signal)
+\item{\tt r} JACK sample rate in Hz
+\end{description}
+
+\paragraph{Warning:}
+
+Please note that starting JACK with real-time priority and
+memory-locking might cause to kill your \Matlab{} process or freeze your
+system, because it might not be possible to lock the complete \Matlab{}
+memory. It is recommended not to use jackiomex when memory locking is
+active.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "MHA_manual"
+%%% End: 
+
+% LocalWords:  mhactl jackiomex MHA mhagui mha cfg mex csInPorts csOutPorts

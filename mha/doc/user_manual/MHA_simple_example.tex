@@ -1,0 +1,428 @@
+\section{A simple example configuration and how to start it}%
+\label{sec:scenarios}%
+\index{example configuration}%
+\index{configuration!example}%
+\index{configuration file}%
+
+In this section, an example is shown on how to configure and start the
+MHA. First, a simple algorithm is designed, which implements a 
+linear hearing aid (equaliser). Then examples are given on
+how to start this algorithm in different situations (\Windows{}
+framework, \mhad{}, \Matlab{} processing).
+
+\subsection{A linear hearing aid algorithm}%
+\label{sec:linha}%
+
+In this example, a MHA with a single chain will be configured. The
+input signal will be equalised in five frequency bands, using the MHA
+plugins \verb!fftfilterbank! and
+\verb!gain!. The sound level at input and
+output will be measured. Only spectral processing is required, thus
+the plugin \verb!overlapadd! will be
+used by the framework. The corresponding configuration file for this
+plugin is created (you will find the final version \verb!mhaex1.cfg!
+in the \verb!cfg!  directory of your MHA distribution).
+
+MHA configuration files usually start with an identification line:
+\begin{verbatim}
+#[MHAVersion 4.4]
+\end{verbatim}
+Please note that since version 4.4, the first line in configuration
+files is not treated as an identification line, thus a comment
+character is required before the version number.
+
+In the next lines, we configure the parameters of the overlap-add
+method. A fragment size of 64 samples is assumed. Zeros will be padded
+at both ends to avoid circular aliasing.
+
+Within the overlapadd framework, we process a sequence of plugins
+by setting the \verb!mhachain! plugin.
+\begin{verbatim}
+fftlen = 192
+wnd.len = 128
+plugin_name = mhachain
+\end{verbatim}
+A single chain will be processed, with a level meter at the input, a
+frequency grouping into bands, a gain plugin, a filterbank re-synthesis
+and a level meter at the output:
+\begin{verbatim}
+mhachain.algos = [ ...
+  rmslevel:Lin ...
+  fftfilterbank gain combinechannels ...
+  rmslevel:Lout ...
+]
+\end{verbatim}
+In the next step, the filter bank will be configured with five
+overlapping octave bands. The filter shape will be a hanning shape on
+a linear amplitude scale and a Bark-frequency scale.
+\begin{verbatim}
+mhachain.fftfilterbank.fscale = bark
+mhachain.fftfilterbank.ovltype = hanning
+mhachain.fftfilterbank.plateau = 0
+mhachain.fftfilterbank.ftype = center
+mhachain.fftfilterbank.f = [250 500 1000 2000 4000]
+\end{verbatim}
+Each filterbank band is handled as a separate channel. The next plugin
+can adjust the gain of each channel in a limited range, here between
+-16 and 32 dB. The gain plugin is followed by the filterbank
+resynthesis.
+\begin{verbatim}
+mhachain.gain.min = -16
+mhachain.gain.max = 32
+mhachain.gain.gains = [-1 5 10 15 10 2 7 9 12 16]
+mhachain.combinechannels.outchannels = 2
+\end{verbatim}
+
+We will assume, that this algorithm configuration was stored in the
+file \verb!mhaex1.cfg!. Now we created a complete MHA hearing aid
+algorithm configuration file. In the next step, we want to start a MHA
+framework with this configuration.
+
+\subsection{Using the \mhad{} and \Matlab{}}
+
+The \mhad{} configuration interface can be easily accessed from the
+\Matlab{} prompt through a generic graphical user interface,
+'mhagui\_generic' (see also \secpageref{sec:mhagui_generic}).
+This interface works on \Linux{} and \Windows{}. To start the \mhad{} on \Linux{}, type
+\begin{verbatim}
+MHA_LIBRARY_PATH=./
+LD_LIBRARY_PATH=./
+mha
+\end{verbatim}
+in the MHA 'bin' directory; on \Windows{} just double-click the file
+'mha.exe'. Then start \Matlab{}, and add the MHA matlab directory to
+your \Matlab{} search path using 'addpath'. Finally, before opening the user interface, add \verb!mhactl_java.jar! into your \Matlab{} classpath. To open the user interface, type
+\begin{verbatim}
+mhagui_generic
+\end{verbatim}
+at the \Matlab{} prompt.
+
+
+%%%nowindows%% \subsection{Starting the \Windows{} framework 1: test executable}
+%%%nowindows%% \label{sec:start-win-framewrk}
+%%%nowindows%% 
+%%%nowindows%% %\susubsection
+%%%nowindows%% The following example uses the double buffering plugin 'db'. It is
+%%%nowindows%% highly recommended to use double buffering on \Windows{} operating
+%%%nowindows%% systems. However if you want to disable double buffering please refer
+%%%nowindows%% to sections \ref{sec:framwork-win-exe}.
+%%%nowindows%% 
+%%%nowindows%% It is recommended to copy the shared fft libraries {\tt sfftw.dll} and
+%%%nowindows%% {\tt srfftw.dll} from the bin/windows directory to a windows search
+%%%nowindows%% path, e.g.\ \verb!C:\WINDOWS\SYSTEM!. Otherwise these libraries will
+%%%nowindows%% not be found by the MHA if you use your own configurations and/or
+%%%nowindows%% paths.
+%%%nowindows%% 
+%%%nowindows%% The \Windows{} test executable is configured with the file
+%%%nowindows%% HearcomMHA.ini located in the same directory as the executable. This
+%%%nowindows%% file is described in section \ref{sec:framwork-win-exe}, page
+%%%nowindows%% \pageref{sec:framwork-win-exe}, here only some configuration entries
+%%%nowindows%% that are specific for this example are described.
+%%%nowindows%% 
+%%%nowindows%% Here only the actual path is set as MHALibraryPath because all plugins
+%%%nowindows%% are located in the same directory as HearComMHA.exe itself:
+%%%nowindows%% \begin{verbatim}
+%%%nowindows%% MHALibraryPath=;
+%%%nowindows%% \end{verbatim}
+%%%nowindows%% Double buffering is used, with the configuration file
+%%%nowindows%% \verb!fwex3.cfg! (see below):
+%%%nowindows%% \begin{verbatim}
+%%%nowindows%% LibName=db
+%%%nowindows%% ConfigFile=..\\..\\cfg\\fwex3.cfg
+%%%nowindows%% \end{verbatim}
+%%%nowindows%% Reasonable buffer size and buffer number. Not suited for low latency
+%%%nowindows%% but 'safe':
+%%%nowindows%% \begin{verbatim}
+%%%nowindows%% BufferSize=2048
+%%%nowindows%% NumBuffers=20
+%%%nowindows%% \end{verbatim}
+%%%nowindows%% Set overlap for FFT to 0.5. This will adjust the fragsize variable of
+%%%nowindows%% the db plugin automatically (see sections \ref{sec:framwork-win-exe},
+%%%nowindows%% \ref{sec:db} and \ref{sec:wave2spec}).
+%%%nowindows%% \begin{verbatim}
+%%%nowindows%% OLAFeed=0.5
+%%%nowindows%% \end{verbatim}
+%%%nowindows%% The example configuration is optimized for 48 kHz sampling
+%%%nowindows%% frequency. ATTENTION: if you use the test executable to play files, be
+%%%nowindows%% sure to use 48 kHz wave files for this example!
+%%%nowindows%% \begin{verbatim}
+%%%nowindows%% WaveInSampleRate=48000
+%%%nowindows%% \end{verbatim}
+%%%nowindows%% 
+%%%nowindows%% On startup of the application the framework will load the plugin 'db'
+%%%nowindows%% with its configuration file \verb!..\..\cfg\fwex3.cfg!. This contains
+%%%nowindows%% just three lines (plus some comments on fragsize):
+%%%nowindows%% \begin{verbatim}
+%%%nowindows%% #[MHAVersion 4.4]
+%%%nowindows%% plugname = concurrentchains
+%%%nowindows%% plug?read:..\\..\\cfg\\mhaex1.cfg
+%%%nowindows%% \end{verbatim}
+%%%nowindows%% This causes the db plugin to load the MHA Kernel 'concurrentchains' and read the example
+%%%nowindows%% configuration file \verb!..\\..\\cfg\\mhaex1.cfg! to the parser named
+%%%nowindows%% 'plug' within the db plugin (see section \ref{sec:db}). Please note
+%%%nowindows%% that the path to this configuration file has to be specified relative
+%%%nowindows%% to the path where you started the application!
+%%%nowindows%% 
+%%%nowindows%% After the startup you may load files and play them through the MHA or
+%%%nowindows%% perform direct I/O. For a description of the GUI please refer to
+%%%nowindows%% section \ref{sec:framwork-win-exe} on page \pageref{sec:framwork-win-exe}.
+
+%%\subsection{Starting SoundMex2 for \Matlab{} with the \mhalib{}}
+%%\index{Matlab}%
+%%\index{SoundMex}%
+%%
+%%To start the same example with the SoundMex2-MHA-Plugin for \Matlab{}
+%%please run \Matlab{} and change the directory to
+%%\verb!matlab\soundmex_mha!  within the distributions install directory
+%%and run the example 'mha.m'. The framework (i.e. the plugin) is
+%%configured with the file MHA.INI in the section [1]. This section
+%%contains the same entries as the test executable configuration. Only
+%%the \verb!BufferSize! and \verb!NumBuffers! entries are missing. They
+%%have to be adjusted using the SoundMex2 command 'setbuffer' (please refer
+%%to the SoundMex2 documentation for details).
+%%
+%%The only difference to the test executables configuration is the value
+%%of the path entry:
+%%\begin{verbatim}
+%%MHALibraryPath=..\\..\\bin\\windows\\
+%%\end{verbatim}
+%%It points to the directory where the \Windows{} MHA plugins are
+%%located.
+%%
+%%For a detailed description of the MHA-SoundMex2-Plugin please refer to
+%%the separate manual "SoundMex2-MHA-Plugin.pdf".
+%%
+%%For a detailed description of SoundMex2 and the SoundMex2-DSP-Pipe
+%%please refer to the separate manuals available from H\"orTech gGmbH.
+
+\subsection{Starting the \mhad{} with JACK}%
+\label{sec:example_jack}%
+\index{JACK}%
+\index{framework configuration}%
+\index{configuration!framework}%
+
+The configuration file for the \mhad{} has the same structure
+as that of the algorithm. Again, the first line is an identification
+string. Then we set the number of input channels, fragment size and
+sampling rate of the framework. When using JACK, then fragment size
+and sampling rate have to match those values used by the JACK server.
+Here, we assume that the JACK server runs with a fragment size
+of 64 samples, so that the overlap in the overlap-add method is
+50\%. Later we will show how to use a double buffer for those
+situations, where it is not possible to start JACK with the desired
+fragment size.
+\begin{verbatim}
+#[MHAVersion 4.4]
+nchannels_in = 2
+fragsize = 64
+srate = 48000
+\end{verbatim}
+%% In the next step, we have to calibrate the framework. For a linear
+%% algorithm like an equalizer, the absolute level at the microphone or
+%% receiver is not relevant. Therefore, it is sufficient to use the same
+%% input and output calibration value (\verb!peaklevel_in!,
+%% \verb!peaklevel_out!) for now. If knowledge of absolute values is
+%% required, we have to measure the physical sound pressure level at the
+%% microphone, and adjust the \verb!peaklevel_in!, until the internal
+%% level meter shows that level. Similarely, the \verb!peaklevel_out! can
+%% be adjusted. How to access the internal level meter will be described
+%% below. Here comes the calibration section of the framework
+%% configuration file:
+%% \begin{verbatim}
+%% peaklevel_in = [100 100]
+%% peaklevel_out = [100 100]
+%% \end{verbatim}
+Now, we configure the libraries to use.
+%
+It is assumed, that the current working directory is "examples" from
+the MHA distribution, and the binaries can be found in \verb!../bin/!,
+i.e.\ the environment variables MHA\_LIBRARY\_PATH and LD\_LIBRARY\_PATH are configured
+properly.
+%
+Please note that these environment variables have to be
+terminated with a slash.
+%
+No extension is required in the configuration of plugin names.
+\begin{verbatim}
+iolib = MHAIOJack
+mhalib = overlapadd
+\end{verbatim}
+Finally, we can connect the JACK client to the hardware input and
+output ports and load the algorithm configuration file:
+\begin{verbatim}
+io.con_in = [alsa_pcm:capture_1 alsa_pcm:capture_2]
+io.con_out = [alsa_pcm:playback_1 alsa_pcm:playback_2]
+mha?read:mhaex1.cfg
+\end{verbatim}
+Please replace the port names by the ports you want to connect
+to.
+
+This framework configuration will be stored in the file
+\verb!fwex1.cfg!. Before we can start the framework, we have to start
+the license server and insert a valid license (dongle). Please install
+the package \verb!license/HDD_Linux_USB_daemon.tar.gz! and start the
+license server as described in that package.
+
+The path to the MHA binaries should be exported to the \mhad{}.
+Now, we start the \mhad{}:
+%
+\begin{verbatim}
+export MHA_LIBRARY_PATH=../bin/
+export LD_LIBRARY_PATH=../bin/
+../bin/mha
+\end{verbatim}
+%
+To start the \mhad{} from \Matlab{} on Linux, one can call
+\begin{verbatim}
+[errcode, pid] = system('mha & echo $!')
+\end{verbatim}
+(assuming, that the directory containing the MHA binaries is included
+in the system path and in the MHA\_LIBRARY\_PATH environment
+variable).
+%
+The variable \verb!pid! than contains the process id of the \mhad{} process as text.
+%
+The MHA configuration and control
+input is accepted over a network connection. 
+%
+When no command line parameters are given, the default port number
+33337 and the loopback network interface 127.0.0.1 is used, i.e., only
+connections from the local host are accepted (see section
+\ref{sec:linuxmhaserver} on page \pageref{sec:linuxmhaserver} for
+details).
+%
+To enter MHA commands, please start a network client, e.g.\ telnet, to
+open a MHA console:
+\begin{verbatim}telnet localhost 33337\end{verbatim}
+
+To read the framework configuration file, please type
+\begin{verbatim}
+?read:fwex1.cfg
+\end{verbatim}
+followed by the return key. If everything went well, the MHA will print
+\verb!(MHA:success)!. In case of an error message \verb!(MHA:failure)!, MHA will also indicate the line containing the error. You need to correct this error using an editor you prefer and  reload it. If you receive anerror message, \verb!(mha_parser) (mha_parser) The variable is locked!, you need to close the \mhad{} and relaunch it. If the JACK server was not started yet, this is the
+right moment to start your JACK server with the correct settings,
+e.g.:
+\begin{verbatim}
+jackd -d alsa -r 48000 -p 64
+\end{verbatim}
+Please make sure that the fragment size and sample rate of the JACK
+sound server matches the MHA fragment size (see below if it
+doesn't). After having successfully started the JACK server, the MHA
+can be started by typing
+\begin{verbatim}
+cmd = start
+\end{verbatim}
+at the MHA console. The processing can be stopped at any time by
+typing \verb!cmd = stop!.
+
+Now, we want to access the variables of the algorithm. The easiest way
+is to type \verb!?!, followed by the return key, in the console. This
+will show the complete MHA configuration, including all framework
+variables and plugin configuration. Usually, this
+produces so much output, that the console has to be scrolled to see
+the complete information. If only a subset or a single variable is of
+interest, the prefix of that subset or variable can be put before the
+\verb!?!, e.g.\ all variables of the processing chain can be reached
+by typing \verb!mha.mhachain?!, the peak and RMS levels of the input level
+meter by typing \verb!mha.mhachain.Lin?!. All monitor variable contents can
+be stored into the file "example.mon" by typing
+\verb!?savemons:example.mon!. The \mhad{} will be closed
+by typing \verb!cmd = quit!.
+
+\paragraph{Adjusting the fragment size}%
+\index{fragment size}%
+\index{double buffering}%
+
+If the required fragment size is not supported by the audio hardware,
+double buffering can be used in the MHA frameworks. We assume now,
+that the JACK server was started with a fragment size of 256 samples at
+a sampling rate of 48 kHz, e.g.\ \verb!jackd -d alsa -r 48000 -p 256!. A
+fragment size of 64 samples in the algorithm can be reached by inserting
+a double buffer plugin between the framework and the algorithm. This is
+done by replacing the MHA library \verb!overlapadd! by the double
+buffer plugin \verb!db!, which will load \verb!overlapadd! as a
+client. In the framework configuration in \verb!fwex1.cfg!, the line
+\verb!mhalib = overlapadd! will be replaced by
+\begin{verbatim}
+mhalib = db
+mha.plugin\_name = overlapadd
+mha.fragsize = 64
+\end{verbatim}
+The fragment size of the framework will be set to that of the JACK
+server, so please replace \verb!fragsize = 64! on the top level by
+\verb!fragsize = 256!. Now, the configuration of the algorithm can be
+found one layer below the former level, so the read command will be
+modified to
+\begin{verbatim}
+mha.overlapadd?read:mhaex1.cfg
+\end{verbatim}
+Similarly, the variable contents of the processing chain can now be
+queried by typing \verb!mha.overlapadd.mhachain?!.
+
+\subsection{Start the MHA for real-time processing with \Matlab{} from Linux}%
+\index{Matlab}%
+
+The configuration\index{framework
+configuration}\index{configuration!framework} of the \mhad{} can be
+read at startup time by adding a MHA configuration language command:
+%
+\begin{verbatim}
+../bin/mha '?read:fwex1.cfg' 'cmd=start'
+\end{verbatim}
+%
+We assume, that your \Matlab{} process is running on the same host and
+as the same user as the MHA, and that the \mhad{} runs with the
+default port number 33337.
+%
+The MHA \Matlab{} tools directory has to be in the \Matlab{} path.
+%
+Now, communication with the configuration interface of the MHA is
+possible through MHA \Matlab{} functions (see \secpageref{sec:matlab}
+for a detailed documentation):
+%
+First, create a MHA connection handle for the \Matlab{} tools by
+typing
+\begin{verbatim}
+h = struct( 'port', 33337, 'host', 'localhost' );
+\end{verbatim}
+at the \Matlab{} prompt. Then this handle can be used to connect to
+the MHA:
+%
+\begin{verbatim}
+result = mha_get( h, '' );
+\end{verbatim}
+%
+The complete MHA configuration hierarchy is converted into a \Matlab{}
+'struct' variable.
+%
+\Matlab{} vectors can be sent to the JACK server (and that way to the
+MHA) with the use of the tool \verb!jackiomex! (see
+\secpageref{sec:jackiomex}).
+%
+The next four lines plot the frequency response of our linear hearing
+aid ('zeropad' and 'realfft' are functions from the MHA \Matlab{}
+toolbox):
+\begin{verbatim}
+x = zeropad( 1, 48000 );
+y = jackiomex( x, {'MHA:out_1'}, {'MHA:in_1'} );
+plot( 20*log10( abs( realfft( y ) ) ) );
+set( gca, 'XScale', 'log', 'XLim', [40 20000], 'YLim', [-5 16] );
+\end{verbatim}
+When the MHA processing is not needed any more, the MHA can be shut
+down by calling
+%
+\begin{verbatim}
+mha_set( h, 'cmd', 'quit' );
+\end{verbatim}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "MHA_manual"
+%%% End:
+
+% LocalWords:  mhactl MHA Matlab jackiomex plugin MHAIOJack iolib mhalib alsa
+% LocalWords:  overlapadd pcm io mha mhaex cfg fwex errcode pid savemons mon
+% LocalWords:  cmd jackd concurrentchains plugname fragsize struct localhost
+% LocalWords:  eval zeropad XLim realfft gca XScale YLim

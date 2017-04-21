@@ -1,0 +1,55 @@
+\documentclass[11pt,a4paper,twoside]{article}
+\usepackage{mha}
+\begin{document}
+\MHAtitle{Writing Fitting Rules}
+\newpage
+\MHAcopyright{}
+\newpage
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section*{Warning}
+
+The fitting interface is planned to be completely redesigned.
+
+\section{Gain prescription rules}
+
+Example gain rule with a 40\% gain rule:
+
+\begin{verbatim}
+function sGt = gainrule_linear40( sAud, sCfg )
+  nLev = length(sCfg.levels);
+  htl.l = interp1(log(sAud.frequencies),sAud.l.htl,...
+		  log(sCfg.frequencies),'linear','extrap');
+  htl.r = interp1(log(sAud.frequencies),sAud.r.htl,...
+		  log(sCfg.frequencies),'linear','extrap');
+  sGt = struct;
+  sGt.l = repmat(0.4*htl.l,[nLev 1]);
+  sGt.r = repmat(0.4*htl.r,[nLev 1]);
+\end{verbatim}
+
+\verb!sAud! is a structure with the sub-structures \verb!l! and
+\verb!r!. Each of them contains the pure tone audiogram (HTL and, if
+measured, UCL). The frequencies are stored in
+\verb!sAud.frequencies!. Values which have not been measured are
+stored as \verb!inf! or \verb!nan!.
+
+The second argument \verb!sCfg! contains information on the compressor
+module configuration. The field \verb!sCfg.levels! contains the input
+level values at which a gain sample is
+expected. \verb!sCfg.frequencies! contains the center frequencies, and
+\verb!sCfg.edge_frequencies! the edge frequencies of the compressor
+filterbank. Edge frequencies are the -3~dB points of the filters.
+
+The output gain table structure \verb!sGt! contains two matrices with
+gains for the left and right side in the fields \verb!sGt.l! and
+\verb!sGt.r!. Each matrix has size $N_{level}\times M_{freq}$, where
+$N_{level}$ is the number of level samples, and $M_{freq}$ is the
+number of frequency bands.
+
+%\bibliography{MHA}
+
+\printindex
+
+\end{document}
