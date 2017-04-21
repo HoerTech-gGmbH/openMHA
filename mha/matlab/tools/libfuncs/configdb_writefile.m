@@ -34,5 +34,5 @@ function configdb_writefile( filename, varname, value )
   if ~exist(filename,'file')
   save(filename,'-struct','-binary','data',basename);
   else
-    save(filename,'-struct','data',basename);
+    save(filename,'-struct','-binary','data',basename);
   end
