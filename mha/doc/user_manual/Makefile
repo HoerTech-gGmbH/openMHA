@@ -1,3 +1,6 @@
+include ../../../config.mk
+include ../../../magic.mk
+
 all: MHA_manual.pdf MHA_writing_fitting_rules.pdf libaudprof_manual.pdf
 
 #TEXINPUTS = "./:../:./plugins/:../technical_report/:../flowcharts/fmt_eps/:../flowcharts/fmt_png/:../flowcharts/fmt_pdf/:"
@@ -28,4 +31,4 @@ mhacontrol_manual.tex: $(patsubst %,plug_%.tex,$(MHACONTROL_PLUGS))
 .PHONY : plug_*.tex
 
 plug_%.tex:
-	generatemhaplugindoc --ofname=$@ --category-macro='invisible' --plugin-macro='subsubsection' $*
+	../../frameworks/$(BUILD_DIR)/generatemhaplugindoc --ofname=$@ --category-macro='invisible' --plugin-macro='subsubsection' $*
