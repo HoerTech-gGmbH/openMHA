@@ -87,10 +87,11 @@
 
 % Used by @code ... @endcode
 \newenvironment{DoxyCode}{%
-  \footnotesize%
-  \verbatim%
+  \par%
+  \scriptsize%
+  \begin{alltt}%
 }{%
-  \endverbatim%
+  \end{alltt}%
   \normalsize%
 }
 
