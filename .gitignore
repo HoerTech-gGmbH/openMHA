@@ -26,5 +26,7 @@ build
 mha.creator.user
 
 # Local Variables:
+mha/matlab/tools/octave-workspace
+
 # coding: utf-8-unix
 # End:
