@@ -607,7 +607,7 @@ function [vXTick,csXTickLabel] = freq_xtick
       csXTickLabel{k} =sprintf('%g',vXTick(k));
     else
       csXTickLabel{k} =sprintf('%gk',vXTick(k)/1000);
-    end
+    end  
   end
   
 function update_current_fit_gui
@@ -640,45 +640,71 @@ function update_current_fit_gui
       set(cf_children(strcmp(cf_tags,['mhagui_fitting_checkbox_select_side_',ch])),'Value',0);
     end
     for ch=sPlugFinal.fitmodel.side
-      sHTL = audprof.threshold_get( sPlugFinal.audprof, ch, ...
-					  'htl_ac' );
-      vaudF = [sHTL.data.f];
-      vaudH = [sHTL.data.hl] + isothr(vaudF);
-      vFAudP = [sTarget.f(1),sTarget.f(1),vaudF,sTarget.f(end),sTarget.f(end)];
       set(cf_children(strcmp(cf_tags,['mhagui_fitting_checkbox_select_side_',ch])),'Value',1);
       idxmid = round(length(sTarget.f)/2);
       ax = cf_children(strcmp(cf_tags,['target_gain_',ch]));
       axes(ax);
-      hold off;
-      if strcmp(ch,'l')
-	audstyle = 'b-x';
-      else
-	audstyle = 'r-o';
-      end
-      plot(1,1,'k-');
-      hold on;
-      patch(vFAudP,...
-	    [-10,vaudH(1),vaudH,vaudH(end),-10],...
-	    [0.7,0.75,0.7]);
-      plot(vaudF,vaudH,audstyle,'MarkerSize',10);
-      plot(sTarget.f,sTarget.inlevel,'--');
-      plot(sTarget.f,sTarget.(ch).outlevel,'-','linewidth',3);
-      patch([sTarget.f(1),sTarget.f,sTarget.f(end)],...
-	    [-10,isothr(sTarget.f),-10],0.7*ones(1,3));
+      ca = get(ax,'children');
+      ca_tags = get(ca,'tag');
+      bExist = true;
       for kl=1:length(sTarget.levels)
-	text(sTarget.f(idxmid),sTarget.(ch).outlevel(kl,idxmid),...
-	     sprintf('%g dB',sTarget.levels(kl)),...
-	     'VerticalAlignment','bottom','Fontweight','bold');
+        h = ca(strcmp(ca_tags,['outgain_' ch '_tagetGain_' num2str(sTarget.levels(kl))]));
+        ht = ca(strcmp(ca_tags,['textoutgain_' ch '_tagetGain_' num2str(sTarget.levels(kl))]));
+        if ~isempty(h)
+          h_outgain(kl,1) = h;
+          h_outgain(kl,2) = ht; 
+        else
+          bExist = false;
+        end
       end
-      %hold off;
-      set(ax,'XScale','log',...
-      	     'XLim',minmax(sTarget.f),...
-	     'XTick',vXTick,...
-	     'XTickLabel',csXTickLabel,...
-      	     'YLim',[-10 120],...
-	     'Tag',['target_gain_',ch]);
-      xlabel('frequency / Hz');
-      ylabel('3rd octave level / dB SPL');
+      if bExist
+        for kl=1:length(sTarget.levels)
+          set(h_outgain(kl,1),'xdata',sTarget.(ch).outlevel(kl,:));
+          set(h_outgain(kl,1),'ydata',sTarget.(ch).outlevel(kl,:));
+          set(h_outgain(kl,2),'position',[sTarget.f(idxmid) sTarget.(ch).outlevel(kl,idxmid) 0]);
+        end
+        drawnow expose;
+      else
+        sHTL = audprof.threshold_get( sPlugFinal.audprof, ch, ...
+					  'htl_ac' );
+        vaudF = [sHTL.data.f];
+        vaudH = [sHTL.data.hl] + isothr(vaudF);
+        vFAudP = [sTarget.f(1),sTarget.f(1),vaudF,sTarget.f(end),sTarget.f(end)];
+        hold off;
+        if strcmp(ch,'l')
+          audstyle = 'b-x';
+        else
+          audstyle = 'r-o';
+        end
+        plot(1,1,'k-');
+        hold on;
+        patch(vFAudP,...
+        [-10,vaudH(1),vaudH,vaudH(end),-10],...
+        [0.7,0.75,0.7]);
+        plot(vaudF,vaudH,audstyle,'MarkerSize',10);
+        plot(sTarget.f,sTarget.inlevel,'--');
+        for kl=1:length(sTarget.levels)
+          plot(sTarget.f,sTarget.(ch).outlevel(kl,:),'-','linewidth',3,...
+          'tag',['outgain_' ch '_tagetGain_' num2str(sTarget.levels(kl))]);
+        end
+        patch([sTarget.f(1),sTarget.f,sTarget.f(end)],...
+        [-10,isothr(sTarget.f),-10],0.7*ones(1,3));
+        for kl=1:length(sTarget.levels)
+    text(sTarget.f(idxmid),sTarget.(ch).outlevel(kl,idxmid),...
+         sprintf('%g dB',sTarget.levels(kl)),...
+         'VerticalAlignment','bottom','Fontweight','bold',...
+         'tag',['textoutgain_' ch '_tagetGain_' num2str(sTarget.levels(kl))]);
+        end
+        %hold off;
+        set(ax,'XScale','log',...
+               'XLim',minmax(sTarget.f),...
+         'XTick',vXTick,...
+         'XTickLabel',csXTickLabel,...
+               'YLim',[-10 120],...
+         'Tag',['target_gain_',ch]);
+        xlabel('frequency / Hz');
+        ylabel('3rd octave level / dB SPL');
+      end
     end
   end
 
