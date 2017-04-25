@@ -13,12 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-include ../../../config.mk
-include ../../../magic.mk
-
-SUBDIRS = example1 example2 example3 example4 example5 example6
-
-include ../../../rules.mk
+include ../../plugin.mk
 
 # Local Variables:
 # compile-command: "make"
