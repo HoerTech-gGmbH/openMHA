@@ -659,7 +659,6 @@ function update_current_fit_gui
       end
       if bExist
         for kl=1:length(sTarget.levels)
-          set(h_outgain(kl,1),'xdata',sTarget.(ch).outlevel(kl,:));
           set(h_outgain(kl,1),'ydata',sTarget.(ch).outlevel(kl,:));
           set(h_outgain(kl,2),'position',[sTarget.f(idxmid) sTarget.(ch).outlevel(kl,idxmid) 0]);
         end
@@ -677,7 +676,7 @@ function update_current_fit_gui
           audstyle = 'r-o';
         end
         plot(1,1,'k-');
-        hold on;
+        hold all;
         patch(vFAudP,...
         [-10,vaudH(1),vaudH,vaudH(end),-10],...
         [0.7,0.75,0.7]);
