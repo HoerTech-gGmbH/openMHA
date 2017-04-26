@@ -1,0 +1,58 @@
+Requirements:
+
+- qt for GUI support, comes with octave version >= 4.0
+
+If octave crashes, when GUI is started try
+
+LIBGL_ALWAYS_SOFTWARE=1 octave
+
+OR update mesa driver
+
+sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sudo apt-get dist-upgrade
+
+=== Revert to original drivers ===
+To revert to standard Ubuntu drivers type the following in a prompt shell:
+$ sudo apt-get install ppa-purge
+$ sudo ppa-purge ppa:oibaf/graphics-drivers
+ More info: https://launchpad.net/~oibaf/+archive/ubuntu/graphics-drivers
+
+
+- octave signal package is needed for some fitting rules
+
+> sudo apt-get install octave-signal
+In ocatve run 
+> pkg load signal
+at startup
+
+In octave 4.2.1 I used
+> pkg install -forge control
+> pkg install -forge signal
+
+==
+
+- Error message
+error: octave_base_value::convert_to_str_internal (): wrong type argument '<unknown type>'
+
+is connected to the required use of the qt graphics toolkit 
+http://savannah.gnu.org/bugs/?46466
+
+--> Installed octave 4.2.1 manually - resolved
+
+===
+
+Issues:
+
+% fitting rules that crash
+- loudfit: gt_basic is missing
+- CAMFIT: field 'frequencies' does not exist
+- NAL: nl1.mex is missing
+
+% Data handling
+Whole client database is stored in a single file - makes octave slow
+--> Use one-file-per-event approach?
+
+% Data compatibility
+Octave is not able to save complex structs in Matlab format!
+Other formats are slow.
+
+
