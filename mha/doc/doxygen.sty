@@ -1,0 +1,621 @@
+% stylesheet for doxygen 1.8.11
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{doxygen}
+
+% Packages used by this style file
+\RequirePackage{a4wide}
+\RequirePackage{alltt}
+\RequirePackage{array}
+\RequirePackage{calc}
+\RequirePackage{float}
+\RequirePackage{ifthen}
+\RequirePackage{verbatim}
+\RequirePackage[table]{xcolor}
+\RequirePackage{longtable}
+\RequirePackage{tabu}
+\RequirePackage{tabularx}
+\RequirePackage{multirow}
+\RequirePackage{fancyhdr}
+
+%---------- Copied from mha.sty---------------------------------------
+
+% Use helvetica font instead of times roman
+%\RequirePackage{helvet}
+\RequirePackage{sectsty}
+%\RequirePackage{tocloft}
+\providecommand{\rmdefault}{phv}
+\providecommand{\bfdefault}{bc}
+
+%---------- Internal commands used in this style file ----------------
+
+\newcommand{\ensurespace}[1]{%
+  \begingroup%
+    \setlength{\dimen@}{#1}%
+    \vskip\z@\@plus\dimen@%
+    \penalty -100\vskip\z@\@plus -\dimen@%
+    \vskip\dimen@%
+    \penalty 9999%
+    \vskip -\dimen@%
+    \vskip\z@skip% hide the previous |\vskip| from |\addvspace|
+  \endgroup%
+}
+
+\newcommand{\DoxyLabelFont}{}
+\newcommand{\entrylabel}[1]{%
+  {%
+    \parbox[b]{\labelwidth-4pt}{%
+      \makebox[0pt][l]{\DoxyLabelFont#1}%
+      \vspace{1.5\baselineskip}%
+    }%
+  }%
+}
+
+\newenvironment{DoxyDesc}[1]{%
+  \ensurespace{4\baselineskip}%
+  \begin{list}{}{%
+    \settowidth{\labelwidth}{20pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\leftmargin}{\labelwidth+\labelsep}%
+    \renewcommand{\makelabel}{\entrylabel}%
+  }%
+  \item[#1]%
+}{%
+  \end{list}%
+}
+
+\newsavebox{\xrefbox}
+\newlength{\xreflength}
+\newcommand{\xreflabel}[1]{%
+  \sbox{\xrefbox}{#1}%
+  \setlength{\xreflength}{\wd\xrefbox}%
+  \ifthenelse{\xreflength>\labelwidth}{%
+    \begin{minipage}{\textwidth}%
+      \setlength{\parindent}{0pt}%
+      \hangindent=15pt\bfseries #1\vspace{1.2\itemsep}%
+    \end{minipage}%
+  }{%
+   \parbox[b]{\labelwidth}{\makebox[0pt][l]{\textbf{#1}}}%
+  }%
+}
+
+%---------- Commands used by doxygen LaTeX output generator ----------
+
+% Used by <pre> ... </pre>
+\newenvironment{DoxyPre}{%
+  \small%
+  \begin{alltt}%
+}{%
+  \end{alltt}%
+  \normalsize%
+}
+
+% Used by @code ... @endcode
+\newenvironment{DoxyCode}{%
+  \par%
+  \scriptsize%
+  \begin{alltt}%
+}{%
+  \end{alltt}%
+  \normalsize%
+}
+
+% Used by @example, @include, @includelineno and @dontinclude
+\newenvironment{DoxyCodeInclude}{%
+  \DoxyCode%
+}{%
+  \endDoxyCode%
+}
+
+% Used by @verbatim ... @endverbatim
+\newenvironment{DoxyVerb}{%
+  \footnotesize%
+  \verbatim%
+}{%
+  \endverbatim%
+  \normalsize%
+}
+
+% Used by @verbinclude
+\newenvironment{DoxyVerbInclude}{%
+  \DoxyVerb%
+}{%
+  \endDoxyVerb%
+}
+
+% Used by numbered lists (using '-#' or <ol> ... </ol>)
+\newenvironment{DoxyEnumerate}{%
+  \enumerate%
+}{%
+  \endenumerate%
+}
+
+% Used by bullet lists (using '-', @li, @arg, or <ul> ... </ul>)
+\newenvironment{DoxyItemize}{%
+  \itemize%
+}{%
+  \enditemize%
+}
+
+% Used by description lists (using <dl> ... </dl>)
+\newenvironment{DoxyDescription}{%
+  \description%
+}{%
+  \enddescription%
+}
+
+% Used by @image, @dotfile, @dot ... @enddot, and @msc ... @endmsc
+% (only if caption is specified)
+\newenvironment{DoxyImage}{%
+  \begin{figure}[H]%
+    \begin{center}%
+}{%
+    \end{center}%
+  \end{figure}%
+}
+
+% Used by @image, @dotfile, @dot ... @enddot, and @msc ... @endmsc
+% (only if no caption is specified)
+\newenvironment{DoxyImageNoCaption}{%
+  \begin{center}%
+}{%
+  \end{center}%
+}
+
+% Used by @attention
+\newenvironment{DoxyAttention}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @author and @authors
+\newenvironment{DoxyAuthor}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @date
+\newenvironment{DoxyDate}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @invariant
+\newenvironment{DoxyInvariant}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @note
+\newenvironment{DoxyNote}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @post
+\newenvironment{DoxyPostcond}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @pre
+\newenvironment{DoxyPrecond}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @copyright
+\newenvironment{DoxyCopyright}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @remark
+\newenvironment{DoxyRemark}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @return and @returns
+\newenvironment{DoxyReturn}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @since
+\newenvironment{DoxySince}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @see
+\newenvironment{DoxySeeAlso}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @version
+\newenvironment{DoxyVersion}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @warning
+\newenvironment{DoxyWarning}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @internal
+\newenvironment{DoxyInternal}[1]{%
+  \paragraph*{#1}%
+}{%
+}
+
+% Used by @par and @paragraph
+\newenvironment{DoxyParagraph}[1]{%
+  \begin{list}{}{%
+    \settowidth{\labelwidth}{40pt}%
+    \setlength{\leftmargin}{\labelwidth}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\itemsep}{-4pt}%
+    \renewcommand{\makelabel}{\entrylabel}%
+  }%
+  \item[#1]%
+}{%
+  \end{list}%
+}
+
+% Used by parameter lists
+\newenvironment{DoxyParams}[2][]{%
+    \tabulinesep=1mm%
+    \par%
+    \ifthenelse{\equal{#1}{}}%
+      {\begin{longtabu} spread 0pt [l]{|X[-1,l]|X[-1,l]|}}% name + description
+    {\ifthenelse{\equal{#1}{1}}%
+      {\begin{longtabu} spread 0pt [l]{|X[-1,l]|X[-1,l]|X[-1,l]|}}% in/out + name + desc
+      {\begin{longtabu} spread 0pt [l]{|X[-1,l]|X[-1,l]|X[-1,l]|X[-1,l]|}}% in/out + type + name + desc
+    }
+    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #2}\\[1ex]%
+    \hline%
+    \endfirsthead%
+    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #2}\\[1ex]%
+    \hline%
+    \endhead%
+}{%
+    \end{longtabu}%
+    \vspace{6pt}%
+}
+
+% Used for fields of simple structs
+\newenvironment{DoxyFields}[1]{%
+    \tabulinesep=1mm%
+    \par%
+    \begin{longtabu} spread 0pt [l]{|X[-1,r]|X[-1,l]|X[-1,l]|}%
+    \multicolumn{3}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
+    \hline%
+    \endfirsthead%
+    \multicolumn{3}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
+    \hline%
+    \endhead%
+}{%
+    \end{longtabu}%
+    \vspace{6pt}%
+}
+
+% Used for parameters within a detailed function description
+\newenvironment{DoxyParamCaption}{%
+  \renewcommand{\item}[2][]{##1 {\em ##2}}%
+}{%
+}
+
+% Used by return value lists
+\newenvironment{DoxyRetVals}[1]{%
+    \tabulinesep=1mm%
+    \par%
+    \begin{longtabu} spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
+    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
+    \hline%
+    \endfirsthead%
+    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
+    \hline%
+    \endhead%
+}{%
+    \end{longtabu}%
+    \vspace{6pt}%
+}
+
+% Used by exception lists
+\newenvironment{DoxyExceptions}[1]{%
+    \tabulinesep=1mm%
+    \par%
+    \begin{longtabu} spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
+    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
+    \hline%
+    \endfirsthead%
+    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
+    \hline%
+    \endhead%
+}{%
+    \end{longtabu}%
+    \vspace{6pt}%
+}
+
+% Used by template parameter lists
+\newenvironment{DoxyTemplParams}[1]{%
+    \tabulinesep=1mm%
+    \par%
+    \begin{longtabu} spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
+    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
+    \hline%
+    \endfirsthead%
+    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
+    \hline%
+    \endhead%
+}{%
+    \end{longtabu}%
+    \vspace{6pt}%
+}
+
+% Used for member lists
+\newenvironment{DoxyCompactItemize}{%
+  \begin{itemize}%
+    \setlength{\itemsep}{-3pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\topsep}{0pt}%
+    \setlength{\partopsep}{0pt}%
+}{%
+  \end{itemize}%
+}
+
+% Used for member descriptions
+\newenvironment{DoxyCompactList}{%
+  \begin{list}{}{%
+    \setlength{\leftmargin}{0.5cm}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\topsep}{0pt}%
+    \renewcommand{\makelabel}{\hfill}%
+  }%
+}{%
+  \end{list}%
+}
+
+% Used for reference lists (@bug, @deprecated, @todo, etc.)
+\newenvironment{DoxyRefList}{%
+  \begin{list}{}{%
+    \setlength{\labelwidth}{10pt}%
+    \setlength{\leftmargin}{\labelwidth}%
+    \addtolength{\leftmargin}{\labelsep}%
+    \renewcommand{\makelabel}{\xreflabel}%
+  }%
+}{%
+  \end{list}%
+}
+
+% Used by @bug, @deprecated, @todo, etc.
+\newenvironment{DoxyRefDesc}[1]{%
+  \begin{list}{}{%
+    \renewcommand\makelabel[1]{\textbf{##1}}%
+    \settowidth\labelwidth{\makelabel{#1}}%
+    \setlength\leftmargin{\labelwidth+\labelsep}%
+  }%
+}{%
+  \end{list}%
+}
+
+% Used by parameter lists and simple sections
+\newenvironment{Desc}
+{\begin{list}{}{%
+    \settowidth{\labelwidth}{20pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\leftmargin}{\labelwidth+\labelsep}%
+    \renewcommand{\makelabel}{\entrylabel}%
+  }
+}{%
+  \end{list}%
+}
+
+% Used by tables
+\newcommand{\PBS}[1]{\let\temp=\\#1\let\\=\temp}%
+\newenvironment{TabularC}[1]%
+{\tabulinesep=1mm
+\begin{longtabu} spread 0pt [c]{*#1{|X[-1]}|}}%
+{\end{longtabu}\par}%
+
+\newenvironment{TabularNC}[1]%
+{\begin{tabu} spread 0pt [l]{*#1{|X[-1]}|}}%
+{\end{tabu}\par}%
+
+% Used for member group headers
+\newenvironment{Indent}{%
+  \begin{list}{}{%
+    \setlength{\leftmargin}{0.5cm}%
+  }%
+  \item[]\ignorespaces%
+}{%
+  \unskip%
+  \end{list}%
+}
+
+% Used when hyperlinks are turned off
+\newcommand{\doxyref}[3]{%
+  \textbf{#1} (\textnormal{#2}\,\pageref{#3})%
+}
+
+% Used to link to a table when hyperlinks are turned on
+\newcommand{\doxytablelink}[2]{%
+  \ref{#1}%
+}
+
+% Used to link to a table when hyperlinks are turned off
+\newcommand{\doxytableref}[3]{%
+  \ref{#3}%
+}
+
+% Used by @addindex
+\newcommand{\lcurly}{\{}
+\newcommand{\rcurly}{\}}
+
+% Colors used for syntax highlighting
+\definecolor{comment}{rgb}{0.5,0.0,0.0}
+\definecolor{keyword}{rgb}{0.0,0.5,0.0}
+\definecolor{keywordtype}{rgb}{0.38,0.25,0.125}
+\definecolor{keywordflow}{rgb}{0.88,0.5,0.0}
+\definecolor{preprocessor}{rgb}{0.5,0.38,0.125}
+\definecolor{stringliteral}{rgb}{0.0,0.125,0.25}
+\definecolor{charliteral}{rgb}{0.0,0.5,0.5}
+\definecolor{vhdldigit}{rgb}{1.0,0.0,1.0}
+\definecolor{vhdlkeyword}{rgb}{0.43,0.0,0.43}
+\definecolor{vhdllogic}{rgb}{1.0,0.0,0.0}
+\definecolor{vhdlchar}{rgb}{0.0,0.0,0.0}
+
+% Color used for table heading
+\newcommand{\tableheadbgcolor}{lightgray}%
+
+
+%----------openMHA options --------------------------------------------
+
+\usepackage{makeidx}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{alltt}
+\usepackage{times}
+\ifx\pdfoutput\undefined
+\usepackage[ps2pdf,
+            pagebackref=true,
+            colorlinks=true,
+            linkcolor=blue
+           ]{hyperref}
+\DeclareGraphicsExtensions{.eps,.ps}
+\usepackage{pspicture}
+\else
+\usepackage[pdftex,
+            pagebackref=true,
+            colorlinks=true,
+            linkcolor=blue
+           ]{hyperref}
+\DeclareGraphicsExtensions{.pdf,.png}
+\fi
+\usepackage{calc}
+\usepackage{array}
+\pagestyle{fancyplain}
+\usepackage[round]{natbib}
+\bibliographystyle{plainnat}
+\addtocounter{secnumdepth}{1}
+
+
+
+\newcommand{\mhavar}[1]{{\tt #1}\index{#1@\texttt{#1}}}
+\newcommand{\mhavardesc}[2]{\item\mhavar{#1}\\#2}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\lhead[\fancyplain{}{\bfseries\thepage}]
+        {\fancyplain{}{\bfseries\rightmark}}
+\rhead[\fancyplain{}{\bfseries\leftmark}]
+        {\fancyplain{}{\bfseries\thepage}}
+\rfoot[\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2013 H\"orTech gGmbH, Oldenburg }]{}
+\lfoot[]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2013 H\"orTech gGmbH, Oldenburg }}
+\cfoot{}
+%
+%
+\usepackage[T1]{fontenc}
+\makeindex
+\setcounter{tocdepth}{2}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\familydefault}{phv}
+\renewcommand{\paragraph}[1]{\par\medskip\penalty-100{\bf #1}\par}
+\pagenumbering{roman}
+\usepackage{optparams}
+\long\def\MHAfigurex[#1][#2][#3]#4#5{\begin{figure}[#3]\centering\includegraphics[width=#2]{#5}\caption[#1]{#4}\label{fig:#5}\end{figure}}
+
+\newcommand{\MHAfigure}{\optparams{\MHAfigurex}{[][75mm][htbp]}}
+
+\newcommand{\figref}[1]{Fig.\ \ref{fig:#1}}
+
+\newcommand{\MHAtitle}[1]{
+\begin{titlepage}
+\vspace*{2cm}
+\begin{center}
+{\Huge\bf The Open Master Hearing Aid (openMHA)\\[1ex]\large openMHA }\\
+\vfill
+
+{\Huge 
+
+#1
+
+\bigskip
+
+
+}
+\vfill
+{\includegraphics[width=7cm]{hoertechlogo}}\\
+\vspace*{0.5cm}
+{\small \copyright{} 2005-2013 by H\"orTech gGmbH, Marie-Curie-Str. 2,
+  D--26129 Oldenburg, Germany}\\
+\end{center}
+\end{titlepage}
+\thispagestyle{empty}
+~
+
+\vfill
+
+{\bf The Open Master Hearing Aid (openMHA) -- #1}\\
+H\"orTech gGmbH\\
+Marie-Curie-Str. 2\\
+D--26129 Oldenburg
+
+
+}
+
+\newcommand{\MHAcopyright}{
+{\large LICENSE AGREEMENT}
+This file is part of the H\"{o}rTech Open Master Hearing Aid (openMHA)
+Copyright \copyright  2005 2006 2007 2008 2009 2010 2012 2013 2014 2015 2016 2017 
+H\"{o}rTech gGmbH.
+
+openMHA is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+openMHA is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License, version 3 for more details.
+
+You should have received a copy of the GNU Affero General Public License, 
+version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+}
+
+%\newcommand{\Matlab}{MATLAB$^{\textrm{\textregistered{}}}$}
+%\newcommand{\Windows}{MS Windows$^{\textrm{\textregistered{}}}$}
+%\newcommand{\Linux}{Linux$^{\textrm{\textregistered{}}}$}
+\newcommand{\Matlab}{MATLAB}
+\newcommand{\Windows}{MS Windows}
+\newcommand{\Linux}{Linux}
+\newcommand{\mhad}{MHA host application}
+\newcommand{\secpageref}[1]{section \ref{#1} on page \pageref{#1}}
+\definecolor{monitorcolor}{rgb}{0.5,0.5,0.6}
+
+% TOC subsection number >= 100 overlap text without this
+%\makeatletter
+%  \renewcommand\l@subsection{\@dottedtocline{2}{1.5em}{3em}}
+%\makeatother
+

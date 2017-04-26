@@ -1,8 +1,7 @@
 /** \defgroup plugif The openMHA Plugins (programming interface)
 
 
-* \defgroup plugindoc Plugin Documentation 
-*
+
 * An openMHA plugin is the signal processing unit, usually an algorithm. openMHA
 * plugins can be combined into processing chains. One of the configured
 * chains can be selected for output which allows direct comparison of
