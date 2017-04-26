@@ -1,37 +1,35 @@
-/** \defgroup plugif The openMHA Plugins (programming interface)
+/** \defgroup plugif The \mha Plugins (programming interface)
 
-
-
-* An openMHA plugin is the signal processing unit, usually an algorithm. openMHA
+* An \mha plugin is the signal processing unit, usually an algorithm. \mha
 * plugins can be combined into processing chains. One of the configured
 * chains can be selected for output which allows direct comparison of
 * single algorithms or complex signal processing
 * configurations. Algorithms within one chain can communicate with each
 * other by sharing some of their variables, see section \ref algocomm.
 *
-* The openMHA plugins can use the openMHA configuration language for their
+* The \mha plugins can use the \mha configuration language for their
 * configuration. If they do so, the configuration can be changed through
 * the framework even at run time. A description of this language can be
 * found in section \ref mhascript. If the algorithms should make use of
-* the openMHA configuration language, they need to be written in C++ rather than
+* the \mha configuration language, they need to be written in C++ rather than
 * pure C.
 *
-* In the openMHA package a set of example plugins is included as source code
+* In the \mha package a set of example plugins is included as source code
 * and binary format. These examples are the base of a step by step
-* tutorial on how to write a openMHA plugin. See section \ref example_tut
+* tutorial on how to write a \mha plugin. See section \ref example_tut
 * for detailes.
 *
-* openMHA plugins communicate with the openMHA using a simple ANSI-C interface.
+* \mha plugins communicate with the \mha using a simple ANSI-C interface.
 * This way it is easy to mix plugins compiled with different C++ compilers.
 * For convenience, we provide C++ classes which can be connected
 * to the C++ interface. We strongly recommend the usage of these C++ wrappers.
 * They include out-of-the box support exporting variables to the
 * configuration interface and for thread safe configuration update.
 *
-* The openMHA C++ plugin interface consists of a few number of
+* The \mha C++ plugin interface consists of a few number of
 * method prototypes:
 *
-* The output domain (spectrum or waveform) of a openMHA plugin
+* The output domain (spectrum or waveform) of a \mha plugin
 * will typically be the same as the input domain:
 *
 * - mha_wave_t * process(\ref mha_wave_t *): pure waveform processing
@@ -52,30 +50,30 @@
 * - void release(void)
 * .
 * have to be implemented.
-* The openMHA will call the process() method only ater the prepare method has 
+* The \mha will call the process() method only ater the prepare method has 
 * returned and before release() is invoked.
-* It is guarantteed by the openMHA framework that signal
+* It is guarantteed by the \mha framework that signal
 * processing is performed only between calls of <tt>prepare</tt> and
 * <tt>release</tt>. Each call of <tt>prepare</tt> is followed by a call
 * of <tt>release</tt> (after some optional signal processing).
 *
 * For configuration purposes, the plugin class has to export a method called 
-* parse() which implements the openMHA configuration language.
+* parse() which implements the \mha configuration language.
 * We strongly recommend that you do not implement this method yourself,
-* but by inheriting from the class MHAParser::parser_t from the openMHA toolbox,
+* but by inheriting from the class MHAParser::parser_t from the \mha toolbox,
 * directly or indirectly (inheriting from a class that itself inherits from
 * MHAParser::parser_t).
 *
 * \section sec_plugif_cxx Connecting the C++ class with the C Interface
 *
 * A C++ class which provides the appropriate methods can be used as
-* a openMHA Plugin by connecting it to the C interface using the
+* a \mha Plugin by connecting it to the C interface using the
 * \ref MHAPLUGIN_CALLBACKS macro. 
 *
-* The openMHA Toolbox library provides a base class MHAPlugin::plugin_t<T>
+* The \mha Toolbox library provides a base class MHAPlugin::plugin_t<T>
 * (a template class) which can be used as the base class for a plugin class.
-* This base class implements some necessary features for openMHA plugin developers
-* like integration into the openMHA configuration language environment 
+* This base class implements some necessary features for \mha plugin developers
+* like integration into the \mha configuration language environment 
 * (it inherits from MHAParser::parser_t) and 
 * thread-safe runtime configuration update.
 *
@@ -91,7 +89,7 @@
 *
 * Throwing exceptions in response to unsupported configuration changes does not
 * stop the signal processing. 
-* The openMHA configuration language parser will restore the previous value of that
+* The \mha configuration language parser will restore the previous value of that
 * variable and report an error to the configurator, while the signal processing continues.
 * Throwing exceptions from the signal processing thread will terminate the
 * signal processing. 
@@ -101,7 +99,7 @@
 * and then you should include enough information in the error message to be able
 * to fix the defect.
 *
-* \section sec_plugif_contents Contents of the openMHA Plugin programming interface
+* \section sec_plugif_contents Contents of the \mha Plugin programming interface
 *
 */
 
