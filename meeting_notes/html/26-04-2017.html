@@ -1,0 +1,88 @@
+<p><em>Wed, 26.04.2017, 14h</em></p>
+<p><strong>Attendees:</strong> Tobias, Frasher, Hendrik</p>
+<ol style="list-style-type: decimal">
+<li>Documentation
+<ul>
+<li>technically running, robustness to be checked, some formatting issues</li>
+<li>It's not a bad idea to use what Giso did, in general the beast is under control</li>
+<li>We have
+<ul>
+<li>developers guide --&gt; developers guide</li>
+<li>general manual --&gt; application engineers</li>
+<li>MHA control (GUI) manual (no html)</li>
+</ul></li>
+<li>We need new screenshots</li>
+<li>update content</li>
+<li>Figure out which years to use in license text</li>
+<li>Try to make manuals complementary</li>
+</ul></li>
+<li>Unit tests
+<ul>
+<li>Tobias does this for frequency shifter plugin</li>
+<li>There is no general rule for comparing Matlab and openMHA output</li>
+<li>Use defined (non-random, on-the-fly-generated) signals</li>
+<li>assert_almost.m</li>
+<li>1e-5 is a good number</li>
+<li>Note if higher precision is possible</li>
+</ul></li>
+<li>Fractional delay
+<ul>
+<li>to realize fractional delay in delay-and-sum plugin</li>
+<li>but introduces additional delay</li>
+</ul></li>
+<li>Status of plugins included in openMHA
+<ul>
+<li>check list of plugins</li>
+<li>build .cfg?</li>
+</ul></li>
+<li>Octave fitting GUI
+<ul>
+<li>Include</li>
+<li>Select fitting rules</li>
+<li>Tobias takes care of fixing fitting</li>
+<li>Rework data handling ()<br />
+</li>
+<li>Don't store the whole history</li>
+</ul></li>
+<li>Demonstrator for company showcase
+<ul>
+<li>show fitting GUI with multi-channel dynamic compressor</li>
+</ul></li>
+<li>Support request for early adopter Stefan Stenfelt by Volker
+<ul>
+<li>release version including GUI and fitting rules via github, see how they do and offer support if something is not working</li>
+</ul></li>
+<li>NIH report
+<ul>
+<li>Hendrik will ask for input when/if needed</li>
+</ul></li>
+<li>Is there a common name for MatLab- and octave-language?
+<ul>
+<li>MatLab --&gt; octave for openMHA</li>
+</ul></li>
+<li>openMHA_doc repository?
+<ul>
+<li>No.</li>
+<li>Generating documentation might be messy and prone to errors</li>
+<li><code>make doc</code> to be used</li>
+<li>Provide documentation on openMHA.org</li>
+</ul></li>
+<li><p>Unification of MHA-repositories</p></li>
+<li>User issues
+<ul>
+<li>There are merge requests</li>
+</ul></li>
+<li>Henning Schepker's feedback canceler
+<ul>
+<li>Ask Volker how to proceed</li>
+</ul></li>
+<li>TODOs in documentation
+<ul>
+<li>Leave them if not resolved quickly</li>
+</ul></li>
+<li>Administration of gitHub requests
+<ul>
+<li>Tobias</li>
+</ul></li>
+</ol>
+<p>Next time: - Documentation for closed MHA</p>
