@@ -24,15 +24,20 @@
 #
 # or add the COMPILERPREFIX variable to config.mk
 
+include config.mk
+
 MODULES = \
 	mha/libmha \
 	mha/frameworks \
 	mha/plugins \
+        mha/mhatest \
+	external_libs \
+
+DOCMODULES = \
 	mha/doc/images \
 	mha/doc/flowcharts \
 	mha/doc \
-        mha/mhatest \
-	external_libs \
+
 
 all: $(MODULES)
 
@@ -43,6 +48,12 @@ $(MODULES:external_libs=):
 
 external_libs:
 	$(MAKE) -j 1 -C $@
+
+doc:
+        ifeq ($(wildcard mha/frameworks/$(BUILD_DIR)/generatemhaplugindoc),) 
+	make all;
+        endif
+	for m in $(DOCMODULES); do $(MAKE) -C $$m; done
 
 clean:
 	for m in $(MODULES); do $(MAKE) -C $$m clean; done
