@@ -5,15 +5,19 @@ permalink: /download/
 menu: main
 ---
 
-You can download a pre-release of the openMHA software 
+Visit the openMHA GitHub project page
 
-from GitHub [here](https://github.com/HoerTech-gGmbH/openMHA/archive/master.zip)
+[https://github.com/HoerTech-gGmbH/openMHA](https://github.com/HoerTech-gGmbH/openMHA)
 
-
-... or clone the git repository:
+... clone the git repository:
 
 ``` 
 git clone https://github.com/HoerTech-gGmbH/openMHA.git
 ```
+
+or download a pre-release of the openMHA software [here](https://github.com/HoerTech-gGmbH/openMHA/archive/master.zip)
+
+
+
 
 This package compiles on Ubuntu 16.04 (or later) for 64-bit processors (x86_64). See installation instructions in the [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) file for more details.
