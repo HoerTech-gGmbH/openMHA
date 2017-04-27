@@ -126,6 +126,10 @@ a.header{
 	padding-left: 0px;
 	background: none;
 }
+a.footer{
+	padding-left: 0px;
+	background: none;
+}
 a.link_inline{
 	padding-left: 0px;
 	background: none;
@@ -204,4 +208,9 @@ footer {
 	text-align: center;
 	padding-top: 20px;
 	color: $darkgrayblue;
+	a,
+	a:visited {
+		text-decoration: none;
+		color: $darkgrayblue;
+		}
 	}
