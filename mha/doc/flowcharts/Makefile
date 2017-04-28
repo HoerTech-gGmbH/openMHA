@@ -1,4 +1,17 @@
-#TCM_CMD_EPS = t$(subst .,,$(suffix $<)) -toEPS $@ $<
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
+# Copyright © 2005 2006 2007 2011 2013 2016 HörTech gGmbH
+#
+# openMHA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# openMHA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License, version 3 for more details.
+#
+# You should have received a copy of the GNU Affero General Public License, 
+# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 MHA_CHART_FMT = eps m dia png xfig
 MHA_CHART_FILES = $(wildcard $(patsubst %,*.%,$(MHA_CHART_FMT)))
@@ -21,24 +34,6 @@ png: $(patsubst %,fmt_png/%.png,$(MHA_CHARTS))
 pdf: $(patsubst %,fmt_pdf/%.pdf,$(MHA_CHARTS))
 
 emf: $(patsubst %,fmt_emf/%.emf,$(MHA_CHARTS))
-
-#fmt_eps/%.eps: %.gt
-#	$(TCM_CMD_EPS)
-#
-#fmt_eps/%.eps: %.esd
-#	$(TCM_CMD_EPS)
-#
-#fmt_eps/%.eps: %.efd
-#	$(TCM_CMD_EPS)
-#
-#fmt_eps/%.eps: %.scd
-#	$(TCM_CMD_EPS)
-#
-#fmt_eps/%.eps: %.std
-#	$(TCM_CMD_EPS)
-#
-#fmt_eps/%.eps: %.gd
-#	$(TCM_CMD_EPS)
 
 fmt_eps/%.eps: %.dia
 	dia -n -e $@ $<
@@ -90,3 +85,7 @@ fmt_emf/%.emf: fmt_eps/%.eps
 
 fmt_png/%.png: %.dot
 	dot -Tpng < $< > $@
+
+# Local Variables:
+# coding: utf-8-unix
+# End:
