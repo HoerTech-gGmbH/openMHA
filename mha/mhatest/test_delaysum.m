@@ -52,5 +52,5 @@ function [retval] = test_delaysum
     
     mha_set(mha, 'io.input', in_sig);
     output_signal = mha_get(mha, 'io.output');
-    assert_equal(num2str(output_signal,5),num2str(out_sig,5));
+    assert_almost(output_signal,out_sig,1e-6);
 endfunction
