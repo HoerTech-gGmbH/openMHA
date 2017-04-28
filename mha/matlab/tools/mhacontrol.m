@@ -65,12 +65,12 @@ function mhacontrol( hostname, port, b_wait_fh, advanced_callback )
       end
     end
     set(wbh,'XData',[0,0.75]);drawnow;
-    fh = setup_ctlgui(advanced_callback);
     %waitbar(0.5,hsplash);
     set(wbh,'XData',[0,1]);drawnow;
     %waitbar(1,hsplash);
     pause(0.1);
     close(hsplash);
+    fh = setup_ctlgui(advanced_callback);drawnow;
     setup_windowmenus;
     if b_wait_fh
       uiwait(fh);
