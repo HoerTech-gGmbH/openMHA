@@ -128,7 +128,7 @@ function add_aud_wrapper( varargin )
   try
     sAud = addfun( sCfg.client_id, sCfg.audprof );
     sAud
-    if ~isempty(sAud) && ~isequalwithequalnans( sAud, sCfg.audprof );
+    if ~isempty(sAud) && ~isequaln( sAud, sCfg.audprof );
       audprof.db_audprof_add( sAud );
     end
     reload_db( gcbf );
