@@ -6,7 +6,6 @@ function mhagui_jackconnection_manager( mode, mha )
     mha = struct('host','localhost','port',33337);
   end
   libconfigdb();
-  libconfigdb();
   switch mode
    case 'gui'
     create_gui(mha);
