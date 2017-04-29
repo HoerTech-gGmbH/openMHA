@@ -2,7 +2,7 @@
 title: "openMHA"
 email: "hendrikkayser@openMHA.org"
 description: "openMHA"
-baseurl: "http://www.openMHA.org"
+baseurl: ""
 url: "http://www.openMHA.org"
 # Build Settings
 sass:
