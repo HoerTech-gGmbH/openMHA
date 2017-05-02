@@ -7,6 +7,8 @@ Common to all manuals:
     - Should we replace all "Master Hearing Aid (MHA)" with Open Master 
 Hearing Aid (openMHA)?
     - Change MATLAB to Octave everywhere?
+    - Only MHA_reference is generated in both latex and html form. Should 
+we have this for the rest of the manuals?
 
 MHA_manual.pdf - (Now called User Manual, to be changed to Application 
 Engineer Manual?):
@@ -32,3 +34,9 @@ configuration files?
 examples of the prerelease?
     - Page 23, Start the Start the MHA for real-time processing with MATLAB 
 from Linux - should we include this in the other manual (mhacontrol_manual.pdf)
+
+MHA_reference.pdf - (Developer's reference book - should the name change?)
+    
+    - Introduction - now has more or less the introduction of the lac2017
+paper. What should it contain?
+    - 
