@@ -80,7 +80,7 @@ typedef unsigned int mha_domain_t;
 
 /** 
     \ingroup mhasignal
-    \brief MHA type for real numbers 
+    \brief \mha type for real numbers 
     
     This type is expected to be allways the C-type 'float' (IEEE 754
     single).
@@ -173,7 +173,7 @@ typedef struct {
 
 /**
    \ingroup mhasignal
-   \brief An audio fragment in the MHA (planned as a replacement of mha_wave_t and mha_spec_t).
+   \brief An audio fragment in the \mha (planned as a replacement of mha_wave_t and mha_spec_t).
 
    The data alignment is
    \f$(t_0,c_0,f_0),(t_0,c_0,f_1),\dots,(t_0,c_0,f_{freqs}),(t_0,c_1,f_0),\dots\f$. This
@@ -192,7 +192,7 @@ typedef struct {
     \brief MHA prepare configuration structure 
 
     This structure contains information about channel number and
-    domain for input and output signals of a MHA Plugin. Each plugin
+    domain for input and output signals of a \mha Plugin. Each plugin
     can change any of these parameters, e.g. by resampling of the
     signal. The only limitation is that the callback frequency is
     fixed (except for the plugins \c db and \c dbasync).

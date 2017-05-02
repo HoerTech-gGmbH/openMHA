@@ -23,10 +23,10 @@
 #include "mha_signal_fft.h"
 
 /**
-   \defgroup mhatoolbox The MHA Toolbox library
+   \defgroup mhatoolbox The \mha Toolbox library
 
-   The MHA toolbox is a static C++ library which makes it more
-   comfortable to develop MHA plugins. It contains the MHA script
+   The \mha toolbox is a static C++ library which makes it more
+   comfortable to develop \mha plugins. It contains the \mha script
    language classes.
 
 */
@@ -55,7 +55,7 @@
 
 /**
    \ingroup mhatoolbox
-   \defgroup mhacomplex Complex aithmetics in the MHA
+   \defgroup mhacomplex Complex aithmetics in the \mha
 
 */
 

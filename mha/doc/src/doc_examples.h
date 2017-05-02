@@ -1,7 +1,7 @@
 /**
-* \defgroup example_tut Writing MHA Plugins. A step-by-step tutorial 
+* \defgroup example_tut Writing \mha Plugins. A step-by-step tutorial 
 *
-* \brief A step-by-step tutorial on writing MHA plugins.
+* \brief A step-by-step tutorial on writing \mha plugins.
 *
 * \mha contains a small number of example plugins as C++ source code.
 * They are meant to help developers in understanding the concepts 
@@ -98,7 +98,7 @@
 * by throwing an instance of MHA_Error.
 * This is important, because: (1) C++ exceptions cannot cross the plugin interface, 
 * which is in C, and (2) there is no error handling code for your exception classes 
-* in the MHA framework anyways.
+* in the \mha framework anyways.
 * 
 * \section ex2 example2.cpp
 *
@@ -232,14 +232,14 @@ different memory address.
 
 There is also a consistency problem if you take the combination of two 
 "safe" datatypes. 
-The MHA provides a mechanism that can cope with these types of problems.
+The \mha provides a mechanism that can cope with these types of problems.
 This thread-safe runtime configuration update mechanism is introduced in
 example 5.
 
 \section ex3 example3.cpp
 \dontinclude example3.cpp
 
-This example introduces the MHA Event mechanism.
+This example introduces the \mha Event mechanism.
 Plugins that provide configuration variable can receive a callback from the 
 parser base class when a configuration variable is accessed
 through the configuration language interface.
@@ -249,7 +249,7 @@ only even channel indices are permitted when selecting the audio
 channel to scale.
 This restriction cannot be ensured by setting the range of the channel
 index configuration variable.
-Instead, the event mechanism of MHA configuration variables is used.
+Instead, the event mechanism of \mha configuration variables is used.
 Configuration variables emit 4 different events, and your plugin can
 connect callback methods that are called when the events are triggered.
 These events are:
@@ -449,7 +449,7 @@ help of a MHAEvents::patchbay_t instance.
 The constructor of the runtime configuration analyses and validates
 the user variables. 
 If the configuration is invalid, an exception of type \ref MHA_Error is thrown.
-This will cause the MHA configuration language command which caused the change
+This will cause the \mha configuration language command which caused the change
 to fail: 
 The modified configuration language variable is then reset to its original
 value, 
@@ -494,7 +494,7 @@ The prepare method ensures that a valid runtime configuration exists by
 creating a new runtime configuration from the current configuration language
 variables.
 If the configuraion is invalid, then an exception of type \ref MHA_Error
-is raised and the preparation of the MHA fails with an error message.
+is raised and the preparation of the \mha fails with an error message.
 
 \skip ::prepare
 \until }
@@ -543,9 +543,9 @@ and other detailed informations please see \ref algocomm.
 
 \latexonly \par~\par\vfill\par~\par\endlatexonly
 
-\section DebuggingMHAplugins Debugging MHA plugins
+\section DebuggingMHAplugins Debugging \mha plugins
 
-Suppose you would want to step through the code of your mha plugin with a 
+Suppose you would want to step through the code of your \mha plugin with a 
 debugger.  This example details how to use the linux gdb debugger to
 inspect the example6_t::prepare() and example6_t::process() routines of
 \ref ex6
@@ -579,7 +579,7 @@ $ gdb $MHA_LIBRARY_PATH/mha
 
 Set breakpoints in prepare and process methods, and start execution.
 Note that specifying the breakpoint by symbol (example6_t::prepare) does not yet
-work, as the symbol lives in the MHA plugin that has not yet been loaded.
+work, as the symbol lives in the \mha plugin that has not yet been loaded.
 Specifying by line number works, however.
 Specifying the breakpoint by symbol also works once the plugin is loaded
 (i.e. when the debugger stops in the first break point).
@@ -626,5 +626,5 @@ $1 = {buf = 0x823abf8, num_channels = 2, num_frames = 64, channel_info = 0x0}
 
 */
 
-/*  LocalWords:  MHA plugin Matlab Configurator
+/*  LocalWords:  \mha plugin Matlab Configurator
  */

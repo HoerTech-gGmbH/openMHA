@@ -16,7 +16,7 @@
 /**
    \internal
    \file   mha_error.cpp
-   \brief  Implementation of MHA error handling
+   \brief  Implementation of \mha error handling
    
    This file forms a seperate library.
    
@@ -41,7 +41,7 @@
 
 /**
    \ingroup mhatoolbox
-   \defgroup mhaerror Error handling in the MHA
+   \defgroup mhaerror Error handling in the \mha
 
    Errors are reported to the user via the MHA_Error exception.
 
@@ -53,8 +53,8 @@
    \class MHA_Error
    \brief Error reporting exception class
    
-   This class is used for error handling in the MHA. It is used by the
-   MHA kernel and by the MHA toolbox library. Please note that
+   This class is used for error handling in the \mha. It is used by the
+   \mha kernel and by the \mha toolbox library. Please note that
    exceptions should not be used accross ANSI-C interfaces. It is
    necessary to catch exceptions within the library.
 

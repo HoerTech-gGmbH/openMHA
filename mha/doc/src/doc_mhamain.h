@@ -2,10 +2,10 @@
 * \mainpage Overview
 * \section str Structure
 * The openMHA can be split into four major components :
-* 	- The openMHA command line application
-* 	- Signal processing plugins
+* 	- \ref mhascript "The openMHA command line application"
+* 	- \ref plugif "Signal processing plugins"
 * 	- Audio input-output (IO) plugins
-* 	- The openMHA toolbox library
+* 	- \ref mhatoolbox "The openMHA toolbox library"
 * 	.
 * 
 * \image html structure_openmha.png

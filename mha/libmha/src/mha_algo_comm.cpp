@@ -222,7 +222,7 @@ contains a reference handle, \ref algo_comm_t::handle, and a number of
 function pointers, \ref algo_comm_t::insert_var etc.. An algorithm
 communication variable is an object of type \ref comm_var_t.
 
-For AC variables of numeric types, MHA Plugins for conversion into
+For AC variables of numeric types, \mha Plugins for conversion into
 parsable monitor variables, acmon, and storage into Matlab or
 text files, acsave, are available.
 

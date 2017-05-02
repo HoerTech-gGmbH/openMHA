@@ -44,7 +44,7 @@ __attribute__((unused)) static const char* mha_git_commit_hash =
 class Test_mha_plugin_rtcfg_t; // Forward declaration
 
 /**
-   \brief Namespace for MHA plugin class templates and thread-safe runtime configurations
+   \brief Namespace for \mha plugin class templates and thread-safe runtime configurations
 */
 namespace MHAPlugin {
 
@@ -63,10 +63,10 @@ namespace MHAPlugin {
 
        This template class provides a mechanism for the handling of
        thread safe configuration which is required for run time
-       configuration changes of the MHA plugins.
+       configuration changes of the \mha plugins.
 
        The template parameter runtime_cfg_t is the run time
-       configuration class of the MHA plugin. The constructor of that
+       configuration class of the \mha plugin. The constructor of that
        class should transform the MHAParser variables into derived
        runtime configuration. The constructor should fail if the
        configuration is invalid by any reason.
@@ -103,14 +103,14 @@ namespace MHAPlugin {
 
     /** 
         \ingroup plugif
-        \brief The template class for C++ MHA plugins
+        \brief The template class for C++ \mha plugins
 
         \todo Describe all services provided by this class, so that the reason
         why it is recommended that all plugins use this class as their base is
         evident. Document all relevant methods and fields.
 
         This template class provides thread safe configuration handling
-        and standard methods to be compatible to the C++ MHA plugin
+        and standard methods to be compatible to the C++ \mha plugin
         wrapper macro \ref MHAPLUGIN_CALLBACKS.
 
         The template parameter runtime_cfg_t should be the runtime
@@ -489,7 +489,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
     \param indom Input domain (\c wave or \c spec)
     \param outdom Output domain (\c wave or \c spec)
 
-    This macro defines all required MHA Plugin interface functions and
+    This macro defines all required \mha Plugin interface functions and
     passes calls of these functions to the corresponding member functions
     of the class `classname'. The parameters `indom' and `outdom' specify
     the input and output domain of the processing method. The MHAInit()
@@ -527,7 +527,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
     \param cat Space separated list of categories to which belong the plugin (as const char*)
     \param doc Documentation of the plugin (as const char*)
 
-    This macro defines the MHA Plugin interface function for the
+    This macro defines the \mha Plugin interface function for the
     documentation. The categories can be any space seperated list of
     category names. An empty string will categorize the plugin in the
     category 'other'. 
@@ -558,7 +558,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
     \param indom Input domain (\c wave or \c spec)
     \param outdom Output domain (\c wave or \c spec)
 
-    This macro defines all required MHA Plugin interface functions and
+    This macro defines all required \mha Plugin interface functions and
     passes calls of these functions to the corresponding member functions
     of the class `classname'. The parameters `indom' and `outdom' specify
     the input and output domain of the processing method. The MHAInit()
@@ -580,7 +580,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
     \param cat Space separated list of categories to which belong the plugin (as const char*)
     \param doc Documentation of the plugin (as const char*)
 
-    This macro defines the MHA Plugin interface function for the
+    This macro defines the \mha Plugin interface function for the
     documentation. The categories can be any space seperated list of
     category names. An empty string will categorize the plugin in the
     category 'other'. 

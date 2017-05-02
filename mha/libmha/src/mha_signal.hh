@@ -1525,7 +1525,7 @@ void mha_fft_wave2spec(mha_fft_t h,const mha_wave_t* in, mha_spec_t* out);
    Like normal wave2spec, but swaps wave buffer halves before transforming if
    the swaps parameter is true.
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -1540,7 +1540,7 @@ void mha_fft_wave2spec(mha_fft_t h,const mha_wave_t* in, mha_spec_t* out,
    \ingroup mhafft
    \brief Tranform spectrum into waveform segment.
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -1556,7 +1556,7 @@ void mha_fft_spec2wave(mha_fft_t h,const mha_spec_t* in, mha_wave_t* out);
    Only as many frames are written into out as fit, starting with offset
    offset of the complete iFFT.
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -1574,7 +1574,7 @@ void mha_fft_spec2wave(mha_fft_t h,const mha_spec_t* in, mha_wave_t* out,
    sIn and sOut need to have nfft bins (please note that mha_spec_t
    typically has nfft/2+1 bins for half-complex representation).
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -1591,7 +1591,7 @@ void mha_fft_forward(mha_fft_t h, mha_spec_t* sIn, mha_spec_t* sOut);
    sIn and sOut need to have nfft bins (please note that mha_spec_t
    typically has nfft/2+1 bins for half-complex representation).
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -2313,18 +2313,18 @@ namespace MHASignal {
     }
 
     /**
-       \brief Save a MHA spectrum as a variable in a Matlab4 file.
+       \brief Save a \mha spectrum as a variable in a Matlab4 file.
 
-       \param data MHA spectrum to be saved.
+       \param data \mha spectrum to be saved.
        \param varname Matlab variable name (Matlab4 limitations on maximal length are not checked).
        \param fh File handle to Matlab4 file.
      */
     void saveas_mat4(const mha_spec_t& data,const std::string& varname,FILE* fh);
 
     /**
-       \brief Save a MHA waveform as a variable in a Matlab4 file.
+       \brief Save a \mha waveform as a variable in a Matlab4 file.
 
-       \param data MHA waveform to be saved.
+       \param data \mha waveform to be saved.
        \param varname Matlab variable name (Matlab4 limitations on maximal length are not checked).
        \param fh File handle to Matlab4 file.
      */

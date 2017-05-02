@@ -268,12 +268,12 @@ namespace MHAFilter {
 
         This class implements an infinite impulse response filter.
         Since it inherits from MHAParser::parser_t, it can easily be integrated
-        in the MHA configuration tree.  It provides the configuration language
+        in the \mha configuration tree.  It provides the configuration language
         variables "A" (vector of recursive filter coefficients) and "B" (vector
         of non-recursive filter coefficients). 
 
         The filter instance reacts to changes in filter coefficients through
-        the MHA configuration language, and uses the updated coefficients in
+        the \mha configuration language, and uses the updated coefficients in
         the next invocation of the filter method. 
 
         Update of the coefficients is thread-safe and non-blocking. 
