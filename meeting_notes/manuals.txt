@@ -14,7 +14,7 @@ MHA_manual.pdf - (Now called User Manual, to be changed to Application
 Engineer Manual?):
 
     - Fig. 1 (Layered structure of the master hearing aid) - should it change?
-    - Sound card drivers - should we mention Windows?
+    - Sound card drivers - should we mention Windows? No!
     - Fig. 2 (Signal flow) - is it correct?
     - Page 2, paragraph "The structure of this manual..." - do we have to 
 inlucde MATLAB (I guess Octave in our case) and plugins?
@@ -40,3 +40,10 @@ MHA_reference.pdf - (Developer's reference book - should the name change?)
     - Introduction - now has more or less the introduction of the lac2017
 paper. What should it contain?
     - 
+
+
+
+TODOs:
+- Remove Windows OS and other distributions
+- Years 2005 - 2017
+
