@@ -33,11 +33,11 @@ TEXINPUTS = "./:../:./plugins/:../technical_report/:../flowcharts/fmt_eps/:../fl
 clean:
 	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl MHA_manual.pdf plug_*.tex
 
-MHA_manual.pdf: MHA_manual.tex ../mha.sty $(wildcard *.tex)
+MHA_manual.pdf: MHA_manual.tex ../openMHAdoxygen.sty $(wildcard *.tex)
 
-libaudprof_manual.pdf: libaudprof_manual.tex ../mha.sty
+libaudprof_manual.pdf: libaudprof_manual.tex ../openMHAdoxygen.sty
 
-mhacontrol_manual.pdf: mhacontrol_manual.tex ../mha.sty
+mhacontrol_manual.pdf: mhacontrol_manual.tex ../openMHAdoxygen.sty
 
 MHACONTROL_PLUGS = audiometerbackend transducers dc_simple finetuning addsndfile fftfilterbank altplugs
 
