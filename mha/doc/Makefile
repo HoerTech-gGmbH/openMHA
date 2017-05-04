@@ -37,7 +37,7 @@ space := $(empty) $(empty)
 PLUGINDIRS=$(wildcard ../plugins/*/*/$(PLATFORM_CC)/)
 MHA_PLUGINDIRS=$(subst $(space),;,$(PLUGINDIRS))
 
-MHADISTS = MHA-20080023 MHA-HaH compression MHA-FhG MHA-UOL-SigProc MHA-basic MHA-NCA MHA-newfeatures2010 MHA-example-distribution MHA-LiU MHA-Forschergruppe-TpA-devel MHA-ABCIT MHA-Audiologicall MHA-Maartje MHA-cHIRP
+MHADISTS = openMHA
 
 REF_CORR = ',s/{\\rm (p\./ {\\sf (p./g'
 INHERITED_BY = '/Inherited by/ d'
@@ -141,19 +141,19 @@ parser:
 	doxygen mhaparser.cfg
 
 plugins: $(MHADISTS:=_plugins.pdf)
-#	doxygen mhaplugins.cfg
+	doxygen mhaplugins.cfg
 
 MHA_plugin_auto_doc.pdf:
 	rm -f MHA_plugin_auto_doc.*
 	MHA_PARSER_PRECISION=6 ./create_doc_for_all_plugins.sh
 
-%_plugin.list: ../../distributions/distributions.csv
-	../../distributions/print_plugin_list $< $* $(PLATFORM_CC) | sort > $@
+#%_plugin.list: ../../distributions/distributions.csv
+#	../../distributions/print_plugin_list $< $* $(PLATFORM_CC) | sort > $@
 
-%_plugin_section.tex: %_plugin.list
+%_plugin_section.tex: plugin.list
 	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" generatemhaplugindoc -o $@ -c subsection -p subsubsection `cat $<` 
 
-%_plugins.tex: %_plugin.list
+%_plugins.tex: plugin.list
 	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" generatemhaplugindoc -o temp$@ -c section -p subsection `cat $<` 
 	cat plugin_doc_prefix.tex | sed -e 's/__DISTID__/$*/g' > $@
 	cat temp$@ >> $@
