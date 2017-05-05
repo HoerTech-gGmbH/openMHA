@@ -151,10 +151,10 @@ MHA_plugin_auto_doc.pdf:
 #	../../distributions/print_plugin_list $< $* $(PLATFORM_CC) | sort > $@
 
 %_plugin_section.tex: plugin.list
-	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" generatemhaplugindoc -o $@ -c subsection -p subsubsection `cat $<` 
+	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" ../frameworks/$(BUILD_DIR)/generatemhaplugindoc -o $@ -c subsection -p subsubsection `cat $<` 
 
 %_plugins.tex: plugin.list
-	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" generatemhaplugindoc -o temp$@ -c section -p subsection `cat $<` 
+	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" ../frameworks/$(BUILD_DIR)/generatemhaplugindoc -o temp$@ -c section -p subsection `cat $<` 
 	cat plugin_doc_prefix.tex | sed -e 's/__DISTID__/$*/g' > $@
 	cat temp$@ >> $@
 	cat plugin_doc_postfix.tex >> $@
