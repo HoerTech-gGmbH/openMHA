@@ -1,6 +1,6 @@
 // This file is part of the Open HörTech Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2011 2012 2013 HörTech gGmbH
-// Copyright © 2014 2016 HörTech gGmbH
+// Copyright © 2014 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -234,7 +234,6 @@ std::string mhaserver_t::received_group(const std::string& cmd)
 "This is free software, and you are welcome to redistribute it \n"\
 "under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3; \n"\
 "for details see file COPYING.\n\n"
-
 
 void create_lock(unsigned int p,std::string s)
 {
