@@ -37,6 +37,9 @@ space := $(empty) $(empty)
 PLUGINDIRS=$(wildcard ../plugins/*/*/$(PLATFORM_CC)/)
 MHA_PLUGINDIRS=$(subst $(space),;,$(PLUGINDIRS))
 
+# Get plugin names
+PLUGIN_NAMES:=$(subst $(space),"\n",$(foreach plg,$(PLUGINDIRS),$(word 4,$(subst /,$(space),$(plg)))))
+
 MHADISTS = openMHA
 
 REF_CORR = ',s/{\\rm (p\./ {\\sf (p./g'
@@ -147,13 +150,13 @@ MHA_plugin_auto_doc.pdf:
 	rm -f MHA_plugin_auto_doc.*
 	MHA_PARSER_PRECISION=6 ./create_doc_for_all_plugins.sh
 
-#%_plugin.list: ../../distributions/distributions.csv
-#	../../distributions/print_plugin_list $< $* $(PLATFORM_CC) | sort > $@
+%_plugin.list: 
+	echo $(PLUGIN_NAMES) | sort > $@
 
-%_plugin_section.tex: plugin.list
+%_plugin_section.tex: %_plugin.list
 	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" ../frameworks/$(BUILD_DIR)/generatemhaplugindoc -o $@ -c subsection -p subsubsection `cat $<` 
 
-%_plugins.tex: plugin.list
+%_plugins.tex: %_plugin.list
 	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" ../frameworks/$(BUILD_DIR)/generatemhaplugindoc -o temp$@ -c section -p subsection `cat $<` 
 	cat plugin_doc_prefix.tex | sed -e 's/__DISTID__/$*/g' > $@
 	cat temp$@ >> $@
