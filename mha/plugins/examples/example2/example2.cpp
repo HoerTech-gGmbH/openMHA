@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2005 2006 2007 2009 2010 2014 2015 HörTech gGmbH
+// Copyright © 2004 2005 2006 2007 2009 2010 2014 2015 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -67,7 +67,7 @@ example2_t::example2_t(algo_comm_t & ac,
                        const std::string & chain_name,
                        const std::string & algo_name)
     : MHAPlugin::plugin_t<int>("This plugin multiplies the sound signal"
-                   " in one audio channel by a factor",ac),
+                               " in one audio channel by a factor",ac),
       scale_ch("Index of audio channel to scale. Indices start from 0.",
                "0",
                "[0,["),
