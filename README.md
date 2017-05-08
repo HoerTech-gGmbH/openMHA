@@ -1,6 +1,6 @@
 # openMHA
 
-HörTech Open Master Hearing Aid (openMHA) 
+HÃ¶rTech Open Master Hearing Aid (openMHA) 
 
 1. Content of the Pre-Release 
 
@@ -57,7 +57,7 @@ No installation routine is provided together with the source code. The binaries
 will be generated in the source tree. To collect the relevant binaries in one 
 place, you may e.g. create a bin directory and copy all the binaries there with 
 
-mkdir bin; cp $(find . -name *.so) mha/frameworks/x86_64-linux-gcc-5/mha bin 
+mkdir bin; cp $(find . -name *.so) mha/frameworks/*-linux-gcc-*/mha bin 
 
 Then, you should set the environment variable LD_LIBRARY_PATH to point to your 
 bin directory, like this: 
