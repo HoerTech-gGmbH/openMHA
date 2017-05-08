@@ -9,7 +9,7 @@ openMHA framework and command line application, and of a selection of algorithm
 plugins forming a basic hearing aid processing chain featuring
 - calibration
 - bilateral adaptive differential microphones for noise suppression
-- binaural coherence filter foo feedback reduction and dereverberation
+- binaural coherence filter for feedback reduction and dereverberation
 - multi-band dynamic range compressor for hearing loss compensation
 
 
