@@ -16,16 +16,15 @@ Tobias, Frasher, Hendrik
 	
 		
 3. git repository branches
-	- periodic merges of developement in GUI branch tbd.
-
-
+	- periodic merges of developement in GUI branch tbd.          
+	
+    
 4. Hardware
 	- about 4k left 
 	- What else to buy? 
 		- Thunderbold soundcard - see whats available 
 		- NUC demonstrator system: NUC + memory + storage (800€)
-		- sound card? (UCX= 
-		
+		- sound card? (UCX)
 		- 1-2 macbooks (AIR)  
 		- ARM equipment 
 		
