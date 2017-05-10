@@ -1,0 +1,44 @@
+*Wed, 10.05.2017, 14h*
+
+__Attendees:__
+Tobias, Frasher, Hendrik
+
+1. NIH report
+	- Check project goals in the document 
+	- Plans for next funding period
+	- Tobias will read documents and give feedback
+
+
+2. Support request Stefan Stenfelt
+	- Linux version: 16.04 LTS
+	- Install Octave 4.2.1.
+	- CAMFIT rule needed - must be fixed first 
+	
+		
+3. git repository branches
+	- periodic merges of developement in GUI branch tbd.
+
+
+4. Hardware
+	- about 4k left 
+	- What else to buy? 
+		- Thunderbold soundcard - see whats available 
+		- NUC demonstrator system: NUC + memory + storage (800€)
+		- sound card? (UCX= 
+		
+		- 1-2 macbooks (AIR)  
+		- ARM equipment 
+		
+	- Detailed list will be specified later, mid of June would be good
+		
+	
+5. Octave fitting GUI
+	- data handling concept needs to be changed
+	- Differences Matlab-Octave using gcbf command makes trouble 
+
+	
+6. LAC2017 presentation
+	- rehearsal Wednesday, 17.5., 9:30  
+	
+		
+	
