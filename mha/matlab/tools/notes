@@ -57,3 +57,10 @@ Other formats are slow.
 
 
 % Client data is not updated/ saved after editing audiogram!
+! solved
+
+===
+% Remove
+- Audiometer in fitting GUI
+- Administration in mhacontrol main window
+  
