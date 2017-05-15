@@ -17,11 +17,18 @@ function ax = mhagui_audprof_plot( sAudProf, ax )
   vXLim = [100 10000];
   vYLim = [-15 115];
   if nargin < 2
-    ax = findall(gcf,'Tag','audiogram_axes');
+      ax = findall('Tag','audiogram_axes');
     if isempty(ax)
       ax = axes('Tag','audiogram_axes');
+    else
+      hpar = get(ax,'parent');
+      if iscell(hpar) % Make shure that the most recent window is updated
+        [~,IDXlatestFig]=max(cell2mat(hpar));
+      else
+        IDXlatestFig = 1;
+      end
+      ax = ax(IDXlatestFig); 
     end
-    ax = ax(1);
   end
   axes(ax);
   set(ax,'NextPlot','ReplaceChildren');
