@@ -63,6 +63,7 @@ function audprof_audprof_print( sAud )
   if(exist('printdlg')==2)
     printdlg(fh);
   else
-    print(fh);
+    [FNAME, FPATH] = uiputfile('.pdf','Save audiogramm as...');
+    print(fh,fullfile(FPATH,FNAME),'-dpdf');
   end
   close(fh);
