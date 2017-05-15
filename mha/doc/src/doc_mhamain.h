@@ -17,11 +17,11 @@
 * Additionally, it provides the command line configuration interface and
 * a TCP/IP based configuration interface.
 * Several IO plugins exist:
-* For real-time signal processing, commonly the MHA \ref MHAIOJack "MHAIOJack" plugin is
+* For real-time signal processing, commonly the \mha MHAIOJack plugin (see plugins' manual) is
 * used, which provides an interface to the Jack Audio Connection Kit (JACK).
 * Other IO plugins provide audio file access or TCP/IP-based processing.
 *
-* \ref plugindoc "openMHA plugins" provide the audio signal processing capabilities and
+* \ref plugif "\mha plugins" provide the audio signal processing capabilities and
 * audio signal handling.
 * Typically, one openMHA plugin implements one specific algorithm.
 * The complete virtual hearing aid signal processing can be achieved by
