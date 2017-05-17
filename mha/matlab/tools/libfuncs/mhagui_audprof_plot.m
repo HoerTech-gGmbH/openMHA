@@ -17,13 +17,25 @@ function ax = mhagui_audprof_plot( sAudProf, ax )
   vXLim = [100 10000];
   vYLim = [-15 115];
   if nargin < 2
-      ax = findall('Tag','audiogram_axes');
+      ax = findobj('Tag','audiogram_axes');
     if isempty(ax)
       ax = axes('Tag','audiogram_axes');
     else
       hpar = get(ax,'parent');
       if iscell(hpar) % Make shure that the most recent window is updated
-        [~,IDXlatestFig]=max(cell2mat(hpar));
+        if isoctave 
+            [~,IDXlatestFig]=max(cell2mat(hpar));
+        else 
+            if verLessThan('matlab','8.4') % Matlab < 2014b
+                [~,IDXlatestFig]=max(cell2mat(hpar));
+            else % Matlab >= 2014b
+                vNumFig = [];
+                for IDXfig = 1 : size(hpar,1)
+                    vNumFig = [vNumFig hpar{IDXfig}.Number];
+                end
+                [~,IDXlatestFig]=max(vNumFig);
+            end
+        end
       else
         IDXlatestFig = 1;
       end
