@@ -16,7 +16,7 @@ function sGt = multifit_upload( sFit, mha )
   fields = fieldnames(lfau);
   for i = 1:numel(fields)
     if ~isstruct(lfau.(fields{i}))
-      if isequal(func2str(sFit.gaintable2mha),func2str(lfau.(fields{i})))
+      if isequal(sFit.gaintable2mha,func2str(lfau.(fields{i})))
         sFit.gaintable2mha = lfau.(fields{i});
         break;
       end
@@ -24,5 +24,6 @@ function sGt = multifit_upload( sFit, mha )
   end
   %------------------------------------------------
   mhacfg = sFit.gaintable2mha(sGt,sFit.plugincfg);
+  sFit.gaintable2mha = func2str(sFit.gaintable2mha);
   mha_set(mha,sFit.addr,mhacfg);
 

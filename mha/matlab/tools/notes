@@ -54,7 +54,20 @@ Whole client database is stored in a single file - makes octave slow
 % Data compatibility
 Octave is not able to save complex structs in Matlab format!
 Other formats are slow.
+This is the problem:
+https://savannah.gnu.org/bugs/?43215#discussion
+Function handles cannot be saved in Matlab binary format. Thay are contained in the setting structure to be saved. Removing them before saving takes too much time (and may cause errors at other places, when the struct is re-loaded).
 
+v4: struct and cell not supported
+v6,v7: function handles not supported
+v7 + stripping off handles: slow
+using native binary format: incompatibility between Octave and Matlab
+
+Do we really need to save/store these handles?!
+
+No, does seem so. Converting the handles to strings after using it seems to be a suitable workaround!
+
+-----
 
 % Client data is not updated/ saved after editing audiogram!
 ! solved
@@ -63,4 +76,9 @@ Other formats are slow.
 % Remove
 - Audiometer in fitting GUI
 - Administration in mhacontrol main window
-  
+
+
+======
+MatLab
+
+- Issue with plotting the fit in the main window at startup needs to be fixed.

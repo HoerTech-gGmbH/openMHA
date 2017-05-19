@@ -14,8 +14,9 @@ function csPlugs = multifit_query( mha )
       sCfg.plugin = sPlug;
       sCfg.plugincfg = mha_get(mha,sAddr);
       sCfg.mha2fitmodel = lfa.(sMultifitRule1);
-      sCfg.gaintable2mha = lfa.(sMultifitRule2);
+      sCfg.gaintable2mha = func2str(lfa.(sMultifitRule2));
       sCfg.fitmodel = sCfg.mha2fitmodel(sCfg.plugincfg);
+      sCfg.mha2fitmodel = func2str(sCfg.mha2fitmodel);
       csPlugs{end+1} = sCfg;
     end
   end

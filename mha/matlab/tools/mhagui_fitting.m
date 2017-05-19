@@ -228,7 +228,6 @@ function toggle_select_side(varargin)
   end
   configdb.set_mhaconfig(mha_basic_cfg.mha,'next_fit_side',sSide);
   
-  
 function sAud = mha_audiometer_wrap( clientid, sAud )
   global mha_basic_cfg;
   issndfile = [];
