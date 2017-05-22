@@ -117,6 +117,7 @@ function mhagui_fitting_main;
     fh = mhagui.figure(sprintf('MHA fitting tool for %s@%s, %s',...
 				   sClientID,mha_basic_cfg.mha.host,sAud.id),...
 			   'mhagui_fitting',guip);
+    figure(fh)
     switch sPlug.fitmodel.channels
      case 1
       x_lateral = 'uni';
