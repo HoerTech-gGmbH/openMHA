@@ -34,5 +34,7 @@ function configdb_writefile( filename, varname, value )
   if ~exist(filename,'file')
     save(filename,'-v7','-struct','data',basename);
   else
-    save(filename,'-append','-struct','data',basename);
+    warning('off','MATLAB:save:versionWithAppend')
+    save(filename,'-v7','-append','-struct','data',basename);
+    warning('on','MATLAB:save:versionWithAppend')
   end
