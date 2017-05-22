@@ -18,7 +18,7 @@ which hide the platform dependency (see
 \secpageref{sec:audioabstraction}).
 %
 
-The \mhad{} and all of its plugins can be configured with the MHA
+The \mhad{} and all of its plugins can be configured with the \mha{}
 configuration language (see \secpageref{sec:script}).
 %
 
@@ -40,21 +40,21 @@ greeting text or error messages.
   the \mhad{} should bind (default: 33337). 
   If port number is 0, 
   then the operating system chooses a free port for the mha to bind to.
-\item\verb!--announce=port | -a port!\\ If given, then the MHA connects to 
+\item\verb!--announce=port | -a port!\\ If given, then the \mha{} connects to 
   this TCP port on the localhost after it has established its own TCP server 
   socket, and announces its process ID and the TCP server port in use, and
   closes the connection again. 
 \item\verb!--interface=if | -i if!\\Set the network interface to which
 the \mhad{} should bind (default: 127.0.0.1).
 \item\verb!--daemon | -d!\\Start the \mhad{} in daemon
-  mode. This means that after a MHA server was closed (via the MHA
+  mode. This means that after a \mha{} server was closed (via the \mha{}
   command 'cmd=quit'), the \mhad{} will wait for a new
   connections. In daemon mode the \mhad{} can be stopped by killing
   the daemon process or by pressing {\tt Ctrl-C} at the console.
 \item\verb!--ok-ack=str | -o str!\\Set the acknowledgement string for
-  accepted MHA command lines (default value is '(MHA:success)').
+  accepted \mha{} command lines (default value is '(MHA:success)').
 \item\verb!--fail-ack=str | -f str!\\Set the acknowledgement string
-  for rejected MHA command lines (default value is
+  for rejected \mha{} command lines (default value is
   '(MHA:failure)').
 \item\verb!--log=logfile!\\Set the log file to 'logfile'
   (default: /dev/null).
@@ -62,15 +62,15 @@ the \mhad{} should bind (default: 127.0.0.1).
   arguments.
 \item\verb!--lockstr=str | -l str!\\Create a file with name 'portno'
 and write the text 'str' into that file. The file is removed after the
-MHA session is closed.
+\mha{} session is closed.
 \item\verb!--license!\\Print the license agreement.
 \end{description}
 
 Additional command line arguments which are not recognised as options
-will be interpreted as MHA configuration language commands and sent to the
+will be interpreted as \mha{} configuration language commands and sent to the
 \mhad{} after allocation, before accepting other input.
 %
-In daemon mode, these MHA configuration language commands are interpreted at the 
+In daemon mode, these \mha{} configuration language commands are interpreted at the 
 start of each session.
 \verb!mha --daemon ?read:defaults.cfg! will read a default
 configuration file for each session.
@@ -78,7 +78,7 @@ configuration file for each session.
 Clients for the \mhad{} are the \Matlab{} tool 'mhactl' and any
 telnet client (not part of the distribution).
 
-The \mhad{} searches for MHA plugins in the system library paths, or in
+The \mhad{} searches for \mha{} plugins in the system library paths, or in
 the directories given in the environment variable {\tt
 MHA\_LIBRARY\_PATH}.
 %
@@ -136,7 +136,7 @@ A configuration file with these settings can be read by sending a {\tt
     library.}
 
 \mhavardesc{sleep}{This special command waits on the normal execution of commands
-   while MHA continues processing audio. The number of seconds waited is given by the right-hand side
+   while \mha{} continues processing audio. The number of seconds waited is given by the right-hand side
    e.g. {\tt sleep = 5} waits 5 seconds.}
 
 \end{description}
@@ -145,7 +145,7 @@ A configuration file with these settings can be read by sending a {\tt
 \label{sec:fwstates}\index{states}%
 
 The states of the \mhad{} are controlled by setting the {\tt cmd}
-variable. After configuring all modules of the MHA (Framework and
+variable. After configuring all modules of the \mha{} (Framework and
 Plugins), the configuration can be prepared to be ready for signal
 processing by setting {\tt cmd=prepare}. This will also validate the
 configuration; on error the prepare command will be rejected. Setting
@@ -178,14 +178,14 @@ server (see \secpageref{sec:jack}).
 When the \mhad{} is prepared for processing, this module connects to a
 running JACK server and validates its parameters. The input and output
 ports of the MHA can be connected to any other JACK ports through the
-MHA configuration (see below) or externally. Please note, that
+\mha{} configuration (see below) or externally. Please note, that
 MHAIOJack currently supports only fixed sample rates and fragment
 sizes. Changing the fragment size of JACK while processing will stop
-the MHA processing thread. If sample rates are required which are not
+the \mha{} processing thread. If sample rates are required which are not
 provided by JACK, the {\tt downsample} and {\tt upsample} plugins can
-be used. The module 'MHAIOJackdb' allows configuration of MHA fragment
+be used. The module 'MHAIOJackdb' allows configuration of \mha{} fragment
 sizes which are a integer fragment of the actual Jack fragment size,
-e.g., Jack runs with a fragment size of 1024 samples, but the MHA is
+e.g., Jack runs with a fragment size of 1024 samples, but the \mha{} is
 confgured with 64 samples.  Other fragment sizes can be realised with
 the double buffering plugin {\tt db}.
 
@@ -195,20 +195,20 @@ Variables of the 'MHAIOJack' module:
 \mhavardesc{name}{Name of the JACK client. This variable only needs to
   be modified if multiple instances of MHAs should run simultaneously.}
 
-\mhavardesc{con\_in}{Connection list for input MHA ports with one
+\mhavardesc{con\_in}{Connection list for input \mha{} ports with one
   entry for each port, e.g.\ {\tt con\_in = [alsa\_pcm:capture\_1
     alsa\_pcm:capture\_2]}. The ports are reconnected at any time the
   variable is accessed. Ports can be disconnected by using a colon as
-  a port name. To achieve multiple connections to one MHA port, please
+  a port name. To achieve multiple connections to one \mha{} port, please
   use external connection tools, e.g. 'qjackctl' or 'jack\_connect'.}
 
-\mhavardesc{con\_out}{Connection list for output MHA ports with one
+\mhavardesc{con\_out}{Connection list for output \mha{} ports with one
   entry for each port, e.g.\
   {\tt con\_out = [alsa\_pcm:playback\_1 alsa\_pcm:playback\_2]}.}
 
-\mhavardesc{names\_in}{Labels of MHA input ports (empty for auto-generated labels).}
+\mhavardesc{names\_in}{Labels of \mha{} input ports (empty for auto-generated labels).}
 
-\mhavardesc{names\_out}{Labels of MHA output ports (empty for auto-generated labels).}
+\mhavardesc{names\_out}{Labels of \mha{} output ports (empty for auto-generated labels).}
 
 \end{description}
 
@@ -297,7 +297,7 @@ driver}
 \label{sec:MHAIOFile}%
 
 The module 'MHAIOFile' provides file to file processing with the
-MHA. Input and output file name can be configured. After the \mhad{}
+\mha{}. Input and output file name can be configured. After the \mhad{}
 is started (\verb!cmd=start!), the whole input file will be
 processed and the processed data will be written to the output
 file. The start command will wait until the processing is finished.
@@ -315,8 +315,8 @@ The variables of 'MHAIOFile' are:
 \mhavardesc{output\_sample\_format}{Output sample format, or 'input' to copy format specification from input file.}
 \mhavardesc{startsample}{First sample to be processed.}
 \mhavardesc{length}{Number of samples to be processed by one start command, or zero for all.}
-\mhavardesc{strict\_channel\_match}{Require same channel count in MHA and input sound file. If yes, an error message is created if the channel count doesn't match, otherwise additional channels are ignored and missing channels are filled with zeros.}
-\mhavardesc{strict\_srate\_match}{Require same sample rate in MHA and sound file. If yes then an error is reported if the sample rate does not match, otherwise the sample rate of the sound file is ignored (no re-sampling).}
+\mhavardesc{strict\_channel\_match}{Require same channel count in \mha{} and input sound file. If yes, an error message is created if the channel count doesn't match, otherwise additional channels are ignored and missing channels are filled with zeros.}
+\mhavardesc{strict\_srate\_match}{Require same sample rate in \mha{} and sound file. If yes then an error is reported if the sample rate does not match, otherwise the sample rate of the sound file is ignored (no re-sampling).}
 \end{description}
 
 %%% Local Variables: 

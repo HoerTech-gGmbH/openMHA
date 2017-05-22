@@ -1,27 +1,27 @@
-\section{Concept of Variables and Data Exchange in the MHA}
+\section{Concept of Variables and Data Exchange in the \mha{}}
 \label{sec:variables}
 
 Accessibility of configuration variables\index{configuration variable}\index{variable!configuration}\index{variables} and
 data exchange between plugins (processing blocks) are an important issue in the
-MHA. In general, variable types in the MHA are distinguished by their
-different access methods. The variable types in the MHA are:
+\mha{}. In general, variable types in the \mha{} are distinguished by their
+different access methods. The variable types in the \mha{} are:
 
 \begin{itemize}
 \item{\bf Configuration variables}\index{configuration variable}\index{variable!configuration}: Read and
-  write accesses are possible through the MHA configuration language interface.
+  write accesses are possible through the \mha{} configuration language interface.
   Configuration variables are implemented as C++ classes with a public data
   member of the underlying C type.
   Configuration variables can be read and modified from ``outside'' using the 
   configuration language.
   The plugin which provides the configuration variable can use 
   the exposed data member directly.
-  All accesses through the MHA configuration language are checked for data
+  All accesses through the \mha{} configuration language are checked for data
   type, valid range, and access restrictions. 
   See section \ref{sec:script} (page
   \pageref{sec:script}) for details.
   
 \item{\bf Monitor variables}\index{monitor variable}\index{variable!monitor}: Read access is possible
-  through the MHA configuration language. 
+  through the \mha{} configuration language. 
   Write access is only possible from the C++ code. 
   Internally, monitor variables have a similar C++ class interface
   as configuration
@@ -31,53 +31,53 @@ different access methods. The variable types in the MHA are:
 \item{\bf AC variables}\index{AC variable}\index{algorithm
     communication variable}\index{variable!AC} (algorithm
     communication variables): Any C or C++ data structure can be
-    shared within a MHA chain. Access management and name space is
-    realised in MHA chain plugins ('mhachain' and
+    shared within an \mha{} chain. Access management and name space is
+    realised in \mha{} chain plugins ('mhachain' and
     'altplugs'). 
-    AC variables are not available to the MHA configuration language interface,
+    AC variables are not available to the \mha{} configuration language interface,
     although a read-only converter plugin \verb!acmon! is available.
   
 \item{\bf Runtime configuration}\index{runtime configuration}\index{configuration!runtime-}: Algorithms
   usually derive more parameters (runtime configuration)
-  from the MHA configuration language variables. 
+  from the \mha{} configuration language variables. 
   When a configuration variable changes through configuration language write 
   access, then the runtime configuration has to be recomputed.  
   Plugin developers are encouraged to encapsulate the runtime configuration in 
   a C++ class, which recomputes the runtime configuration from 
   configuration variables in the constructor.
-  The MHA supports lock-free and thread-safe replacement of the 
+  The \mha{} supports lock-free and thread-safe replacement of the 
   runtime configuration instance.
   See the programmers reference handbook for details.
 \end{itemize}
 
-\MHAfigure[][\linewidth]{Variable types in the MHA}{variables}
+\MHAfigure[][\linewidth]{Variable types in the \mha{}}{variables}
 
-\subsection{The MHA configuration language}
-\label{sec:script}\index{script language}\index{MHA script language}\index{language}\index{configuration}\index{hierarchical configuration}\index{configuration!hierarchical}\index{configuration language}\index{MHA configuration language}
+\subsection{The \mha{} configuration language}
+\label{sec:script}\index{script language}\index{\mha{} script language}\index{language}\index{configuration}\index{hierarchical configuration}\index{configuration!hierarchical}\index{configuration language}\index{\mha{} configuration language}
 
-The \mhad{} and most of the MHA plugins are controlled
-through the MHA configuration language. This language is implemented in the
+The \mhad{} and most of the \mha{} plugins are controlled
+through the \mha{} configuration language. This language is implemented in the
 MHAToolbox library. It allows hierarchical configuration similar to the
 concept of \Matlab{} structures. 
 Each configuration level (parser)\index{parser}
 can contain items like variables or sub-parsers. Properties of any item can be
 queried.  Write access to items can be connected with C++ callback functions
-which makes it possible to change the configuration and state of the MHA 
+which makes it possible to change the configuration and state of the \mha{} 
 and all plugins while the audio signal is being processed.
 
-The MHA configuration language consists of line-based human-readable
+The \mha{} configuration language consists of line-based human-readable
 text commands.
-The MHA configuration language interpreter receives commands by
+The \mha{} configuration language interpreter receives commands by
 reading text files or through a TCP network stream.  
-The MHA also provides access to the configuration language parser via
+The \mha{} also provides access to the configuration language parser via
 a C++ object, 
 which also uses the text interface\index{text interface},
-for embedding the MHA into other applications (e.g. Windows MHA
+for embedding the \mha{} into other applications (e.g. Windows \mha{}
 configurator GUI, \Matlab{} access).
 
-\subsubsection{Structure of the MHA configuration language}
+\subsubsection{Structure of the \mha{} configuration language}
 
-A MHA configuration language command has a very simple structure: Each
+A \mha{} configuration language command has a very simple structure: Each
 command consists of a left value, an operator\index{operator} and a
 right value. Three operators are defined:
 
@@ -90,24 +90,24 @@ right value. Three operators are defined:
   is used to query a value, type or other information of a variable or other
   nodes (with some exceptions).
 \item A {\bf descending operator "."} descends into the next level of the
-  hierarchical MHA configuration.
+  hierarchical \mha{} configuration.
 \end{itemize}
 
 Each left value is the name of a parser entry. Not all operators are
 available for all parser entries: A subparser supports only "?" and
 ".", a monitor only "?". The structure of parser entries is shown in
-\figref{parserelements}. In the configuration files, MHA script
+\figref{parserelements}. In the configuration files, \mha{} script
 language commands can be split up into multiple lines similar as in
 \Matlab{}: If a lines ends with "\verb!...!", the next line will be
 appended. This holds not for the command prompt (e.g.\ Windows
 framework, Configurator, TCP interface).
 
-\MHAfigure[][\linewidth]{MHA configuration language: These C++ classes 
+\MHAfigure[][\linewidth]{\mha{} configuration language: These C++ classes 
   (living in the namespace ``MHAParser'') can be used to implement monitor
   variables, configuration variables, and sub-hierarchies (parser\_t).
 }{parserelements}
 
-The MHA configuration language features strong static typing, the data type
+The \mha{} configuration language features strong static typing, the data type
 of a variable is defined by the plugin that implements this variable.
 Many configuration language commands like write access ("=") to variables can
 be connected to C++ callbacks by the plugin developer.
@@ -162,7 +162,7 @@ parser node.
 \index{multidimensional variable}%
 \index{variable!multidimensional}%
 
-The MHA configuration language supports vectors and matrices in a way similar
+The \mha{} configuration language supports vectors and matrices in a way similar
 to the \Matlab{} notation: Vectors are put into squared brackets, with
 the items separated by withespace (\Matlab{} row vectors). Matrices are
 noted as vectors of vectors, with each vector separated by a semicolon
@@ -204,7 +204,7 @@ vcomplex = [(1.3 + 2.7i) (2.0 - 1.1i) 6.3]
 
 \subsubsection{Text variables}\index{text variable}\index{variable!text}
 
-Strings in the MHA configuration language can contain any characters. Special
+Strings in the \mha{} configuration language can contain any characters. Special
 characters do not have to be quoted; quote characters are treated
 literally. Leading and trailing whitespace of strings is automatically
 removed. Vector elements in string vectors are separated by a single
@@ -221,7 +221,7 @@ strvec = [pears bananas green_apples]
 
 Numeric variables can have a restricted range, the value of keyword list 
 variables is always restricted to one of the keywords. New values are checked 
-against this range when the variable is changed through the MHA configuration 
+against this range when the variable is changed through the \mha{} configuration 
 language interface. For numeric variables, the range can be 
 $[x_{min},x_{max}]$ (boundaries included), $]x_{min},x_{max}[$
 (boundaries excluded) or a mixed version of both. If $x_{min}$ or
@@ -234,7 +234,7 @@ entries.
 \subsubsection{Variable Substitution and Environment
   Variables}\index{substitution}\index{environment variable}\index{variable!environment}
 
-Each node in the MHA configuration tree can define a set of text
+Each node in the \mha{} configuration tree can define a set of text
 substitutions.  The pattern to be replaced has the form "\$[VARNAME]",
 where VARNAME can be any text. Any occurrence of this pattern is
 replaced. The set of substitutions can be queried with the "?subst"
@@ -244,17 +244,17 @@ query command in the style
 set of text substitutions, which is not inherited by children parser
 nodes.
 
-Environment variables can be used in the MHA configuration language in the form
+Environment variables can be used in the \mha{} configuration language in the form
 "\$\{VARNAME\}", where VARNAME is the name of an environment variable. Each
 occurrence of \$\{VARNAME\} is replaced by its contents before interpreting the
-MHA configuration language, i.e.\ the left hand side or even operators can be part of
+\mha{} configuration language, i.e.\ the left hand side or even operators can be part of
 the substitution.
 
-\subsection{Communication between MHA Plugins}\index{AC variable}\index{variable!AC}\index{communication}
+\subsection{Communication between \mha{} Plugins}\index{AC variable}\index{variable!AC}\index{communication}
 
 Interaction of algorithms is a major issue in hearing aid
 development. In order to systematically analyse and control
-interaction problems, the MHA chain plugins 'mhachain' and
+interaction problems, the \mha{} chain plugins 'mhachain' and
 'concurrentchains' provide a mechanism for sharing parameters and
 states between algorithms. Any algorithm plugin can register selected
 algorithm communication (AC) variables (any data segment) to be public

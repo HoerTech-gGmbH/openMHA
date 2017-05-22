@@ -5,7 +5,7 @@
 \index{configuration file}%
 
 In this section, an example is shown on how to configure and start the
-MHA. First, a simple algorithm is designed, which implements a 
+\mha{}. First, a simple algorithm is designed, which implements a 
 linear hearing aid (equaliser). Then examples are given on
 how to start this algorithm in different situations (\Windows{}
 framework, \mhad{}, \Matlab{} processing).
@@ -13,17 +13,17 @@ framework, \mhad{}, \Matlab{} processing).
 \subsection{A linear hearing aid algorithm}%
 \label{sec:linha}%
 
-In this example, a MHA with a single chain will be configured. The
-input signal will be equalised in five frequency bands, using the MHA
+In this example, a \mha{} with a single chain will be configured. The
+input signal will be equalised in five frequency bands, using the \mha{}
 plugins \verb!fftfilterbank! and
 \verb!gain!. The sound level at input and
 output will be measured. Only spectral processing is required, thus
 the plugin \verb!overlapadd! will be
 used by the framework. The corresponding configuration file for this
 plugin is created (you will find the final version \verb!mhaex1.cfg!
-in the \verb!cfg!  directory of your MHA distribution).
+in the \verb!cfg!  directory of your \mha{} distribution).
 
-MHA configuration files usually start with an identification line:
+\mha{} configuration files usually start with an identification line:
 \begin{verbatim}
 #[MHAVersion 4.4]
 \end{verbatim}

@@ -1,6 +1,6 @@
 \section{Introduction}
  
-The HörTech Master Hearing Aid (MHA) is a software development
+The HörTech Master Hearing Aid (\mha{}) is a software development
 platform for signal processing algorithms and a software solution of a
 hearing aid prototype.
 %
@@ -14,8 +14,8 @@ The Master Hearing Aid has a layered structure as shown in
 \item The \textbf{audio backbone} is external to the master hearing
 aid.
 It is an abstraction for a source and a sink for audio data. 
-The MHA can use different audio backbones by selecting the corresponding
-MHA IO library.
+The \mha{} can use different audio backbones by selecting the corresponding
+\mha{} IO library.
 Usable audio backbones are: 
 The file system\footnote{several sound file formats are supported through 
 the use of the libsndfile library}, 
@@ -23,15 +23,15 @@ sound card drivers (Windows MME, Windows ASIO, Linux Alsa, Linux OSS),
 the Jack low latency sound server and router, 
 and network audio streams. 
 
-\item The {\bf MHA Framework}: selects the MHA IO library
-and passes the fragmented signal to the MHA plugins. The
+\item The {\bf \mha{} Framework}: selects the \mha{} IO library
+and passes the fragmented signal to the \mha{} plugins. The
 frameworks are platform dependant programs or libraries. Towards the
 user, a control interface is provided.
  
-\item A {\bf MHA Plugin} generally performs the
+\item An {\bf \mha{} Plugin} generally performs the
 signal processing, but plugins for signal flow management also exist.
 Each plugin forms one
-processing block; algorithms can consist of one or more plugins. MHA
+processing block; algorithms can consist of one or more plugins. \mha{}
 plugins communicate with the framework and with other plugins 
 through a simple ANSI-C interface. Plugins can work on waveform data
 (time domain) or STFT (frequency domain). 
@@ -39,13 +39,13 @@ Plugins can implement domain translations,
 e.g. FFT (fast fourier transform) and iFFT (inverse FFT) plugins exist.
 \end{itemize}
 
-Additionally, many tools of different kind are part of the MHA
+Additionally, many tools of different kind are part of the \mha{}
 software development platform: A toolbox library for easy development
-of real-time capable algorithms, many MHA Plugins for signal analysis
+of real-time capable algorithms, many \mha{} Plugins for signal analysis
 and basic signal modification, and applications to access the
 configuration space (e.g.\ GUI configurator, \Matlab{} access).
 
-An example of the possible signal flow in the MHA is shown in
+An example of the possible signal flow in the \mha{} is shown in
 \figref{multilayer}. The multi-channel input signal, symbolised by a
 set of microphones, is read by the framework and passed to the plugin
 'concurrentchains'. There, the data is duplicated and passed to all
@@ -59,14 +59,14 @@ applied to the data.
 
 The structure of this user manual is as follows: First (section
 \ref{sec:variables}), the variable concept is described for
-clarification of the nomenclature. Then, the MHA frameworks (section
+clarification of the nomenclature. Then, the \mha{} frameworks (section
 \ref{sec:frameworks}), followed by some example scenarios and a
-step-by-step description on how to start the MHA (section
+step-by-step description on how to start the \mha{} (section
 \ref{sec:scenarios}). Afterwards, a description of some \Matlab{}
 tools is given (section \ref{sec:matlab}). Finally, a section on
 tuning a low latency signal processing environment is added (section
 \ref{sec:system}). The Programmers Reference Handbook describes the
-programming interface of the MHA and the toolbox. MHA plugins are
+programming interface of the \mha{} and the toolbox. \mha{} plugins are
 documented in a separate document.
 
 \MHAfigure[][0.7\linewidth]{Schematic typical signal flow in
