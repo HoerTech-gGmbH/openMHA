@@ -36,8 +36,8 @@ error: octave_base_value::convert_to_str_internal (): wrong type argument '<unkn
 is connected to the required use of the qt graphics toolkit 
 http://savannah.gnu.org/bugs/?46466
 
---> Installed octave 4.2.1 manually - resolved
-
+--> Installed octave 4.2.1 manually
+! Solved
 ===
 
 Issues:
@@ -67,10 +67,15 @@ Do we really need to save/store these handles?!
 
 No, does seem so. Converting the handles to strings after using it seems to be a suitable workaround!
 
+! Solved
+
 -----
 
 % Client data is not updated/ saved after editing audiogram!
 ! solved
+
+BUT: Does not work for automatically generated Test user!
+Why?!
 
 ===
 % Remove
@@ -82,3 +87,4 @@ No, does seem so. Converting the handles to strings after using it seems to be a
 MatLab
 
 - Issue with plotting the fit in the main window at startup needs to be fixed.
+! Solved
