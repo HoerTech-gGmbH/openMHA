@@ -1,7 +1,6 @@
 function sGt = gainrule_2010K052_CR2_NALRP( sAud, sCfg )
   sAud = audprof2aud( sAud );
-  warning('this module contains hand-coded parameters! Do not use!');
-  sCfg
+  warning('this module contains hand-coded parameters! Do not use! See gainrule_2010K052_CR2_NALRP.m for details.');
   nLev = length(sCfg.levels);
   g_L = NalRP(sAud.l.htl,sAud.frequencies,sCfg.frequencies)';
   g_R = NalRP(sAud.r.htl,sAud.frequencies,sCfg.frequencies)';

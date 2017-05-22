@@ -76,6 +76,16 @@ No, does seem so. Converting the handles to strings after using it seems to be a
 
 BUT: Does not work for automatically generated Test user!
 Why?!
+- Test user is reload each time and generated from scratch, nerver added to audprofdb.
+See libaudprof>audprof_db_load 1561
+Should we change that?
+
+
+
+% Preset overwrites jack connection given in configuration file!
+Pitfall - working preset would have to be saved in connection manager first.
+Can we load preset only in the case that MHA is not connected?
+
 
 ===
 % Remove
