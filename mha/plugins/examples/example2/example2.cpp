@@ -15,7 +15,7 @@
 
 
 /*
- * A simple example MHA plugin written in C++
+ * A simple example of an \mha plugin written in C++
  *
  * This plugin scales one channel of the input signal, working in the
  * time domain. The scale factor and the scaled channel number is made
@@ -34,7 +34,7 @@ class example2_t : public MHAPlugin::plugin_t<int> {
     MHAParser::float_t factor;
 public:
     /** This constructor initializes the configuration language
-     * variables and inserts them into the MHA configuration tree. */
+     * variables and inserts them into the \mha configuration tree. */
     example2_t(algo_comm_t & ac,
                const std::string & chain_name,
                const std::string & algo_name);

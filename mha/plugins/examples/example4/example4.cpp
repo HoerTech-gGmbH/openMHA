@@ -14,7 +14,7 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
- * A simple example MHA plugin written in C++
+ * A simple example \mha plugin written in C++
  *
  * This plugin scales one channel of the input signal, working in the
  * time domain. The scale factor and the scaled channel number is made
@@ -45,8 +45,8 @@ class example4_t : public MHAPlugin::plugin_t<int> {
     void on_prereadaccess();
 public:
     /** This constructor initializes the configuration language
-     * variables and inserts them into the MHA configuration tree.
-     * It connects the MHA Events triggered by these configuration variables
+     * variables and inserts them into the \mha configuration tree.
+     * It connects the \mha Events triggered by these configuration variables
      * to the respective callbacks. */
     example4_t(algo_comm_t & ac,
                const std::string & chain_name,

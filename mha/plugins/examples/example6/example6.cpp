@@ -14,14 +14,14 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
- * A simple example MHA plugin written in C++
+ * A simple example \mha plugin written in C++
  *
  * This plugin calculates the RMS level of a given channel of the
  * input signal, working in the time domain. The channel number is
  * made accessible to the configuration structure, the result is
  * stored into a algorithm communication variable (AC variable).
  *
- * This plugin implementation uses the C++ macros for standard MHA
+ * This plugin implementation uses the C++ macros for standard \mha
  * plugins and a template class for algorithms with a thread safe
  * configuration space. The second item is important if the
  * configuration will be changed at runtime.
@@ -83,7 +83,7 @@ public:
  *
  * The base class MHAParser::parser_t provides the configuration
  * interface, the base class MHAPlugin::plugin_t provides standard
- * methods for MHA plugins (i.e. error handling) and functionality for
+ * methods for \mha plugins (i.e. error handling) and functionality for
  * thread safe runtime configuration and algorithm communication.
  *
  * Implementation see below.
