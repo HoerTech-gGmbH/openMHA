@@ -209,3 +209,10 @@ void example6_t::update_cfg()
 }
 
 MHAPLUGIN_DOCUMENTATION(example6,"example","")
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

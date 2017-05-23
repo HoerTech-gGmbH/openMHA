@@ -545,7 +545,7 @@ and other detailed informations please see \ref algocomm.
 
 Suppose you would want to step through the code of your \mha plugin with a 
 debugger.  This example details how to use the linux gdb debugger to
-inspect the example6_t::prepare() and example6_t::process() routines of
+inspect the \c example6_t::prepare() and \c example6_t::process() routines of
 \ref ex6
 example 6.
 
@@ -553,7 +553,9 @@ First, make sure that your plugin is compiled with the compiler option to
 include debugging symbols: Apply the -ggdb switch to all gcc, g++ invocations.
 
 Once the plugin is compiled, with debugging symbols, create a test
-configuration. For example 6, you could use
+configuration. For example 6, assuming there is an audio file named 
+input.wav in your working directory, you could create a configuration 
+file named `debugexample6.cfg', with the following content:
 
 \verbatim
 # debugexample6.cfg
@@ -569,56 +571,57 @@ mha.channel = 1
 cmd=start
 \endverbatim
 
-Start gdb using
+Assuming all your binaries and shared-object libraries 
+are in your `bin' directory (see README.md), you could 
+start gdb using
 \verbatim
 $ export MHA_LIBRARY_PATH=$PWD/bin 
 $ gdb $MHA_LIBRARY_PATH/mha
 \endverbatim
 
 Set breakpoints in prepare and process methods, and start execution.
-Note that specifying the breakpoint by symbol (example6_t::prepare) does not yet
+Note that specifying the breakpoint by symbol (\c example6_t::prepare) does not yet
 work, as the symbol lives in the \mha plugin that has not yet been loaded.
 Specifying by line number works, however.
 Specifying the breakpoint by symbol also works once the plugin is loaded
-(i.e. when the debugger stops in the first break point).
+(i.e. when the debugger stops in the first break point). You can set the 
+breakpoints like this (example shown here is run in gdb version 7.11.1):
 
 \verbatim
-(gdb) b example6.cpp:215
-No source file named example6.cpp.
-Make breakpoint pending on future shared library load? (y or [n]) y
-
-Breakpoint 1 (example6.cpp:215) pending.
 (gdb) run ?read:debugexample6.cfg
-Starting program: /home/tobias/autobuild_mha/mha/bin/i686-linux-gcc-3.3/mha ?read:debugexample6.cfg
+Starting program: {openMHA_directory}/bin/mha ?read:debugexample6.cfg
 [Thread debugging using libthread_db enabled]
-The Master Hearing Aid (MHA) server
-(c) 2005-2009 HoerTech gGmbH, Marie-Curie-Str. 2, D-26129 Oldenburg, Germany
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+The Open Master Hearing Aid (openMHA) server
+Copyright (c) 2005-2017 HoerTech gGmbH, D-26129 Oldenburg, Germany
 
-By starting this program you accept the license agreement
-provided with this software.
+This program comes with ABSOLUTELY NO WARRANTY; for details see file COPYING.
+This is free software, and you are welcome to redistribute it 
+under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3; 
+for details see file COPYING.
 
-[New Thread 0xb7d2f6b0 (LWP 21903)]
-[Switching to Thread 0xb7d2f6b0 (LWP 21903)]
 
-Breakpoint 1, example6_t::prepare (this=0x821ec38, tfcfg=@0x8213f38)
-    at ../src/examples/example6.cpp:215
-215         if( tfcfg.domain != MHA_WAVEFORM )
-Current language:  auto; currently c++
-(gdb) b example6_t::process
-Breakpoint 2 at 0xb795b6af: file ../src/examples/example6.cpp, line 186.
+Breakpoint 1, example6_t::prepare (this=0x6478b0, tfcfg=...)
+    at example6.cpp:192
+192	    if( tfcfg.domain != MHA_WAVEFORM )
+(gdb) b example6.cpp:162
+Breakpoint 2 at 0x7ffff589744a: file example6.cpp, line 162.
 (gdb) c
 Continuing.
 \endverbatim
 
-Next stop is the process() method. You can now examine and change the
-variables, step through the program as needed.
+Where `{openMHA_directory}' is the directory where openMHA is 
+located (which should also be your working directory in this case). 
+Next stop is the \c process() method. You can now examine and change the
+variables, step through the program as needed (using, for example `n' to 
+step in the next line):
 
 \verbatim
-Breakpoint 3, example6_t::process (this=0x821ec38, wave=0x821eb7c)
-    at ../src/examples/example6.cpp:186
-186         poll_config();
-(gdb) p *wave
-$1 = {buf = 0x823abf8, num_channels = 2, num_frames = 64, channel_info = 0x0}
+Breakpoint 2, example6_t::process (this=0x7ffff6a06c0d, wave=0x10a8b550)
+    at example6.cpp:162
+162	{
+(gdb) n
+163	    poll_config();
 (gdb) 
 \endverbatim
 
