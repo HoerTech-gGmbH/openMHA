@@ -14,10 +14,9 @@
 * the \mha configuration language, they need to be written in C++ rather than
 * pure C.
 *
-* In the \mha package a set of example plugins is included as source code
-* and binary format. These examples are the base of a step by step
-* tutorial on how to write a \mha plugin. See section \ref example_tut
-* for detailes.
+* In the \mha package a set of example plugins is included. These examples 
+* are the base of a step by step tutorial on how to write an \mha plugin. 
+* See section \ref example_tut for detailes.
 *
 * \mha plugins communicate with the \mha using a simple ANSI-C interface.
 * This way it is easy to mix plugins compiled with different C++ compilers.
@@ -29,7 +28,7 @@
 * The \mha C++ plugin interface consists of a few number of
 * method prototypes:
 *
-* The output domain (spectrum or waveform) of a \mha plugin
+* The output domain (spectrum or waveform) of an \mha plugin
 * will typically be the same as the input domain:
 *
 * - mha_wave_t * process(\ref mha_wave_t *): pure waveform processing
@@ -50,15 +49,15 @@
 * - void release(void)
 * .
 * have to be implemented.
-* The \mha will call the process() method only ater the prepare method has 
-* returned and before release() is invoked.
+* The \mha will call the \c process() method only ater the prepare method has 
+* returned and before \c release() is invoked.
 * It is guarantteed by the \mha framework that signal
-* processing is performed only between calls of <tt>prepare</tt> and
-* <tt>release</tt>. Each call of <tt>prepare</tt> is followed by a call
-* of <tt>release</tt> (after some optional signal processing).
+* processing is performed only between calls of <tt>prepare()</tt> and
+* <tt>release()</tt>. Each call of <tt>prepare()</tt> is followed by a call
+* of <tt>release()</tt> (after some optional signal processing).
 *
 * For configuration purposes, the plugin class has to export a method called 
-* parse() which implements the \mha configuration language.
+* \c parse() which implements the \mha configuration language.
 * We strongly recommend that you do not implement this method yourself,
 * but by inheriting from the class MHAParser::parser_t from the \mha toolbox,
 * directly or indirectly (inheriting from a class that itself inherits from
@@ -67,10 +66,10 @@
 * \section sec_plugif_cxx Connecting the C++ class with the C Interface
 *
 * A C++ class which provides the appropriate methods can be used as
-* a \mha Plugin by connecting it to the C interface using the
+* an \mha Plugin by connecting it to the C interface using the
 * \ref MHAPLUGIN_CALLBACKS macro. 
 *
-* The \mha Toolbox library provides a base class MHAPlugin::plugin_t<T>
+* The \mha Toolbox library provides a base class MHAPlugin::plugin_t\<T\>
 * (a template class) which can be used as the base class for a plugin class.
 * This base class implements some necessary features for \mha plugin developers
 * like integration into the \mha configuration language environment 

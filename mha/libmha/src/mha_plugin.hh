@@ -104,6 +104,7 @@ namespace MHAPlugin {
     /** 
         \ingroup plugif
         \brief The template class for C++ \mha plugins
+        \tparam runtime_cfg_t run-time configuration.
 
         \todo Describe all services provided by this class, so that the reason
         why it is recommended that all plugins use this class as their base is
@@ -491,9 +492,9 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
     This macro defines all required \mha Plugin interface functions and
     passes calls of these functions to the corresponding member functions
-    of the class `classname'. The parameters `indom' and `outdom' specify
-    the input and output domain of the processing method. The MHAInit()
-    and MHADestroy() functions will create or destroy an instance of
+    of the class \c `classname'. The parameters \c `indom' and \c `outdom' specify
+    the input and output domain of the processing method. The \c MHAInit()
+    and \c MHADestroy() functions will create or destroy an instance of
     the class. The approriate member functions have to be defined in the
     class. It is suggested to make usage of the MHAPlugin::plugin_t
     template class. Exceptions of type \ref MHA_Error are caught and
