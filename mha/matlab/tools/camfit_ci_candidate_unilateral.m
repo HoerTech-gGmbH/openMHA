@@ -90,7 +90,7 @@ function sGt = camfit_ci_candidate_unilateral(sAud_, sCfg, side)
           end
       end
       % avoid negative gains
-      sGt.(s) = (sGt.(s) + abs(sGt.(s))) / 2
+      sGt.(s) = (sGt.(s) + abs(sGt.(s))) / 2;
   end
   
 function g=gains(compr_thr_inputs, compr_thr_gains, compression_ratios,levels) 
