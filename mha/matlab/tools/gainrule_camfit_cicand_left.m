@@ -13,5 +13,5 @@ function sGt = gainrule_camfit_cicand_left(sAud, sCfg)
 % loudness model for hearing aid fitting: II. Hearing aids with multi-channel
 % compression." Brit. J. Audiol. (33) 157-170
 % This rule is modified to fit severe hearing losses, on left ear only.
-  sAud = audprof2aud( sAud );
+
 sGt = camfit_ci_candidate_unilateral(sAud, sCfg, 'l');

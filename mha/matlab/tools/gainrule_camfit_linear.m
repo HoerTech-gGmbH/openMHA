@@ -12,7 +12,9 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
 % Linear cambridge rule for hearing aid fittings.  
 % Implemented as described in B. Moore (1998), "Use of a loudness model for 
 % hearing-aid fitting. I. Linear hearing aids" Brit. J. Audiol. (32) 317-335
-  
+
+  libaudprof();
+
   intercept_frequencies = ...
       [125 250 500 750 1000 1500 2000 3000 4000 5000 5005];
   intercepts = [-11 -10 -8 -6 0 -1 1 -1 0 1 1];
@@ -20,15 +22,23 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
   intercepts = freq_interp_sh(intercept_frequencies, ...
 			      intercepts, ...
 			      sFitmodel.frequencies);
+  noisegate = 45;
+  global CAMFIT_NOISEGATE;
+  if ~isempty(CAMFIT_NOISEGATE)
+      noisegate = CAMFIT_NOISEGATE;
+  end
 
   % Interpolate audiogram
   for side=sFitmodel.side
+     sT = audprof.threshold_get(sAud, side, 'htl_ac');
+     htl.(side) = freq_interp_sh([sT.data.f],[sT.data.hl],...
+                                 sFitmodel.frequencies);
 %    htl.(side) = freq_interp_sh([sAud.(side).htl_ac.data.f],...
 %				[sAud.(side).htl_ac.data.hl],...
 %				sFitmodel.frequencies);
-     htl.(side) = freq_interp_sh([sAud.frequencies],...
-				[sAud.(side).htl],...
-				sFitmodel.frequencies);
+%     htl.(side) = freq_interp_sh([sAud.frequencies],...
+%				[sAud.(side).htl],...
+%				sFitmodel.frequencies);
     insertion_gains.(side) = htl.(side) * 0.48 + intercepts;
 
     % according to B. Moore (1998), "Use of a loudness model for hearing-aid
@@ -37,7 +47,10 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
     % practice.
     insertion_gains.(side)(insertion_gains.(side) < 0) = 0;
 
+    % set all gains to 0 for 0dB HL flat audiogram
+    insertion_gains.(side) = insertion_gains.(side) * any(htl.(side));
+    
     sGt.(side) = repmat(insertion_gains.(side), length(sFitmodel.levels),1);
-    sGt.noisegate.(side).level = 45*ones(size(sFitmodel.frequencies));
+    sGt.noisegate.(side).level = noisegate*ones(size(sFitmodel.frequencies));
     sGt.noisegate.(side).slope = ones(size(sFitmodel.frequencies));
   end

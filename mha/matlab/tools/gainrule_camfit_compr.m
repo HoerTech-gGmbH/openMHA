@@ -68,6 +68,12 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
   Lmid = speech_level_65_in_dc_bands;
   Gmid = gainrule_camfit_linear(sAud, sFitmodel);
 
+  noisegate = 45;
+  global CAMFIT_NOISEGATE;
+  if ~isempty(CAMFIT_NOISEGATE)
+      noisegate = CAMFIT_NOISEGATE;
+  end
+  
   for side=sFitmodel.side
     compression_ratio.(side) = minima_distance ./ max(Lmid+Gmid.(side)(end,:) - Lmin-Gmin.(side), 13);
     compression_ratio.(side) = max(compression_ratio.(side), 1);
@@ -75,9 +81,14 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
     %compression_ratio.r = max(compression_ratio.r, 1);
 
     sGt.(side) = gains(Lmin,Gmin.(side),compression_ratio.(side),sFitmodel.levels);
-    %sGt.r =
-    %gains(Lmin,Gmin.r,compression_ratio.r,sFitmodel.levels);
-    sGt.noisegate.(side).level = 45*ones(size(sFitmodel.frequencies));
+    
+    % set negative gains to zero
+    sGt.(side) = (sGt.(side) + abs(sGt.(side))) / 2;
+    
+    % set all gains to zero for 0dB HL flat audiogram
+    sGt.(side) = sGt.(side) * any(htl.(side));
+    
+    sGt.noisegate.(side).level = noisegate*ones(size(sFitmodel.frequencies));
     sGt.noisegate.(side).slope = ones(size(sFitmodel.frequencies));
   end
 

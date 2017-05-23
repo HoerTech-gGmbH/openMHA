@@ -1,4 +1,4 @@
-function sGt = camfit_ci_candidate_unilateral(sAud, sCfg, side)
+function sGt = camfit_ci_candidate_unilateral(sAud_, sCfg, side)
 % sGt = camfit_ci_candidate_unilateral(sAud, sCfg, side)
 % sAud.frequencies contains the audiogram frequencies
 % sAud.l.htl       contains the subject-specific hearing threshold levels in
@@ -22,7 +22,8 @@ function sGt = camfit_ci_candidate_unilateral(sAud, sCfg, side)
   LTASS_lev = [38.6 43.5 54.4 57.7 56.8 60.2 60.3 59.0 62.1 62.1 60.5 56.8 ...
              53.7 53.0 52.0 48.7 48.1 46.8 45.6 44.5 44.3 43.7 43.4 41.3 40.7];
   LTASS_intensity = 10.^(LTASS_lev/10);
-
+  sAud = audprof2aud( sAud_ );
+  
   % Compute level for 65dB speech in dyncomp bands. For the lowest 3 and 
   % the last (8th) band, this computation yields the same levels as detailed
   % in Moore 1999 for his border frequencies, if a lower cutoff frequency below
@@ -68,7 +69,7 @@ function sGt = camfit_ci_candidate_unilateral(sAud, sCfg, side)
   Gmin.r = htl.r + Conv - Lmin;
 
   Lmid = speech_level_65_in_dc_bands;
-  Gmid = gainrule_camfit_linear(sAud, sCfg);
+  Gmid = gainrule_camfit_linear(sAud_, sCfg);
 
   compression_ratio.l = minima_distance ./ max(Lmid+Gmid.l(end,:) - Lmin-Gmin.l, threshold);
   compression_ratio.l = max(compression_ratio.l, 1);
@@ -88,6 +89,8 @@ function sGt = camfit_ci_candidate_unilateral(sAud, sCfg, side)
               sGt.(s)(:,i) = 0;
           end
       end
+      % avoid negative gains
+      sGt.(s) = (sGt.(s) + abs(sGt.(s))) / 2
   end
   
 function g=gains(compr_thr_inputs, compr_thr_gains, compression_ratios,levels) 
