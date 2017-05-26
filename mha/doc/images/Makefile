@@ -18,9 +18,11 @@ all: structure_openmha.pdf structure_openmha.png
 
 structure_openmha.pdf: structure_openmha.dot
 	dot -Tpdf $< > $@
+	cp $@ ../flowcharts/fmt_pdf/$@
 
 structure_openmha.png: structure_openmha.dot
 	dot -Tpng $< > $@
+	cp $@ ../flowcharts/fmt_png/$@
 
 # Local Variables:
 # coding: utf-8-unix
