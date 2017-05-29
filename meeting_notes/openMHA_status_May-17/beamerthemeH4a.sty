@@ -1,0 +1,165 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LaTeX Beamer port of the official Hearing4all
+% Powerpoint template for talks.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Authors:
+%    Jörg-Hendrik Bach (j.bach@uni-oldenburg.de)
+%    Hendrik Kayser (hendrik.kayser@uni-oldenburg.de)
+%    Martin Krawczyk (martin.krawczyk@uni-oldenburg.de)
+%    Torben Wendt (torben.wendt@uni-oldenburg.de)
+% Date
+%    06.02.2014
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mode<all>
+\RequirePackage{helvet} % necessary for compatibility with H4a Corporate Design.
+\RequirePackage[T1]{fontenc} % simply necessary.
+\RequirePackage{xstring} % necessary for string comparison when parsing the ``university'' option.
+\RequirePackage{setspace} % necessary for better line spacing in frame titles.
+\RequirePackage{tikz,textpos} % necessary for fine tuning header and footer.
+\usetikzlibrary{fadings,positioning,calc} % necessary for colour gradient on title page and for calculating positions relative to page.
+
+%% options --> check for university UOL/MHH/LUH 
+\DeclareOptionBeamer{university}[]{\def\beamer@H4a@university{#1}}
+\ExecuteOptionsBeamer{university=none} % set default value
+\ProcessOptionsBeamer % check if user has given different option
+
+% include correct university logo based on option 'university'
+\IfStrEqCase{\beamer@H4a@university}{%
+    {UOL}{\newcommand{\Unilogo}{Logo_UOL.pdf}}%
+    {MHH}{\newcommand{\Unilogo}{Logo_MHH.pdf}}%
+    {LUH}{\newcommand{\Unilogo}{Logo_LUH.pdf}}%
+}[\newcommand{\Unilogo}{placeholder.pdf}]%
+
+%% remove navigation icons
+\setbeamertemplate{navigation symbols}{}
+
+%% define Hearing4all colours
+\definecolor{h4aGreen}{cmyk}{0.25,0,1,0}
+\definecolor{h4aBlueLight}{cmyk}{0.7,0,0,0}
+\definecolor{h4aBlueMedium}{cmyk}{1,0.2,0.05,0}
+\definecolor{h4aBlueDark}{cmyk}{1,0.6,0.1,0}
+\definecolor{medired}{rgb}{0.914,0.439,0.416}
+%% set colours for text elements
+\setbeamercolor{structure}{fg=black} 
+\setbeamercolor{titlelike}{fg=h4aBlueMedium} % has no effect
+\setbeamercolor{title}{fg=h4aBlueDark}
+\setbeamercolor{frametitle}{fg=h4aBlueDark} % doesn't have an effect, because the frametitle is manually added to and coloured in in the header
+\setbeamercolor{normal text}{fg=black}
+
+%% set colour for header separation (medium blue) and for background of footer (medium blue)
+\setbeamercolor{separation line}{parent=normal text,use=block title,bg=h4aBlueMedium,fg=white}
+\setbeamercolor{footline}{parent=normal text,use=block title,bg=h4aBlueMedium,fg=white}
+\setbeamercolor{footline section}{parent=normal text,use=block title,bg=h4aBlueMedium,fg=white}
+
+%% use H4a colours for all blocks except alert (which is red)
+\setbeamercolor{block title}{use=structure,fg=white,bg=h4aBlueMedium}
+\setbeamercolor{block title alerted}{use=alerted text,fg=white,bg=alerted text.fg}
+\setbeamercolor{block title example}{use=structure,fg=white,bg=h4aGreen}
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!15!bg}
+\setbeamercolor{block body alerted}{parent=normal text,use=block title alerted,bg=block title alerted.bg!15!bg}
+\setbeamercolor{block body example}{parent=normal text,use=block title example,bg=block title example.bg!15!bg}
+
+%% use h4aGreen squares for itemize, gradually getting smaller with each level
+\setbeamertemplate{itemize item}{\footnotesize\hbox{\vrule width 1ex height 1ex}}
+\setbeamertemplate{itemize subitem}{\scriptsize\hbox{\vrule width 1ex height 1ex}}
+\setbeamertemplate{itemize subsubitem}{\tiny\hbox{\vrule width 1ex height 1ex}}
+
+\setbeamercolor{item}{use={structure,example text},fg=h4aGreen}
+\setbeamercolor{subitem}{use={structure,example text},fg=h4aGreen}
+\setbeamercolor{subsubitem}{use={structure,example text},fg=h4aGreen}
+
+%% change TOC bullets to h4aBlueDark font on h4aGreen square background:
+\setbeamertemplate{sections/subsections in toc}[square]
+\setbeamercolor{section number projected}{fg=h4aBlueDark}
+
+%% use bold face for titles
+\setbeamerfont{title}{series=\bfseries,parent=structure} 
+\setbeamerfont{frametitle}{series=\bfseries,parent=structure}
+\setbeamerfont{author}{parent=structure}
+\setbeamerfont{institute}{parent=structure}
+\setbeamerfont{date}{size=\footnotesize,parent=structure}
+
+%% construct header: H4a logo on the left, then frametitle, then university logo (on the right)
+\providecommand\insertframetitle{} % this avoids an error in compilation
+% first: remove frame title from main frame body:
+\setbeamertemplate{frametitle}{}
+% define new header line
+\defbeamertemplate*{headline}{infolines theme}{
+    \leavevmode
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[shift={(0.2cm,-0.25cm)},anchor=north west] (h4alogo) at (current page.north west) {\includegraphics[height=1.2cm]{H4A_Logo_Print.pdf}};
+        \node[right=of h4alogo,anchor=north west,align=right,shift={(-0.7cm,0.55cm)}] (frametitle) {\hspace{1cm} \parbox[t][][t]{7.8cm}{\usebeamerfont{subtitle}\color{h4aBlueDark} \strut\insertframetitle\strut}};
+        \node[anchor=north east,align=right,shift={(-0.2cm,-0.45cm)}] (unilogo) at (current page.north east) {\includegraphics[width=2.5cm,height=0.9cm,keepaspectratio]{\Unilogo}\hspace{.3cm}\includegraphics[width=2.5cm,height=0.9cm,keepaspectratio]{HoerTech-Logo_freigestellt.png}\hspace{.3cm}\includegraphics[width=2.5cm,height=0.9cm,keepaspectratio]{logo_BatAndCat_large.png}};
+        \draw[line width=0.5ex,color=h4aBlueMedium] ($ (current page.north west) + (0,-1.7cm) $) -- ($ (current page.north east) + (0,-1.7cm) $) ;
+    \end{tikzpicture}
+\vskip1.8cm
+}
+
+
+%% construct footer: date on the left, then short title, then section name, then page number. Draw a green triangle in the bottom right corner (ugly solution, but it works..)
+\defbeamertemplate*{footline}{infolines theme}
+{
+  \leavevmode
+  \hbox{%
+      \begin{beamercolorbox}[wd=.10\paperwidth,ht=2.6ex,dp=1ex,center]{footline}%
+        \insertshortdate{}    
+      \end{beamercolorbox}% 
+       \begin{beamercolorbox}[wd=.50\paperwidth,ht=2.6ex,dp=1ex,left]{footline}%
+        \hspace{0.2cm}\insertshorttitle
+      \end{beamercolorbox}%
+     \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.6ex,dp=1ex]{footline}%
+       \hspace{0.2cm}\insertauthor
+      \end{beamercolorbox}%
+       \begin{beamercolorbox}[wd=.05\paperwidth,ht=2.6ex,dp=1ex,center]{footline}%
+        \insertframenumber{} / \inserttotalframenumber
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.02\paperwidth,ht=2.6ex,dp=1ex,left]{footline}%
+            \begin{tikzpicture}[remember picture, overlay]
+                  %\draw[fill=h4aGreen,draw=h4aGreen] (-0,-0.15) -- (0.47,-0.15) -- (0.47,0.22) --cycle;
+                  %\draw[fill=h4aGreen,draw=h4aGreen] (-0,-0.15) -- (0.4,-0.15) -- (0.4,0.28) --cycle;
+                   \node at (current page.south east) {
+            \begin{tikzpicture}[remember picture, overlay]
+                \draw[fill=h4aGreen,draw=h4aGreen] (0,0) -- +(-0.33cm,0) -- +(0cm,0.33cm) --cycle;
+            \end{tikzpicture}
+        };
+
+            \end{tikzpicture}
+      \end{beamercolorbox}}%
+      \vskip0pt%
+}
+
+%% design title page: fade from medium blue (top) to light blue (bottom) in the upper half, and use light blue for the lower half:
+\setbeamertemplate{title page}{
+    \begin{tikzpicture}[remember picture, overlay]
+    \node [shift={(0 cm,-1.7cm)}] at (current page.north west){   
+        \begin{tikzpicture}[remember picture, overlay]
+            \fill[h4aBlueLight] (0,0) rectangle (current page.south east); %(12,-5);
+            \fill[h4aBlueLight, path fading=north] (0,0) rectangle ($ (current page.south east) + (0,4cm) $);
+            \fill[h4aBlueMedium, path fading=south] (0,0) rectangle ($ (current page.south east) + (0,4cm) $);
+        \end{tikzpicture}%
+        };
+
+    % draw green triangle in bottom right corner
+        \node at (current page.south east) {
+            \begin{tikzpicture}[remember picture, overlay]
+                \draw[fill=h4aGreen,draw=h4aGreen] (0,0) -- +(-0.33cm,0) -- +(0cm,0.36cm) --cycle;
+            \end{tikzpicture}
+        };
+    \end{tikzpicture}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north west,align=right,shift={(1cm,-2cm)}] (title) at (current page.north west) {\parbox{10cm}{\usebeamerfont{title}\color{white}\strut\inserttitle\strut}};
+        \node[anchor=north west,align=right,below=0cm of title] (subtitle) {\parbox{10cm}{\usebeamerfont{subtitle}\color{white}\insertsubtitle\strut}};
+        \node[anchor=south west,align=right,shift={(1cm,0.4cm)}] (date) at (current page.south west) {\parbox{10cm}{\usebeamerfont{date}\color{white}\insertdate}};
+        \node[anchor=north west,align=right,above=0cm of date] (institution) {\parbox{10cm}{\usebeamerfont{institute}\color{white}\insertinstitute\strut}};
+        \node[anchor=north west,align=right,above=0cm of institution] (author) {\parbox{10cm}{\usebeamerfont{author}\color{white}\insertauthor\strut}};
+    \end{tikzpicture}
+}
+
+\mode<handout>
+
+\usepackage{pgfpages}
+\pgfpagesuselayout{4 on 1}[a4paper,landscape,border shrink=5mm]
+\setbeamertemplate{footline}[page number]
+
+\mode
+<all>
