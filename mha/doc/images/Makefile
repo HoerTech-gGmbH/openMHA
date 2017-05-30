@@ -13,7 +13,11 @@
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-all: structure_openmha.pdf structure_openmha.png
+IMAGES = \
+       structure_openmha.pdf \
+       structure_openmha.png
+
+all: $(IMAGES)
 
 
 structure_openmha.pdf: structure_openmha.dot
@@ -23,6 +27,9 @@ structure_openmha.pdf: structure_openmha.dot
 structure_openmha.png: structure_openmha.dot
 	dot -Tpng $< > $@
 	cp $@ ../flowcharts/fmt_png/$@
+
+clean:
+	rm -f $(IMAGES)
 
 # Local Variables:
 # coding: utf-8-unix

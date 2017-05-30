@@ -56,7 +56,7 @@ doc:
 	for m in $(DOCMODULES); do $(MAKE) -C $$m; done
 
 clean:
-	for m in $(MODULES); do $(MAKE) -C $$m clean; done
+	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
