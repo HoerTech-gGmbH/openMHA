@@ -34,8 +34,8 @@ MODULES = \
 	external_libs \
 
 DOCMODULES = \
-	mha/doc/images \
 	mha/doc/flowcharts \
+        mha/doc/images \
 	mha/doc \
 
 
