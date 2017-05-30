@@ -21,8 +21,6 @@
 
 function test_fshift_hilbert
 
-    return;
-
     % basic mha config for 2 channel stft
     desc.instance = 'test_fshift_hilbert';
     desc.nchannels_in = 2;
@@ -49,9 +47,14 @@ function test_fshift_hilbert
     % configure the new MHA
     mha_set(mha,'',desc);
     mha_set(mha, 'cmd', 'start');
-    
-    % time base for generating test signals (two blocks to fill stft window)
-    t = [1:desc.fragsize * 2] / desc.srate;
+
+    % create test signal. The delay of overlapadd as used here is 128 samples,
+    % so we need to put in 3 blocks to get the first block out correctly.
+    % We put one more buffer through, 4 altogether, to account for adaptation
+    % effects.
+
+    % time base for generating test signal
+    t = [1:desc.fragsize * 4] / desc.srate;
     
     % first channel has sinusoids below and above the shifted frequency
     % range, and is unaffected
@@ -60,15 +63,37 @@ function test_fshift_hilbert
     % second channel has sinusoid in shifted range
     s_in(2,:) = sin(2*pi*6000*t);
     
-    % process the signal in two blocks
-    mha_set(mha,'io.input',s_in(:,1:desc.fragsize));
-    mha_set(mha,'io.input',s_in(:,desc_fragsize+1:end));
+    % process the signal in three blocks
+    sample_indices = 1:desc.fragsize;
+    for block = 0:3
+      mha_set(mha,'io.input',s_in(:,sample_indices + block*desc.fragsize));
+    end
+    % last output corresponds to second input block
     s_out = mha_get(mha,'io.output');
+    
+    % Compare first channel input and output signal.
+    actual = s_out(1,:);
+    expected = s_in(1,sample_indices + desc.fragsize);
 
+    % We expect a minor but clearly detectable effect of the frequency shifting
+    % going on between the two test frequencies on the test signal because of the
+    % short analysis window. The effect will be in the order of -50dB SDR.
+    assert_difference_below(expected, actual, 10^(-45/20));
+
+    % check second channel output signal: Input frequency was 6000 Hz,
+    % output frequency should be 6040Hz.
+    actual = s_out(2,:);
     
-    ch1_input + [zeros(1,dl) ch2_input(1:(200-dl))];
-    
-    mha_set(mha, 'io.input', in_sig);
-    output_signal = mha_get(mha, 'io.output');
-    assert_almost(output_signal,out_sig,1e-6);
+    % helper function to compute squared error for a given phase
+    err = @(phi) mean((actual - sin(2*pi*6040*t(1:desc.fragsize) + phi)) .^ 2);
+
+    % initial search parameters
+    phi = 0.1;
+
+    % match the phase
+    [phi,e] = fminsearch(err, phi);
+
+    % the error in the shifted range should be in the order of -40 dB SDR
+    assert_difference_below(0,sqrt(e),10^(-40/20));
+
 end
