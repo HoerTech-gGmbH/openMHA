@@ -16,7 +16,7 @@
 include ../../config.mk
 include ../../magic.mk
 
-TARGETS=libMHAToolbox$(DYNAMIC_LIB_EXT)
+TARGETS=libopenMHA$(DYNAMIC_LIB_EXT)
 
 include ../../rules.mk
 include ./private.mk
@@ -60,7 +60,7 @@ OBJECTS += $(MHA_FFTW_OBJECTS) $(MHA_RFFTW_OBJECTS)
 
 CXXFLAGS += -I../../external_libs/$(PLATFORM_CC)/include
 
-$(BUILD_DIR)/libMHAToolbox$(DYNAMIC_LIB_EXT): $(OBJECTS:%.o=$(BUILD_DIR)/%.o)
+$(BUILD_DIR)/libopenMHA$(DYNAMIC_LIB_EXT): $(OBJECTS:%.o=$(BUILD_DIR)/%.o)
 
 ifeq "MinGW" "$(PLATFORM)"
 LDLIBS += -Wl,--out-implib,$(basename $@).a

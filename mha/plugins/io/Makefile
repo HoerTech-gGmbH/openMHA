@@ -31,7 +31,7 @@ CXXFLAGS += -I../../libmha/src
 CFLAGS += -I../../../external_libs/$(PLATFORM_CC)/include
 CFLAGS += -I../../libmha/src
 LDFLAGS += -L../../libmha/$(BUILD_DIR) -L../../../external_libs/$(PLATFORM_CC)/lib
-LDLIBS += -lMHAToolbox
+LDLIBS += -lopenMHA
 
 
 $(BUILD_DIR)/MHAIOJack$(PLUGIN_EXT): $(BUILD_DIR)/mhajack.o

@@ -122,7 +122,7 @@ CXXFLAGS += -I../../../../external_libs/$(PLATFORM_CC)/include
 CXXFLAGS += -I../../../libmha/src
 CFLAGS += -I../../../libmha/src
 LDFLAGS += -L../../../libmha/$(BUILD_DIR)
-LDLIBS += -lMHAToolbox
+LDLIBS += -lopenMHA
 
 
 # Local Variables:
