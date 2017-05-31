@@ -20,7 +20,7 @@
     echo ARCH=$ARCH
     PLATFORM=`uname -o | sed -e 's/GNU.Linux/linux/' -e 's/Cygwin/MinGW/' -e 's/Msys/MinGW/'`
     echo PLATFORM=$PLATFORM
-    GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/'`
+    GCC_VER=-`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/'`
     echo GCC_VER=$GCC_VER
     echo DYNAMIC_LIB_EXT=`uname -o | grep -q -e 'Linux' && echo ".so" || echo ".dll"`
 #    echo BUILD_DIR=build
