@@ -18,9 +18,14 @@ include ../../config.mk
 include ../../magic.mk
 
 ifeq (linux,$(PLATFORM))
-  LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):$(MHA_INSTALL_DIR)
-  export LD_LIBRARY_PATH
+    ifeq ($(LD_LIBRARY_PATH),)
+       LD_LIBRARY_PATH := ../libmha/$(BUILD_DIR)/
+    else
+       LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):$(MHA_INSTALL_DIR)
+       export LD_LIBRARY_PATH
+    endif 
 endif
+
 
 all:
 	$(MAKE) -C flowcharts
