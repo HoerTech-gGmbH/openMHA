@@ -30,6 +30,7 @@ endif
 all:
 	$(MAKE) -C flowcharts
 	$(MAKE)  MHA_reference.pdf MHA_manual.pdf mhacontrol_manual.pdf
+	$(MAKE)  plugins
 
 
 .PHONY : test images kernel parser plugins copyright mhadoc MHA_plugin_auto_doc.pdf clean
