@@ -55,7 +55,7 @@
 
 /**
    \ingroup mhatoolbox
-   \defgroup mhacomplex Complex aithmetics in the \mha
+   \defgroup mhacomplex Complex arithmetics in the \mha
 
 */
 
