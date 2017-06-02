@@ -12,9 +12,9 @@
 * 	.
 * 
 * \image html structure_openmha.png
-* \image latex structure_openmha.pdf "openMHA structure" width=0.5\textwidth
+* \image latex structure_openmha.pdf "openMHA structure" width=0.4\textwidth
 *
-* The openMHA command line application acts as a plugin host.
+* \ref mhascript "The openMHA command line application" acts as a plugin host.
 * It can load signal processing plugins as well as audio input-output
 * (IO) plugins.
 * Additionally, it provides the command line configuration interface and

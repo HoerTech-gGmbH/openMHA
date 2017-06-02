@@ -13,61 +13,8 @@
 %%% You should have received a copy of the GNU Affero General Public License, 
 %%% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-\section{Concept of Variables and Data Exchange in the \mha{}}
-\label{sec:variables}
 
-Accessibility of configuration variables\index{configuration variable}\index{variable!configuration}\index{variables} and
-data exchange between plugins (processing blocks) are an important issue in the
-\mha{}. In general, variable types in the \mha{} are distinguished by their
-different access methods. The variable types in the \mha{} are:
-
-\begin{itemize}
-\item{\bf Configuration variables}\index{configuration variable}\index{variable!configuration}: Read and
-  write accesses are possible through the \mha{} configuration language interface.
-  Configuration variables are implemented as C++ classes with a public data
-  member of the underlying C type.
-  Configuration variables can be read and modified from ``outside'' using the 
-  configuration language.
-  The plugin which provides the configuration variable can use 
-  the exposed data member directly.
-  All accesses through the \mha{} configuration language are checked for data
-  type, valid range, and access restrictions. 
-  See section \ref{sec:script} (page
-  \pageref{sec:script}) for details.
-  
-\item{\bf Monitor variables}\index{monitor variable}\index{variable!monitor}: Read access is possible
-  through the \mha{} configuration language. 
-  Write access is only possible from the C++ code. 
-  Internally, monitor variables have a similar C++ class interface
-  as configuration
-  variables. See section \ref{sec:script} (page \pageref{sec:script}) for
-  details.
-  
-\item{\bf AC variables}\index{AC variable}\index{algorithm
-    communication variable}\index{variable!AC} (algorithm
-    communication variables): Any C or C++ data structure can be
-    shared within an \mha{} chain. Access management and name space is
-    realised in \mha{} chain plugins ('mhachain' and
-    'altplugs'). 
-    AC variables are not available to the \mha{} configuration language interface,
-    although a read-only converter plugin \verb!acmon! is available.
-  
-\item{\bf Runtime configuration}\index{runtime configuration}\index{configuration!runtime-}: Algorithms
-  usually derive more parameters (runtime configuration)
-  from the \mha{} configuration language variables. 
-  When a configuration variable changes through configuration language write 
-  access, then the runtime configuration has to be recomputed.  
-  Plugin developers are encouraged to encapsulate the runtime configuration in 
-  a C++ class, which recomputes the runtime configuration from 
-  configuration variables in the constructor.
-  The \mha{} supports lock-free and thread-safe replacement of the 
-  runtime configuration instance.
-  See the programmers reference handbook for details.
-\end{itemize}
-
-\MHAfigure[][\linewidth]{Variable types in the \mha{}}{variables}
-
-\subsection{The \mha{} configuration language}
+\section{The \mha{} configuration language}
 \label{sec:script}\index{script language}\index{\mha{} script language}\index{language}\index{configuration}\index{hierarchical configuration}\index{configuration!hierarchical}\index{configuration language}\index{\mha{} configuration language}
 
 The \mhad{} and most of the \mha{} plugins are controlled
@@ -90,9 +37,9 @@ which also uses the text interface\index{text interface},
 for embedding the \mha{} into other applications (e.g. Windows \mha{}
 configurator GUI, \Matlab{} access).
 
-\subsubsection{Structure of the \mha{} configuration language}
+\subsection{Structure of the \mha{} configuration language}
 
-A \mha{} configuration language command has a very simple structure: Each
+An \mha{} configuration language command has a very simple structure: Each
 command consists of a left value, an operator\index{operator} and a
 right value. Three operators are defined:
 
@@ -110,17 +57,11 @@ right value. Three operators are defined:
 
 Each left value is the name of a parser entry. Not all operators are
 available for all parser entries: A subparser supports only "?" and
-".", a monitor only "?". The structure of parser entries is shown in
-\figref{parserelements}. In the configuration files, \mha{} script
+".", a monitor only "?". In the configuration files, \mha{} script
 language commands can be split up into multiple lines similar as in
 \Matlab{}: If a lines ends with "\verb!...!", the next line will be
 appended. This holds not for the command prompt (e.g.\ Windows
 framework, Configurator, TCP interface).
-
-\MHAfigure[][\linewidth]{\mha{} configuration language: These C++ classes 
-  (living in the namespace ``MHAParser'') can be used to implement monitor
-  variables, configuration variables, and sub-hierarchies (parser\_t).
-}{parserelements}
 
 The \mha{} configuration language features strong static typing, the data type
 of a variable is defined by the plugin that implements this variable.
@@ -269,19 +210,18 @@ the substitution.
 
 Interaction of algorithms is a major issue in hearing aid
 development. In order to systematically analyse and control
-interaction problems, the \mha{} chain plugins 'mhachain' and
-'concurrentchains' provide a mechanism for sharing parameters and
-states between algorithms. Any algorithm plugin can register selected
+interaction problems, the \mha{} chain plugins 'mhachain' provides 
+a mechanism for sharing parameters and states between algorithms. 
+Any algorithm plugin can register selected
 algorithm communication (AC) variables (any data segment) to be public
-within one signal processing
-chain. Other algorithms within the same processing chain can read and
-modify these AC variables. AC variables are accessed by name. Type and
-dimension are checked on each access. This concept does not only
-provide analysis of interaction aspects but also modular combination
-of signal processing strategies, e.g.\ separation of noise estimators
-and noise reduction strategies in different logical processing
-stages. A detailed description of the programming interface can be
-found in the Programmers Reference Handbook.
+within one signal processing chain. Other algorithms within the same 
+processing chain can read and modify these AC variables. AC variables 
+are accessed by name. Type and dimension are checked on each access. 
+This concept does not only provide analysis of interaction aspects 
+but also modular combination of signal processing strategies, 
+e.g.\ separation of noise estimators and noise reduction strategies 
+in different logical processing stages. A detailed description of 
+the programming interface can be found in the Developers Reference Handbook.
 
 
 %%% Local Variables: 
