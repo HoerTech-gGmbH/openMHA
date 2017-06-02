@@ -2,14 +2,13 @@
 
 \section{The \mhad{}}\label{sec:linuxmhaserver}\label{sec:frameworks}
 
-The \mhad{} ('mha' on \Linux{}, 'mha.exe' on \Windows{}) provides a
-control interface for the configuration and connects to the audio
-abstraction layer (MHA IO).
+The \mhad{} ('mha' on \Linux{}) provides a control interface for 
+the configuration and connects to the audio abstraction layer (MHA IO).
 %
 The text based user interface is available through a TCP network
 socket.
 %
-External network clients, e.g.\ telnet, or the \Matlab{} control
+External network clients, e.g.\ telnet, Netcat or the \Matlab{} control
 interface function 'mhactl' (see \secpageref{sec:mhactl}) can be used
 to access this interface.
 %
@@ -19,7 +18,7 @@ which hide the platform dependency (see
 %
 
 The \mhad{} and all of its plugins can be configured with the \mha{}
-configuration language (see \secpageref{sec:script}).
+configuration language (see \secpageref{sec:script} and \secpageref{sec:scenarios}).
 %
 
 
@@ -72,6 +71,7 @@ will be interpreted as \mha{} configuration language commands and sent to the
 %
 In daemon mode, these \mha{} configuration language commands are interpreted at the 
 start of each session.
+
 \verb!mha --daemon ?read:defaults.cfg! will read a default
 configuration file for each session.
 %
@@ -115,7 +115,7 @@ A configuration file with these settings can be read by sending a {\tt
   
   \mhavardesc{fragsize}{The fragment size in samples per audio
     channel. If 'MHAIOJack' is used, this has to match the JACK
-    fragment size.}
+    fragment size (see \secpageref{sec:scenarios} for an example).}
   
   \mhavardesc{srate}{Sampling rate in Hz. Please note that JACK allows only a
     fixed sampling rate given at the invocation of 'jackd'.}
@@ -160,16 +160,15 @@ also \figref{MHA-fw-states}.
 \subsection{Audio abstraction layer}%
 \label{sec:audioabstraction}
 
-The audio abstraction layer connects the audio backbone, i.e., ASIO,
+The audio abstraction layer connects the audio backbone, i.e.,
 Jack (see \secpageref{sec:jack}) or audio files, with the \mhad{}.
 %
-This layer consists of three modules: 'MHAIOJack' for low delay real
+This layer consists of two modules: 'MHAIOJack' for low delay real
 time processing with the JACK audio server (see \secpageref{sec:jack})
-on \Linux{}, 'MHAIOASIO' for real time processing on \Windows{}, and
-'MHAIOFile' for file to file processing (both platforms).
+on \Linux{} and 'MHAIOFile' for file to file processing (both platforms).
 
-\paragraph{The 'MHAIOJack' and 'MHAIOJackdb' audio IO modules}%
-\index{MHAIOJack}\index{MHAIOJackdb}%
+\paragraph{The 'MHAIOJack' audio IO module}%
+\index{MHAIOJack}%
 \index{Jack Audio Connection Kit}%
 
 The module 'MHAIOJack' provides communication with the JACK audio
@@ -183,11 +182,7 @@ MHAIOJack currently supports only fixed sample rates and fragment
 sizes. Changing the fragment size of JACK while processing will stop
 the \mha{} processing thread. If sample rates are required which are not
 provided by JACK, the {\tt downsample} and {\tt upsample} plugins can
-be used. The module 'MHAIOJackdb' allows configuration of \mha{} fragment
-sizes which are a integer fragment of the actual Jack fragment size,
-e.g., Jack runs with a fragment size of 1024 samples, but the \mha{} is
-confgured with 64 samples.  Other fragment sizes can be realised with
-the double buffering plugin {\tt db}.
+be used. 
 
 Variables of the 'MHAIOJack' module:
 
@@ -216,78 +211,6 @@ In the node \verb!ports!, monitor variables filled with available
 hardware and software ports of Jack can be found.
 
 \MHAfigure[][\linewidth]{Typical session using the \mhad{} and Jack}{linuxfw_screenshot}
-
-\paragraph{The 'MHAIOASIO' audio IO module}%
-\index{MHAIOASIO}%
-\index{ASIO}%
-
-The module 'MHAIOASIO' provides the interface to the ASIO driver
-layer. Variables of the 'MHAIOASIO' module:
-
-\begin{description}
-\mhavardesc{driver}{ASIO driver name. By setting this variable, one of
-the installed ASIO drivers will be loaded. This variable should be
-configured before setting the other ASIO parameters.}
-
-\mhavardesc{current\_clock\_source}{Index of clock source, to select a
-clock.}
-
-\mhavardesc{input\_channels}{Indices of input channels to use for
-sound i/o (indices start from 0).}
-
-\mhavardesc{output\_channels}{Indices of output channels to use for sound i/o (indices start from 0).}
-\end{description}
-
-Monitor variables of the 'MHAIOASIO' module, which contain information
-on the selected ASIO driver/hardware:
-
-\begin{description}
-\mhavardesc{hw\_channels\_in}{Number of input channels supported by
-driver}
-
-\mhavardesc{hw\_channels\_out}{Number of output channels supported by
-driver}
-
-\mhavardesc{latency\_in}{Input latency reported by driver}
-
-\mhavardesc{latency\_out}{Output latency reported by driver}
-
-\mhavardesc{bufsize\_min}{Minimum buffer size supported by driver}
-
-\mhavardesc{bufsize\_max}{Maximum buffer size supported by driver}
-
-\mhavardesc{bufsize\_preferred}{Driver likes this buffer size best}
-
-\mhavardesc{bufsize\_granularity}{"Granularity at which buffer sizes may differ". -1 means powers of 2 are supported}
-
-\mhavardesc{srate}{Sampling rate reported by asio driver}
-
-\mhavardesc{clock\_source\_index}{indices identifying clock sources}
-
-\mhavardesc{clock\_source\_associated\_channel}{index of first associated channel of clock sources}
-
-\mhavardesc{clock\_source\_associated\_group}{index of associated channel group of clock source}
-
-\mhavardesc{clock\_source\_name}{names of clock sources}
-
-\mhavardesc{channel\_input\_active}{activity vector of input channels}
-
-\mhavardesc{channel\_output\_active}{activity vector of output channels}
-
-\mhavardesc{channel\_input\_group}{group indices of input channel groups}
-
-\mhavardesc{channel\_output\_group}{group indices of output channel groups}
-
-\mhavardesc{channel\_input\_sample\_type}{data type used for input channels}
-
-\mhavardesc{channel\_output\_sample\_type}{data type used for output channels}
-
-\mhavardesc{channel\_input\_name}{names of input channels}
-
-\mhavardesc{channel\_output\_name}{names of output channels}
-
-\end{description}
-
 
 \paragraph{The 'MHAIOFile' audio IO module}%
 \index{MHAIOFile}%
