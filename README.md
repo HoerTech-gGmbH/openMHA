@@ -2,7 +2,7 @@
 
 HörTech Open Master Hearing Aid (openMHA) 
 
-1. Content of the Pre-Release 
+1. Content of the openMHA release 4.5 (2017-06-21) 
 
 The software contains the source code of the openMHA Toolbox library, of the 
 openMHA framework and command line application, and of a selection of algorithm 
@@ -11,7 +11,7 @@ plugins forming a basic hearing aid processing chain featuring
 - bilateral adaptive differential microphones for noise suppression
 - binaural coherence filter for feedback reduction and dereverberation
 - multi-band dynamic range compressor for hearing loss compensation
-
+@todo-release: update
 
 2. Source Code Overview 
 
@@ -22,8 +22,8 @@ Library can be found in the sub-directory mha/libmha. It contains the
 implementation of the MHA configuration language, of signal processing
 primitives and also many signal processing algorithms to by used in MHA
 plugins. The MHA command line application and its support framework 
-can be found in the sub-director mha/frameworks. The plugins contained in this 
-pre-release can be found in the sub-directory mha/plugins. The IO libraries, 
+can be found in the sub-directory mha/frameworks. The plugins contained in this 
+release can be found in the sub-directory mha/plugins. The IO libraries, 
 that connect the MHA e.g. to the sound card for live processing, or to sound 
 files for offline processing, are also found here. 
 
@@ -32,14 +32,16 @@ files for offline processing, are also found here.
 
 The MHA source code has to be compiled before the MHA can be used. While MHA in 
 general can be compiled for many operating systems and hardware platforms, in 
-this pre-release we concentrate on compilation on Ubuntu 16.04 for 64-bit 
-processors (x86_64). 
+this release we concentrate on compilation on Ubuntu 16.04 for 64-bit PC
+processors (x86_64) and on Debian 8 (jessie) for the Beaglebone Black
+single-board ARM computer. 
 
 Prerequisites: 
-64-bit version of Ubuntu 16.04 or later, 
+64-bit version of Ubuntu 16.04 or later,
+or a Beaglebone Black with Debian jessie installed.
 
 with the following software packages installed: 
-- g++-5 
+- g++-5 for Ubuntu, g++-4.9 for Debian
 - make 
 - libsndfile1-dev, 
 - libjack-jackd2-dev
@@ -81,19 +83,20 @@ loaded.
 We provide with this release several examples of configuration files containing 
 detailed explations. The files included are: 
 
-a) prerelease_adm.cfg
+a) adm.cfg
 	Adaptive Differential Microphones for signal enhancement. 
-b) prerelease_coherence.cfg
+b) coherence.cfg
 	Binaural coherence filter for acoustic feedback and noise reduction. 
-c) prerelease_dynamiccompression.cfg
+c) dynamiccompression.cfg
 	Multichannel dynamic range compressor for hearing loss compensation. 
-d) prerelease_allplugins.cfg 
+d) allplugins.cfg 
 	Implementation of the full hearing aid processing chain combining all 
 	plugins mentioned above. 
+@todo-release: update
 
 For example, we can start the example d) above by the following command: 
 
-mha ?read:configurations/prerelease_allplugins.cfg cmd=start cmd=quit 
+mha ?read:configurations/allplugins.cfg cmd=start cmd=quit 
 
 Together with these configuration files we provide also example audio data from 
 a binaural four-channel hearing aid setup in an anechoic environment:

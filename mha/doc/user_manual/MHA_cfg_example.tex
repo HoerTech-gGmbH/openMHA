@@ -14,7 +14,7 @@ how to start this algorithm in different situations (\mhad{}, \Matlab{} processi
 
 This example is meant to serve as an illustrative case and a more complete 
 configuration file with detailed explanations for dynamic compression is given 
-in the file \newline \emph{prerelease\_dynamiccompression.cfg}.
+in the file \newline \emph{dynamiccompression.cfg}.
 %
 In this example the host plugin, the plugin that loads other plugins, 
 will be \verb!transducers!. This plugin is used for calibrating the 
@@ -108,7 +108,7 @@ between the individual elements in each row of the matrix is
 determined by the value of \verb!gtstep! for the respective 
 band. The dynamic compressor also employs a common attack/decay low-pass filter
 to determine the input level (for in-depth explanation of the parameters 
-listed below, see file \emph{prerelease\_dynamiccompression.cfg}):
+listed below, see file \emph{dynamiccompression.cfg}):
 \begin{verbatim}
 # gaintable data in dB gains
 mha.overlapadd.mhachain.dc.gtdata = [[10 -10 -30];...
