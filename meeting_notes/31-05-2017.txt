@@ -1,0 +1,62 @@
+
+
+todo release
+
+- documentation
+	- finish application enginener and audiologist manual
+ 	- change file names: openMHA_...GUI
+								 ...manual
+	 							 ...reference
+								 ...plugins
+	- update readme (make doc), installation procedure
+	- put release number in documentation 
+	- shell script
+
+- GUI 
+	- compile a list of known issues --> github bug tracker
+	- test user cannot be saved (describe save as... approach)
+	- remove calibration wizard (Hendrik)
+	- documentation of levelmeter etc.?  (Hendrik)
+	
+- release number
+
+- beamformer plugins
+- single channel noise reduction
+
+- generate example configuration files (Tobias)
+
+- audio examples for beamformer (Hendrik)
+
+- clarify status of feed-back canceller
+
+- remove ACALOS fitting rules 
+
+
+===
+
+post release todos
+
+- enter bugs
+- release protocoll
+- forum - github tickets?
+
+- announce on openMHA.org (Hendrik)
+
+- GUI onb ARM   
+
+
+
+
+
+===
+ 
+- camfit rules is fixed
+
+
+- git branches: merge gui-devel with development --> merge in master
+
+
+Next meeting:
+Shopping list!
+
+
