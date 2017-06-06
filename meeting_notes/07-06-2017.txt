@@ -1,19 +1,20 @@
 
 
 
-. web presence
-	- wiki (gtihub?)
-	- table for delay values
-	
+- Web presence
+	- wiki 
+		- github? Everyone with an account can edit
+	- put table with delay values there - what details are needed?
 
-. tools
+	
+- tools
 	- delay measurement tool
-	
+		(script running jack_iodelay)
 
-. BBQ 
+- BBQ 
 	- Yes!? When?
 	
 	
-.  
+  
 	
 	

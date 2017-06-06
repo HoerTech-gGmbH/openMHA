@@ -1,6 +1,6 @@
 
 
-todo release
+Todos Release
 
 - documentation
 	- finish application enginener and audiologist manual
@@ -37,7 +37,9 @@ todo release
 post release todos
 
 - enter bugs
+
 - release protocoll
+
 - forum - github tickets?
 
 - announce on openMHA.org (Hendrik)
@@ -45,10 +47,9 @@ post release todos
 - GUI onb ARM   
 
 
-
-
-
 ===
+
+other
  
 - camfit rules is fixed
 
