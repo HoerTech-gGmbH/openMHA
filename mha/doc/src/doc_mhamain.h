@@ -1,6 +1,6 @@
 /**
 * \mainpage Overview
-* The HörTech Open Master Hearing Aid (\mha), is a development and evaluation 
+* The H&ouml;rTech Open Master Hearing Aid (\mha), is a development and evaluation 
 * software platform that is able to execute hearing aid signal processing in real-time
 * on standard computing hardware with a low delay between sound input and output.
 * \section str Structure
