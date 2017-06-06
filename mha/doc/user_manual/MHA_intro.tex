@@ -1,78 +1,37 @@
 \section{Introduction}
- 
-The HörTech Open Master Hearing Aid (\mha{}) is software development
-platform for signal processing algorithms and a software solution of a
-hearing aid prototype.
-%
-The Master Hearing Aid has a layered structure as shown in 
-\figref{structure_openmha}.
+The HörTech Open Master Hearing Aid (openMHA), is a development and evaluation software platform that is able to execute hearing aid signal processing in real-\/time on standard computing hardware with a low delay between sound input and output.
 
+\subsection{Structure}\label{index_str}
+The openMHA can be split into four major components :
+\begin{itemize}
+\item The openMHA command line application
+\item Signal processing plugins
+\item Audio input-\/output (IO) plugins
+\item The openMHA toolbox library
+\end{itemize} 
 \MHAfigure[][0.4\linewidth]{Layered structure of the master hearing aid}{structure_openmha}
 
-\begin{itemize}
+{\bf The openMHA command line application} acts as a plugin host. It can load signal processing plugins as well as audio input-\/output (IO) plugins. Additionally, it provides the command line configuration interface and a TCP/IP based configuration interface. Several IO plugins exist: For real-\/time signal processing, commonly the openMHA MHAIOJack plugin (see plugins\textquotesingle{} manual) is used, which provides an interface to the Jack Audio Connection Kit (JACK). Other IO plugins provide audio file access or TCP/IP-\/based processing.
 
-\item The \textbf{audio backbone} is external to the master hearing
-aid.
-It is an abstraction for a source and a sink for audio data. 
-The \mha{} can use different audio backbones by selecting the corresponding
-\mha{} IO library.
-Usable audio backbones are: 
-The file system\footnote{several sound file formats are supported through 
-the use of the libsndfile library}, 
-sound card drivers (Windows MME, Windows ASIO, Linux Alsa, Linux OSS), 
-the Jack low latency sound server and router, 
-and network audio streams. 
+{\bf openMHA plugins} provide the audio signal processing capabilities and audio signal handling. Typically, one openMHA plugin implements one specific algorithm. The complete virtual hearing aid signal processing can be achieved by a combination of several openMHA plugins.\subsection{Platform Services and Conventions}\label{index_pltf}
+The openMHA platform offers some services and conventions to algorithms implemented in plugins, that make it especially well suited to develop hearing aid algorithms, while still supporting general-\/purpose signal processing.\subsubsection{Audio Signal Domains}\label{index_asd}
+As in most other plugin hosts, the audio signal in the openMHA is processed in audio chunks. However, plugins are not restricted to propagate audio signal as blocks of audio samples in the time domain another option is to propagate the audio signal in the short time Fourier transform (STFT) domain, i.e. as spectra of blocks of audio signal, so that not every plugin has to perform its own STFT analysis and synthesis. Since STFT analysis and re-\/synthesis of acceptable audio quality always introduces an algorithmic delay, sharing STFT data is a necessity for a hearing aid signal processing platform, because the overall delay of the complete processing has to be as short as possible.
 
-\item The {\bf \mha{} Framework}: selects the \mha{} IO library
-and passes the fragmented signal to the \mha{} plugins. The
-frameworks are platform dependant programs or libraries. Towards the
-user, a control interface is provided.
- 
-\item An {\bf \mha{} Plugin} generally performs the
-signal processing, but plugins for signal flow management also exist.
-Each plugin forms one
-processing block; algorithms can consist of one or more plugins. \mha{}
-plugins communicate with the framework and with other plugins 
-through a simple ANSI-C interface. Plugins can work on waveform data
-(time domain) or STFT (frequency domain). 
-Plugins can implement domain translations, 
-e.g. FFT (fast fourier transform) and iFFT (inverse FFT) plugins exist.
-\end{itemize}
+Similar to some other platforms, the openMHA allows also arbitrary data to be exchanged between plugins through a mechanism called \doxyref{algorithm communication variables}{p.}{a00205} or short \char`\"{}AC vars\char`\"{}. This mechanism is commonly used to share data such as filter coefficients or filter states.\subsubsection{Real-\/Time Safe Complex Configuration Changes}\label{index_rtscc}
+Hearing aid algorithms in the openMHA can export configuration settings that may be changed by the user at run time.
 
-Additionally, many tools of different kind are part of the \mha{}
-software development platform: A toolbox library for easy development
-of real-time capable algorithms, many \mha{} Plugins for signal analysis
-and basic signal modification, and applications to access the
-configuration space (e.g.\ GUI configurator, \Matlab{} access).
+To ensure real-\/time safe signal processing, the audio processing will normally be done in a signal processing thread with real-\/time priority, while user interaction with configuration parameters would be performed in a configuration thread with normal priority, so that the audio processing does not get interrupted by configuration tasks. Two types of problems may occur when the user is changing parameters in such a setup:
+\begin{DoxyItemize}
+\item The change of a simple parameter exposed to the user may cause an involved recalculation of internal runtime parameters that the algorithm actually uses in processing. The duration required to perform this recalculation may be a significant portion of (or take even longer than) the time available to process one block of audio signal. In hearing aid usage, it is not acceptable to halt audio processing for the duration that the recalculation may require.
+\item If the user needs to change multiple parameters to reach a desired configuration state of an algorithm from the original configuration state, then it may not be acceptable that processing is performed while some of the parameters have already been changed while others still retain their original values. It is also not acceptable to interrupt signal processing until all pending configuration changes have been performed.
+\end{DoxyItemize}The openMHA provides a mechanism in its toolbox library to enable real-\/time safe configuration changes in openMHA plugins:
 
-An example of the possible signal flow in the \mha{} is shown in
-\figref{multilayer}. The multi-channel input signal, symbolised by a
-set of microphones, is read by the framework and passed to the plugin
-'concurrentchains'. There, the data is duplicated and passed to all
-chains as a waveform stream, or if requested by a processing chain, as
-short time Fourier transform (STFT) data. The user can select the chain to be
-played back; switching is allowed at any time.  If the last algorithm
-in the selected chain returns STFT, an inverse Fourier-transform is
-applied to the data.
+Basically, existing runtime configurations are used in the processing thread until the work of creating an updated runtime configuration has been completed in the configuration thread.
 
-\medskip
+In hearing aids, it is more acceptable to continue to use an outdated configuration for a few more milliseconds than blocking all processing.
 
-The structure of this user manual is as follows: First (section
-\ref{sec:variables}), the variable concept is described for
-clarification of the nomenclature. Then, the \mha{} frameworks (section
-\ref{sec:frameworks}), followed by some example scenarios and a
-step-by-step description on how to start the \mha{} (section
-\ref{sec:scenarios}). Afterwards, a description of some \Matlab{}
-tools is given (section \ref{sec:matlab}). Finally, a section on
-tuning a low latency signal processing environment is added (section
-\ref{sec:system}). The Programmers Reference Handbook describes the
-programming interface of the \mha{} and the toolbox. \mha{} plugins are
-documented in a separate document.
+The openMHA toolbox library provides an easy-\/to-\/use mechanism to integrate real-\/time safe runtime configuration updates into every plugin.\subsubsection{Plugins can Themselves Host Other Plugins}\label{index_bridge}
+An openMHA plugin can itself act as a plugin host. This allows to combine analysis and re-\/synthesis methods in a single plugin. We call plugins that can themselves load other plugins ``bridge plugins\textquotesingle{}\textquotesingle{} in the openMHA.
 
-\MHAfigure[][0.7\linewidth]{Schematic typical signal flow in
-  the Master Hearing Aid}{multilayer}
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "MHA_manual"
-%%% End: 
+When such a bridge plugin is then called by the openMHA to process one block of signal, it will first perform its analysis, then invoke (as a function call) the signal processing in the loaded plugin to process the block of signal in the analysis domain, wait to receive a processed block of signal in the analysis domain back from the loaded plugin when the signal processing function call to that plugin returns, then perform the re-\/synthesis transform, and finally return the block of processed signal in the original domain back to the caller of the bridge plugin.\subsubsection{Central Calibration}\label{index_clb}
+The purpose of hearing aid signal processing is to enhance the sound for hearing impaired listeners. Hearing impairment generally means that people suffering from it have increased hearing thresholds, i.e. soft sounds that are audible for normal hearing listeners may be imperceptible for hearing impaired listeners. To provide accurate signal enhancement for hearing impaired people, hearing aid signal processing algorithms have to be able to determine the absolute physical sound pressure level corresponding to a digital signal given to any openMHA plugin for processing. Inside the openMHA, we achieve this with the following convention: The single-\/precision floating point time-\/domain sound signal samples, that are processed inside the openMHA plugins in blocks of short durations, have the physical pressure unit Pascal ( $1 \mathrm{Pa} = 1 \mathrm{N} / \mathrm{m}^2$). With this convention in place, all plugins can determine the absolute physical sound pressure level from the sound samples that they process. A derived convention is employed in the spectral domain for STFT signals. Due to the dependency of the calibration on the hardware used, it is the responsibility of the user of the openMHA to perform calibration measurements and adapt the openMHA settings to make sure that this calibration convention is met. We provide the plugin {\ttfamily transducers} which can be configured to perform the necessary signal adjustments in most situations. 

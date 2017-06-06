@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2016 HörTech gGmbH
+# Copyright © 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -19,8 +19,13 @@
         "sources": [ "fw_t_wrap.cxx", "mhafw_lib.cpp" ],
       "include_dirs": ["../../libmha/src"],
       "libraries": ["-L<(module_root_dir)/../../libmha/x86_64-linux-gcc-5",
-                   "-lMHAToolbox"],
+                   "-lopenmha"],
         "cflags_cc": ["-fexceptions"]
     }
   ]
 }
+
+# Local Variables:
+# indent-tabs-mode: nil
+# coding: utf-8-unix
+# End:

@@ -1,5 +1,8 @@
 /**
 * \mainpage Overview
+* The HörTech Open Master Hearing Aid (\mha), is a development and evaluation 
+* software platform that is able to execute hearing aid signal processing in real-time
+* on standard computing hardware with a low delay between sound input and output.
 * \section str Structure
 * The openMHA can be split into four major components :
 * 	- \ref mhascript "The openMHA command line application"
@@ -9,9 +12,9 @@
 * 	.
 * 
 * \image html structure_openmha.png
-* \image latex structure_openmha.pdf "openMHA structure" width=0.5\textwidth
+* \image latex structure_openmha.pdf "openMHA structure" width=0.4\textwidth
 *
-* The openMHA command line application acts as a plugin host.
+* \ref mhascript "The openMHA command line application" acts as a plugin host.
 * It can load signal processing plugins as well as audio input-output
 * (IO) plugins.
 * Additionally, it provides the command line configuration interface and
@@ -27,7 +30,7 @@
 * The complete virtual hearing aid signal processing can be achieved by
 * a combination of several openMHA plugins. 
 *
-* \section pltf Platroform Services and Conventions
+* \section pltf Platform Services and Conventions
 *
 * The openMHA platform offers some services and conventions to
 * algorithms implemented in plugins, that make it especially well suited

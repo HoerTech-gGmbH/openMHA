@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -31,8 +31,7 @@ CXXFLAGS += -I../../libmha/src
 CFLAGS += -I../../../external_libs/$(PLATFORM_CC)/include
 CFLAGS += -I../../libmha/src
 LDFLAGS += -L../../libmha/$(BUILD_DIR) -L../../../external_libs/$(PLATFORM_CC)/lib
-LDLIBS += -lMHAToolbox
-
+LDLIBS += -lopenmha
 
 $(BUILD_DIR)/MHAIOJack$(PLUGIN_EXT): $(BUILD_DIR)/mhajack.o
 $(BUILD_DIR)/MHAIOJack$(PLUGIN_EXT): LDLIBS += $(JACK_LINKER_COMMAND)
