@@ -114,8 +114,8 @@
 
 \section{Introduction}
 
-The Master Hearing Aid (MHA) is an algorithm development and evaluation
-system.
+The H\"{o}rtech Open Master Hearing Aid (\mha{}) is an algorithm 
+development and evaluation platform.
 %
 The real-time system can be configured to behave as a hearing device.
 %
@@ -130,33 +130,35 @@ explains typical work flows.
 
 \section{Starting 'mhacontrol'}
 
-The control surface 'mhacontrol'\index{mhacontrol} is a Matlab
+The control surface 'mhacontrol'\index{mhacontrol} is a \Matlab{}
 application.
 %
-To start the control surface, please start Matlab, change into the
-directory with the application files, and type
+We assume that an instance of \mha{} is already running (see \EngineerManual) for 
+details). To start the control surface, please start \Matlab{}, change into the 
+directory with the application files (assuming your working directory to be the 
+main directory of \mha{}, this should be '\MatlabDir{}'), and type
 %
 \begin{verbatim}
 mahcontrol hostname
 \end{verbatim}
 %
 \verb!hostname! is the hostname\index{hostname} or IP address\index{IP
-  address} of the MHA.
+  address} of the \mha{}.
 %
-If the MHA runs on the same host as Matlab the hostname or IP address
+If the \mha{} runs on the same host as \Matlab{} the hostname or IP address
 can be omitted.
 %
-If the MHA and Matlab do not run on the same host, please make sure
+If the \mha{} and \Matlab{} do not run on the same host, please make sure
 that the firewall allows access to port\index{port}\index{firewall}
-33337 (or the port used by the actual MHA configuration), and that the
-MHA on the remote host is started listening on the appropriate network
+33337 (or the port used by the actual \mha{} configuration), and that the
+\mha{} on the remote host is started listening on the appropriate network
 devive (e.g., \verb!mha -i 0.0.0.0!).
 %
-A TCP network connection between MHA and mhacontrol is required.
+A TCP network connection between \mha{} and 'mhacontrol' is required.
 
 Please note that the control tool will overwrite many values of the
-MHA configuration files with values stored in the configuration of
-mhacontrol (stored in Matlab files on the control PC).
+\mha{} configuration files with values stored in the configuration of
+mhacontrol (stored in \Matlab{} files on the control PC).
 %
 This primarily affects the client data, i.e. configuration of dynamic
 compression and fine-tuning, and the calibration parameters.
@@ -172,7 +174,7 @@ The main screen (\figref{mhacontrol_main.png}) is divided into four regions:
 %
 In the top left area, a panel for algorithm selection\index{algorithm
   selection}\index{program selection} is provided, if the underlying
-MHA contains multiple algorithms or programs.
+\mha{} contains multiple algorithms or programs.
 %
 An algorithm\index{algorithm selection}\index{program selection} can
 be selected by clicking on an entry of the list.
@@ -193,7 +195,7 @@ A level meter can be opened by clicking 'Levels' (see Section
 
 Below the 'Actions' panel is the 'Administration'
 panel\index{administration} with start buttons for actions which are
-needed only for the maintainance of the MHA setup.
+needed only for the maintainance of the \mha{} setup.
 %
 These are 'Audio connections' (Section \ref{sec:audioconnections}) for
 a selection of input and output sound card connections.
@@ -201,7 +203,7 @@ a selection of input and output sound card connections.
 The calibration of the system can be accessed through 'Calibration'
 (see Section \ref{sec:calibration}).
 %
-The generic MHA configuration browser can be reached through 'Advanced
+The generic \mha{} configuration browser can be reached through 'Advanced
 control' (see Section \ref{sec:advanced}).
 
 In the bottom left area some status informations\index{status
@@ -252,15 +254,15 @@ The selected audiogram can be printed using the 'Print' button.
 \subsubsection*{In-situ Audiometer}%
 \index{audiometry}\index{audiometer}\index{in-situ audiometry}\index{audiogram}\index{hearing threshold}\index{HTL}\index{UCL}
 
-The MHA can provide in-situ audiometry through the audiometer dialog
+The \mha{} can provide in-situ audiometry through the audiometer dialog
 (\figref{mhacontrol_audiometer.png}).
 %
-Using in-situ audiometry requires a properly calibrated MHA.
+Using in-situ audiometry requires a properly calibrated \mha{}.
 %
-Even with a calibrated MHA, differences between in-situ- and
+Even with a calibrated \mha{}, differences between in-situ- and
 standard-audiometry are possible.
 %
-Currently, the MHA can measure the hearing threshold; UCL
+Currently, the \mha{} can measure the hearing threshold; UCL
 measurement is not supported.
 
 The audiometer can be controlled with the keyboard or with the
@@ -334,12 +336,12 @@ configured in frequency bands, by selecting \verb!gain! or
 \verb!maxgain! in the drop-down menu.
 
 To create a first fit, first select the appropriate gain prescription
-rule from the list. In MHA configurations with a unilateral
+rule from the list. In \mha{} configurations with a unilateral
 compressor, also the ear to be fitted must be selected\footnote{The
   selection of an ear in the fitting dialog does not affect any signal
-  routing. A correct mapping of MHA input and output channels to the
+  routing. A correct mapping of \mha{} input and output channels to the
   correct ear must be assured.}. Pressing the `Create First Fit'
-button will create a first fit, upload it to the MHA and store it as a
+button will create a first fit, upload it to the \mha{} and store it as a
 preset in the preset list. The fine-tuning parameters are set to
 default values.  A first fit can not be overwritten by a fine-tuned
 preset.  Creating a new first fit (e.g. after selecting another
@@ -358,7 +360,7 @@ shows a list of available sound files, a list of check boxes for
 channel selection, and control elements for the other configurable
 parameters of the underlying \verb!addsndfile! plugin.
 %
-The number of microphone channels and the channel order depends on the MHA
+The number of microphone channels and the channel order depends on the \mha{}
 configuration.
 %
 Input channels can be selected for playback by activating their check
@@ -401,7 +403,7 @@ and output channels to specific hardware audio channels, see
 \figref{mhacontrol_audio_connections.png} for a screenshot (this
 requires the JACK audio backend).
 %
-Each MHA input channel can be connected to a hardware input, and
+Each \mha{} input channel can be connected to a hardware input, and
 each output channel can be connected to a hardware output.
 %
 Connections can be saved in presets that are listed in the left panel of the connection dialog.
@@ -412,7 +414,7 @@ Please note that in the connection dialog only connections to hardware
 ports are supported.
 %
 If you need connections to software ports, please use JACK connection
-tools on the MHA computer.
+tools on the \mha{} computer.
 %
 
 \MHAfigure[][0.8\linewidth]{Audio connection manager.}{mhacontrol_audio_connections.png}
@@ -518,7 +520,7 @@ faces the the loudspeaker exactly. \index{input calibration}\index{microphone ca
 See \figref{mhacontrol_calibration_wiz3.png} for a screen shot of the
 calibration wizard page.
 %
-If the MHA provides a loud speaker output which has been
+If the \mha{} provides a loud speaker output which has been
 calibrated properly in the previous step, it can be used for playback
 of the speech shaped noise.
 %
@@ -531,24 +533,24 @@ In the last stage (see \figref{mhacontrol_calibration_wiz4.png}), the
 calibration values and receiver response can be verified.
 %
 If you press 'Finish', the calibration based on the previous
-calibration steps will be uploaded to the MHA and stored in the
+calibration steps will be uploaded to the \mha{} and stored in the
 calibration database.
 
 \MHAfigure{Calibration wizard, final page.}{mhacontrol_calibration_wiz4.png}
 
 \subsection{Advanced control}\label{sec:advanced}\index{advanced control}\index{mhagui\_generic}
 
-A generic parameter control interface to the MHA is available. See
+A generic parameter control interface to the \mha{} is available. See
 \figref{mhacontrol_advanced.png} for a typical root level dialog.
 %
-A description of this generic interface can be found in the MHA
+A description of this generic interface can be found in the \mha{}
 manual.
 
-\MHAfigure{Generic MHA parameter interface.}{mhacontrol_advanced.png}
+\MHAfigure{Generic \mha{} parameter interface.}{mhacontrol_advanced.png}
 
 \section{Appendix}
 
-\subsection{MHA backend plugins}
+\subsection{\mha{} backend plugins}
 
 These plugins are automatically located by the mhacontrol interface:
 %
@@ -568,4 +570,4 @@ These plugins are automatically located by the mhacontrol interface:
 
 \end{document}
 
-% LocalWords:  audiogram MHA LTASS
+% LocalWords:  audiogram \mha{} LTASS
