@@ -16,13 +16,15 @@ The example plugin file \c example1.cpp demonstrates the easiest way to
 implement an \mha Plugin. 
 It attenuates the sound signal in the first channel by multiplying the sound
 samples with a factor.
-The plugin class exports 5 methods, 
-but only 2 of them need a non-empty implementation.
+The plugin class MHAPlugin::plugin_t exports several methods, 
+but only two of them need a non-empty implementation: \c prepare() method 
+is a pure virtual function and \c process() is called when signal processing 
+starts.
 
 \skip mha_plugin.hh
 \until Do nothing in release
 
-Every plugin implementation should include the mha_plugin.hh header
+Every plugin implementation should include the 'mha_plugin.hh' header
 file.  C++ helper classes for plugin development are declared in this
 header file, and most header files needed for plugin development are
 included by mha_plugin.hh. 
@@ -36,7 +38,7 @@ plugin is visible in the \mha configuration tree.
 The constructor has to accept 3 parameters of correct types.
 In this simple example, we do not make use of them.
 
-The release method is used to free resources after signal processing.
+The \c release() method is used to free resources after signal processing.
 In this simple example, we do not allocate resources, so there is no need to
 free them.
 
@@ -46,10 +48,10 @@ free them.
 \param signal_info Contains information about the input signal's parameters,
                   see \ref mhaconfig_t.
 
-The prepare method of the plugin is called before the signal
+The \c prepare() method of the plugin is called before the signal
 processing starts, when the input signal parameters like domain,
 number of channels, frames per block, and sampling rate are known.
-The prepare method can check these values and raise an exception if the 
+The \c prepare() method can check these values and raise an exception if the 
 plugin cannot cope with them, as is done here.
 The plugin can also change these values if the signal processing performed 
 in the plugin results in an output signal with different parameters.

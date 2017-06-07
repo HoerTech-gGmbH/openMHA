@@ -16,12 +16,12 @@ underlying C type. Configuration variables can be read and modified from
 ``outside'' using the configuration language. The plugin which provides 
 the configuration variable can use the exposed data member directly. All 
 accesses through the \mha configuration language are checked for data type, 
-valid range, and access restrictions. See section \ref scriptlng for details.
+valid range, and access restrictions. 
 \addindex monitor variable
 	- <B> Monitor variables </B>: Read access is possible through the 
 \mha configuration language. Write access is only possible from the C++ code. 
 Internally, monitor variables have a similar C++ class interface as 
-configuration variables. See section \ref scriptlng for details.
+configuration variables.
 \addindex AC variable
 	- <B> AC variables </B> (\ref algocomm "algorithm communication variables"): 
 Any C or C++ data structure can be shared within an \mha chain. Access management and 
