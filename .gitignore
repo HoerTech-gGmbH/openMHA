@@ -26,6 +26,8 @@ build
 mha.creator.user
 
 # Local Variables:
+mha/matlab/tools/octave-workspace
+
 # coding: utf-8-unix
 # End:
 meeting_notes/openMHA_status_May-17/openMHA_status_June-17.aux

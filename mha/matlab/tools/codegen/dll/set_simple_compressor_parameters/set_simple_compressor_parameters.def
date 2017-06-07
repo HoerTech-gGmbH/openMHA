@@ -1,0 +1,14 @@
+DLL {
+	global:
+		emxCreate_real_T;
+		emxCreateWrapper_real_T;
+		emxCreateND_real_T;
+		emxCreateWrapperND_real_T;
+		emxDestroyArray_real_T;
+		set_simple_compressor_parameters;
+		simple_compressor;
+		set_simple_compressor_parameters_initialize;
+		set_simple_compressor_parameters_terminate;
+	local:
+		*;
+};

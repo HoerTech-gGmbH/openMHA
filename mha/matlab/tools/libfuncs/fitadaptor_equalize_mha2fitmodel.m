@@ -1,0 +1,11 @@
+function sFitModel = fitadaptor_equalize_mha2fitmodel( sMHACfg )
+  sFitModel = struct;
+  fftlen = sMHACfg.mhaconfig_in.fftlen;
+  srate = sMHACfg.mhaconfig_in.srate;
+  fftfreqs = [1:fftlen] / fftlen * srate;
+  bins = floor(fftlen/2)+1;
+  binfreqs = fftfreqs(1:bins);
+  sFitModel.frequencies = binfreqs;
+  sFitModel.edge_frequencies = [1,mean([binfreqs(1:end-1);binfreqs(2:end)]),srate/2];
+  sFitModel.levels = [0 65];
+  sFitModel.channels = sMHACfg.mhaconfig_in.channels;
