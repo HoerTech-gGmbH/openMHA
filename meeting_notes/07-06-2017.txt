@@ -1,20 +1,61 @@
+*Wed, 07.06.2017, 14h*
+
+__Attendees:__
+Tobias, Frasher, Hendrik
 
 
-
-- Web presence
-	- wiki 
-		- github? Everyone with an account can edit
-	- put table with delay values there - what details are needed?
+1. developers manual and application engineers manuals work
+	- examples work
+	- Introductions to be checked
+	- some figures to be updated: JACK, advanced GUI 
+	- "doxygen is straightforward and easy-to-use" (Frasher) 
+	- remove html hacking stuff from doxygen
+	- requirements to compile documentation -> check on a fresh Ubuntu installation, virtual box (Frasher)
+	
+	- plugin documentation (?) 
 
 	
-- tools
+2. GUI	
+	- remove audiometer
+	- take screenshots
+
+	
+3. plugins 
+	- example configuration files renamed (pre-release removed)
+	- Tobias knows what to do about beamformer plugins
+	- Ann Spriet FB canceler: unstable, we can deliver this or deliver many plugins or Kamil will fix it in time
+	- single channel noise reduction - copy ABCIT configuration 
+
+	
+4. Web presence
+	- wiki 
+		- github - Everyone with an account can edit
+	- put table with delay values there - what details are needed?
+		soundcard, how is it connected, kernel version, CPU  
+	- put doxygen-generated html on the web (at some time) 
+	
+	
+5. tools
 	- delay measurement tool
 		(script running jack_iodelay)
 
-- BBQ 
-	- Yes!? When?
+
+6. shopping list
+	- next week
+	- investigate hardware options
+
+
+7. BBQ 
+	- Yes!? When? June, 21st at Tobias' house (Johann-Gerdes-Str. 44)
 	
 	
+8. Request by guy from San Diego 
+	- Software skills crucial for a collaboration
+	- "make openMHA running on openspeechlab system"
+	- System is of general interest, floating point, but is too slow for hearing aid processing 
+	
+
+
   
 	
 	
