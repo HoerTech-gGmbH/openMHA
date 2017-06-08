@@ -83,7 +83,8 @@
 * unsupported number of input channels at preparation time,
 * unsupported combinations of values in the plugin's variables during
 * configuration, it should throw a C++ exception.
-* The exception should be of type MHAError. Exceptions of this type are caught by the MHAPLUGIN_CALLBACKS macro for further error
+* The exception should be of type MHAError. Exceptions of this type are caught by the 
+* \ref MHAPLUGIN_CALLBACKS macro for further error
 * Reporting.
 *
 * Throwing exceptions in response to unsupported configuration changes does not

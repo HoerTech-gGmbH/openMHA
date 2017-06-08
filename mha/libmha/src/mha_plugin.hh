@@ -521,6 +521,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
         return 1;                                               \
     }                                                           \
                                                                 \
+
 /** \ingroup plugif
 
     \brief Wrapper macro for the plugin documentation interface
