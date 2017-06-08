@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = acsave acmon
+SUBDIRS = acmon acsave acSteer
 
 include ../../../rules.mk
 
