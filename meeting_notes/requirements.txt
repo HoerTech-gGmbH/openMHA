@@ -1,0 +1,20 @@
+Getting openMHA
+
+1. git
+
+Packages needed for installing openMHA (development, using ./configure && make):
+
+1. libsndfile1-dev
+2. Octave (for tests)
+(g++-5 was available by default)
+
+Documentation specific
+
+1. xfig
+2. texlive-font-utils (a very large package 
+(~700MB); needed for epstopdf)
+3. doxygen
+4. texlive (~500MB; needed for pdflatex)
+5. texlive-latex-extra (needed for a4wide.sty)
+6. graphviz (strange - make doesn't complain, but 
+the .pdf and .png files produced are emtpy)
