@@ -50,7 +50,7 @@ with the following software packages installed:
 
 4. Compilation instructions: 
 
-After downloading and unpacking the prerelease package or cloning from github
+After downloading and unpacking the openMHA package, or cloning from github,
 compile the MHA with ./configure && make
 
 4.1 Installation instructions: 
