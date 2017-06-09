@@ -18,12 +18,8 @@ include ../../config.mk
 include ../../magic.mk
 
 ifeq (linux,$(PLATFORM))
-    ifeq ($(LD_LIBRARY_PATH),)
-       LD_LIBRARY_PATH := ../libmha/$(BUILD_DIR)/
-    else
-       LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):../libmha/$(BUILD_DIR)/
-       export LD_LIBRARY_PATH
-    endif 
+    LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):../libmha/$(BUILD_DIR)/
+    export LD_LIBRARY_PATH
 endif
 
 
