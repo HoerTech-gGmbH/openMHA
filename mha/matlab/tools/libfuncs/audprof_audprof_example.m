@@ -16,8 +16,8 @@ function sAudProf = audprof_audprof_example( type )
 	audprof_threshold_entry_add([],fAud,[10 15 30 40 45 50 65 65 75 65 65]);
     sAudProf.r.htl_ac = ...
 	audprof_threshold_entry_add([],fAud,[20 15 20 30 35 35 40 55 70 65 85]);
-    sAudProf.l.acalos = dummy_acalos_l;
-    sAudProf.r.acalos = dummy_acalos_r;
+%    sAudProf.l.acalos = dummy_acalos_l;
+%    sAudProf.r.acalos = dummy_acalos_r;
    case 'flat40'
     sAudProf = audprof_audprof_flat(40);
    case 'flat50'
