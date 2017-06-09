@@ -1,0 +1,91 @@
+<p><em>Wed, 05.04.2017, 14h</em></p>
+<p><strong>Attendees:</strong> Tobias, Frasher, Giso, Hendrik</p>
+<ol style="list-style-type: decimal">
+<li>We need protocols of our meetings
+<ul>
+<li>Hendrik is will take notes</li>
+</ul></li>
+<li>Release numbers
+<ul>
+<li>Options:
+<ul>
+<li>do it manually (Hendrik checks out mechanism in github)<br />
+&gt; github simply uses <code>git tag</code> [HK, 06.04.2017]</li>
+<li>Giso has written a half-automated release number generation script for TASCAR</li>
+<li>It is important to store release number in data logging</li>
+</ul></li>
+<li>Release number format: x.yz
+<ul>
+<li>x: Major release (e.g. yearly release defined in NIH project milestones</li>
+<li>y: updates and bug fixes</li>
+<li>z: minor fixes</li>
+</ul></li>
+<li>We will have a protocol to be followed for the release process that can contain manual steps to do</li>
+<li>Suggestion: A new release is created whenever a push from the GH shadow repository's master branch is done, following on a squash commit from GH shadow-development to GH shadow master (&quot;release branch&quot;)</li>
+</ul></li>
+<li>delay-and-sum beamformer
+<ul>
+<li>implementation finished</li>
+<li>unit test to be performed [Frasher]</li>
+</ul></li>
+<li>openMHA documentation
+<ul>
+<li>still messy</li>
+<li>Everyone should have a look on the current structure in the openMHA repository and give Frasher feedback</li>
+<li>Example code needs to be reviewed and updated</li>
+<li>Documentation branch (doc-devel) in GH shadow repository will be merged in development branch</li>
+</ul></li>
+<li>Frequency shifter
+<ul>
+<li>Which one of the three to be taken? --&gt; fshift_hilbert</li>
+<li>test is needed</li>
+</ul></li>
+<li>Octave fitting GUI
+<ul>
+<li>Many problems to be fixed</li>
+<li>Currently: fix as many problems as possible, if appropriate some functionality (e.g., printing dialogue) can be removed or made dependent on Software used and integration left for later (after June'17 release)</li>
+<li>Aim for long perspective solution needs to be defined</li>
+<li>Data needs to be stored in non-.mat format, should be open source and open standard
+<ul>
+<li>XML? - That's '90s</li>
+<li>Frasher will take a look on JSON</li>
+</ul></li>
+<li>GUI is slow under octave (compared to running it in MatLab)
+<ul>
+<li>use profiling to figure out where the bottlenecks are</li>
+</ul></li>
+</ul></li>
+<li>Configuration interface
+<ul>
+<li>Needs to be fixed (I don't remember the details and didn't take notes, sorry!)</li>
+</ul></li>
+</ol>
+<p>After session (without Giso)</p>
+<ol start="8" style="list-style-type: decimal">
+<li>GH-pages
+<ul>
+<li>Put link to repository on openMHA.org/download (so far only download link and clone command is there) [Hendrik]</li>
+</ul></li>
+<li>openMHA vs. MHA
+<ul>
+<li>Strategic decision on head-of-R&amp;D level needed urgently</li>
+<li>According to that plugin interface in openMHA might need to be changed - to be done before June'17 release</li>
+</ul></li>
+<li>Internal (i.e., Medi/Hoertech-users) feedback
+<ul>
+<li>Currently, feedback is send to Hendrik from medi-users (Ben W., Ayham Z.)</li>
+<li>Leave it like this for the time being, as this provides a low threshold for reporting also minor bugs like typos and non-crucial inconsistencies in installation guide</li>
+<li>Have an eye on the evolution of this process</li>
+</ul></li>
+<li>Beamformer (BF) plugins, plugin modularity
+<ul>
+<li>We try to keep plugins as modular as possible</li>
+<li>MVDR-BF: Filter coefficients are to be provided from outside, i.e., stored somewhere</li>
+<li>We might implement a free-field model plugin that provides delay and filter coefficients dependent on microphone setup geometry and direction of arrival, such that it is usable by delay-and-sum BF</li>
+<li>We provide what we have available (like pre-computed filters based on HRTF database) to maximizes usability, but do not obligate ourselves to deliver whatever user ask for</li>
+</ul></li>
+<li>openMHA reference paper
+<ul>
+<li>List LAC2017-paper as reference in openMHA readme (if Volker does not veto) until a technical paper about the first full release is published</li>
+</ul></li>
+</ol>

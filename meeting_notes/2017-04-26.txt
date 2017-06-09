@@ -1,0 +1,84 @@
+*Wed, 26.04.2017, 14h*
+
+__Attendees:__
+Tobias, Frasher, Hendrik
+
+1. Documentation
+	- technically running, robustness to be checked, some formatting issues 
+	- It's not a bad idea to use what Giso did, in general the beast is under control
+	- We have 
+		- developers guide --> developers guide
+		- general manual --> application engineers
+		- MHA control (GUI) manual (no html)
+	- We need new screenshots
+	- update content
+	- Figure out which years to use in license text
+	- Try to make manuals complementary 
+
+2. Unit tests
+	- Tobias does this for frequency shifter plugin
+	- There is no general rule for comparing Matlab and openMHA output
+	- Use defined (non-random, on-the-fly-generated) signals
+	- assert_almost.m
+	- 1e-5 is a good number
+	- Note if higher precision is possible
+
+3. Fractional delay 
+	- to realize fractional delay in delay-and-sum plugin
+	- but introduces additional delay
+
+4. Status of plugins included in openMHA
+	- check list of plugins 
+	- build .cfg?
+
+5. Octave fitting GUI
+	- Include
+	- Select fitting rules
+	- Tobias takes care of fixing fitting 
+	- Rework data handling ()  
+	- Don't store the whole history
+	
+6. Demonstrator for company showcase
+	- show fitting GUI with multi-channel dynamic compressor
+
+7. Support request for early adopter Stefan Stenfelt by Volker
+	- release version including GUI and fitting rules via github, see how they do and offer support if something is not working
+
+8. NIH report
+	- Hendrik will ask for input when/if needed
+
+9. Is there a common name for MatLab- and octave-language?
+	- MatLab --> octave for openMHA
+
+10. openMHA_doc repository?
+	- No.
+	- Generating documentation might be messy and prone to errors
+	- ``` make doc ``` to be used
+	- Provide documentation on openMHA.org
+	
+11. Unification of MHA-repositories
+
+12. User issues
+	- There are merge requests
+
+13. Henning Schepker's feedback canceler
+	- Ask Volker how to proceed
+
+14. TODOs in documentation
+	- Leave them if not resolved quickly
+		
+15.	Administration of gitHub requests
+	- Tobias
+	
+	
+Next time:
+- Documentation for closed MHA
+	
+	
+	
+	
+
+
+
+
+
