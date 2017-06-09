@@ -73,9 +73,6 @@ MHA_manual.pdf: user_manual/MHA_manual.pdf
 mhacontrol_manual.pdf: user_manual/mhacontrol_manual.pdf
 	cp $< $@
 
-hearcom_receiver_corr.pdf: user_manual/hearcom_receiver_corr.pdf
-	cp $< $@
-
 .PHONY : images user_manual/MHA_manual.pdf user_manual/mhacontrol_manual.pdf
 
 user_manual/MHA_manual.pdf:
@@ -83,9 +80,6 @@ user_manual/MHA_manual.pdf:
 
 user_manual/mhacontrol_manual.pdf:
 	make -C user_manual mhacontrol_manual.pdf
-
-user_manual/hearcom_receiver_corr.pdf:
-	make -C user_manual hearcom_receiver_corr.pdf
 
 images:
 	make -C flowcharts
