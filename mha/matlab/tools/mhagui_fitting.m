@@ -33,11 +33,11 @@ function mhagui_fitting( mha )
   %cfg_db.selected_client = configdb.get_mhaconfig(mha,'client_id','');
   %cfg_db.selected_auds = configdb.get_mhaconfig(mha,'client_aud_ids',cell([2,0]));
   close(findobj('tag','mhagui_fitting'));
-  clientdb_args = {'Audiometer',@mha_audiometer_wrap};
-  if exist('mha_afcaudiometer')
-    clientdb_args{end+1} = 'AFC-aud.';
-    clientdb_args{end+1} = @mha_afcaudiometer;
-  end
+%  clientdb_args = {'Audiometer',@mha_audiometer_wrap};
+%  if exist('mha_afcaudiometer')
+%    clientdb_args{end+1} = 'AFC-aud.';
+%    clientdb_args{end+1} = @mha_afcaudiometer;
+%  end
   if exist('audiogram_averager')
     clientdb_args{end+1} = 'average';
     clientdb_args{end+1} = @audiogram_averager;
