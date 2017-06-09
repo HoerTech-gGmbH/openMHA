@@ -38,6 +38,7 @@ function mhagui_fitting( mha )
 %    clientdb_args{end+1} = 'AFC-aud.';
 %    clientdb_args{end+1} = @mha_afcaudiometer;
 %  end
+  clientdb_args = cell(0);
   if exist('audiogram_averager')
     clientdb_args{end+1} = 'average';
     clientdb_args{end+1} = @audiogram_averager;
