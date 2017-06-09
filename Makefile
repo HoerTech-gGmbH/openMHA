@@ -41,19 +41,15 @@ DOCMODULES = \
 
 all: $(MODULES)
 
-.PHONY : $(MODULES)
+.PHONY : $(MODULES) $(DOCMODULES)
 
-$(MODULES:external_libs=):
+$(MODULES:external_libs=) $(DOCMODULES):
 	$(MAKE) -C $@
 
 external_libs:
 	$(MAKE) -j 1 -C $@
 
-doc:
-        ifeq ($(wildcard mha/frameworks/$(BUILD_DIR)/generatemhaplugindoc),) 
-	make all;
-        endif
-	for m in $(DOCMODULES); do $(MAKE) -C $$m; done
+doc: mha/doc
 
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
@@ -63,6 +59,8 @@ mha/libmha: external_libs
 mha/frameworks: mha/libmha
 mha/plugins: mha/libmha mha/frameworks
 mha/mhatest: mha/plugins mha/frameworks
+mha/doc: mha/doc/images all
+mha/doc/images: mha/doc/flowcharts
 
 # Local Variables:
 # coding: utf-8-unix

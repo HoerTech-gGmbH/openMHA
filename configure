@@ -23,7 +23,6 @@
     GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
     echo GCC_VER=$GCC_VER
     echo DYNAMIC_LIB_EXT=`uname -o | grep -q -e 'Linux' && echo ".so" || echo ".dll"`
-#    echo BUILD_DIR=build
     echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
     echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
     uname -m|grep -q -e "x86_64" && (echo "CFLAGS+=-fPIC";echo "CXXFLAGS+=-fPIC")
@@ -32,9 +31,9 @@
     pkg-config jack && (echo "WITH_JACK=yes")
     if [ "x$PLATFORM" = "xMinGW" ]
     then echo WITH_JACK=yes
-	 if [ "x$ARCH" = "xx86_64" ]
-	 then echo "JACK_LINKER_COMMAND = -ljack64"
-	 fi
+         if [ "x$ARCH" = "xx86_64" ]
+         then echo "JACK_LINKER_COMMAND = -ljack64"
+         fi
     fi
 
     case $ARCH in
@@ -52,4 +51,5 @@
 
 # Local Variables:
 # coding: utf-8-unix
+# indent-tabs-mode: nil
 # End:
