@@ -21,7 +21,7 @@ ifeq (linux,$(PLATFORM))
     ifeq ($(LD_LIBRARY_PATH),)
        LD_LIBRARY_PATH := ../libmha/$(BUILD_DIR)/
     else
-       LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):$(MHA_INSTALL_DIR)
+       LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):../libmha/$(BUILD_DIR)/
        export LD_LIBRARY_PATH
     endif 
 endif

@@ -46,7 +46,7 @@ mhacontrol_manual.tex: $(patsubst %,plug_%.tex,$(MHACONTROL_PLUGS))
 .PHONY : plug_*.tex
 
 plug_%.tex:
-	LD_LIBRARY_PATH=../../libmha/$(BUILD_DIR):"$LD_LIBRARY_PATH" ../../frameworks/$(BUILD_DIR)/generatemhaplugindoc --ofname=$@ --category-macro='invisible' --plugin-macro='subsubsection' $*
+	LD_LIBRARY_PATH=../../libmha/$(BUILD_DIR):"$$LD_LIBRARY_PATH" ../../frameworks/$(BUILD_DIR)/generatemhaplugindoc --ofname=$@ --category-macro='invisible' --plugin-macro='subsubsection' $*
 
 # Local Variables:
 # coding: utf-8-unix
