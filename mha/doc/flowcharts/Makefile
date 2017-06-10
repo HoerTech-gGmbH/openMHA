@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2005 2006 2007 2011 2013 2016 HörTech gGmbH
+# Copyright © 2005 2006 2007 2011 2013 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -17,15 +17,12 @@ MHA_CHART_FMT = eps m dia png xfig
 MHA_CHART_FILES = $(wildcard $(patsubst %,*.%,$(MHA_CHART_FMT)))
 MHA_CHARTS = $(basename $(notdir $(MHA_CHART_FILES))) mha_structure_now delaysum
 
-all: dirs eps png pdf
+all: eps png pdf
 
-.PHONY: dirs eps png pdf
+.PHONY: eps png pdf
 
 clean:
 	rm -f *~ fmt_eps/*.eps fmt_png/*.png fmt_pdf/*.pdf fmt_emf/*.emf
-
-dirs:
-	mkdir -p fmt_eps fmt_png fmt_pdf
 
 eps: $(patsubst %,fmt_eps/%.eps,$(MHA_CHARTS))
 
