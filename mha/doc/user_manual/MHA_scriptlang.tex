@@ -19,8 +19,7 @@
 
 The \mhad{} and most of the \mha{} plugins are controlled
 through the \mha{} configuration language. This language is implemented in the
-openMHA library. It allows hierarchical configuration similar to the
-concept of \Matlab{} structures. 
+openMHA library. It allows hierarchical configuration. 
 Each configuration level (parser)\index{parser}
 can contain items like variables or sub-parsers. Properties of any item can be
 queried.  Write access to items can be connected with C++ callback functions
@@ -34,12 +33,11 @@ reading text files or through a TCP network stream.
 The \mha{} also provides access to the configuration language parser via
 a C++ object, 
 which also uses the text interface\index{text interface},
-for embedding the \mha{} into other applications (e.g. Windows \mha{}
-configurator GUI, \Matlab{} access).
+for embedding the \mha{} into other applications (e.g. \Octave or \Matlab{} access).
 
 \subsection{Structure of the \mha{} configuration language}
 
-An \mha{} configuration language command has a very simple structure: Each
+An \mha{} configuration language command has a simple structure: Each
 command consists of a left value, an operator\index{operator} and a
 right value. Three operators are defined:
 
@@ -58,10 +56,8 @@ right value. Three operators are defined:
 Each left value is the name of a parser entry. Not all operators are
 available for all parser entries: A subparser supports only "?" and
 ".", a monitor only "?". In the configuration files, \mha{} script
-language commands can be split up into multiple lines similar as in
-\Matlab{}: If a lines ends with "\verb!...!", the next line will be
-appended. This holds not for the command prompt (e.g.\ Windows
-framework, Configurator, TCP interface).
+language commands can be split up into multiple lines: If a lines ends with "\verb!...!", the next line will be
+appended. This does not hold for the command prompt (e.g. TCP interface).
 
 The \mha{} configuration language features strong static typing, the data type
 of a variable is defined by the plugin that implements this variable.
@@ -104,13 +100,13 @@ Special query commands are:
 \index{\verb.?read.}%
 
 \begin{itemize}
-\item {\bf ?save:filename}: Save the contents of this node into the
+\item {\bf ?save:<filename>}: Save the contents of this node into the
 text file "filename", complete with element description comments.
-\item {\bf ?saveshort:filename}: Save the contents of this node into the
+\item {\bf ?saveshort:<filename>}: Save the contents of this node into the
 text file "filename", without additional comments or blank lines.
-\item {\bf ?savemons:filename}: Save the contents of all monitor variables to
+\item {\bf ?savemons:<filename>}: Save the contents of all monitor variables to
   the file 'filename'.
-\item {\bf ?read:filename}: Read the file "filename" into the current
+\item {\bf ?read:<filename>}: Read the file "filename" into the current
 parser node.
 \end{itemize}
 
@@ -119,8 +115,8 @@ parser node.
 \index{variable!multidimensional}%
 
 The \mha{} configuration language supports vectors and matrices in a way similar
-to the \Matlab{} notation: Vectors are put into squared brackets, with
-the items separated by withespace (\Matlab{} row vectors). Matrices are
+to the \Octave{} / \Matlab{} notation: Vectors are put into squared brackets, with
+the items separated by withespace. Matrices are
 noted as vectors of vectors, with each vector separated by a semicolon
 from the other vectors:
 
@@ -210,13 +206,11 @@ the substitution.
 
 Interaction of algorithms is a major issue in hearing aid
 development. In order to systematically analyse and control
-interaction problems, the \mha{} chain plugins 'mhachain' provides 
+interaction problems, the \mha{} chain plugin 'mhachain' provides 
 a mechanism for sharing parameters and states between algorithms. 
-Any algorithm plugin can register selected
-algorithm communication (AC) variables (any data segment) to be public
+Any algorithm plugin can register selected AC vars (any data segment) to be public
 within one signal processing chain. Other algorithms within the same 
-processing chain can read and modify these AC variables. AC variables 
-are accessed by name. Type and dimension are checked on each access. 
+processing chain can read and modify these AC vars which are accessed by name. Type and dimension are checked on each access. 
 This concept does not only provide analysis of interaction aspects 
 but also modular combination of signal processing strategies, 
 e.g.\ separation of noise estimators and noise reduction strategies 
