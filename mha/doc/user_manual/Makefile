@@ -16,7 +16,9 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-all: MHA_manual.pdf MHA_writing_fitting_rules.pdf libaudprof_manual.pdf
+MHANAME=openMHA
+
+all: $(MHANAME)_application_manual.pdf MHA_writing_fitting_rules.pdf libaudprof_manual.pdf
 
 #TEXINPUTS = "./:../:./plugins/:../technical_report/:../flowcharts/fmt_eps/:../flowcharts/fmt_png/:../flowcharts/fmt_pdf/:"
 TEXINPUTS = "./:../:./plugins/:../technical_report/:../flowcharts/fmt_eps/:../flowcharts/fmt_pdf/:../flowcharts/:"
@@ -31,17 +33,17 @@ TEXINPUTS = "./:../:./plugins/:../technical_report/:../flowcharts/fmt_eps/:../fl
 	TEXINPUTS=$(TEXINPUTS) pdflatex $<
 
 clean:
-	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl MHA_manual.pdf plug_*.tex
+	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf plug_*.tex
 
-MHA_manual.pdf: MHA_manual.tex ../openMHAdoxygen.sty $(wildcard *.tex)
+$(MHANAME)_application_manual.pdf: $(MHANAME)_application_manual.tex ../openMHAdoxygen.sty $(wildcard *.tex)
 
 libaudprof_manual.pdf: libaudprof_manual.tex ../openMHAdoxygen.sty
 
-mhacontrol_manual.pdf: mhacontrol_manual.tex ../openMHAdoxygen.sty
+$(MHANAME)_gui_manual.pdf: $(MHANAME)_gui_manual.tex ../openMHAdoxygen.sty
 
 MHACONTROL_PLUGS = audiometerbackend transducers dc_simple finetuning addsndfile fftfilterbank altplugs
 
-mhacontrol_manual.tex: $(patsubst %,plug_%.tex,$(MHACONTROL_PLUGS))
+$(MHANAME)_gui_manual.tex: $(patsubst %,plug_%.tex,$(MHACONTROL_PLUGS))
 
 .PHONY : plug_*.tex
 

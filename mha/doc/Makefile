@@ -22,10 +22,11 @@ ifeq (linux,$(PLATFORM))
     export LD_LIBRARY_PATH
 endif
 
+MHANAME = openMHA
 
 all:
 	$(MAKE) -C flowcharts
-	$(MAKE)  MHA_reference.pdf MHA_manual.pdf mhacontrol_manual.pdf
+	$(MAKE)  $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf
 	$(MAKE)  plugins
 
 
@@ -56,26 +57,26 @@ mhastructure.pdf: mhastructure
 	TEXINPUTS="./:../../:../../flowcharts/fmt_png/:" make -C MHA-Structure/latex refman.pdf
 	cp MHA-Structure/latex/refman.pdf $@
 
-MHA_reference.pdf: images mhadoc
+$(MHANAME)_developer_manual.pdf: images mhadoc
 	cp optparams.sty mhadoc/latex
 	cp flowcharts/fmt_png/*.png mhadoc/latex
 	cp flowcharts/fmt_pdf/*.pdf mhadoc/latex
 	make -C mhadoc/latex refman.pdf
 	cp mhadoc/latex/refman.pdf $@
 
-MHA_manual.pdf: user_manual/MHA_manual.pdf
+$(MHANAME)_application_manual.pdf: user_manual/$(MHANAME)_application_manual.pdf
 	cp $< $@
 
-mhacontrol_manual.pdf: user_manual/mhacontrol_manual.pdf
+$(MHANAME)_gui_manual.pdf: user_manual/$(MHANAME)_gui_manual.pdf
 	cp $< $@
 
-.PHONY : images user_manual/MHA_manual.pdf user_manual/mhacontrol_manual.pdf
+.PHONY : images user_manual/$(MHANAME)_application_manual.pdf user_manual/$(MHANAME)_gui_manual.pdf
 
-user_manual/MHA_manual.pdf:
-	make -C user_manual MHA_manual.pdf
+user_manual/$(MHANAME)_application_manual.pdf:
+	make -C user_manual $(MHANAME)_application_manual.pdf
 
-user_manual/mhacontrol_manual.pdf:
-	make -C user_manual mhacontrol_manual.pdf
+user_manual/$(MHANAME)_gui_manual.pdf:
+	make -C user_manual $(MHANAME)_gui_manual.pdf
 
 images:
 	make -C flowcharts
@@ -128,7 +129,7 @@ MHA_plugin_auto_doc.pdf:
 	rm -f $*.{aux,dvi,log,toc,out,idx,ilg}
 
 clean:
-	rm -f $(MHADISTS:=_plugins.*) *~
+	rm -f $(MHADISTS:=_plugins.*) *~ $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf
 
 # Local Variables:
 # coding: utf-8-unix
