@@ -26,7 +26,6 @@
     echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
     echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
     uname -m|grep -q -e "x86_64" && (echo "CFLAGS+=-fPIC";echo "CXXFLAGS+=-fPIC")
-    uname -o|grep -q -e "Linux" && (echo "WITH_HASP=yes")
     pkg-config alsa && (echo "WITH_ALSA=yes")
     pkg-config jack && (echo "WITH_JACK=yes")
     if [ "x$PLATFORM" = "xMinGW" ]
