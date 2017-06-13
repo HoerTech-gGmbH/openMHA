@@ -1,44 +1,40 @@
-\section{\Matlab{} tools}%
+\section{\Octave{}/ \Matlab{} tools}%
 \label{sec:matlab}%
 
-Officially, \Matlab{} is not supported by the \mha{}.
-%
-However, in this
-package release \mha{} related tools for \Matlab{} are included.
+In this package release \mha{} related tools for usage with \Octave{} and \Matlab{} are included.
 %
 No support
 is granted for these modules, nor give we any warranty for usage of
 these tools.
 
-The \mhad{} can be controlled through a simple \Matlab{}
+The \mhad{} can be controlled through a simple \Octave{}/ \Matlab{}
 interface (mhactl). This tool opens a TCP connection to a \mhad{} and
 communicates with the framework configuration interface.
 %
-For data exchange with the \mha{}, a \Matlab{} client to the JACK low
-latency sound server (see section \ref{sec:jack} on page
+For data exchange with the \mha{}, an \Octave{}/ \Matlab{} client to the JACK low latency sound server (see section \ref{sec:jack} on page
 \pageref{sec:jack}) is provided within this release.
 %
 This interface gives direct access to the low latency real-time
-processing system from \Matlab{} without requiring special toolboxes.
+processing system from \Octave{} and \Matlab{} without requiring special toolboxes.
 
-Algorithm communication variables can be exported to \Matlab{} files
+Algorithm communication variables can be exported to \Matlab{}-format files
 using the 'acsave' algorithm.
 
-\subsection{"mhactl\_wrapper" - \mha{} control interface for \Matlab{}}
+\subsection{"mhactl\_wrapper" - \mha{} control interface for \Octave{} and \Matlab{}}
 \label{sec:mhactl}
 
-The \Matlab{} function \verb!mhactl_wrapper! communicates with the \mhad{}
+The  \Octave{}/ \Matlab{} function \verb!mhactl_wrapper! communicates with the \mhad{}
 through a TCP network connection.
 %
 For correct operation, the \mhad{} has to be started with the
 default acknowledge/prompt strings.
 %
 It is not required that the MHA process runs as the same user or on
-the same machine as \Matlab{}.
+the same machine as \Octave{} or Matlab{}.
 
 The function 'mhactl\_wrapper' accepts two arguments, the \mha{} handle 
 (struct with the correct TCP port and host), and the \mha{} query to be processed:
-\begin{verbatim}result = mhactl( mha_handle, query )\end{verbatim}
+\verb!result = mhactl( mha_handle, query )!
 %
 The 'mhactl\_wrapper' function opens a network connection to the \mhad{},
 and sends the command string to the MHA and waits for an acknowledge
@@ -47,20 +43,20 @@ prompt.
 On success, the MHA response (without the acknowledge prompt) is
 returned, otherwise an error is reported.
 
-\subsection{\Matlab{} wrapper functions for "mhactl\_wrapper"}
+\subsection{Wrapper functions for "mhactl\_wrapper"}
 \label{sec:mhactl_wrapper}
 
 While 'mhactl\_wrapper' provides direct access to the \mha{} control interface,
 some wrapper functions are implemented which utilize 'mhactl\_wrapper' to
-convert \mha{} control commands into \Matlab{} values and back.
+convert \mha{} control commands into \Octave{}/ \Matlab{} values and back.
 
 \subsubsection{"mha\_get" - read contents of a \mha configuration}
 
 The function 'mha\_get' reads the contents of an \mha{} configuration
-entry and returns them in a \Matlab{} type, i.e., a type dependent
+entry and returns them in a \Octave{}/ \Matlab{} type, i.e., a type dependent
 conversion from the \mha{} string representation is performed. The
 command syntax is
-\begin{verbatim}[answer, info] = mha_get(handle, field, perm )\end{verbatim}
+\verb![answer, info] = mha_get(handle, field, perm )\end{verbatim}!
 The \mha{} handle 'handle' is a structure containing the fields 'host'
 and 'port' defining the host name and port number of the \mhad{}.
 %
@@ -70,7 +66,7 @@ It can be either a variable or a parser node -- in the first case, the
 content of the variable is returned in 'answer' and the help comment
 of the variable is returned in 'info', if available.
 %
-If 'field' denotes a parser node, 'answer' will hold a \Matlab{}
+If 'field' denotes a parser node, 'answer' will hold a \Octave{}/ \Matlab{}
 structure, with each field holding the contents of an \mha{} variable or a
 sub-parser.
 %
@@ -80,16 +76,16 @@ entries with a specific permission, which can be given in 'perm'.
 'perm' can be either a character string, or a cell array of string.
 %
 To receive the complete writable configuration of an \mhad{}, type
-\begin{verbatim}cfg = mha_get( handle, '', 'writable' )\end{verbatim}
+\verb!cfg = mha_get( handle, '', 'writable' )!
 %
 
 \subsubsection{"mha\_set" - set contents of \mha{} configuration entries}
 
-\Matlab{} values can be assigned to \mha{} configuration entries via the
+\Octave{}/ \Matlab{} values can be assigned to \mha{} configuration entries via the
 'mha\_set' function.
 %
 The syntax of this function is:
-\begin{verbatim}mha_set( handle, field, value )\end{verbatim}
+\verb!mha_set( handle, field, value )!
 %
 As in 'mha\_get', 'handle' is a structure containing the fields 'host'
 and 'port' defining the host name and port number of the \mhad{}, and
@@ -98,15 +94,15 @@ and 'port' defining the host name and port number of the \mhad{}, and
 The parameter 'value' is a \Matlab{} representation to be assigned to
 the variable 'field'.
 %
-The \Matlab{} representation is converted to the correct \mha{} string
+The \Octave{}/ \Matlab{} representation is converted to the correct \mha{} string
 representation by first retrieving the type of the configuration entry
 'field' through the control interface.
 %
-If the \Matlab{} value cannot be converted, an error is reported.
+If the \Octave{}/ \Matlab{} value cannot be converted, an error is reported.
 %
-To setup a complete \mha{}, it is possible to assign a \Matlab{}
+To setup a complete \mha{}, it is possible to assign a \Octave{}/ \Matlab{}
 configuration structure 'cfg' to the \mha{} by typing
-\begin{verbatim}mha_set( handle, '', cfg )\end{verbatim}
+\verb!mha_set( handle, '', cfg )!
 
 \subsection{"mhagui\_generic" - Generic graphical user interface}
 \label{sec:mhagui_generic}
@@ -126,7 +122,7 @@ default values are 'localhost' and 33337.
 %
 'base' is the name of the \mha{} parser node (default: '', i.e.\ root level).
 %
-A control panel is created in a \Matlab{} figure, and the figure
+A control panel is created in a \Octave{}/ \Matlab{} figure, and the figure
 handle is returned.
 %
 A control element for each entry in the parser 'base' is created.
@@ -142,16 +138,16 @@ panel.
 %
 Other types can be edited in a text editing field.
 
-If the \mha{} is running on the same host as the \Matlab{} control
+If the \mha{} is running on the same host as the \Octave{}/ \Matlab{} control
 interface, it is possible to read and save \mha{} configuration files by
 clicking the 'read' or 'save' button. The read/save command operates
 relative to the \mha{} parser level displayed in the control panel, i.e.,
 the complete configuration should be read or saved from the root level
 panel.
 
-\MHAfigure[][\linewidth]{Generic graphical user interface of a
-\mhad{}, created by the \Matlab{} function
-'mhagui\_generic'. See text for details.}{mhagui_generic}
+\MHAfigure[][.8\linewidth]{Generic graphical user interface of a
+\mhad{}, created under \Octave{}/ with the function
+'mhagui\_generic'.}{mhagui_generic}
 
 %%% Local Variables: 
 %%% mode: latex
