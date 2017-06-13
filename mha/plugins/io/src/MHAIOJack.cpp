@@ -22,7 +22,9 @@
 #include "mhajack.h"
 #include <unistd.h>
 
-
+/** 
+    \brief JACK IO
+*/
 namespace MHAIOJack {
 
     /** 

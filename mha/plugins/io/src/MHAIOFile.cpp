@@ -19,7 +19,9 @@
 #include <sndfile.h>
 
 #define DEBUG(x) std::cerr << __FILE__ << ":" << __LINE__ << " " << #x " = " << x << std::endl
-
+/**
+    \brief File IO
+*/
 class io_file_t : public MHAParser::parser_t
 {
 public:
