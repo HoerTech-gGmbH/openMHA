@@ -27,36 +27,40 @@ for audio processing. At least two audio distributions are freely
 available, one of those is used by H\"orTech for low delay audio
 processing.
 
-A widely used audio distribution is 'Planet CCRMA'\index{audio distribution}
-which is built on top of a RedHat or Fedora Linux distribution. It is easy to
-maintain and includes all software packages required for low latency\index{low
-  latency} signal processing with the MHA (mainly the JACK\index{JACK} sound
-server, ALSA\index{ALSA} sound card drivers and a low latency kernel). System
-updates including security fixes are available. This distribution is actively
-maintained. This distribution is used by H\"orTech.  More information and
-download sites can be found here:
+A widely used audio distribution is 'Ubuntu Studio'\index{audio distribution},
+which is a variation of the Ubuntu distribution.
+%
+It offers a low-latency kernel and all required software packages for
+running the openMHA.
+%
+All software packages for Ubuntu are available to Ubuntu Studio, since
+it is an official ``flavour'' of Ubuntu.
+%
+A new version of the distribution is released twice per year, with
+long-term support versions released every two years.
+%
+This distribution is used by H\"orTech.
+%
+We usually use the latest long-term support version.
+%
+More information and download sites can be found here:
+
+\url{http://ubuntustudio.org/}
+
+Another commonly used audio distribution is
+'Planet CCRMA'\index{audio distribution} which is built on top of a
+Fedora Linux distribution.
+%
+It is easy to maintain and includes all software packages required for
+low latency\index{low latency} signal processing with the MHA (mainly
+the JACK\index{JACK} sound server, ALSA\index{ALSA} sound card drivers
+and a low latency kernel).
+%
+System updates including security fixes are available.
+%
+More information and download sites can be found here:
 
 \url{http://ccrma.stanford.edu/planetccrma/software/}
-
-Another audio distribution developed and compiled as an IST project
-is 'AGNULA'. Two versions of this distribution exists, one built on
-top of a Debian distribution, the other on top of RedHat Linux. This
-audio distribution contains all packages required to run the low
-latency realtime MHA (JACK sound server, ALSA sound card drivers and a
-low latency kernel). Watching the project in the last months it seems
-that the maintenance is only performed at a low rate. H\"orTech has no
-direct experience with this distribution. More information and
-download sites can be found following this link:
-
-\url{http://www.agnula.org/}
-
-Both distributions provide a detailed discussion on low latency signal
-processing in general and on system tuning. We strongly recommend to
-have a look at these sites before starting to work with low latency
-processing. Another source of information about low latency audio
-processing can be found here:
-
-\url{http://www.Linuxdj.com/audio/quality/}
 
 Information on the ALSA (Advanced Linux Sound Architecture) sound
 drivers and supported audio devices can be found in the web:
