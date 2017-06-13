@@ -13,7 +13,7 @@ plugins = find_all_plugins(git_dir, build_dir);
 global MHA_INSTALL_DIR;
 MHA_INSTALL_DIR = [git_dir '/mha/frameworks/' build_dir];
 setenv('MHA_INSTALL_DIR',MHA_INSTALL_DIR);
-addpath([git_dir '/mha/matlab/tools']);
+addpath([git_dir '/mha/mfiles']);
 addpath([git_dir '/mha/mhatest']);
 javaaddpath ([git_dir '/mha/matlab/tools/mhactl_java.jar']);
 

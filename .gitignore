@@ -25,7 +25,7 @@ autom4te.cache
 build
 mha.creator.user
 
-mha/matlab/tools/octave-workspace
+mha/mfiles/octave-workspace
 
 meeting_notes/openMHA_status_May-17/openMHA_status_June-17.aux
 meeting_notes/openMHA_status_May-17/openMHA_status_June-17.bbl
