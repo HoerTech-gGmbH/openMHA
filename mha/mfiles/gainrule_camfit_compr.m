@@ -13,6 +13,21 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
 % loudness model for hearing aid fitting: II. Hearing aids with multi-channel
 % compression." Brit. J. Audiol. (33) 157-170
 
+% This file is part of the HörTech Open Master Hearing Aid (openMHA)
+% Copyright © 2007 2009 2011 2013 2015 2017 HörTech gGmbH
+%
+% openMHA is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Affero General Public License as published by
+% the Free Software Foundation, version 3 of the License.
+%
+% openMHA is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License, version 3 for more details.
+%
+% You should have received a copy of the GNU Affero General Public License, 
+% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
   % International long-term average speech spectrum for speech with an overall 
   % level of 70dB in third-octave frequency bands, taken from Byrne et al.
   % (1994) J. Acoust. Soc. Am. 96(4) 2108-2120
@@ -57,12 +72,9 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
   % Interpolate audiogram
   for side=sFitmodel.side
     htl.(side) = freq_interp_sh([sAud.(side).htl_ac.data.f],...
-				[sAud.(side).htl_ac.data.hl],...
-				sFitmodel.frequencies);
-    %htl.r = interp1(log(sAud.frequencies), sAud.r.htl, log(sFitmodel.frequencies));
-  
+                                [sAud.(side).htl_ac.data.hl],...
+                                sFitmodel.frequencies);
     Gmin.(side) = htl.(side) + Conv - Lmin;
-    %Gmin.r = htl.r + Conv - Lmin;
   end
 
   Lmid = speech_level_65_in_dc_bands;
@@ -77,8 +89,6 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
   for side=sFitmodel.side
     compression_ratio.(side) = minima_distance ./ max(Lmid+Gmid.(side)(end,:) - Lmin-Gmin.(side), 13);
     compression_ratio.(side) = max(compression_ratio.(side), 1);
-    %compression_ratio.r = minima_distance ./ max(Lmid+Gmid.r(end,:) - Lmin-Gmin.r, 13);
-    %compression_ratio.r = max(compression_ratio.r, 1);
 
     sGt.(side) = gains(Lmin,Gmin.(side),compression_ratio.(side),sFitmodel.levels);
     

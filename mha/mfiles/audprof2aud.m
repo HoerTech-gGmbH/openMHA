@@ -3,7 +3,23 @@ function [sAud,sAcalos] = audprof2aud( sAudProf )
 %
 % Usage:
 %   [sAud,sAcalos] = audprof2aud( sAudProf )
-  sAcalos = struct([]);
+
+% This file is part of the HörTech Open Master Hearing Aid (openMHA)
+% Copyright © 2011 2013 2017 HörTech gGmbH
+%
+% openMHA is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Affero General Public License as published by
+% the Free Software Foundation, version 3 of the License.
+%
+% openMHA is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License, version 3 for more details.
+%
+% You should have received a copy of the GNU Affero General Public License, 
+% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+sAcalos = struct([]);
   sAud = struct('id',sAudProf.id,'client_id',sAudProf.client_id);
   sAud.frequencies = unique([1000*2.^[-3:3],1500*2.^[-1:2]]);
   sTmp = struct;
@@ -31,30 +47,30 @@ function [sAud,sAcalos] = audprof2aud( sAudProf )
       f = sAud.frequencies(kaud);
       k = find(sTmp.(side).f==f);
       if ~isempty(k)
-	sAud.(side).htl(kaud) = sTmp.(side).htl(k);
+        sAud.(side).htl(kaud) = sTmp.(side).htl(k);
       end
       k = find(sTmp.(side).fu==f);
       if ~isempty(k)
-	sAud.(side).ucl(kaud) = sTmp.(side).ucl(k);
+        sAud.(side).ucl(kaud) = sTmp.(side).ucl(k);
       end
     end
   end
   for side='lr'
     if isfield(sAudProf,side) && isfield(sAudProf.(side),'acalos')
       if isempty(sAcalos)
-	sAcalos = struct;
-	sAcalos.cliend_id = sAudProf.client_id;
-	sAcalos.id = sAudProf.id;
+        sAcalos = struct;
+        sAcalos.cliend_id = sAudProf.client_id;
+        sAcalos.id = sAudProf.id;
       end
       for k=1:numel(sAudProf.(side).acalos)
-	sAc = sAudProf.(side).acalos(k);
-	sAc.measured_data = sAc.data;
-	sAc = rmfield(sAc,'data');
-	if ~isfield(sAcalos,side)
-	  sAcalos.(side) = sAc;
-	else
-	  sAcalos.(side)(end+1) = sAc;
-	end
+        sAc = sAudProf.(side).acalos(k);
+        sAc.measured_data = sAc.data;
+        sAc = rmfield(sAc,'data');
+        if ~isfield(sAcalos,side)
+          sAcalos.(side) = sAc;
+        else
+          sAcalos.(side)(end+1) = sAc;
+        end
       end
     end
   end

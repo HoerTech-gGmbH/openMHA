@@ -13,6 +13,21 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
 % Implemented as described in B. Moore (1998), "Use of a loudness model for 
 % hearing-aid fitting. I. Linear hearing aids" Brit. J. Audiol. (32) 317-335
 
+% This file is part of the HörTech Open Master Hearing Aid (openMHA)
+% Copyright © 2007 2011 2013 2015 2016 2017 HörTech gGmbH
+%
+% openMHA is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Affero General Public License as published by
+% the Free Software Foundation, version 3 of the License.
+%
+% openMHA is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License, version 3 for more details.
+%
+% You should have received a copy of the GNU Affero General Public License, 
+% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
   libaudprof();
 
   intercept_frequencies = ...
@@ -20,8 +35,8 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
   intercepts = [-11 -10 -8 -6 0 -1 1 -1 0 1 1];
   
   intercepts = freq_interp_sh(intercept_frequencies, ...
-			      intercepts, ...
-			      sFitmodel.frequencies);
+                              intercepts, ...
+                              sFitmodel.frequencies);
   noisegate = 45;
   global CAMFIT_NOISEGATE;
   if ~isempty(CAMFIT_NOISEGATE)
@@ -33,12 +48,6 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
      sT = audprof.threshold_get(sAud, side, 'htl_ac');
      htl.(side) = freq_interp_sh([sT.data.f],[sT.data.hl],...
                                  sFitmodel.frequencies);
-%    htl.(side) = freq_interp_sh([sAud.(side).htl_ac.data.f],...
-%				[sAud.(side).htl_ac.data.hl],...
-%				sFitmodel.frequencies);
-%     htl.(side) = freq_interp_sh([sAud.frequencies],...
-%				[sAud.(side).htl],...
-%				sFitmodel.frequencies);
     insertion_gains.(side) = htl.(side) * 0.48 + intercepts;
 
     % according to B. Moore (1998), "Use of a loudness model for hearing-aid
