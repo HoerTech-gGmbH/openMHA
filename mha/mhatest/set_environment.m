@@ -28,7 +28,6 @@ if ispc
   try
     [dummy,hostname] = system('hostname');
     hostname = strtrim(hostname);
-    copyfile([git_dir '/mha/doc/system/windows/' hostname '/mha.lic'], MHA_INSTALL_DIR)
   catch
   end
 else
