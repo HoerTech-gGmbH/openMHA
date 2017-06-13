@@ -5,16 +5,16 @@
 * on standard computing hardware with a low delay between sound input and output.
 * \section str Structure
 * The openMHA can be split into four major components :
-* 	- \ref mhascript "The openMHA command line application"
+* 	- \ref mhascript "The openMHA command line application (MHA)"
 * 	- \ref plugif "Signal processing plugins"
-* 	- Audio input-output (IO) plugins
+* 	- Audio input-output (IO) plugins (see io_file_t, MHAIOJack, io_parser_t, io_tcp_parser_t)
 * 	- \ref mhatoolbox "The openMHA toolbox library"
 * 	.
 * 
 * \image html structure_openmha.png
 * \image latex structure_openmha.pdf "openMHA structure" width=0.4\textwidth
 *
-* \ref mhascript "The openMHA command line application" acts as a plugin host.
+* \ref mhascript "The openMHA command line application (MHA)" acts as a plugin host.
 * It can load signal processing plugins as well as audio input-output
 * (IO) plugins.
 * Additionally, it provides the command line configuration interface and

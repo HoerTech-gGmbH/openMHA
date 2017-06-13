@@ -56,7 +56,9 @@ The function 'mha\_get' reads the contents of an \mha{} configuration
 entry and returns them in a \Octave{}/ \Matlab{} type, i.e., a type dependent
 conversion from the \mha{} string representation is performed. The
 command syntax is
-\verb![answer, info] = mha_get(handle, field, perm )\end{verbatim}!
+\begin{verbatim}
+[answer, info] = mha_get(handle, field, perm ).
+\end{verbatim}
 The \mha{} handle 'handle' is a structure containing the fields 'host'
 and 'port' defining the host name and port number of the \mhad{}.
 %

@@ -28,7 +28,7 @@ graph openmha {
 
       plugins;
       IO;
-      MHAhost;
+      MHA;
       libopenmha [style="dashed"];
     };
 
@@ -40,9 +40,9 @@ graph openmha {
   audiobackend [label="audio backend\n(Jack, File, TCP)"];
 
 
-  MHAhost -- IO [dir="both"];
-  config -- MHAhost [style="dashed"];
-  MHAhost -- plugins [dir="both"];
+  MHA -- IO [dir="both"];
+  config -- MHA [style="dashed"];
+  MHA -- plugins [dir="both"];
   
 
   IO -- audiobackend [dir="both"];
