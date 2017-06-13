@@ -14,7 +14,7 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-   \internal
+   
    \file   mha_error.cpp
    \brief  Implementation of \mha error handling
    
@@ -62,7 +62,7 @@
    error message.
  */
 
-/**\internal
+/**
  * Compute number of digits in an unsigned integer.
  */
 static unsigned digits(unsigned n)

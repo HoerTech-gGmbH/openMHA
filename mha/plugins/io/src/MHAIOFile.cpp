@@ -68,7 +68,7 @@ private:
 };
 
 
-/** \internal
+/** 
     \brief Remove FILE client and deallocate internal ports and buffers
   
 */
@@ -83,7 +83,7 @@ void io_file_t::release()
     s_file_in = NULL;
 }
 
-/** \internal
+/** 
     \brief Allocate buffers, activate FILE client and install internal ports
   
 */

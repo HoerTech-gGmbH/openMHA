@@ -44,47 +44,47 @@ namespace MHA_TCP {
 
 namespace MHA_TCP {
     // Error string functions
-    /**\internal
+    /**
      * Portable conversion from error number to error string.
      */
     std::string STRERROR(int err);
-    /**\internal
+    /**
      * Portable conversion from hostname error number to error string.
      */
     std::string HSTRERROR(int err);
-    /**\internal
+    /**
      * Portable access to last network error number.
      */
     int N_ERRNO();
-    /**\internal
+    /**
      * Portable access to last hostname error number.
      */
     int H_ERRNO();
-    /**\internal
+    /**
      * Portable access to last non-network error number.
      */
     int G_ERRNO();
 }
 
-/**\internal
+/**
  * A Namespace for TCP helper classes 
  */
 namespace MHA_TCP {
 
-    /**\internal
+    /**
      * Time access function for system's high resolution time,
      * retrieve current time as double.
      */
     double dtime();
     
 #ifndef _WIN32
-    /**\internal
+    /**
      * Time access function for unix' high resolution time,
      * converts struct timeval to double.
      */
     double dtime(const struct timeval & tv);
 
-    /**\internal
+    /**
      * Time access function for unix' high resolution time,
      * converts time from double to struct timeval.
      */
@@ -92,11 +92,11 @@ namespace MHA_TCP {
 #endif
 
 
-    /**\internal
+    /**
      * A base class for asynchronous wakeup events.
      */ 
     class Wakeup_Event {
-        /**\internal
+        /**
          * A list of all Event_Watcher instances that this Wakeup_Event is
          * observed by (stored here for proper deregistering).
          */
@@ -105,40 +105,40 @@ namespace MHA_TCP {
         OS_EVENT_TYPE os_event;
         bool os_event_valid;
     public:
-        /**\internal
+        /**
          * Event Constructor. The new event has invalid state.
          */
         Wakeup_Event();
 
-        /**\internal
+        /**
          * Called by the Event_Watcher when this event is added to its list of
          * observed events.
          */
         virtual void observed_by(Event_Watcher * observer);
-        /**\internal
+        /**
          * Called by the Event_Watcher when this event is removed from its
          * list of observed events.
          */
         virtual void ignored_by(Event_Watcher * observer);
-        /**\internal
+        /**
          * Destructor deregisters from observers.
          */
         virtual ~Wakeup_Event();
-        /**\internal
+        /**
          * Get necessary information for the Event Watcher.
          */
         virtual OS_EVENT_TYPE get_os_event();
-        /**\internal
+        /**
          * For pure notification events, reset the "signalled" status
          */
         virtual void reset();
-        /**\internal
+        /**
          * Query wether the event is in signalled state now.
          */
         virtual bool status();
     };
 
-    /** \internal
+    /** 
         \brief Portable Multiplexable cross-thread notification
     */
     class Async_Notify : public Wakeup_Event {
@@ -151,19 +151,19 @@ namespace MHA_TCP {
         virtual void set();
         virtual ~Async_Notify();
     };
-    /**\internal
+    /**
      * OS-independent event watcher, uses select on Unix and
      * WaitForMultipleObjects on Windows.
      */
     class Event_Watcher {
-        /**\internal The list of events to watch. */
+        /** The list of events to watch. */
         std::set<Wakeup_Event*> events;
     public:
         typedef std::set<Wakeup_Event*> Events;
         typedef std::set<Wakeup_Event*>::iterator iterator;
-        /**\internal Add an event to this observer. */
+        /** Add an event to this observer. */
         void observe(Wakeup_Event * event);
-        /**\internal Remove an event from this observer */
+        /** Remove an event from this observer */
         void ignore(Wakeup_Event * event);
         /**\ Wait for some event to occur. Return all events that are ready */
         std::set<Wakeup_Event *> wait();
@@ -179,7 +179,7 @@ namespace MHA_TCP {
         virtual OS_EVENT_TYPE get_os_event();
     };
 
-    /**\internal
+    /**
      * OS-independent event watcher with internal fixed-end-time timeout.
      */
     class Timeout_Watcher : public Event_Watcher {
@@ -189,7 +189,7 @@ namespace MHA_TCP {
         virtual ~Timeout_Watcher();
     };
 
-    /**\internal Watch socket for incoming data */
+    /** Watch socket for incoming data */
     class Sockread_Event : public Wakeup_Event {
     public:
         /** Set socket to watch for.
@@ -207,7 +207,7 @@ namespace MHA_TCP {
     };
 
     class Server;
-    /**\internal
+    /**
      * Connection handles Communication between client and server,
      * is used on both sides.
      */
@@ -219,19 +219,19 @@ namespace MHA_TCP {
         bool closed;
         struct sockaddr_in peer_addr;
 
-        /**\internal
+        /**
          * determine peer address and port
          */
         void init_peer_data();
-        /**\internal
+        /**
          * Determine wether at least 1 byte can be read without blocking.
          */
         bool can_sysread();
-        /**\internal
+        /**
          * Determine wether at least 1 byte can be written without blocking.
          */
         bool can_syswrite();
-        /**\internal
+        /**
          * Call the system's read function and try to read bytes.
          * This will block in a situation where can_sysread returns false.
          * @param bytes
@@ -243,7 +243,7 @@ namespace MHA_TCP {
          *   closed by the peer.
          */
         std::string sysread(unsigned bytes);
-        /**\internal
+        /**
          * Call the system's write function and try to write all characters
          * in the string data. May write fewer characters, but will at least
          * write one character.
@@ -254,13 +254,13 @@ namespace MHA_TCP {
          */
         std::string syswrite(const std::string & data);
     protected:
-        /**\internal
+        /**
          * The file descriptor of the TCP Socket.
          */
         SOCKET fd;
 
         friend class Server;
-        /**\internal
+        /**
          * Create a connection instance from a socket filedescriptor.
          * @param _fd  The file descriptor of the TCP Socket. 
          *           This file descriptor is closed again in the destructor.
@@ -271,33 +271,33 @@ namespace MHA_TCP {
         Sockread_Event * get_read_event();
         Sockwrite_Event * get_write_event();
 
-        /**\internal
+        /**
          * Get peer's IP Address
          */
         std::string get_peer_address();
-        /**\internal
+        /**
          * Get peer's TCP port
          */
         unsigned short get_peer_port();
-        /**\internal
+        /**
          * Return the (protected) file descriptor of the connection. 
          * Will be required for SSL.
          */
         SOCKET get_fd() const {return fd;};
 
-        /**\internal
+        /**
          * Destructor closes the underlying file descriptor
          */
         virtual ~Connection();
 
-        /**\internal
+        /**
          * Checks if the peer has closed the connection. As a side effect,
          * this method fills the internal "incoming" buffer if it was empty
          * and the socket is readable and not eof.
          */
         bool eof();
         
-        /**\internal
+        /**
          * Checks if a full line of text has arrived by now. This method
          * reads data from the socket into the internal "incoming" buffer if
          * it can be done without blocking.
@@ -309,7 +309,7 @@ namespace MHA_TCP {
          */
         bool can_read_line(char delim = '\n');
 
-        /**\internal
+        /**
          * Checks if the specified ammount of data can be read. This method
          * reads data from the socket into an internal "incoming" buffer if it
          * can be done without blocking.
@@ -321,7 +321,7 @@ namespace MHA_TCP {
          */
         bool can_read_bytes(unsigned howmany);
 
-        /**\internal
+        /**
          * Reads a single line of data from the socket. Blocks if necessary.
          * @param delim The line delimiter.
          * @return      The string of characters in this line, including the
@@ -329,7 +329,7 @@ namespace MHA_TCP {
          *              the last line before EOF does not have a delimiter.
          */
         std::string read_line(char delim = '\n');
-        /**\internal
+        /**
          * Reads the specified ammount of dat from the socket.
          * Blocks if necessary.
          * @param howmany The number of bytes to read.
@@ -338,7 +338,7 @@ namespace MHA_TCP {
          */
         std::string read_bytes(unsigned howmany);
         
-        /**\internal
+        /**
          * Adds data to the internal "outgoing" buffer, and then tries to write
          * as much data from that buffer to the socket as possible without
          * blocking.
@@ -347,7 +347,7 @@ namespace MHA_TCP {
          */
         void try_write(const std::string & data = "");
 
-        /**\internal
+        /**
          * Adds data to the internal "outgoing" buffer, and then writes that
          * that buffer to the socket, regardless of blocking.
          * @param data
@@ -355,17 +355,17 @@ namespace MHA_TCP {
          */
         void write(const std::string & data = "");
 
-        /**\internal
+        /**
          * Checks if the internal "outgoing" buffer contains data.
          */
         bool needs_write();
 
-        /**\internal
+        /**
          * Returns the number of bytes in the internal "incoming" buffer.
          */
         unsigned buffered_incoming_bytes() const;
 
-        /**\internal
+        /**
          * Returns the number of bytes in the internal "outgoing" buffer.
          */
         unsigned buffered_outgoing_bytes() const;
@@ -379,44 +379,44 @@ namespace MHA_TCP {
         Sockaccept_Event * accept_event;
         void initialize(const std::string & iface, unsigned short port);
     public:
-        /**\internal
+        /**
          * Create a TCP server socket.
          * @param port  The TCP port to listen to.
          * @param iface The network interface to bind to.
          */
         Server(unsigned short port = 0, const std::string & iface = "0.0.0.0");
-        /**\internal
+        /**
          * Create a TCP server socket.
          * @param port  The TCP port to listen to.
          * @param iface The network interface to bind to.
          */
         Server(const std::string & iface, unsigned short port = 0);
-        /**\internal
+        /**
          * Close the TCP server socket.
          */
         ~Server();
-        /**\internal
+        /**
          * Get the name given in the constructor for the network interface.
          */
         std::string get_interface() const;
-        /**\internal
+        /**
          * Get the port that the TCP server socket currently listens to.
          */
         unsigned short get_port() const;
-        /**\internal
+        /**
          * Produces an event that can be observed by an Event_Watcher. This
          * event signals incoming connections that can be accepted.
          */
         Sockaccept_Event * get_accept_event();
 
-        /**\internal
+        /**
          * Accept an incoming connection. blocks if necessary.
          * @return The new TCP connection. The connection has to be deleted
          *         by the caller.
          */
         Connection * accept();
 
-        /**\internal
+        /**
          * Accept an incoming connection if it can be done without blocking.
          * @return The new TCP connection or 0 if there is no immediate
          *         connection. The connection has to be deleted by the caller.
@@ -424,19 +424,19 @@ namespace MHA_TCP {
         Connection * try_accept();
     };
 
-    /**\internal
+    /**
      * A portable class for a tcp client connections.
      */
     class Client : public Connection {
     public:
-        /**\internal
+        /**
          * Constructor connects to host, port via TCP.
          * @param host The hostname of the TCP Server.
          * @param port The port or the TCP Server.
          */
         Client(const std::string & host, unsigned short port);
 
-        /**\internal
+        /**
          * Constructor connects to host, port via TCP, using a timeout.
          * @param host The hostname of the TCP Server.
          * @param port The port or the TCP Server.
@@ -447,7 +447,7 @@ namespace MHA_TCP {
                Timeout_Watcher & timeout_watcher);
     };
 
-    /**\internal
+    /**
      * A very simple class for portable threads.
      */
     class Thread {

@@ -166,7 +166,7 @@ std::string MHAParser::commentate( const std::string & s )
     return r;
 }
 
-/** \internal
+/** 
 
 \brief string replace function
 
@@ -1037,7 +1037,7 @@ std::string MHAParser::monitor_t::query_perm( const std::string & s )
 }
 
 /**
-   \internal
+   
    \class expression_t
    \brief Class for separating a string into a left hand value and a right hand value.
 
@@ -1325,7 +1325,7 @@ void MHAParser::StrCnv::str2val( const std::string & s, float &v )
     v = val;
 }
 
-/**\internal
+/**
  * This internal function parses a floating point number from the beginning
  * of a string.
  * 
@@ -1343,7 +1343,7 @@ static std::string parse_1_float( const std::string & s, mha_real_t & v )
     return s.substr( converted_characters );
 }
 
-/**\internal
+/**
  * This internal function parses a complex number from the beginning of a
  * string.
  * 
@@ -1406,7 +1406,7 @@ void MHAParser::StrCnv::str2val( const std::string & s, bool & v )
     }
 }
 
-/** \internal
+/** 
     \brief Return number of brackets at beginning and end of string.
   
     \param s    String

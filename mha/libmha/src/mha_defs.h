@@ -17,7 +17,7 @@
 #define __MHA_DEFS_H__
 
 /**
-   \internal
+   
    \file mha_defs.h
    \brief Preprocessor definitions common to all MHA components
 

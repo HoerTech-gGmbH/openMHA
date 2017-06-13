@@ -267,7 +267,7 @@ const char* PluginLoader::mhastrdomain(mha_domain_t d)
 
 /**
 
-   \internal
+   
    \brief Compare two mhaconfig_t structures, and report differences as an error
 
    \param req Expected mhaconfig_t structure

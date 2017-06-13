@@ -96,7 +96,7 @@ typedef struct {
     mha_real_t im;/**< \brief Imaginary part. */
 } mha_complex_t;
 
-/** \internal
+/** 
     Channel source direction structure 
 */
 typedef struct {
@@ -105,7 +105,7 @@ typedef struct {
     mha_real_t distance; /**< distance in meters */
 } mha_direction_t;
 
-/** \internal
+/** 
     Channel information structure 
 */
 typedef struct {

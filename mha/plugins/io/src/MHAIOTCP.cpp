@@ -43,7 +43,7 @@ static char user_err_msg[MAX_USER_ERR];
 
 
 /* ======================================================================== */
-/**\internal 
+/** 
  * The parser interface of the IOTCP library. */
 class io_tcp_parser_t : public MHAParser::parser_t
 {
@@ -251,7 +251,7 @@ io_tcp_parser_t::io_tcp_parser_t()
 }
 
 /* ========================================================================= */
-/**\internal
+/**
  * Sound data handling of io tcp library.
  */
 class io_tcp_sound_t {
@@ -270,7 +270,7 @@ private:
     /** Storage for input signal. */
     MHASignal::waveform_t* s_in;
 
-    /**\internal This union helps in conversion of floats from host byte
+    /** This union helps in conversion of floats from host byte
      * order to network byte order and back again. */
     union float_union {
         float f;
@@ -426,7 +426,7 @@ std::string io_tcp_sound_t::hton(const mha_wave_t * s_out)
 }
 
 /* ========================================================================= */
-/**\internal
+/**
  * TCP sound-io library's interface to the framework callbacks. */
 class io_tcp_fwcb_t {
 private:

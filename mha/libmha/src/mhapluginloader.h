@@ -40,7 +40,7 @@ namespace PluginLoader {
         std::string configfile;
     };
 
-/** \internal This abstract class defines the interface for classes
+/**  This abstract class defines the interface for classes
  * that implement all types of signal domain processing supported by
  * the MHA: wave2wave, spec2spec, wave2spec, and spec2wave.
  * 
@@ -173,7 +173,7 @@ namespace PluginLoader {
 namespace MHAParser {
 
     /**
-       \internal
+       
        \brief Class to create a plugin loader in a parser, including the load logic.
      */
     class mhapluginloader_t {

@@ -14,7 +14,7 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-  \internal
+  
   \ingroup mhatoolbox
   \ingroup algocomm
   \file   mha_algo_comm.h

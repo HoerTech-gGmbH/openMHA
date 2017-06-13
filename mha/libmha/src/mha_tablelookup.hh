@@ -22,7 +22,7 @@
 
 #ifdef __cplusplus
 
-/** \internal
+/** 
     \ingroup mhatoolbox
     \file mha_tablelookup.hh
     \brief Header file for table lookup classes

@@ -612,7 +612,7 @@ mha_spec_t& operator+=(mha_spec_t&,const mha_spec_t&);
     \brief Addition operator */
 mha_spec_t& operator+=(mha_spec_t&,const mha_real_t&);
 void set_minabs(mha_spec_t&,const mha_real_t&);
-///\internal In-Place division with lower limit on divisor.
+/// In-Place division with lower limit on divisor.
 mha_spec_t & safe_div( mha_spec_t & self, const mha_spec_t & v,
                        mha_real_t eps );
 /** \ingroup mhasignal
@@ -649,7 +649,7 @@ namespace MHASignal {
                       unsigned src_channel, unsigned dest_channel);
 
 
-    /** \internal
+    /** 
         
         \brief Signal counter to produce signal ID strings
     */
@@ -1289,7 +1289,7 @@ operator/(const mha_complex_t & self, mha_real_t other_real)
 }
 
 /**
-   \internal
+   
    \ingroup mhacomplex
    Safe division of two complex numbers, overwriting the first.
    If abs(divisor) < eps, then divisor is replaced by eps. eps2 = eps*eps.
@@ -1475,7 +1475,7 @@ bool operator<(const mha_complex_t & x, const mha_complex_t & y)
 { return abs2(x) < abs2(y); }
 
     
-/**\internal
+/**
  * ostream operator for mha_complex_t
  */
 inline
@@ -1483,7 +1483,7 @@ std::ostream & operator<<(std::ostream & o, const mha_complex_t & c) {
     return o << "(" << c.re << ((c.im >= 0) ? "+" : "") << c.im << "i)";
 }
 
-/**\internal
+/**
  * preliminary istream operator for mha_complex_t without error checking
  */
 inline
