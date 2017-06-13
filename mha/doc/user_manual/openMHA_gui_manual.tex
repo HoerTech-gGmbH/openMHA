@@ -139,7 +139,7 @@ directory with the application files (assuming your working directory to be the
 main directory of \mha{}, this should be '\MatlabDir{}'), and type
 %
 \begin{verbatim}
-mahcontrol hostname
+mhacontrol hostname
 \end{verbatim}
 %
 \verb!hostname! is the hostname\index{hostname} or IP address\index{IP
@@ -170,25 +170,13 @@ changed by the control surface.
 
 \subsection{The main screen 'mhacontrol'}\index{mhacontrol}\index{main screen}
 
-The main screen (\figref{mhacontrol_main.png}) is divided into four regions:
+The main screen (\figref{mhacontrol_main.png}) contains buttons for all control applications the GUI currently provides:
 %
-In the top left area, a panel for algorithm selection\index{algorithm
-  selection}\index{program selection} is provided, if the underlying
-\mha{} contains multiple algorithms or programs.
-%
-An algorithm\index{algorithm selection}\index{program selection} can
-be selected by clicking on an entry of the list.
-%
-The entry '(none)' mutes the output of the hearing aid.
-
 In the upper right area is a panel with starter buttons for typically
 used actions.
 %
 If a dynamic compression is available, a fitting interface (see
 Section \ref{sec:fitting}) can be opened through the 'Fitting' button.
-%
-The 'In-situ signals' button opens a dialog for playback of in-situ
-signals (see \ref{sec:insitu}).
 %
 A level meter can be opened by clicking 'Levels' (see Section
 \ref{sec:levels}).
@@ -200,17 +188,8 @@ needed only for the maintainance of the \mha{} setup.
 These are 'Audio connections' (Section \ref{sec:audioconnections}) for
 a selection of input and output sound card connections.
 %
-The calibration of the system can be accessed through 'Calibration'
-(see Section \ref{sec:calibration}).
-%
 The generic \mha{} configuration browser can be reached through 'Advanced
 control' (see Section \ref{sec:advanced}).
-
-In the bottom left area some status informations\index{status
-  information} are displayed, like selected
-calibration\index{calibration ID}, current client ID\index{client ID},
-gain prescritpion rule\index{gain rule} and current gain/fine-tuning
-preset\index{preset}.
 
 \MHAfigure[][\linewidth]{Main screen}{mhacontrol_main.png}
 
@@ -232,9 +211,6 @@ In the top left panel a list of existing clients is shown.
 A client can be selected for editing an audiogram entry by a single
 mouse click on the list entry.
 %
-To select a client (with an audiogram selection) for fitting, please
-click the 'select' button on the bottom of the screen.
-%
 With the buttons 'New client' and 'Edit client', the client data can
 be entered or edited.
 
@@ -246,52 +222,9 @@ Available audiograms are listed in the top right panel.
 %
 A new audiogram can be created by either manually entering the
 audiogram data (see \figref{mhacontrol_audiogram_entry.png}, button
-'Edit'), or by starting the in-situ audiometer
-(\figref{mhacontrol_audiometer.png}, button 'Audiometer').
+'Edit').
 %
 The selected audiogram can be printed using the 'Print' button.
-
-\subsubsection*{In-situ Audiometer}%
-\index{audiometry}\index{audiometer}\index{in-situ audiometry}\index{audiogram}\index{hearing threshold}\index{HTL}\index{UCL}
-
-The \mha{} can provide in-situ audiometry through the audiometer dialog
-(\figref{mhacontrol_audiometer.png}).
-%
-Using in-situ audiometry requires a properly calibrated \mha{}.
-%
-Even with a calibrated \mha{}, differences between in-situ- and
-standard-audiometry are possible.
-%
-Currently, the \mha{} can measure the hearing threshold; UCL
-measurement is not supported.
-
-The audiometer can be controlled with the keyboard or with the
-mouse/touch screen.
-%
-In the top left corner three buttons allow closing and saving of the
-audiometer ('Quit'), cancelling of the current measurement ('Cancel')
-and printing of the current audiogram ('Print').
-%
-Below, the audiogram of the right and left ear is shown.
-%
-Between the audiogram panels status information about the current test
-signal is shown (ear, frequency, level and playback status).
-%
-In the bottom half of the dialog are buttons for selection of
-right/left ear ('R', 'L'), for cursor navigation and data confirmation
-($\leftarrow$, $\rightarrow$, $\uparrow$, $\downarrow$, 'Ok') and for
-toggle of playback ('Sound on/off').
-%
-To find out the key short-cut please move the mouse pointer over the
-buttons to see tool-tip information.
-
-After closing and saving the audiogram ('Quit'), an audiogram ID can
-be entered.
-%
-If you choose an existing audiogram ID, the audiogram with that ID will
-be replaced.\index{audiogram ID}
-
-\MHAfigure{In-situ audiometer dialog.}{mhacontrol_audiometer.png}
 
 \subsubsection*{Audiogram editor}
 
@@ -312,21 +245,16 @@ dialog.
 
 \MHAfigure{Audiogram editor.}{mhacontrol_audiogram_entry.png}
 
-\subsubsection*{Print audiogram}
-
-The current audiogram can be printed using a system printer.\index{print audiogram}
-
 \subsubsection*{Fitting dialog}
 
-The fitting dialog (see \figref{mhacontrol_fitting_tool.png}) is
-divided into three columns. The middle column contains control
+After hitting 'OK' the fitting dialog opens (see \figref{mhacontrol_fitting_tool.png}). It is divided into three columns. The middle column contains control
 elements to select a gain prescription rule and create a first
 fit. Below is a box for preset management. A preset contains all
 settings which can be made in this dialog, including gain prescription
 rule and fine-tuning, for a specific client and algorithm.  The
 columns on the left and right side of the screen contain the
 ear-specific settings for the right and left ear, respectively. In the
-graph the nominal target level of a LTASS at three different levels is
+graph the nominal target level of a (long term average speech spectrum) LTASS at three different levels is
 shown with thick solid lines, calculated in third-octave bands. The
 thin dashed lines mark the corresponding input level. The shaded areas
 mark the ISO-226 normal hearing threshold (gray) and the threshold of
@@ -350,38 +278,6 @@ rule.
 
 \MHAfigure[][\linewidth]{Fitting dialog.}{mhacontrol_fitting_tool.png}
 
-\subsection{In-situ signals}\label{sec:insitu}\index{in-situ signal}\index{audio file}\index{wave file}
-
-Audio signals can be played back through the PHS, replacing the
-microphone inputs.
-%
-The in-situ signal dialog (\figref{mhacontrol_in-situ_signals.png})
-shows a list of available sound files, a list of check boxes for
-channel selection, and control elements for the other configurable
-parameters of the underlying \verb!addsndfile! plugin.
-%
-The number of microphone channels and the channel order depends on the \mha{}
-configuration.
-%
-Input channels can be selected for playback by activating their check
-box.
-%
-The playback RMS level and the meaning of the \verb!level! variable
-depends on the settings in the \verb!levelmode!  field:
-\verb!relative! means that the signal is scaled by the
-\verb!level!-value relative to its original level, with 0~dB FS
-corresponding to 94~dB SPL. If \verb!peak! is selected, the level
-denotes the peak level of the input file, and with \verb!rms! the RMS
-level is denoted. \verb!rms_limit40! denotes the RMS level, except if
-the peak level exceeds RMS level plus 40~dB, then the peak level is
-set to level+40~dB.
-
-Please make sure that the sound files have the same sampling rate
-which is used at the position of the 'addsndfile' plugin, i.e. take
-account for internal re-sampling.
-
-\MHAfigure[][0.8\linewidth]{Playback of in-situ sound files.}{mhacontrol_in-situ_signals.png}
-
 \subsection{Level meter}\label{sec:levels}\index{level meter}\index{broadband level}\index{gain}\index{input level}\index{output level}
 
 The level meter (\figref{mhacontrol_levels.png}) contains two areas.
@@ -390,9 +286,6 @@ In the upper panel, the broad band level at input and output is shown.
 %
 Below that panel, the time constant for RMS level averaging can be
 adjusted (broad band level meter only).
-
-In the bottom half of the dialog, the input level and gain of the
-dynamic compression is shown as a function of center frequency.
 
 \MHAfigure{Level and gain meter.}{mhacontrol_levels.png}
 
@@ -418,125 +311,6 @@ tools on the \mha{} computer.
 %
 
 \MHAfigure[][0.8\linewidth]{Audio connection manager.}{mhacontrol_audio_connections.png}
-
-\subsection{Calibration}\label{sec:calibration}\index{calibration}
-
-The calibration dialog (\figref{mhacontrol_calibration.png}) gives access
-to the calibration of the PHS.
-%
-Calibrations can be recalled by selecting an entry in the calibration
-list.
-%
-A calibration consists of a broadband calibration value for each
-microphone, a broadband calibration value for the receiver and a
-frequency equalization of the receiver.
-%
-In the bottom half of the dialog, the broadband calibration values for
-inputs and outputs are shown, and the frequency response of the
-receiver equalization is plotted on the right part of the dialog.
-
-The calibration dialog can be closed using the 'Close' button.
-%
-An unused calibration can be removed via the 'Remove' button.
-%
-To create a new calibration, e.g. for re-calibration of the system,
-first select the base calibration from which the new calibration will
-inherit its parameters.
-%
-Then press the 'New' button.
-%
-A calibration wizard will be started.
-
-\MHAfigure{}{mhacontrol_calibration.png}
-
-\subsubsection*{Calibration wizard}
-
-The calibration wizard guides through the calibration process.
-%
-On the first page (\figref{mhacontrol_calibration_wiz1.png}), the
-calibration ID of the new calibration can be entered.\index{calibration ID}
-%
-Below, you can decide whether you would like to calibrate all input
-channels in parallel, or one after each other.
-%
-It is also possible to skip input or output calibration.
-%
-To start with calibration of the output channels (or calibration of
-input channels, if output channels are skipped), press the 'Start'
-button.
-%
-It is possible to exit the calibration process at any time by clicking
-'Cancel'.
-
-\MHAfigure{Calibration wizard, start page.}{mhacontrol_calibration_wiz1.png}
-
-For calibration of an output channel a speech-shaped noise signal is
-played back.\index{output calibration}
-%
-First, select the appropriate receiver response.
-%
-It is assumed that the output level is 80 dB SPL; if the measured
-level differs from 80 dB, please use the green or red buttons to
-decrease or increase the level.
-%
-If you use a coupler for measuring the level, please take the coupler
-correction for the speech shaped noise test signal into account.
-%
-If the output level of 80 dB SPL is reached, press 'Next' to proceed
-with the next output channel, or with the input channels if all output
-channels are calibrated.
-
-\paragraph{Important note}
-%
-During the calibration procedure, a speech shaped noise with an
-internal free field level of 80~dB SPL is played.
-%
-If the combination of selected receiver correction and transducer type has a flat frequency response (e.g., free field loud speaker), then the external level meter should display 80~dB SPL.
-%
-In a typical approach, the receiver correction does not aim to produce
-a flat coupler reponse, but also includes the
-real-ear-to-coupler-difference (RECD) and the real-ear-unaided-gain
-(REUG).
-%
-For internally generated speech-shaped noise signal, typical level
-corrections are in the range of 0 to 10 dB.
-%
-With a 2~cm\textsuperscript{3} coupler (IEC 60318-5:2006), the expected
-coupler level is 78.5~dB SPL.
-%
-%For the Br\"uel \& Kj\ae{}r ear simulator type 4157 and ear mould
-%simulator type DP 0370, the expected coupler level is 87.9~dB SPL.
-%
-
-\MHAfigure{Calibration wizard, calibration of output channel.}{mhacontrol_calibration_wiz2.png}
-
-To calibrate an input channel, or all input channels simultaneously,
-the headsets are placed onto an artificial head.
-A speech shaped noise is presented with a level of 80
-dB SPL at the prospective position of the artificial head's center.
-The artificial head is then put into this position and adjusted so that it 
-faces the the loudspeaker exactly. \index{input calibration}\index{microphone calibration}
-%
-See \figref{mhacontrol_calibration_wiz3.png} for a screen shot of the
-calibration wizard page.
-%
-If the \mha{} provides a loud speaker output which has been
-calibrated properly in the previous step, it can be used for playback
-of the speech shaped noise.
-%
-When you press 'Next', the level is measured during 2 seconds, then
-the next screen is displayed.
-
-\MHAfigure{Calibration of input channels.}{mhacontrol_calibration_wiz3.png}
-
-In the last stage (see \figref{mhacontrol_calibration_wiz4.png}), the
-calibration values and receiver response can be verified.
-%
-If you press 'Finish', the calibration based on the previous
-calibration steps will be uploaded to the \mha{} and stored in the
-calibration database.
-
-\MHAfigure{Calibration wizard, final page.}{mhacontrol_calibration_wiz4.png}
 
 \subsection{Advanced control}\label{sec:advanced}\index{advanced control}\index{mhagui\_generic}
 
