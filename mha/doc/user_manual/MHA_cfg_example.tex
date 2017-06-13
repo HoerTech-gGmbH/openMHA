@@ -6,7 +6,7 @@
 
 In this section, an example is shown on how to configure and start the
 \mha{}. A simple algorithm is designed, which implements a 
-dynamic compressor. Then examples are given on
+multi-band dynamic range compressor. Then examples are given on
 how to start this algorithm in different situations (\mhad{}, \Matlab{} processing).
 
 \subsection{Dynamic compressor algorithm}%
@@ -227,8 +227,8 @@ terminated with a slash.
 Finally, we can connect the JACK client to the hardware input and
 output ports and load the algorithm configuration file, for example:
 \begin{verbatim}
-io.con_in = [system:capture_3 system:capture_7]
-io.con_out = [system:playback_7 system:playback_8]
+io.con_in = [system:capture_5 system:capture_6]
+io.con_out = [system:playback_1 system:playback_2]
 \end{verbatim}
 Please replace the port names by the ports you want to connect
 to.
@@ -324,7 +324,7 @@ and \verb!overlapadd! lies the \verb!db! plugin.
 Similarly, the variable contents of the processing chain can now be
 queried by typing \verb!mha.db.overlapadd.mhachain?!.
 
-\subsection{Start the MHA for real-time processing with \Matlab{} from Linux}%
+\subsection{Start the MHA for real-time processing with \Octave{}/ \Matlab{} from Linux}%
 \index{Matlab}%
 
 The configuration\index{framework

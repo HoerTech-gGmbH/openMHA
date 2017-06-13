@@ -3,12 +3,12 @@
 \section{The \mhad{}}\label{sec:linuxmhaserver}\label{sec:frameworks}
 
 The \mhad{} ('mha' on \Linux{}) provides a control interface for 
-the configuration and connects to the audio abstraction layer (MHA IO).
+the configuration and connects to the audio abstraction layer via the \mhad{} IO modules.
 %
 The text based user interface is available through a TCP network
 socket.
 %
-External network clients, e.g.\ telnet, Netcat or the \Matlab{} control
+External network clients, e.g.\ telnet, Netcat or the \Octave{}/ \Matlab{} control
 interface function 'mhactl' (see \secpageref{sec:mhactl}) can be used
 to access this interface.
 %
@@ -72,10 +72,10 @@ will be interpreted as \mha{} configuration language commands and sent to the
 In daemon mode, these \mha{} configuration language commands are interpreted at the 
 start of each session.
 
-\verb!mha --daemon ?read:defaults.cfg! will read a default
-configuration file for each session.
+\verb!mha --daemon ?read:defaults.cfg! will read
+configuration file named \emph{default.cfg} for each session.
 %
-Clients for the \mhad{} are the \Matlab{} tool 'mhactl' and any
+Clients for the \mhad{} are the \Octave{}/ \Matlab{} tool 'mhactl' and any
 telnet client (not part of the distribution).
 
 The \mhad{} searches for \mha{} plugins in the system library paths, or in
@@ -84,7 +84,7 @@ MHA\_LIBRARY\_PATH}.
 %
 Multiple paths can be separated by a semicolon.
 
-\paragraph{Warning}
+\textbf{Warning}
 
 The \mhad{} accepts connections from any host that can reach
 the configured network interface.
@@ -98,7 +98,7 @@ We explicitly do not take any liability in case of abuse of patient
 data transmitted to the \mhad{} or any other interference.
 
 Please do not modify the acknowledgement strings if a communication
-with the \Matlab{} tool 'mhactl' is required.
+with the \Octave{}/ \Matlab{} tool 'mhactl' is required.
 
 \subsection{Configuration variables of the \mhad{}}
 
@@ -153,7 +153,7 @@ configuration; on error the prepare command will be rejected. Setting
 and accordingly setting {\tt cmd=stop} will cause the IO plugin to
 stop processing. Invoking {\tt cmd=release} brings the IO plugin into
 an unlocked state. The session can be closed with {\tt cmd=quit}. See
-also \figref{MHA-fw-states}.
+\figref{MHA-fw-states} for an overview.
 
 \MHAfigure[][0.7\linewidth]{States of the \mhad{}}{MHA-fw-states}
 
@@ -161,18 +161,18 @@ also \figref{MHA-fw-states}.
 \label{sec:audioabstraction}
 
 The audio abstraction layer connects the audio backbone, i.e.,
-Jack (see \secpageref{sec:jack}) or audio files, with the \mhad{}.
+JACK (see \secpageref{sec:jack}) or audio files, with the \mhad{}.
 %
 This layer consists of two modules: 'MHAIOJack' for low delay real
 time processing with the JACK audio server (see \secpageref{sec:jack})
-on \Linux{} and 'MHAIOFile' for file to file processing (both platforms).
+on \Linux{} and 'MHAIOFile' for file to file processing.
 
 \paragraph{The 'MHAIOJack' audio IO module}%
 \index{MHAIOJack}%
 \index{Jack Audio Connection Kit}%
 
 The module 'MHAIOJack' provides communication with the JACK audio
-server (see \secpageref{sec:jack}).
+server.
 %
 When the \mhad{} is prepared for processing, this module connects to a
 running JACK server and validates its parameters. The input and output
