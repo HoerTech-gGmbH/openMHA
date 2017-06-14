@@ -49,7 +49,7 @@ the same machine as \Octave{} or Matlab{}.
 
 The function 'mhactl\_wrapper' accepts two arguments, the \mha{} handle 
 (struct with the correct TCP port and host), and the \mha{} query to be processed:
-\verb!result = mhactl( mha_handle, query )!
+\verb!result = mhactl_wrapper( mha_handle, query )!
 %
 The 'mhactl\_wrapper' function opens a network connection to the \mhad{},
 and sends the command string to the MHA and waits for an acknowledge
