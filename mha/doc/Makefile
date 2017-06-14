@@ -130,6 +130,7 @@ MHA_plugin_auto_doc.pdf:
 
 clean:
 	rm -f $(MHADISTS:=_plugins.*) *~ $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf
+	$(MAKE) -C user_manual clean
 
 # Local Variables:
 # coding: utf-8-unix
