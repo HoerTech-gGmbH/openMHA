@@ -34,7 +34,7 @@ function h = mha_start( port, pre_binary, post_binary )
   if ~isempty(MHA_INSTALL_DIR)
     binary = [MHA_INSTALL_DIR,'/mha'];
   else
-    MHA_INSTALL_DIR = my_getenv('MHA_INSTALL_DIR');
+    MHA_INSTALL_DIR = getenv('MHA_INSTALL_DIR');
     if ~isempty(MHA_INSTALL_DIR)
       binary = [MHA_INSTALL_DIR,'/mha'];
     else
