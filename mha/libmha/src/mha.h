@@ -38,6 +38,8 @@
 /*                                                                           */
 /*****************************************************************************/
 
+/* @todo-release update version number to 4.5.0 */
+
 /** Major version number of MHA */
 #define MHA_VERSION_MAJOR 4
 
