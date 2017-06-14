@@ -28,7 +28,7 @@ interface function 'mhactl' (see \secpageref{sec:mhactl}) can be used
 to access this interface.
 %
 Multiple IO modules are available in the audio abstraction layer,
-which hide the platform dependency (see
+which encapsulate the platform dependency (see
 \secpageref{sec:audioabstraction}).
 %
 
@@ -195,9 +195,7 @@ ports of the MHA can be connected to any other JACK ports through the
 \mha{} configuration (see below) or externally. Please note, that
 MHAIOJack currently supports only fixed sample rates and fragment
 sizes. Changing the fragment size of JACK while processing will stop
-the \mha{} processing thread. If sample rates are required which are not
-provided by JACK, the {\tt downsample} and {\tt upsample} plugins can
-be used. 
+the \mha{} processing thread. 
 
 Variables of the 'MHAIOJack' module:
 

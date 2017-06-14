@@ -125,8 +125,7 @@ vector = [1.0 2.7 4]
 matrix = [[1 2 3];[4 5 6]]
 \end{verbatim}
 
-Vectors with real values (vector<float>, library class
-\verb!vfloat_t!) support also the special notation
+Vectors with real values support also the special notation
 \verb!min:increment:max!. A mixture of explicit and incremential
 notation is allowed. The vector is internally expanded and will return
 the explicit notation on read:
@@ -160,8 +159,7 @@ Strings in the \mha{} configuration language can contain any characters. Special
 characters do not have to be quoted; quote characters are treated
 literally. Leading and trailing whitespace of strings is automatically
 removed. Vector elements in string vectors are separated by a single
-space character. This means that vector elements
-(\verb!vstring_t!, \verb!kw_t!) can not contain spaces.
+space character. This means that vector elements cannot contain spaces.
 
 \begin{verbatim}
 string =  This is a valid text string.
@@ -215,7 +213,7 @@ This concept does not only provide analysis of interaction aspects
 but also modular combination of signal processing strategies, 
 e.g.\ separation of noise estimators and noise reduction strategies 
 in different logical processing stages. A detailed description of 
-the programming interface can be found in the Developers Reference Handbook.
+the programming interface can be found in the \DeveloperManual.
 
 
 %%% Local Variables: 
