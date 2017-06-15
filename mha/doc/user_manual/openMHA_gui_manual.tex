@@ -130,11 +130,11 @@ explains typical work flows.
 
 \section{Starting 'mhacontrol'}
 
-The control surface 'mhacontrol'\index{mhacontrol} is a \Matlab{}
+The control surface 'mhacontrol'\index{mhacontrol} is a \Octave{}/\Matlab{}
 application.
 %
-We assume that an instance of \mha{} is already running (see \EngineerManual for 
-details). To start the control surface, please start \Matlab{}, change into the 
+We assume that an instance of \mha{} is already running (see README.md and \EngineerManual{} for 
+details). To start the control surface, please start \Octave{}/\Matlab{}, change into the 
 directory with the application files (assuming your working directory to be the 
 main directory of \mha{}, this should be '\MatlabDir{}'), and type
 %
@@ -145,20 +145,20 @@ mhacontrol hostname
 \verb!hostname! is the hostname\index{hostname} or IP address\index{IP
   address} of the \mha{}.
 %
-If the \mha{} runs on the same host as \Matlab{} the hostname or IP address
+If the \mha{} runs on the same host as \Octave{}/\Matlab{} the hostname or IP address
 can be omitted.
 %
-If the \mha{} and \Matlab{} do not run on the same host, please make sure
+If the \mha{} and \Octave{}/\Matlab{} do not run on the same host, please make sure
 that the firewall allows access to port\index{port}\index{firewall}
 33337 (or the port used by the actual \mha{} configuration), and that the
 \mha{} on the remote host is started listening on the appropriate network
-devive (e.g., \verb!mha -i 0.0.0.0!).
+device (e.g., \verb!mha -i 0.0.0.0!).
 %
 A TCP network connection between \mha{} and 'mhacontrol' is required.
 
 Please note that the control tool will overwrite many values of the
 \mha{} configuration files with values stored in the configuration of
-mhacontrol (stored in \Matlab{} files on the control PC).
+mhacontrol (stored in \Octave{}/\Matlab{} files on the control PC).
 %
 This primarily affects the client data, i.e. configuration of dynamic
 compression and fine-tuning, and the calibration parameters.
@@ -202,7 +202,7 @@ The 'mhacontrol' software contains a simple database for client management\index
 Client entries can be created and modified in the client database
 dialog, see \figref{mhacontrol_client_database.png}.
 %
-A client entry consists of first- and lastname, birthday, an unique
+A client entry consists of first- and lastname, birthday, a unique
 client ID\index{client ID}, and an arbitrary number of
 audiograms\index{audiogram}.
 %
@@ -320,7 +320,7 @@ A generic parameter control interface to the \mha{} is available. See
 A description of this generic interface can be found in the \mha{}
 manual.
 
-\MHAfigure{Generic \mha{} parameter interface.}{mhacontrol_advanced.png}
+\MHAfigure[\linewidth]{Generic \mha{} parameter interface.}{mhacontrol_advanced.png}
 
 \section{Appendix}
 
