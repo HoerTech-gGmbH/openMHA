@@ -1,0 +1,59 @@
+*Wed, 14.06.2017, 14h*
+
+__Attendees:__
+Tobias, Frasher, Hendrik
+
+
+1. Manuals
+	- some things set, some fixed
+	- fix .png-recreation from eps if original image is available in png-format 
+	- some polishing to be done...
+	- application manual almost done :-)
+	- remove available plugin list from GUI manual
+	- simple example to be checked 
+	- > make clean cleans everything 
+
+
+2. Prerequisites
+	- List is in repository
+	- List for documentation as 'optional'
+	
+	
+3. Plugins 
+	- enough example configuration files available
+	- single channel noise reduction - sound file needed (Hendrik)
+	- Kamil will provide something for feedback cancellation 
+
+	
+4. Web presence
+	- put table with delay values on github wiki with information about
+		soundcard, how is it connected (USB, Firwwire, etc.), kernel version, CPU  
+
+
+5. GUI
+	- files renamed X
+	- Does bake still work?
+	 
+	
+6. Version number! 
+	- Tobias was thinking of updating it already 
+
+
+7. Tools
+	- Put mha/mfiles in tools/mfiles 
+
+
+9. What does Frasher do when Tobias is on holidays?
+	- Investigate possibilities for future GUI development?
+	- What GUI frameworks are there?
+	- Get into one...
+
+
+10. Shopping (HTCH)
+	- NUC demo system
+	- MacBook Air + ethernet adapter
+
+
+  
+	
+	
