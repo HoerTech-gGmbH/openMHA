@@ -73,7 +73,7 @@ Also, we specify the audio channel-specific ``peak levels'' for input and output
 signals in dB:
 \begin{verbatim}
 mha.calib_in.peaklevel = [90 90]
-mha.calib_out.peaklevel = [90]
+mha.calib_out.peaklevel = [90 90]
 \end{verbatim}
 In the next few lines, we configure the parameters of the overlap-add
 method. Recall that a fragment size of 64 samples is used. Zeros will be padded
@@ -127,13 +127,13 @@ listed below, see file \emph{dynamiccompression.cfg}):
 \begin{verbatim}
 # gaintable data in dB gains
 mha.overlapadd.mhachain.dc.gtdata = [[10 -10 -30];...
-                                     [0 -25 -50];...
+                                     [20 -25 -50];...
                                      [10 -10 -30];...
-                                     [0 -25 -50]]
+                                     [20 -25 -50]]
 # input level for first gain entry in dB SPL
 mha.overlapadd.mhachain.dc.gtmin = [0]
 # level step size in dB
-mha.overlapadd.mhachain.dc.gtstep = [30]
+mha.overlapadd.mhachain.dc.gtstep = [40]
 # attack time constant in s
 mha.overlapadd.mhachain.dc.tau_attack = [0.02]
 # decay time constant in s
@@ -145,6 +145,7 @@ of the filter bank plugin, used to extract frequency information
 \begin{verbatim}
 # Name of fftfilterbank plugin.  Used to extract frequency information.
 mha.overlapadd.mhachain.dc.fb = fftfilterbank
+mha.overlapadd.mhachain.dc.chname = fftfilterbank_nchannels
 \end{verbatim}
 %
 The number of output channels after that plugin \verb!combinechannels! 
