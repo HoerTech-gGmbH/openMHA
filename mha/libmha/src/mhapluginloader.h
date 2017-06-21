@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2007 2008 2009 2012 2013 2016 HörTech gGmbH
+// Copyright © 2007 2008 2009 2012 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,7 @@ namespace PluginLoader {
         std::string configfile;
     };
 
-/** \internal This abstract class defines the interface for classes
+/**  This abstract class defines the interface for classes
  * that implement all types of signal domain processing supported by
  * the MHA: wave2wave, spec2spec, wave2spec, and spec2wave.
  * 
@@ -173,7 +173,7 @@ namespace PluginLoader {
 namespace MHAParser {
 
     /**
-       \internal
+       
        \brief Class to create a plugin loader in a parser, including the load logic.
      */
     class mhapluginloader_t {

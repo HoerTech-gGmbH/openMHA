@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = coherence
+SUBDIRS = coherence steerbf
 
 include ../../../rules.mk
 

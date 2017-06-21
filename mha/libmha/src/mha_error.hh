@@ -46,7 +46,7 @@ private:
 
 /**
    \ingroup mhaerror
-   \brief Throw a MHA error with a text message.
+   \brief Throw an \mha error with a text message.
    \param x Text message.
  */
 #define MHA_ErrorMsg(x) MHA_Error(__FILE__,__LINE__,"%s",x)

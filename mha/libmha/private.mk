@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2016 HörTech gGmbH
+# Copyright © 2013 2014 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,6 @@
 # This file is part of the build system of the the MHA.  In the open
 # source version of the MHA, this file exists, but is empty.  It
 # should not be removed.
-
 
 
 # Local Variables:

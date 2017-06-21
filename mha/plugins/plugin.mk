@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2014 2015 2016 HörTech gGmbH
+# Copyright © 2014 2015 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -122,7 +122,7 @@ CXXFLAGS += -I../../../../external_libs/$(PLATFORM_CC)/include
 CXXFLAGS += -I../../../libmha/src
 CFLAGS += -I../../../libmha/src
 LDFLAGS += -L../../../libmha/$(BUILD_DIR)
-LDLIBS += -lMHAToolbox
+LDLIBS += -lopenmha
 
 
 # Local Variables:

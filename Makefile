@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -24,26 +24,43 @@
 #
 # or add the COMPILERPREFIX variable to config.mk
 
+include config.mk
+
 MODULES = \
 	mha/libmha \
 	mha/frameworks \
 	mha/plugins \
+        mha/mhatest \
 	external_libs \
+
+DOCMODULES = \
+	mha/doc/flowcharts \
+        mha/doc/images \
+	mha/doc \
+
 
 all: $(MODULES)
 
-.PHONY : $(MODULES)
+.PHONY : $(MODULES) $(DOCMODULES)
 
-$(MODULES):
+$(MODULES:external_libs=) $(DOCMODULES):
 	$(MAKE) -C $@
 
+external_libs:
+	$(MAKE) -j 1 -C $@
+
+doc: mha/doc
+
 clean:
-	for m in $(MODULES); do $(MAKE) -C $$m clean; done
+	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
 mha/frameworks: mha/libmha
 mha/plugins: mha/libmha mha/frameworks
+mha/mhatest: mha/plugins mha/frameworks
+mha/doc: mha/doc/images all
+mha/doc/images: mha/doc/flowcharts
 
 # Local Variables:
 # coding: utf-8-unix

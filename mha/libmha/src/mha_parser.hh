@@ -251,7 +251,7 @@ namespace MHAParser {
         /** Construct detached node to be used in the configuration tree.
          * \param help_text
          *   A text describing this node.  E.g. if this node lives at
-         *   the root of some MHA plugin, then the help text should
+         *   the root of some \mha plugin, then the help text should
          *   describe the functionality of the plugin.
          */
         parser_t(const std::string & help_text = "");

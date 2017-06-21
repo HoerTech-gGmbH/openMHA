@@ -25,7 +25,7 @@
 #include "mhapluginloader.h"
 
 
-/// \internal
+/// 
 /// Class for loading MHA sound IO module.
 class io_lib_t : public MHAParser::c_ifc_parser_t {
 public:

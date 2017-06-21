@@ -20,7 +20,7 @@
 #include <math.h>
 
 
-/** \internal
+/** 
     \brief Main class for Parser IO
 
 */
@@ -63,7 +63,7 @@ private:
     MHAEvents::patchbay_t<io_parser_t> patchbay;
 };
 
-/** \internal
+/** 
     \brief Remove JACK client and deallocate internal ports and buffers
   
 */
@@ -73,7 +73,7 @@ void io_parser_t::release()
     b_prepared = false;
 }
 
-/** \internal
+/** 
     \brief Allocate buffers, activate JACK client and install internal ports
   
 */

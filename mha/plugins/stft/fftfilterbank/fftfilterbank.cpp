@@ -56,7 +56,7 @@ private:
     unsigned int nbands;
 };
 
-/** \internal
+/** 
 
 Default values are set and MHA configuration variables registered into the parser.
 

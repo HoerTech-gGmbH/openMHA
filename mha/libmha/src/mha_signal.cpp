@@ -23,16 +23,16 @@
 #include "mha_signal_fft.h"
 
 /**
-   \defgroup mhatoolbox The MHA Toolbox library
+   \defgroup mhatoolbox The \mha Toolbox library
 
-   The MHA toolbox is a static C++ library which makes it more
-   comfortable to develop MHA plugins. It contains the MHA script
+   The \mha toolbox is a static C++ library which makes it more
+   comfortable to develop \mha plugins. It contains the \mha script
    language classes.
 
 */
 
 /**
-   \internal
+   
    \ingroup mhatoolbox
    \file   mha_signal.hh
    \brief  Header file for audio signal handling and processing classes
@@ -55,7 +55,7 @@
 
 /**
    \ingroup mhatoolbox
-   \defgroup mhacomplex Complex aithmetics in the MHA
+   \defgroup mhacomplex Complex arithmetics in the \mha
 
 */
 
@@ -245,7 +245,7 @@ void waveform_t::copy( const mha_wave_t * src )
     }
 }
 
-/** \internal
+/** 
     
 \brief Copy one channel of a given waveform signal to a target channel
   
@@ -714,7 +714,7 @@ void spectrum_t::copy( const mha_spec_t & src )
     }
 }
 
-/** \internal
+/** 
 \brief Copy one channel of a given spectrum signal to a target channel
   
 \param s Input spectrum signal
@@ -1192,7 +1192,7 @@ void MHASignal::fft_t::spec2wave( const mha_spec_t * spec, mha_wave_t * wave )
     }
 }
 
-/** \internal
+/** 
  * wave may have fewer number of frames than needed for a complete iFFT.
  * Only as many frames are written into wave as fit, starting with offset
  * offset of the complete iFFT. */

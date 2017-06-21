@@ -36,9 +36,12 @@
 
 extern char last_jack_err_msg[MAX_USER_ERR];
 
+/** 
+        \brief Classes and functions for \mha and JACK interaction
+*/
 namespace MHAJack {
 
-    /** \internal
+    /** 
         \brief Class for one channel/port
         
         This class represents one JACK port. Double buffering for
@@ -51,13 +54,13 @@ namespace MHAJack {
             input,
             output
         };
-        /** \internal
+        /** 
             \param jc JACK client.
             \param dir Direction (input/output).
             \param id Number in port name (starting with 1).
          */
         port_t(jack_client_t* jc,dir_t dir,int id);
-        /** \internal
+        /** 
             \brief Constructor to create port with specific name
             \param jc JACK client.
             \param dir Direction (input/output).
@@ -65,27 +68,27 @@ namespace MHAJack {
          */
         port_t(jack_client_t* jc,dir_t dir,const std::string& id);
         ~port_t();
-        /** \internal
+        /** 
             \param s Signal structure to store the audio data.
             \param ch Channel number in audio data structure to be used.
          */
         void read(mha_wave_t* s,unsigned int ch);
-        /** \internal
+        /** 
             \param s Signal structure from which the audio data is read.
             \param ch Channel number in audio data structure to be used.
          */
         void write(mha_wave_t* s,unsigned int ch);
-        /** \internal 
+        /**  
             \param n Number of samples to be muted (must be
             the same as reported by Jack processing callback).
          */
         void mute(unsigned int n);
-        /** \internal 
+        /**  
             \param pn Port name to connect to
         */
         void connect_to(const char* pn);
         /**
-           \internal
+           
            \brief Return the port name.
          */
         const char* get_short_name();
@@ -96,7 +99,7 @@ namespace MHAJack {
         jack_client_t* jc;
     };
 
-/** \internal
+/** 
     \brief Generic asynchronous JACK client
   
 */
@@ -172,7 +175,7 @@ namespace MHAJack {
         bool fail_on_async_jackerror;
     };
 
-/** \internal
+/** 
     \brief Generic client for synchronous playback and recording of waveform fragments.
   
 */
@@ -196,7 +199,7 @@ namespace MHAJack {
         MHASignal::waveform_t* frag_out;
     };
 
-/** \internal
+/** 
     \brief Generic JACK client for averaging a system response across time
   
 */
@@ -223,7 +226,7 @@ namespace MHAJack {
         bool b_ready;
     };
 
-/** \internal
+/** 
     \brief Functional form of generic client for synchronous playback and recording of waveform fragments.
   
 */

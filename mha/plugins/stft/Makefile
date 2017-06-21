@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = fftfilterbank overlapadd
+SUBDIRS = fftfilterbank overlapadd noisePowProposedScale timoSmooth
 
 include ../../../rules.mk
 

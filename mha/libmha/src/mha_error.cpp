@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2003 2004 2005 2006 2008 2009 2013 2016 HörTech gGmbH
+// Copyright © 2003 2004 2005 2006 2008 2009 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -14,9 +14,9 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-   \internal
+   
    \file   mha_error.cpp
-   \brief  Implementation of MHA error handling
+   \brief  Implementation of \mha error handling
    
    This file forms a seperate library.
    
@@ -41,7 +41,7 @@
 
 /**
    \ingroup mhatoolbox
-   \defgroup mhaerror Error handling in the MHA
+   \defgroup mhaerror Error handling in the \mha
 
    Errors are reported to the user via the MHA_Error exception.
 
@@ -53,8 +53,8 @@
    \class MHA_Error
    \brief Error reporting exception class
    
-   This class is used for error handling in the MHA. It is used by the
-   MHA kernel and by the MHA toolbox library. Please note that
+   This class is used for error handling in the \mha. It is used by the
+   \mha kernel and by the \mha toolbox library. Please note that
    exceptions should not be used accross ANSI-C interfaces. It is
    necessary to catch exceptions within the library.
 
@@ -62,7 +62,7 @@
    error message.
  */
 
-/**\internal
+/**
  * Compute number of digits in an unsigned integer.
  */
 static unsigned digits(unsigned n)

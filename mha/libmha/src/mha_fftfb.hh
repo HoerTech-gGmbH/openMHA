@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2009 2013 2016 HörTech gGmbH
+// Copyright © 2005 2006 2007 2009 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -92,16 +92,16 @@ namespace MHAOvlFilter {
        \brief Set of configuration variables for FFT-based overlapping filters
 
        This class enables easy configuration of the FFT-based overlapping
-       filterbank.  An instance of fftfb_vars_t creates MHA configuration
+       filterbank.  An instance of fftfb_vars_t creates \mha configuration
        language variables needed for configuring the filterbank, and
-       inserts these variables in the MHA configuration tree.
+       inserts these variables in the \mha configuration tree.
 
        This way, the variables are visible to the user and can be configured
-       using the MHA configuration language.
+       using the \mha configuration language.
     */
     class fftfb_vars_t {
       public:
-        /** construct a set of MHA configuration language variables suitable
+        /** construct a set of \mha configuration language variables suitable
          * for configuring the FFT-based overlapping filterbank.
          * @param p The node of the configuration tree where the variables
          *          created by this instance are inserted. */
