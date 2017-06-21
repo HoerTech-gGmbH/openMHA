@@ -68,11 +68,11 @@ fmt_eps/standalone.eps: standalone.xfig \
                         fmt_eps/dia_microphone.eps \
                         fmt_eps/dia_speaker.eps
 
-fmt_png/%.png: fmt_eps/%.eps
-	pstopnm -stdout -xsize 3000 -portrait $< | pnmscale 0.25 | pnmcrop | pnmtopng > $@
-
 fmt_png/%.png: %.png
 	cp $< $@
+
+fmt_png/%.png: fmt_eps/%.eps
+	pstopnm -stdout -xsize 3000 -portrait $< | pnmscale 0.25 | pnmcrop | pnmtopng > $@
 
 fmt_pdf/%.pdf: fmt_eps/%.eps
 	epstopdf --nocompress --outfile=$@ $<
