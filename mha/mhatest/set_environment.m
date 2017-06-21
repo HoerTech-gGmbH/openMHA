@@ -44,8 +44,6 @@ else
   setenv('MHA_LIBRARY_PATH',strjoin(dirs,';'));
 end
 
-addpath /usr/share/tascar/matlab;
-
 function result = find_all_plugins(git_dir, build_dir)
 if strfind(build_dir, 'MinGW')
     dll = '.dll';
