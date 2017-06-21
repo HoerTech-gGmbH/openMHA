@@ -88,7 +88,7 @@ and sound examples. These are contained in the directory
 For example, we can start an example featuring multiple algorithms
 together with the following command:
 
-mha ?read:configurations/prerelease_combination.cfg cmd=start cmd=quit 
+mha ?read:mha/configurations/prerelease_combination.cfg cmd=start cmd=quit 
 
 6. Documentation:
 
