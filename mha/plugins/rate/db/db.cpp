@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-// mhainfo: plugin loads: yes
 #include "mha_signal.hh"
 #include "mha_plugin.hh"
 #include "mha_toolbox.h"
