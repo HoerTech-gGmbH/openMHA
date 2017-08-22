@@ -18,7 +18,7 @@ include ../../../magic.mk
 
 #SUBDIRS = jack_client
 
-PLUGINS = MHAIOFile MHAIOParser MHAIOTCP
+PLUGINS = MHAIOFile MHAIOParser MHAIOPortAudio MHAIOTCP
 
 ifeq "$(WITH_JACK)" "yes"
 PLUGINS += MHAIOJack
@@ -44,6 +44,8 @@ $(BUILD_DIR)/MHAIOJackdb$(PLUGIN_EXT): LDLIBS += $(JACK_LINKER_COMMAND)
 
 $(BUILD_DIR)/MHAIOFile$(PLUGIN_EXT): LDFLAGS += -L../../../external_libs/$(PLATFORM_CC)/lib
 $(BUILD_DIR)/MHAIOFile$(PLUGIN_EXT): LDLIBS += -lsndfile
+
+$(BUILD_DIR)/MHAIOPortAudio$(PLUGIN_EXT): LDLIBS += -lportaudio
 
 ifeq ($(PLATFORM),MinGW)
 $(BUILD_DIR)/MHAIOTCP$(PLUGIN_EXT): LDLIBS += -lws2_32
