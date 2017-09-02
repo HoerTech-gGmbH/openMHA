@@ -14,12 +14,10 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-   
    \file   mha_error.cpp
    \brief  Implementation of \mha error handling
    
    This file forms a seperate library.
-   
 */
 
 #include "mha_error.hh"

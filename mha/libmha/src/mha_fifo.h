@@ -28,7 +28,7 @@
 
 
 /** 
- * \brief A FIFO class for blocksize adaptation 
+ * A FIFO class for blocksize adaptation 
  * Synchronization: None. Use external synchronisation or synchronization 
  * in inheriting class.
  */

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2010 2011 2013 2016 HörTech gGmbH
+// Copyright © 2010 2011 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +23,6 @@
 namespace DynComp {
 
     /**
-       
        \brief Variables for dc_afterburn_t class.
     */
     class dc_afterburn_vars_t : public MHAParser::parser_t {
@@ -40,7 +39,6 @@ namespace DynComp {
     };
 
 /**
-    
    \brief Real-time class for after burn effect.
 
    The constructor processes the parameters and creates pre-processed
@@ -50,7 +48,6 @@ namespace DynComp {
     public:
         dc_afterburn_rt_t(const std::vector<float>& cf,unsigned int channels, float srate, const dc_afterburn_vars_t& vars);
         /**
-           
            \brief gain modifier method (afterburn).
 
            \param Gin Linear gain.
@@ -84,7 +81,6 @@ namespace DynComp {
     };
 
 /**
-   
    \brief Afterburn class, to be defined as a member of compressors.
 */
     class dc_afterburn_t : public dc_afterburn_vars_t, protected MHAPlugin::config_t<dc_afterburn_rt_t> {

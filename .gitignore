@@ -1,4 +1,4 @@
-# This file is part of the HörTech Open Master Hearing Aid (MHA)
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
@@ -26,13 +26,6 @@ build
 mha.creator.user
 
 mha/tools/mfiles/octave-workspace
-
-meeting_notes/openMHA_status_May-17/openMHA_status_June-17.aux
-meeting_notes/openMHA_status_May-17/openMHA_status_June-17.bbl
-meeting_notes/openMHA_status_May-17/openMHA_status_June-17.blg
-meeting_notes/openMHA_status_May-17/openMHA_status_June-17.nav
-meeting_notes/openMHA_status_May-17/openMHA_status_June-17.out
-meeting_notes/openMHA_status_May-17/openMHA_status_June-17.pdf
-meeting_notes/openMHA_status_May-17/openMHA_status_June-17.snm
-meeting_notes/openMHA_status_May-17/openMHA_status_June-17.synctex
-meeting_notes/openMHA_status_May-17/openMHA_status_June-17.toc
+# Local Variables:
+# coding: utf-8-unix
+# End:

@@ -173,8 +173,7 @@ namespace PluginLoader {
 namespace MHAParser {
 
     /**
-       
-       \brief Class to create a plugin loader in a parser, including the load logic.
+        \brief Class to create a plugin loader in a parser, including the load logic.
      */
     class mhapluginloader_t {
     public:
