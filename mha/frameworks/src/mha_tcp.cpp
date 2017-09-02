@@ -779,7 +779,7 @@ unsigned short Connection::get_peer_port()
     return ntohs(peer_addr.sin_port);
 }
 
-MHA_TCP::Connection::Connection(SOCKET _fd) throw(MHA_Error)
+MHA_TCP::Connection::Connection(SOCKET _fd)
     : read_event(0),
       write_event(0),
       closed(false),

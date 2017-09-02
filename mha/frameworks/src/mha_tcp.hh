@@ -266,7 +266,7 @@ namespace MHA_TCP {
          *           This file descriptor is closed again in the destructor.
          * @throw MHA_Error If the file descriptor is < 0.
          */
-        Connection(SOCKET _fd) throw(MHA_Error);
+        Connection(SOCKET _fd);// throw(MHA_Error);
     public:
         Sockread_Event * get_read_event();
         Sockwrite_Event * get_write_event();

@@ -79,8 +79,9 @@ private:
     std::vector<adm_t *> adms;
 
 private:
-    /** Index checking for all internal arrays. */
-    inline void check_index(unsigned index) const throw(MHA_Error)
+    /** Index checking for all internal arrays.
+     * \throw MHA_Error if index out of range */
+    inline void check_index(unsigned index) const
     { if (index >= adms.size()) throw MHA_ErrorMsg("BUG:Index out of range"); }
 
 public:
