@@ -52,12 +52,12 @@ private:
 };
 
 overlapadd_t::overlapadd_t(mhaconfig_t spar_in,
-               mhaconfig_t spar_out,
-               float wexp,
-               float wndpos,
-               const MHAParser::window_t& window,
-               const MHAParser::window_t& zerowindow,
-                   float& prescale_fac,float& postscale_fac)
+                           mhaconfig_t spar_out,
+                           float wexp,
+                           float wndpos,
+                           const MHAParser::window_t& window,
+                           const MHAParser::window_t& zerowindow,
+                           float& prescale_fac,float& postscale_fac)
     : fft(mha_fft_new(spar_in.fftlen)),
       prewnd(window.get_window(spar_in.wndlen)),
       postwnd(window.get_window(spar_in.fftlen)),
@@ -72,43 +72,43 @@ overlapadd_t::overlapadd_t(mhaconfig_t spar_in,
       n_pad2(n_zero-n_pad1)
 {
     if( spar_in.fragsize != spar_out.fragsize )
-    throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change fragment size from %d to %d.",spar_in.fragsize,spar_out.fragsize);
+        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change fragment size from %d to %d.",spar_in.fragsize,spar_out.fragsize);
     if( spar_in.wndlen != spar_out.wndlen )
-    throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change fragment size from %d to %d.",spar_in.wndlen,spar_out.wndlen);
+        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change window length from %d to %d.",spar_in.wndlen,spar_out.wndlen);
     if( spar_in.fftlen != spar_out.fftlen )
-    throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change fragment size from %d to %d.",spar_in.fftlen,spar_out.fftlen);
+        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change FFT length from %d to %d.",spar_in.fftlen,spar_out.fftlen);
     prewnd ^= wexp;
     postwnd ^= 1.0-wexp;
     if( n_pad1 ){
-    MHAWindow::base_t pad1wnd(zerowindow.get_window(n_pad1,-1,0));
-    pad1wnd.ramp_begin(postwnd);
+        MHAWindow::base_t pad1wnd(zerowindow.get_window(n_pad1,-1,0));
+        pad1wnd.ramp_begin(postwnd);
     }
     if( n_pad2 ){
-    MHAWindow::base_t pad2wnd(zerowindow.get_window(n_pad2,0,1));
-    pad2wnd.ramp_end(postwnd);
+        MHAWindow::base_t pad2wnd(zerowindow.get_window(n_pad2,0,1));
+        pad2wnd.ramp_end(postwnd);
     }
     float scale_fac = sqrt(spar_in.fftlen/prewnd.sumsqr());
     float scale_postfac = scale_fac * spar_in.wndlen / (2.0f*spar_in.fragsize);
 
     switch( window.get_type() ){
     case MHAParser::window_t::wnd_hann :
-    break;
+        break;
     case MHAParser::window_t::wnd_rect :
-    scale_postfac *= 2;
-    break;
+        scale_postfac *= 2;
+        break;
     case MHAParser::window_t::wnd_hamming :
-    scale_postfac *= 1.08;
-    break;
+        scale_postfac *= 1.08;
+        break;
     case MHAParser::window_t::wnd_blackman :
-    if( spar_in.wndlen/spar_in.fragsize == 2 )
-        scale_postfac *= 0.847585;
-    else
-        scale_postfac *= 0.84;
-    break;
+        if( spar_in.wndlen/spar_in.fragsize == 2 )
+            scale_postfac *= 0.847585;
+        else
+            scale_postfac *= 0.84;
+        break;
     case MHAParser::window_t::wnd_bartlett :
-    break;
+        break;
     case MHAParser::window_t::wnd_user :
-    break;
+        break;
     }
     prewnd *= scale_fac;
     postwnd *= 1.0f/scale_postfac;
@@ -212,22 +212,22 @@ overlapadd_if_t::~overlapadd_if_t()
 void overlapadd_if_t::prepare(mhaconfig_t& t)
 {
     if( t.domain != MHA_WAVEFORM )
-    throw MHA_ErrorMsg("overlapadd: waveform input is required.");
+        throw MHA_ErrorMsg("overlapadd: waveform input is required.");
     t.fftlen = nfft.data;
     t.wndlen = nwnd.data;
     if( t.fragsize > t.wndlen )
-    throw MHA_Error(__FILE__,__LINE__,
-            "overlapadd: The fragment size (%d) is greater than the window size (%d).",
-            t.fragsize, t.wndlen);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "overlapadd: The fragment size (%d) is greater than the window size (%d).",
+                        t.fragsize, t.wndlen);
     if( t.fftlen < t.wndlen )
-    throw MHA_Error(__FILE__,__LINE__,
-            "overlapadd: Invalid FFT length %d (less than window length %d).",
-            t.fftlen, t.wndlen );
+        throw MHA_Error(__FILE__,__LINE__,
+                        "overlapadd: Invalid FFT length %d (less than window length %d).",
+                        t.fftlen, t.wndlen );
     cf_in = tftype = t;
     t.domain = MHA_SPECTRUM;
     plugloader.prepare(t);
     if( t.domain != MHA_SPECTRUM )
-    throw MHA_Error(__FILE__,__LINE__,"The processing plugin did not return spectral output.");
+        throw MHA_Error(__FILE__,__LINE__,"The processing plugin did not return spectral output.");
     /* prepare */
     t.domain = MHA_WAVEFORM;
     cf_out = t;
@@ -246,11 +246,12 @@ void overlapadd_if_t::update()
         (cf_in.wndlen > 0) &&
         (cf_in.fragsize > 0) && 
         (cf_in.channels > 0) ){
-    push_config(new overlapadd_t(cf_in,cf_out,
-                     wndexp.data,
-                     wndpos.data,
-                     window,
-                     zerowindow,prescale.data,postscale.data));
+        push_config(new overlapadd_t(cf_in,cf_out,
+                                     wndexp.data,
+                                     wndpos.data,
+                                     window,
+                                     zerowindow,prescale.data,
+                                     postscale.data));
     }
 }
 

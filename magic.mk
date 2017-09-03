@@ -56,6 +56,12 @@ GITCOMMITHASH = $(shell git log -1 --abbrev=12 --pretty="format:%h")$(shell test
 CFLAGS += -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
 CXXFLAGS += -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
 
+# The name of the toolbox library.
+MHATOOLBOX_NAME = openmha
+
+# Some private magic may override some settings in here. Do not use.
+-include $(dir $(lastword $(MAKEFILE_LIST)))/private_magic.mk
+
 # Local Variables:
 # coding: utf-8-unix
 # End:

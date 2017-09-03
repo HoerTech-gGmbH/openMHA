@@ -16,12 +16,12 @@
 include ../../config.mk
 include ../../magic.mk
 
-libmha = libopenmha
+libmha = lib$(MHATOOLBOX_NAME)
 
 TARGETS=$(libmha)$(DYNAMIC_LIB_EXT)
 
 include ../../rules.mk
-include ./private.mk
+-include ./private.mk
 
 OBJECTS = \
 	mha_parser.o mha_error.o mha_errno.o \

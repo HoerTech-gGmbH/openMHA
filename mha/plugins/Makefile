@@ -30,9 +30,9 @@ SUBDIRS = \
 	binaural \
 	other \
 	examples \
-        feedback \
-        acvariables \
-        rate
+	feedback \
+	acvariables \
+	rate \
 
 include ../../rules.mk
 

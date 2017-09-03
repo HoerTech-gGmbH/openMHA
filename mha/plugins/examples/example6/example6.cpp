@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+
 /*
  * A simple example \mha plugin written in C++
  *

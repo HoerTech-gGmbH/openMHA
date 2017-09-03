@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2009 2010 2012 2014 2015 HörTech gGmbH
+// Copyright © 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -177,7 +178,6 @@ void cfg_t::flush_data(const std::string& filename,unsigned int fmt)
 {
     if( !filename.size() )
         return;
-    //DEBUG(rec_frames);
     unsigned int tobesaved = rec_frames;
     max_frames = 0;
     FILE* fh;

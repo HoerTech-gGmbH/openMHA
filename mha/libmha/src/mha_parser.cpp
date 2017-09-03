@@ -166,7 +166,7 @@ std::string MHAParser::commentate( const std::string & s )
     return r;
 }
 
-/** 
+/**
 
 \brief string replace function
 

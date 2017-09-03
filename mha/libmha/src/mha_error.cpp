@@ -42,7 +42,6 @@
    \defgroup mhaerror Error handling in the \mha
 
    Errors are reported to the user via the MHA_Error exception.
-
 */
 
 

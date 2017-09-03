@@ -410,6 +410,16 @@ extern "C" {
 #define IOStrError           MHA_STATIC_MHAIOPortAudio_IOStrError
 #define IODestroy            MHA_STATIC_MHAIOPortAudio_IODestroy
 #define dummy_interface_test MHA_STATIC_MHAIOPortAudio_dummy_interface_test
+#else
+#define IOInit               MHA_DYNAMIC_IOInit
+#define IOPrepare            MHA_DYNAMIC_IOPrepare
+#define IOStart              MHA_DYNAMIC_IOStart
+#define IOStop               MHA_DYNAMIC_IOStop
+#define IORelease            MHA_DYNAMIC_IORelease
+#define IOSetVar             MHA_DYNAMIC_IOSetVar
+#define IOStrError           MHA_DYNAMIC_IOStrError
+#define IODestroy            MHA_DYNAMIC_IODestroy
+#define dummy_interface_test MHA_DYNAMIC_dummy_interface_test
 #endif
   
   int IOInit(int fragsize,

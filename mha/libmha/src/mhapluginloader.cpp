@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2007 2008 2009 2012 2013 2016 HörTech gGmbH
+// Copyright © 2007 2008 2009 2012 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +18,7 @@
 #ifdef MHA_DEBUG
 #include <cstdio>
 #endif
+
 
 PluginLoader::config_file_splitter_t::config_file_splitter_t(const std::string& name)
     : origname(name)
@@ -267,7 +268,6 @@ const char* PluginLoader::mhastrdomain(mha_domain_t d)
 
 /**
 
-   
    \brief Compare two mhaconfig_t structures, and report differences as an error
 
    \param req Expected mhaconfig_t structure

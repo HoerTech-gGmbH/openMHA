@@ -35,7 +35,7 @@ include ../../rules.mk
 
 CXXFLAGS += -I../../external_libs/$(PLATFORM_CC)/include
 CXXFLAGS += -I../libmha/src
-LDLIBS += -lopenmha
+LDLIBS += -l$(MHATOOLBOX_NAME)
 LDFLAGS += -L../libmha/$(BUILD_DIR)
 
 ifeq "linux" "$(PLATFORM)"

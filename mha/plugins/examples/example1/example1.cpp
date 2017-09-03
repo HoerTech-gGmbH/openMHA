@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+
 /*
  * The simplest example of an \mha plugin.
  *
@@ -22,7 +23,7 @@
 
 #include "mha_plugin.hh"
 
-/**This C++ class implements the simplest example plugin for the
+/** This C++ class implements the simplest example plugin for the
  * step-by-step tutorial.  It inherits from MHAPlugin::plugin_t for
  * correct integration in the configuration language interface.  */
 class example1_t : public MHAPlugin::plugin_t<int> {

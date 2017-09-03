@@ -98,11 +98,11 @@ namespace MHAOvlFilter {
         };
     }
 
-    /** 
+    /**
         \brief Transform functions from linear scale in Hz to new frequency scales.
     */ namespace FreqScaleFun {
 
-        /** 
+        /**
             \brief Dummy scale transformation Hz to Hz.
 
             This function implements a dummy scale transformation (linear
@@ -118,7 +118,7 @@ namespace MHAOvlFilter {
         mha_real_t hz2octave(mha_real_t x);
         mha_real_t hz2third_octave(mha_real_t x);
         
-        /** 
+        /**
 
         \brief Transformation to bark scale.
 
@@ -136,7 +136,7 @@ namespace MHAOvlFilter {
 
         mha_real_t hz2erb_glasberg1990(mha_real_t);
 
-        /** 
+        /**
 
         \brief Third octave frequency scale.
 
@@ -159,7 +159,7 @@ namespace MHAOvlFilter {
     \brief Shape functions for overlapping filters.
     */ namespace ShapeFun {
 
-        /** 
+        /**
             
         \brief Filter shape function for rectangular filters.
           
@@ -173,7 +173,7 @@ namespace MHAOvlFilter {
 
         mha_real_t rect(mha_real_t x);
 
-        /** 
+        /**
            
         \brief Filter shape function for sawtooth filters.
 
@@ -190,7 +190,7 @@ namespace MHAOvlFilter {
 
         mha_real_t linear(mha_real_t x);
 
-        /** 
+        /**
 
         \brief Filter shape function for hanning shaped filters.
 

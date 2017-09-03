@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2008 2011 2012 2013 2016 HörTech gGmbH
+// Copyright © 2005 2006 2007 2008 2011 2012 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,8 +24,6 @@
 #include "mha_os.h"
 #include "mhapluginloader.h"
 
-
-/// 
 /// Class for loading MHA sound IO module.
 class io_lib_t : public MHAParser::c_ifc_parser_t {
 public:

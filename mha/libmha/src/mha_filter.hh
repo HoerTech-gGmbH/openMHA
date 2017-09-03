@@ -21,7 +21,7 @@
 #include "mha_plugin.hh"
 #include <valarray>
 
-/** 
+/**
     \ingroup mhatoolbox
     \file mha_filter.hh
     \brief Header file for IIR filter classes
