@@ -18,7 +18,7 @@ include ../../config.mk
 all: octavetest reproducibilitytest
 
 ifeq "$(findstring arm, $(COMPILERPREFIX))" "arm"
-matlabtest:
+octavetest:
 	@echo cannot execute automatic tests for cross-compiled MHA
 else
 octavetest:
