@@ -65,6 +65,16 @@ clean:
 	rm -Rf $(BUILD_DIR)
 	for m in $(SUBDIRS); do $(MAKE) -C $$m clean; done
 
+unit-tests: execute-unit-tests
+	for m in $(SUBDIRS); do $(MAKE) -C $$m unit-tests; done
+
+
+execute-unit-tests: $(BUILD_DIR)/unit-test-runner
+	if [-e $<]; then $<; fi
+
+$(BUILD_DIR)/unit-test-runner: $(patsubs %_test.cpp, %_test.cpp %.cpp, $(wildcard *_test.cpp))
+	$(CXX) $(CXXCLAGS) --coverage -o $@ $^ $(LDFLAGS) $(LDLIBS) -lgmock_main
+
 # Static Pattern Rule defines standard prerequisites for plugins
 $(PLUGINS:%=$(BUILD_DIR)/%$(PLUGIN_EXT)): %$(PLUGIN_EXT): %.o
 
