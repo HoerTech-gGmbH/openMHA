@@ -54,6 +54,9 @@ doc: mha/doc
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
+unit-tests: all
+	for m in $(MODULES); do $(MAKE) -C $$m unit-tests; done
+
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
 mha/frameworks: mha/libmha
