@@ -28,6 +28,7 @@ mha.creator.user
 mha/tools/mfiles/octave-workspace
 
 x86_64-linux-gcc-5
+x86_64-linux-gcc-7
 i686-linux-gcc-5
 armv7l-linux-gcc-4.9
 
