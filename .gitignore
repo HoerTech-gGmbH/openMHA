@@ -26,6 +26,11 @@ build
 mha.creator.user
 
 mha/tools/mfiles/octave-workspace
+
+x86_64-linux-gcc-5
+i686-linux-gcc-5
+armv7l-linux-gcc-4.9
+
 # Local Variables:
 # coding: utf-8-unix
 # End:
