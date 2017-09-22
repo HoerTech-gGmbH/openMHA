@@ -47,7 +47,7 @@ $(MODULES:external_libs=) $(DOCMODULES):
 	$(MAKE) -C $@
 
 external_libs:
-	$(MAKE) -j 1 -C $@
+	$(MAKE) -C $@
 
 doc: mha/doc
 

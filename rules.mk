@@ -57,8 +57,8 @@ $(BUILD_DIR)/%: $(BUILD_DIR)/%.o
 	$(CXX) $(STATIC_DLOPEN) -o $@ $^ ${LDFLAGS} ${LDLIBS}
 
 # Pattern for subdirectories for build artifacts
-$(BUILD_DIR)/.directory:
-	mkdir -p $(BUILD_DIR)
+%/.directory:
+	mkdir -p $*
 	touch $@
 
 clean:

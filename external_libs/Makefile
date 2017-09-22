@@ -18,7 +18,7 @@ include ../magic.mk
 
 EXTERNAL_LIBS=$(realpath .)
 
-TARGETS=fftw.is_installed
+TARGETS = fftw.is_installed googlemock.is_installed
 
 include ../rules.mk
 
@@ -44,7 +44,7 @@ endif
 
 # Build fftw-2
 $(BUILD_DIR)/fftw.is_installed: $(BUILD_DIR)/fftw.is_configured
-	cd fftw-2.1.5/. && $(MAKE) install
+	cd fftw-2.1.5/. && $(MAKE) -j 1 install
 	cd "$(EXTERNAL_LIBS)" && touch $@
 
 # Configure fftw-2
@@ -76,6 +76,17 @@ $(BUILD_DIR)/fftw.is_configured: $(BUILD_DIR)/.directory
 	sleep 0.01 && touch fftw-2.1.5/Makefile.in
 	cd fftw-2.1.5/. && ./configure --enable-static --disable-shared --prefix="$(EXTERNAL_LIBS)/$(BUILD_DIR)" --bindir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/bin --libdir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/lib --includedir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/include  --enable-float --enable-type-prefix --disable-fast-install --disable-fortran
 	cd "$(EXTERNAL_LIBS)" && touch $@
+
+$(BUILD_DIR)/googlemock.is_configured: \
+	$(BUILD_DIR)/lib/.directory $(BUILD_DIR)/include/.directory
+	touch $@
+	
+$(BUILD_DIR)/googlemock.is_installed: $(BUILD_DIR)/googlemock.is_configured
+	cd googletest/googlemock/make && $(MAKE)
+	cp googletest/googlemock/make/gmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
+	cp -ax googletest/googletest/include/gtest $(BUILD_DIR)/include/
+	cp -ax googletest/googlemock/include/gmock $(BUILD_DIR)/include/
+	touch $@
 
 # Local Variables:
 # compile-command: "make"
