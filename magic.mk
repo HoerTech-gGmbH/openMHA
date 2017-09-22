@@ -60,7 +60,7 @@ CXXFLAGS += -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
 MHATOOLBOX_NAME = openmha
 
 # Setup relative paths. This breaks if the path contains spaces.
-GIT_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+GIT_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 EXTERNAL_LIBS := $(GIT_DIR)/external_libs
 EXTERNAL_LIBS_INCLUDE = -I$(EXTERNAL_LIBS)/$(PLATFORM_CC)/include
 EXTERNAL_LIBS_LDFLAGS = -L$(EXTERNAL_LIBS)/$(PLATFORM_CC)/lib

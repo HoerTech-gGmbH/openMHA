@@ -1,5 +1,5 @@
 #include "mha_error.hh"
-#include <gtest/test.h>
+#include <gtest/gtest.h>
 
 TEST(mha_error, helper_function_digits_computes_correct_number_of_decimal_digits)
 {
@@ -10,5 +10,5 @@ TEST(mha_error, helper_function_digits_computes_correct_number_of_decimal_digits
   EXPECT_EQ(2U, digits(10U));
   EXPECT_EQ(2U, digits(99U));
   EXPECT_EQ(3U, digits(100U));
-  EXPECT_TRUE(false);
+  EXPECT_EQ(10U, digits(4294967295U));
 }

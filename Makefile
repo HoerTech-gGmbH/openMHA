@@ -41,7 +41,7 @@ DOCMODULES = \
 
 all: $(MODULES)
 
-.PHONY : $(MODULES) $(DOCMODULES)
+.PHONY : $(MODULES) $(DOCMODULES) coverage
 
 $(MODULES:external_libs=) $(DOCMODULES):
 	$(MAKE) -C $@
@@ -57,6 +57,11 @@ clean:
 unit-tests: all
 	for m in $(MODULES); do $(MAKE) -C $$m unit-tests; done
 
+coverage: unit-tests
+	lcov --capture --directory mha --output-file coverage.info
+	genhtml coverage.info --prefix $$PWD/mha --output-directory $@
+	x-www-browser ./coverage/index.html
+	
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
 mha/frameworks: mha/libmha
