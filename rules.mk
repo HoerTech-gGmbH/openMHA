@@ -72,7 +72,7 @@ unit-tests: execute-unit-tests
 execute-unit-tests: $(BUILD_DIR)/unit-test-runner
 	if [ -x $< ]; then $<; fi
 
-$(BUILD_DIR)/unit-test-runner: $(patsubs %_test.cpp, %_test.cpp %.cpp, $(wildcard *_test.cpp))
+$(BUILD_DIR)/unit-test-runner: $(patsubs %_unit_tests.cpp, %_unit_tests.cpp %.cpp, $(wildcard *_unit_tests.cpp))
 	$(CXX) $(CXXCLAGS) --coverage -o $@ $^ $(LDFLAGS) $(LDLIBS) -lgmock_main -pthread
 
 # Static Pattern Rule defines standard prerequisites for plugins

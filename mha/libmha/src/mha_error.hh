@@ -76,6 +76,17 @@ void mha_debug(const char *fmt,...);
 
 #endif
 
+namespace mha_error_helpers {
+/**
+ * Compute number of decimal digits required to represent an
+ * unsigned integer.
+ * @param n The unsigned integer that we want to know the number of
+ *          required decimal digits for.
+ * return The number of decimal digits in @c n.
+ */
+unsigned digits(unsigned n);
+} // namespace mha_error_helpers
+
 /*
  * Local Variables:
  * compile-command: "make -C .."

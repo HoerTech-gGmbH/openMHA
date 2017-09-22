@@ -59,10 +59,11 @@
    error message.
  */
 
+namespace mha_error_helpers {
 /**
  * Compute number of digits in an unsigned integer.
  */
-static unsigned digits(unsigned n)
+unsigned digits(unsigned n)
 {
     // The following is the iteration version of the recursion
     // return (n<10) ? 1 : (1+digits(n/10));
@@ -71,6 +72,8 @@ static unsigned digits(unsigned n)
         {}
     return digits;
 }
+} // namespace mha_error_helpers
+using namespace mha_error_helpers;
 
 /** 
     Create an instance of a MHA_Error.
