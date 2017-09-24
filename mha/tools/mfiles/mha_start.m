@@ -47,13 +47,18 @@ function h = mha_start( port, pre_binary, post_binary )
   backlog = 1;
   address = javaMethod('getByName','java.net.InetAddress','127.0.0.1');
   acceptor = javaObject('java.net.ServerSocket',serverport, backlog, address);
-  acceptor.setSoTimeout(3000);
+  acceptor.setSoTimeout(10000);
 
   my_port = acceptor.getLocalPort();
 
   command = ...
     {binary, '--port', num2str(port), '--announce', num2str(my_port)};
   command = {pre_binary{:} command{:} post_binary{:}};
+
+  if ispc() && isoctave()
+    remove_octave_directories_from_windows_path()
+  end
+  
   javaruntime = javaMethod('getRuntime', 'java.lang.Runtime');
   octave_version = ver('Octave');
   if( ~isempty(octave_version) && ...
