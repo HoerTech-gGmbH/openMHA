@@ -18,3 +18,22 @@ TEST(MHA_Error, MHA_Error_is_a_subclass_of_std_exception) {
   std::exception * std_exception_pointer = &error_instance;
   EXPECT_NE(nullptr, std_exception_pointer);
 }
+
+TEST(MHA_Error, snprintf_required_length_computes_correct_length) {
+  using mha_error_helpers::snprintf_required_length;
+  EXPECT_EQ(0U, snprintf_required_length(""));
+  EXPECT_EQ(1U, snprintf_required_length("1"));
+  EXPECT_EQ(1U, snprintf_required_length("%s", "1"));
+  EXPECT_EQ(1U, snprintf_required_length("%d", 1));
+  EXPECT_EQ(2U, snprintf_required_length("%d", 10));
+  EXPECT_EQ(6U, snprintf_required_length("%d\n%.1f\n", 1,0.5));
+}
+
+/*
+ * Local Variables:
+ * compile-command: "make -C .. unit-tests"
+ * coding: utf-8-unix
+ * c-basic-offset: 4
+ * indent-tabs-mode: nil
+ * End:
+ */
