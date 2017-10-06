@@ -17,6 +17,8 @@ include ../../config.mk
 
 all: octavetest reproducibilitytest
 
+unit-tests:
+
 ifeq "$(findstring arm, $(COMPILERPREFIX))" "arm"
 octavetest:
 	@echo cannot execute automatic tests for cross-compiled MHA

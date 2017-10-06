@@ -59,10 +59,9 @@
    error message.
  */
 
-/**
- * Compute number of digits in an unsigned integer.
- */
-static unsigned digits(unsigned n)
+namespace mha_error_helpers {
+/* Compute number of digits in an unsigned integer. */
+unsigned digits(unsigned n)
 {
     // The following is the iteration version of the recursion
     // return (n<10) ? 1 : (1+digits(n/10));
@@ -71,6 +70,26 @@ static unsigned digits(unsigned n)
         {}
     return digits;
 }
+unsigned snprintf_required_length(const char * formatstring, ...)
+{
+    // We need a char pointer to point somewhere for snprintf
+    char dummy = 0;
+    // But we tell snprintf that this buffer has zero length.
+    constexpr size_t ZERO_SIZE = 0U;
+    
+    va_list variadic_argument_list;
+    va_start(variadic_argument_list, formatstring);
+
+    // When there is too little space in the target string to hold the result
+    // of an snprintf, snprintf will still return the number of bytes required
+    // to hold the complete string (excluding the terminating 0).
+    int result =
+        vsnprintf(&dummy, ZERO_SIZE, formatstring, variadic_argument_list);
+    va_end(variadic_argument_list);
+    return result;
+}
+} // namespace mha_error_helpers
+using namespace mha_error_helpers;
 
 /** 
     Create an instance of a MHA_Error.
