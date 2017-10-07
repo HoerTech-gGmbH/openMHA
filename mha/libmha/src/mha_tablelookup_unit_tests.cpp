@@ -1,3 +1,18 @@
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// Copyright © 2017 HörTech gGmbH
+//
+// openMHA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, version 3 of the License.
+//
+// openMHA is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License, version 3 for more details.
+//
+// You should have received a copy of the GNU Affero General Public License, 
+// version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "mha_tablelookup.hh"
 #include <gtest/gtest.h>
 
@@ -54,3 +69,10 @@ TEST_F(MHATableLookup_log_interpolation, table_extrapolates) {
   EXPECT_FLOAT_EQ(  30.0f,  t.interp(125.0f/2));
   EXPECT_FLOAT_EQ(  60.0f,  t.interp(2000));
 }
+
+// Local Variables:
+// compile-command: "make -C .. unit-tests"
+// coding: utf-8-unix
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// End:
