@@ -33,6 +33,8 @@ SUBDIRS = \
 	feedback \
 	acvariables \
 	rate \
+	generator \
+	lti \
 
 include ../../rules.mk
 
