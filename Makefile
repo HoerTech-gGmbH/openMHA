@@ -30,7 +30,6 @@ MODULES = \
 	mha/libmha \
 	mha/frameworks \
 	mha/plugins \
-        mha/mhatest \
 	external_libs \
 
 DOCMODULES = \
@@ -46,6 +45,9 @@ all: $(MODULES)
 $(MODULES:external_libs=) $(DOCMODULES):
 	$(MAKE) -C $@
 
+mha/mhatest: $(MODULES)
+	$(MAKE) -C $@
+
 external_libs:
 	$(MAKE) -C $@
 
@@ -53,6 +55,12 @@ doc: mha/doc
 
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
+
+
+googletest: mha/mhatest
+	$(MAKE) -C external_libs googlemock
+
+test: googletest unit-tests
 
 unit-tests: $(patsubst %,%-subdir-unit-tests,$(MODULES))
 $(patsubst %,%-subdir-unit-tests,$(MODULES)): all
