@@ -43,6 +43,9 @@ coverage
 *.gcda
 *.gcno
 
+# octave specific files
+mha/tools/mfiles/classpath.txt
+
 # Local Variables:
 # coding: utf-8-unix
 # End:

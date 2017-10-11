@@ -26,7 +26,7 @@ class prediction_error_config {
 
 public:
     prediction_error_config(algo_comm_t &ac, const mhaconfig_t in_cfg, prediction_error *pred_err);
-    ~prvediction_error_config();
+    ~prediction_error_config();
 
     mha_wave_t* process(mha_wave_t*s_Y, mha_real_t rho, mha_real_t c);
     void insert();
