@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = acmon acsave acSteer
+SUBDIRS = acmon acsave acSteer ac2wave save_wave
 
 include ../../../rules.mk
 

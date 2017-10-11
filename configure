@@ -18,12 +18,35 @@
 (
     ARCH=`uname -m`
     echo ARCH=$ARCH
-    PLATFORM=`uname -o | sed -e 's/GNU.Linux/linux/' -e 's/Cygwin/MinGW/' -e 's/Msys/MinGW/'`
-    echo PLATFORM=$PLATFORM
-    GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
-    echo GCC_VER=$GCC_VER
-    echo DYNAMIC_LIB_EXT=`uname -o | grep -q -e 'Linux' && echo ".so" || echo ".dll"`
-    echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
+
+    PLATFORM=`uname -s`
+    case $PLATFORM in
+        *Linux*)
+            echo PLATFORM=linux
+            echo DYNAMIC_LIB_EXT=".so"
+            GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
+            echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
+            ;;
+        *Cygwin*)
+            echo PLATFORM=MinGW
+            echo DYNAMIC_LIB_EXT=".dll"
+            GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
+            echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
+            ;;
+        Msys)
+            echo MinGW
+            echo DYNAMIC_LIB_EXT=".dll"
+            GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
+            echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
+            ;;
+        Darwin)
+            echo PLATFORM=Darwin
+            echo DYNAMIC_LIB_EXT=".dylib"
+            GCC_VER=""
+            echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
+            echo TOOLSET=clang
+    esac
+    
     echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
     uname -m|grep -q -e "x86_64" && (echo "CFLAGS+=-fPIC";echo "CXXFLAGS+=-fPIC")
     pkg-config alsa && (echo "WITH_ALSA=yes")
