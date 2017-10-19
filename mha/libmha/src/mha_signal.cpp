@@ -2570,7 +2570,8 @@ MHASignal::loop_wavefragment_t::loop_wavefragment_t(const mha_wave_t& src, bool 
         break;
     case rms_limit40 :
         // use maximum of RMS and peak-40dB
-        file_level = std::max(sqrt(sumsqr()/std::max(1u,size(*this))),static_cast<float>(0.01)*MHASignal::maxabs(*this));
+        file_level = std::max(static_cast<mha_real_t>(sqrt(sumsqr()/std::max(1u,size(*this)))),
+                              static_cast<mha_real_t>(0.01*MHASignal::maxabs(*this)));
         if( file_level > 0 )
             *this *= 1.0f/file_level;
         break;
