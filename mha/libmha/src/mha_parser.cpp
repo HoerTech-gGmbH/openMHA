@@ -1295,7 +1295,7 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
 
 
 // Warning in clang, disabled for this block as a workaround.
-#ifndef __GNUC__
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winstantiation-after-specialization"
 #endif
@@ -1309,7 +1309,7 @@ template void MHAParser::StrCnv::str2val<int>(const std::string&,std::vector<std
 template void MHAParser::StrCnv::str2val<float>(const std::string&,std::vector<std::vector<float> >&);
 template void MHAParser::StrCnv::str2val<mha_complex_t>(const std::string&,std::vector<std::vector<mha_complex_t> >&);
 #endif
-#ifndef __GNUC__
+#ifdef __clang__
 #pragma clang diagnostic pop
 #endif
 
