@@ -1295,9 +1295,10 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
 
 
 // Warning in clang, disabled for this block as a workaround.
+#ifndef __GNUC__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winstantiation-after-specialization"
-
+#endif
 #ifndef DOXY_PARSE
 // doxygen does not understand this:
 template void MHAParser::StrCnv::str2val<std::string>(const std::string& s,std::vector<std::string>& v);
@@ -1307,6 +1308,8 @@ template void MHAParser::StrCnv::str2val<mha_complex_t>(const std::string&,std::
 template void MHAParser::StrCnv::str2val<int>(const std::string&,std::vector<std::vector<int> >&);
 template void MHAParser::StrCnv::str2val<float>(const std::string&,std::vector<std::vector<float> >&);
 template void MHAParser::StrCnv::str2val<mha_complex_t>(const std::string&,std::vector<std::vector<mha_complex_t> >&);
+#endif
+#ifndef __GNUC__
 #pragma clang diagnostic pop
 #endif
 
