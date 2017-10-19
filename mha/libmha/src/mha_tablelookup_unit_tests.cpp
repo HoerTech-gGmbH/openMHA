@@ -15,7 +15,7 @@
 
 #include "mha_tablelookup.hh"
 #include <gtest/gtest.h>
-
+#include <math.h>
 // Test linear interpolation between 3 mesh points
 class MHATableLookup_linear_interpolation : public ::testing::Test {
 public:

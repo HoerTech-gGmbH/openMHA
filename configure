@@ -44,6 +44,7 @@
             echo DYNAMIC_LIB_EXT=".dylib"
             GCC_VER=""
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
+            echo 'CXXFLAGS+=-Wno-error=unused-command-line-argument'
             echo TOOLSET=clang
     esac
     
