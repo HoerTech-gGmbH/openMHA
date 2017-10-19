@@ -86,8 +86,8 @@ $(BUILD_DIR)/googlemock.is_configured: \
 	git submodule update --init --recursive
 	cd googletest/googlemock/make && $(MAKE)
 	cp googletest/googlemock/make/gmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
-	cp -ax googletest/googletest/include/gtest $(BUILD_DIR)/include/
-	cp -ax googletest/googlemock/include/gmock $(BUILD_DIR)/include/
+	cp -a googletest/googletest/include/gtest $(BUILD_DIR)/include/
+	cp -a googletest/googlemock/include/gmock $(BUILD_DIR)/include/
 	touch $@
 
 # Local Variables:
