@@ -46,8 +46,8 @@
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
             echo 'CXXFLAGS+=-Wno-error=unused-command-line-argument'
             echo TOOLSET=clang
-            MACLDFLAGS+="-L/opt/local/lib"
-            MACCXXFLAGS+="-I/opt/local/include"
+            echo 'MACLDFLAGS+=-L/opt/local/lib'
+            echo 'MACCXXFLAGS+=-I/opt/local/include'
     esac
     
     echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
