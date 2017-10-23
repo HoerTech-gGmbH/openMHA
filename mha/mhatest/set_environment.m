@@ -37,6 +37,7 @@ else
     ldpath = 'DYLD_LIBRARY_PATH';
   end
   setenv(ldpath,[getenv(ldpath) ':' git_dir '/mha/libmha/' build_dir]);
+  disp(getenv(ldpath))
   dirs = {};
   for p = plugins
       dirs = [dirs, {fileparts(p{1})}];
