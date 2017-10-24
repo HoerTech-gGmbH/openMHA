@@ -42,6 +42,9 @@ ifdef LDLIBS
 export LDLIBS
 endif
 
+
+.NOTPARALLEL:
+
 # Build fftw-2
 $(BUILD_DIR)/fftw.is_installed: $(BUILD_DIR)/fftw.is_configured
 	cd fftw-2.1.5/. && $(MAKE) -j 1 install

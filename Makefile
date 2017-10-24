@@ -54,18 +54,22 @@ doc: mha/doc
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
+unit-tests: all googletest
+	$(MAKE) -f unit-tests unit-tests
+
 googletest: mha/mhatest
 	$(MAKE) -C external_libs googlemock
 
-unit-tests: googletest $(patsubst %,%-subdir-unit-tests,$(MODULES))
-$(patsubst %,%-subdir-unit-tests,$(MODULES)): all
-	$(MAKE) -C $(@:-subdir-unit-tests=) unit-tests
-
-coverage: unit-tests
-	lcov --capture --directory mha --output-file coverage.info
-	genhtml coverage.info --prefix $$PWD/mha --output-directory $@
-	x-www-browser ./coverage/index.html
-
+#unit-tests: googletest $(patsubst %,%-subdir-unit-tests,$(MODULES))
+#
+#$(patsubst %,%-subdir-unit-tests,$(MODULES)): all
+#	$(MAKE) -C $(@:-subdir-unit-tests=) unit-tests
+#
+#coverage: unit-tests
+#	lcov --capture --directory mha --output-file coverage.info
+#	genhtml coverage.info --prefix $$PWD/mha --output-directory $@
+#	x-www-browser ./coverage/index.html
+#
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
 mha/frameworks: mha/libmha
