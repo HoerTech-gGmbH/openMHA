@@ -18,7 +18,7 @@
       "target_name": "mha-node",
         "sources": [ "fw_t_wrap.cxx", "mhafw_lib.cpp" ],
       "include_dirs": ["../../libmha/src"],
-      "libraries": ["-L<(module_root_dir)/../../libmha/x86_64-linux-gcc-5",
+      "libraries": ["-L<(module_root_dir)/../../libmha/x86_64-Darwin-clang",
                    "-lopenmha"],
         "cflags_cc": ["-fexceptions"]
     }
