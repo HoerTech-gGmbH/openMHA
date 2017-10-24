@@ -5,4 +5,4 @@ include definitions.mk
 $(patsubst %,%-subdir-unit-tests,$(MODULES)):
 	$(MAKE) -C $(@:-subdir-unit-tests=) unit-tests
 
-unit-tests-internal: $(patsubst %,%-subdir-unit-tests,$(MODULES))
+unit-tests: $(patsubst %,%-subdir-unit-tests,$(MODULES))
