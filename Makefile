@@ -55,7 +55,7 @@ clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
 unit-tests: all googletest
-	$(MAKE) -f tests.mk unit-tests
+	$(MAKE) -f Makefile2 unit-tests
 
 googletest: mha/mhatest
 	$(MAKE) -C external_libs googlemock
