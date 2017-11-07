@@ -48,12 +48,11 @@
         Darwin)
             echo PLATFORM=Darwin
             echo DYNAMIC_LIB_EXT=".dylib"
-            GCC_VER=""
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
             echo 'CXXFLAGS+=-Wno-error=unused-command-line-argument'
             echo TOOLSET=clang
-            echo 'MACLDFLAGS+=-L/opt/local/lib'
-            echo 'MACCXXFLAGS+=-I/opt/local/include'
+            MACLDFLAGS+=-L/opt/local/lib
+            MACCXXFLAGS+=-I/opt/local/include
     esac
     
     echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
@@ -76,8 +75,8 @@
     esac
     
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
-    echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM) $(MACCXXFLAGS)'
-    echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM) $(MACLDFLAGS)'
+    echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM) ${MACCXXFLAGS}'
+    echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM) ${MACLDFLAGS}'
 ) |tee config.mk
 
 # Local Variables:
