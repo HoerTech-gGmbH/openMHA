@@ -77,7 +77,7 @@ unit_tests_test_files = $(wildcard $(SOURCE_DIR)/*_unit_tests.cpp)
 
 $(BUILD_DIR)/unit-test-runner: $(unit_tests_test_files) $(patsubst %_unit_tests.cpp, %.cpp , $(unit_tests_test_files))
 	@echo dependencies = $^
-	$(CXX) $(CXXFLAGS) --coverage -o $@ $^ $(LDFLAGS) $(patsubst -lopenmha,"",$(LDLIBS)) -lgmock_main -lpthread
+	$(CXX) $(CXXFLAGS) --coverage -o $@ $^ $(LDFLAGS) $(patsubst -lopenmha,,$(LDLIBS)) -lgmock_main -lpthread
 
 # Static Pattern Rule defines standard prerequisites for plugins
 $(PLUGINS:%=$(BUILD_DIR)/%$(PLUGIN_EXT)): %$(PLUGIN_EXT): %.o
