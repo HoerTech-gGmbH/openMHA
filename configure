@@ -75,7 +75,7 @@
     esac
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
     echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM)' ${MACCXXFLAGS}
-    echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM)' ${MACLDFLAGS}
+    echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM)' ${MACCXXFLAGS}
 ) |tee config.mk
 
 # Local Variables:
