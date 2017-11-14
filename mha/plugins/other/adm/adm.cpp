@@ -218,9 +218,9 @@ private:
     MHAParser::int_t decomb_order;
     MHAParser::int_t bypass;
     MHAParser::float_t beta;
+    MHAParser::vfloat_t mu_beta;
     MHAParser::vfloat_mon_t coeff_lp;
     MHAParser::vfloat_mon_t coeff_decomb;
-    MHAParser::vfloat_t mu_beta;
 
     unsigned input_channels;
     mha_real_t srate;
@@ -249,10 +249,10 @@ adm_if_t::adm_if_t(const algo_comm_t& ac,
              "if 2, output rear microphones directly",
              "0", "[0,2]"),
       beta("Explicit fixed beta (-1 for adaptive filtering)","-1"),
-      coeff_lp("Lowpass coefficients"),
-      coeff_decomb("Decomb coefficients"),
       mu_beta("Adaptation step size for each set of ADMs (e.g. left and right)",
               "[1e-4 1e-4]", "[0,1]"),
+      coeff_lp("Lowpass coefficients"),
+      coeff_decomb("Decomb coefficients"),
       input_channels(0)
 {
     insert_item("front_channels", &front_channels);
@@ -262,9 +262,9 @@ adm_if_t::adm_if_t(const algo_comm_t& ac,
     insert_item("decomb_order", &decomb_order);
     insert_item("bypass", &bypass);
     insert_member(beta);
+    insert_item("mu_beta", &mu_beta);
     insert_item("coeff_lp",&coeff_lp);
     insert_item("coeff_decomb",&coeff_decomb);
-    insert_item("mu_beta", &mu_beta);
     patchbay.connect(&writeaccess, this, &adm_if_t::update);
 }
 
