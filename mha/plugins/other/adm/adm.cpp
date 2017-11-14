@@ -382,7 +382,7 @@ MHAPLUGIN_DOCUMENTATION(adm,"beamforming multichannel",
 "The gain factor, {\\tt beta}, is determined adaptively such that the power\n"
 "of the output signal is minimized, under the constraint that the null of the\n"
 "ADM is located in the rear half-plane. The adaptation step size,\n"
-"{\\tt mu_beta}, can be chosen in order to find the optimal combination of\n"
+"{\\tt mu\\_beta}, can be chosen in order to find the optimal combination of\n"
 "adaptation speed and accuracy.\n"
 "\n"
 "\\MHAfigure{Output signals illustrating convergence of the ADM algorithm for\n"
