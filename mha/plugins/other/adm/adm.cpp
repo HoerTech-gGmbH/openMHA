@@ -370,7 +370,7 @@ MHAPLUGIN_CALLBACKS(adm,adm_if_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION(adm,"beamforming multichannel",
 "This plugin implements one or more adaptive first-order differential\n"
 "microphones, each based on the output of two omnidirectional microphones,\n"
-"e.g. two hearing-aid microphones (cf. Elko & Nguyen Pong, 1995). This is\n"
+"e.g. two hearing-aid microphones (cf. Elko \\& Nguyen Pong, 1995). This is\n"
 "achieved by first subtracting the outputs of the two omnidirectional\n"
 "microphones with fixed delays to create a forward-facing and a\n"
 "backward-facing cardioid microphone, respectively; then, in a second step,\n"
