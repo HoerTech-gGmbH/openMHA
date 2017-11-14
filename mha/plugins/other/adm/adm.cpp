@@ -379,7 +379,7 @@ MHAPLUGIN_DOCUMENTATION(adm,"beamforming multichannel",
 "Finally, a lowpass filter and a filter compensating for comb-filter effect\n"
 "is applied to the output signal.\n"
 "\n"
-"The gain factor, {\\tt beta}}, is determined adaptively such that the power\n"
+"The gain factor, {\\tt beta}, is determined adaptively such that the power\n"
 "of the output signal is minimized, under the constraint that the null of the\n"
 "ADM is located in the rear half-plane. The adaptation step size,\n"
 "{\\tt mu_beta}}, can be chosen in order to find the optimal combination of\n"
