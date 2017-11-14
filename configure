@@ -51,7 +51,7 @@
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
             echo 'CXXFLAGS+=-Wno-error=unused-command-line-argument'
             echo TOOLSET=clang
-            MACLDFLAGS+=-L/opt/local/lib
+            MACLDLIBS+=-L/opt/local/lib
             MACCXXFLAGS+=-I/opt/local/include
     esac
     
@@ -76,6 +76,7 @@
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
     echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM)' ${MACCXXFLAGS}
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM)' ${MACCXXFLAGS}
+    echo 'LDLIBS+=‘{MACLDLIBS}
 ) |tee config.mk
 
 # Local Variables:
