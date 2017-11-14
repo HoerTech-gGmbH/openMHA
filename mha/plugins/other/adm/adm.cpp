@@ -386,8 +386,8 @@ MHAPLUGIN_DOCUMENTATION(adm,"beamforming multichannel",
 "adaptation speed and accuracy.\n"
 "\n"
 "\\MHAfigure{Output signals illustrating convergence of the ADM algorithm for\n"
-"three different values of {\\tt mu_beta}}{adm} (input signal: white Gaussian\n"
-"noise directly from behind)\n"
+"three different values of {\\tt mu\\_beta}}{adm} (input signal: white\n"
+"Gaussian noise directly from behind)\n"
 )
 
 // Local Variables:
