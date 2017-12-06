@@ -54,6 +54,8 @@ doc: mha/doc
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
+install: all
+	mkdir -p bin; cp `find . -name *.so` mha/frameworks/$(BUILD_DIR)/mha bin
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
 mha/frameworks: mha/libmha
