@@ -56,6 +56,21 @@ GITCOMMITHASH = $(shell git log -1 --abbrev=12 --pretty="format:%h")$(shell test
 CFLAGS += -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
 CXXFLAGS += -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
 
+# The name of the toolbox library.
+MHATOOLBOX_NAME = openmha
+
+# Setup relative paths. This breaks if the path contains spaces.
+GIT_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+EXTERNAL_LIBS := $(GIT_DIR)/external_libs
+EXTERNAL_LIBS_INCLUDE = -I$(EXTERNAL_LIBS)/$(PLATFORM_CC)/include
+EXTERNAL_LIBS_LDFLAGS = -L$(EXTERNAL_LIBS)/$(PLATFORM_CC)/lib
+CFLAGS += $(EXTERNAL_LIBS_INCLUDE)
+CXXFLAGS += $(EXTERNAL_LIBS_INCLUDE)
+LDFLAGS += $(EXTERNAL_LIBS_LDFLAGS)
+
+# Some private magic may override some settings in here. Do not use.
+-include $(dir $(lastword $(MAKEFILE_LIST)))/private_magic.mk
+
 # Local Variables:
 # coding: utf-8-unix
 # End:

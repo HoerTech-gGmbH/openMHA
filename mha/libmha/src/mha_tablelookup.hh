@@ -22,7 +22,7 @@
 
 #ifdef __cplusplus
 
-/** 
+/**
     \ingroup mhatoolbox
     \file mha_tablelookup.hh
     \brief Header file for table lookup classes
@@ -38,8 +38,8 @@ namespace MHATableLookup {
     public:
         table_t(void);
         virtual ~table_t(void);
-        virtual mha_real_t lookup(mha_real_t)=0;
-        virtual mha_real_t interp(mha_real_t)=0;
+        virtual mha_real_t lookup(mha_real_t) const =0;
+        virtual mha_real_t interp(mha_real_t) const =0;
     protected:
         virtual void clear(void) = 0;
     };
@@ -47,8 +47,8 @@ namespace MHATableLookup {
     class linear_table_t : public table_t {
     public:
         linear_table_t(void);
-        mha_real_t lookup(mha_real_t);
-        mha_real_t interp(mha_real_t);
+        mha_real_t lookup(mha_real_t) const;
+        mha_real_t interp(mha_real_t) const;
         ~linear_table_t(void);
         void set_xmin(mha_real_t);
         void set_xmax(mha_real_t);
@@ -83,8 +83,8 @@ namespace MHATableLookup {
     class xy_table_t : public table_t {
     public:
         xy_table_t();
-        mha_real_t lookup(mha_real_t x);
-        mha_real_t interp(mha_real_t x);
+        mha_real_t lookup(mha_real_t x) const;
+        mha_real_t interp(mha_real_t x) const;
         void add_entry( mha_real_t x, mha_real_t y );
         void add_entry( mha_real_t* pVX, mha_real_t* pVY, unsigned int len );
         void clear();

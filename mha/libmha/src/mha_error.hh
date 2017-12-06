@@ -76,6 +76,28 @@ void mha_debug(const char *fmt,...);
 
 #endif
 
+namespace mha_error_helpers {
+/**
+ * Compute number of decimal digits required to represent an
+ * unsigned integer.
+ * @param n The unsigned integer that we want to know the number of
+ *          required decimal digits for.
+ * return The number of decimal digits in @c n.
+ */
+unsigned digits(unsigned n);
+
+/** snprintf_required_length
+ * Compute the number of bytes (excluding the terminating nul) required to
+ * store the result of an snprintf.
+ * @param formatstring The format string with standard printf formatstring
+ * @return the number of bytes required by printf without the terminating nul
+ */
+unsigned snprintf_required_length(const char * formatstring, ...);
+
+} // namespace mha_error_helpers
+
+
+
 /*
  * Local Variables:
  * compile-command: "make -C .."

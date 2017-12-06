@@ -38,8 +38,6 @@ public:
 private:
     // output signal
     MHASignal::waveform_t out;
-    // number of input channels
-    int numchannels_in;
     // vector of weights
     std::vector<mha_real_t> weights;
     // vector of delays
@@ -71,7 +69,6 @@ delaysum_t::delaysum_t(unsigned int inumchannels_in,
                        std::vector<mha_real_t> iweights,
                        std::vector<int> idelay)
     : out(fragsize,1), //initialize the output signal (only one channel)
-      numchannels_in(inumchannels_in),
       weights(iweights),
       delay(idelay),
       in_buffer(fragsize,inumchannels_in){

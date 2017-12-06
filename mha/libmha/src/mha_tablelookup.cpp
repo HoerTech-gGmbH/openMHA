@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2009 2013 2016 HörTech gGmbH
+// Copyright © 2005 2006 2007 2009 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -97,7 +97,7 @@ void xy_table_t::add_entry(mha_real_t* pVX, mha_real_t* pVY, unsigned int uLengt
    \param x x value
    \return interpolated y value
 */
-mha_real_t xy_table_t::interp( mha_real_t x )
+mha_real_t xy_table_t::interp( mha_real_t x ) const
 {
     if( !mXY.size() )
         throw MHA_ErrorMsg("the xy table has no entries");
@@ -107,8 +107,8 @@ mha_real_t xy_table_t::interp( mha_real_t x )
     // transform x value:
     if( xfun )
         x = xfun(x);
-    std::map<mha_real_t,mha_real_t>::iterator mXYit1(mXY.lower_bound(std::max(mXY.begin()->first,std::min(mXY.rbegin()->first,x))));
-    std::map<mha_real_t,mha_real_t>::iterator mXYit2(mXYit1);
+    std::map<mha_real_t,mha_real_t>::const_iterator mXYit1(mXY.lower_bound(std::max(mXY.begin()->first,std::min(mXY.rbegin()->first,x))));
+    std::map<mha_real_t,mha_real_t>::const_iterator mXYit2(mXYit1);
     if( mXYit1 == mXY.begin() )
         mXYit2++;
     else
@@ -124,7 +124,7 @@ mha_real_t xy_table_t::interp( mha_real_t x )
    \param x Input value
    \return y value at nearest x value below input.
 */
-mha_real_t xy_table_t::lookup( mha_real_t x )
+mha_real_t xy_table_t::lookup( mha_real_t x ) const
 {
     if( !mXY.size() )
         throw MHA_ErrorMsg("the xy table has no entries");
@@ -141,12 +141,12 @@ mha_real_t xy_table_t::lookup( mha_real_t x )
     if( x >= mXY.rbegin()->first )
         return mXY.rbegin()->second;
     // value is in range:
-    std::map<mha_real_t,mha_real_t>::iterator mXYit(mXY.lower_bound(x));
+    std::map<mha_real_t,mha_real_t>::const_iterator mXYit(mXY.lower_bound(x));
     if( x == mXYit->first )
         return mXYit->second;
     if( mXYit == mXY.begin() )
         return mXYit->second;
-    std::map<mha_real_t,mha_real_t>::iterator mXYitL(mXYit);
+    std::map<mha_real_t,mha_real_t>::const_iterator mXYitL(mXYit);
     mXYitL--;
     if( fabs(x-mXYitL->first) <= fabs(x-mXYit->first) )
         return mXYitL->second;
@@ -168,7 +168,7 @@ linear_table_t::~linear_table_t(void)
         delete [] vy;
 }
 
-mha_real_t linear_table_t::lookup(mha_real_t x)
+mha_real_t linear_table_t::lookup(mha_real_t x) const
 {
     mha_real_t ind;
     ind = x - xmin;
@@ -178,7 +178,7 @@ mha_real_t linear_table_t::lookup(mha_real_t x)
     return vy[(unsigned int)ind];
 }
 
-mha_real_t linear_table_t::interp(mha_real_t x)
+mha_real_t linear_table_t::interp(mha_real_t x) const
 {
     mha_real_t ind, frac, ret;
     unsigned int dw_ind;

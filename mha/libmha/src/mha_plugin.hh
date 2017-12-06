@@ -490,16 +490,16 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
     \param indom Input domain (\c wave or \c spec)
     \param outdom Output domain (\c wave or \c spec)
 
-    This macro defines all required \mha Plugin interface functions and
-    passes calls of these functions to the corresponding member functions
-    of the class \c `classname'. The parameters \c `indom' and \c `outdom' specify
-    the input and output domain of the processing method. The \c MHAInit()
-    and \c MHADestroy() functions will create or destroy an instance of
-    the class. The approriate member functions have to be defined in the
-    class. It is suggested to make usage of the MHAPlugin::plugin_t
-    template class. Exceptions of type \ref MHA_Error are caught and
-    transformed into apropriate error codes with their corresponding error
-    messages.
+    This macro defines all required \mha Plugin interface functions
+    and passes calls of these functions to the corresponding member
+    functions of the class \c `classname'.  The parameters \c `indom'
+    and \c `outdom' specify the input and output domain of the
+    processing method.  The \c MHAInit() and \c MHADestroy() functions
+    will create or destroy an instance of the class.  The approriate
+    member functions have to be defined in the class.  It is suggested
+    to make usage of the MHAPlugin::plugin_t template class.
+    Exceptions of type \ref MHA_Error are caught and transformed into
+    apropriate error codes with their corresponding error messages.
 
 */
 #define MHAPLUGIN_CALLBACKS_PREFIX(prefix,classname,indom,outdom)       \
@@ -521,7 +521,6 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
         return 1;                                               \
     }                                                           \
                                                                 \
-
 /** \ingroup plugif
 
     \brief Wrapper macro for the plugin documentation interface
@@ -597,7 +596,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 #define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)                       \
   MHAPLUGIN_DOCUMENTATION_PREFIX(MHA_STATIC_ ## plugname ## _,cat,doc)
 
-#else // MHA_STATIC_PLUGINS
+#else // MHA_STATIC_PLUGINS  		 		
 
 #define MHAPLUGIN_PROC_CALLBACK(plugname,classname,indom,outdom)        \
   MHAPLUGIN_PROC_CALLBACK_PREFIX(MHA_DYNAMIC_,classname,indom,outdom)
@@ -608,7 +607,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 #define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)                       \
   MHAPLUGIN_DOCUMENTATION_PREFIX(MHA_DYNAMIC_,cat,doc)
 
-#endif // MHA_STATIC_PLUGINS
+#endif // MHA_STATIC_PLUGINS   		  		
 
 #endif
 

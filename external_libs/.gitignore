@@ -12,7 +12,5 @@
 #
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
 fftw-2.1.5
-x86_64-linux-gcc-5
-i686-linux-gcc-5
-armv7l-linux-gcc-4.9

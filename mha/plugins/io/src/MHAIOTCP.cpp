@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2008 2009 2013 2014 2015 2016 HörTech gGmbH
+// Copyright © 2005 2006 2008 2009 2013 2014 2015 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -280,7 +280,7 @@ private:
 
     /** Check if mha_real_t is a usable 32-bit floating point type.
      * @throw MHA_Error if mha_real_t is not compatible to 32-bit float. */
-    static void check_sound_data_type() throw (MHA_Error);
+    static void check_sound_data_type();
 
 public:
     /** Initialize sound data handling.  Checks sound data type by calling
@@ -338,7 +338,7 @@ io_tcp_sound_t::io_tcp_sound_t(int _fragsize, float _samplerate)
     check_sound_data_type();
 }
 
-void io_tcp_sound_t::check_sound_data_type() throw(MHA_Error)
+void io_tcp_sound_t::check_sound_data_type()
 {
     float_union data;
     if (sizeof(float) != sizeof(unsigned int))

@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = fshift_hilbert
+SUBDIRS = fshift_hilbert lpc prediction_error lpc_burg-lattice lpc_bl_predictor nlms_wave
 
 include ../../../rules.mk
 

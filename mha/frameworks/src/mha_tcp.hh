@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2008 2009 2011 2012 2013 2015 2016 HörTech gGmbH
+// Copyright © 2004 2008 2009 2011 2012 2013 2015 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -266,7 +266,7 @@ namespace MHA_TCP {
          *           This file descriptor is closed again in the destructor.
          * @throw MHA_Error If the file descriptor is < 0.
          */
-        Connection(SOCKET _fd) throw(MHA_Error);
+        Connection(SOCKET _fd);
     public:
         Sockread_Event * get_read_event();
         Sockwrite_Event * get_write_event();

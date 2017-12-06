@@ -37,7 +37,7 @@ namespace ADM {
   template <class F>
   class Linearphase_FIR {
   public:
-    /** 
+    /**
      * Create linear-phase FIR filter
      * @param order
      *     filter order of this FIR filter.
@@ -84,7 +84,7 @@ namespace ADM {
       m_now = (m_now + 1) % (m_order + 1);
       return out_sample;
     }
-        
+
   private:
     /**
      * The filter order of this linear-phase FIR filter
@@ -146,8 +146,8 @@ namespace ADM {
         (m_norm) * in_sample;
       m_now_in = (m_now_in + 1) % (m_fullsamples + 1);
       return m_state[m_now_out];
-    }      
-    
+    }
+
   private:
     /**
      * Integer part of delay
@@ -184,37 +184,38 @@ namespace ADM {
   class ADM {
   public:
     /**
-     * Create Adaptive Differential Microphone
+     * Create adaptive differential microphone
      *
      * @param fs
-     *   sampling rate / Hz
+     *   Sampling rate / Hz
      * @param dist
-     *   distance between physical microphones / m
+     *   Distance between physical microphones / m
      * @param lp_order
-     *   Filter order of FIR lowpass filter used for adaption
+     *   Filter order of FIR lowpass filter used for adaptation
      * @param lp_alphas
-     *    pointer to Array of alpha coefficients for the lowpass filter used
-     *    for adaption. Since this class uses linear phase FIR filters only,
-     *    only the first half (order / 2 + 1) of the coefficients will be read.
-     *    (Coefficients for linear-phase FIR filters are symmetric.)
+     *   Pointer to array of alpha coefficients for the lowpass filter used
+     *   for adaptation. Since this class uses linear phase FIR filters only,
+     *   only the first half (order/2 + 1) of the coefficients will be read
+     *   (coefficients for linear-phase FIR filters are symmetric).
      * @param decomb_order
      *   Filter order of FIR compensation filter (compensates for comb filter
      *   characteristic)
      * @param decomb_alphas
-     *    pointer to Array of alpha coefficients for the compensation filter
-     *    used to compensate the comb filter characteristic. Since this class
-     *    uses linear phase FIR filters only, only the first half (order/2 + 1)
-     *    of the coefficients will be read.
-     *    (Coefficients for linear-phase FIR filters are symmetric.)
-     * @param tau_beta
-     *   time constant of low pass filter for averaging power of output signal
+     *   Pointer to array of alpha coefficients for the compensation filter
+     *   used to compensate for the comb filter characteristic. Since this
+     *   class uses linear phase FIR filters only, only the first half
+     *   (order/2 + 1)of the coefficients will be read (coefficients
+     *   for linear-phase FIR filters are symmetric).
      * @param mu_beta
-     *   adaption speed
+     *   Adaptation step size for each set of ADMs (e.g. left and right)
+     * @param tau_beta
+     *   Time constant of the lowpass filter used for averaging the power of
+     *   the output signal
      */
     ADM(F fs, F dist,
         unsigned lp_order, const F* lp_alphas,
         unsigned decomb_order, const F* decomb_alphas,
-        F tau_beta = F(50e-3), F mu_beta = F(1e-4));
+        F mu_beta, F tau_beta = F(50e-3));
 
     /**
      * ADM processes one frame
@@ -249,7 +250,7 @@ namespace ADM {
       if (external_beta >= 0)
         m_beta = external_beta;
       else {
-        // low pass filter signals used in adaption
+        // lowpass filter signals used in adaption
         F lp_back_facing = m_lp_bf.process(back_facing);
         F lp_comb_result = m_lp_result.process(comb_result);
         
@@ -332,10 +333,10 @@ namespace ADM {
   }
 
   template <class F>
-  ADM<F>::ADM(F fs, F dist, 
+  ADM<F>::ADM(F fs, F dist,
               unsigned lp_order, const F* lp_alphas,
               unsigned decomb_order, const F* decomb_alphas,
-              F tau_beta, F mu_beta)
+              F mu_beta, F tau_beta)
     : m_delay_front(dist / C * fs, DELAY_FREQ, fs),
       m_delay_back(dist / C * fs, DELAY_FREQ, fs),
       m_lp_bf(lp_order, lp_alphas),
@@ -347,7 +348,7 @@ namespace ADM {
       m_powerfilter_norm(F(1) - m_powerfilter_coeff),
       m_powerfilter_state(mu_beta) // avoid division by zero
   {}
-}  
+}
 #endif
 
 // Local Variables:

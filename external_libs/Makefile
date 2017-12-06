@@ -18,10 +18,13 @@ include ../magic.mk
 
 EXTERNAL_LIBS=$(realpath .)
 
-TARGETS=fftw.is_installed
+TARGETS = fftw.is_installed
 
 include ../rules.mk
 
+# Pass compiler flags to third-party library build process.
+# If third-party libraries produce compiler warnings, then we do not treat
+# these as errors.
 ifdef CFLAGS
 CFLAGS:=$(filter-out -Werror, $(CFLAGS))
 export CFLAGS
@@ -30,6 +33,8 @@ ifdef CXXFLAGS
 CXXFLAGS:=$(filter-out -Werror, $(CXXFLAGS))
 export CXXFLAGS
 endif
+
+# Pass linker flags to third-party library build process
 ifdef LDFLAGS
 export LDFLAGS
 endif
@@ -37,16 +42,18 @@ ifdef LDLIBS
 export LDLIBS
 endif
 
+# Build fftw-2
 $(BUILD_DIR)/fftw.is_installed: $(BUILD_DIR)/fftw.is_configured
-	cd fftw-2.1.5/. && $(MAKE) install
+	cd fftw-2.1.5/. && $(MAKE) -j 1 install
 	cd "$(EXTERNAL_LIBS)" && touch $@
 
+# Configure fftw-2
 $(BUILD_DIR)/fftw.is_configured: $(BUILD_DIR)/.directory
 	sleep 0.01 && touch fftw-2.1.5/depcomp       # Recreate the original
 	sleep 0.01 && touch fftw-2.1.5/install-sh    # ordering of the files'
-	sleep 0.01 && touch fftw-2.1.5/missing       # mtimes. 
+	sleep 0.01 && touch fftw-2.1.5/missing       # mtimes.
 	sleep 0.01 && touch fftw-2.1.5/mkinstalldirs # Otherwise, autotools
-	sleep 0.01 && touch fftw-2.1.5/ltmain.sh     # (if installed) would 
+	sleep 0.01 && touch fftw-2.1.5/ltmain.sh     # (if installed) would
 	sleep 0.01 && touch fftw-2.1.5/config.guess  # attempt to recreate
 	sleep 0.01 && touch fftw-2.1.5/config.sub    # FFTW's configure script.
 	sleep 0.01 && touch fftw-2.1.5/acinclude.m4  # 

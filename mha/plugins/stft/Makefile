@@ -17,7 +17,7 @@ include ../../../config.mk
 include ../../../magic.mk
 
 SUBDIRS = fftfilterbank overlapadd noisePowProposedScale timoSmooth \
-          smoothgains_bridge
+          smoothgains_bridge spec2wave
 
 include ../../../rules.mk
 

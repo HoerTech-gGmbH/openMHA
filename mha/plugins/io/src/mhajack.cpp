@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2013 2014 2016 HörTech gGmbH
+// Copyright © 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -650,7 +651,6 @@ void MHAJack::client_t::connect_output(const std::vector<std::string>& con)
 }
 
 /**
-   
    \brief Get a list of Jack ports
    \param res Result string vector
    \param jack_flags Jack port flags (JackPortInput etc.)

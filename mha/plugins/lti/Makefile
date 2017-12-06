@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2016 2017 HörTech gGmbH
+# Copyright © 2013 2014 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -12,20 +12,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
-{
-  "targets": [
-    {
-      "target_name": "mha-node",
-        "sources": [ "fw_t_wrap.cxx", "mhafw_lib.cpp" ],
-      "include_dirs": ["../../libmha/src"],
-      "libraries": ["-L<(module_root_dir)/../../libmha/x86_64-linux-gcc-5",
-                   "-lopenmha"],
-        "cflags_cc": ["-fexceptions"]
-    }
-  ]
-}
+
+include ../../../config.mk
+include ../../../magic.mk
+
+SUBDIRS = matrixmixer gain delay iirfilter
+
+include ../../../rules.mk
 
 # Local Variables:
-# indent-tabs-mode: nil
+# compile-command: "make"
 # coding: utf-8-unix
 # End:
