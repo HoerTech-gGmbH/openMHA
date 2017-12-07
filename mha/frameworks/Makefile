@@ -42,7 +42,7 @@ ifeq "linux" "$(PLATFORM)"
 LDLIBS += -ldl -lpthread
 else
 ifeq "Darwin" "$(PLATFORM)"
-LDLIBS += ""
+LDLIBS += -ldl -lpthread
 else
 LDLIBS += -lws2_32
 endif

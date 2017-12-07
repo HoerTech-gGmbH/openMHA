@@ -26,7 +26,18 @@
 
 include config.mk
 
-include definitions.mk
+MODULES = \
+	mha/libmha \
+	mha/frameworks \
+	mha/plugins \
+	external_libs \
+	mha/mhatest \
+
+DOCMODULES = \
+	mha/doc/flowcharts \
+        mha/doc/images \
+	mha/doc \
+
 
 all: $(MODULES)
 
@@ -43,17 +54,10 @@ doc: mha/doc
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
-unit-tests: all googletest
-	$(MAKE) -f Makefile2 unit-tests
-
-googletest: mha/mhatest
-	$(MAKE) -C external_libs googlemock
-
-coverage: unit-tests
-	lcov --capture --directory mha --output-file coverage.info
-	genhtml coverage.info --prefix $$PWD/mha --output-directory $@
-	x-www-browser ./coverage/index.html
-
+install: all
+	@mkdir -p bin
+	@find ./external_libs/ ./mha/ -name *so -exec cp {} bin/. \;
+	@cp mha/frameworks/$(BUILD_DIR)/mha bin/.
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
 mha/frameworks: mha/libmha
