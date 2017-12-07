@@ -65,9 +65,9 @@ WARNING: The following packages cannot be authenticated! openmha libopenmha Inst
 
 To install openMHA you have to type "y".
 
-The authentification issue will be resolved in the future.
+The authentication issue will be resolved in the future.
 
-After installation, openMHA dcoumentation is found in
+After installation, openMHA documentation is found in
 /usr/share/doc/openmha
 and tools for GNU Octave/Matlab here:
 /usr/lib/openmha/mfiles
@@ -116,12 +116,12 @@ with the following software packages installed:
     and openjdk-8-jdk for Debian 9)
 
 octave and default-jre are not essential for building or running the
-openMHA.  The build process uses octave + java to run some tests after
-building openMHA.  If octave is not available, this test will fail.
-But the produced openMHA will still work.
+openMHA.  The build process uses Octave + Java to run some tests after
+building openMHA.  If Octave is not available, this test will fail,
+but the produced openMHA will still work.
 
-The optional GUI (cf. openMHA_gui_manual.pdf) requires java-enabled
-octave in version >= 4.2.1.
+The optional GUI (cf. openMHA_gui_manual.pdf) requires Java-enabled
+Octave in version >= 4.2.1.
 
 6. Compilation instructions:
 
