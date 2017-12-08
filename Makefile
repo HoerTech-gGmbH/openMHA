@@ -56,8 +56,11 @@ clean:
 
 install: all
 	@mkdir -p bin
-	@find ./external_libs/ ./mha/ -name *$(DYNAMIC_LIB_EXT) -exec cp {} bin/. \;
+	@mkdir -p lib
+	@mkdir -p share/openMHA
+	@find ./external_libs/ ./mha/ -name *$(DYNAMIC_LIB_EXT) -exec cp {} lib/. \;
 	@cp mha/frameworks/$(BUILD_DIR)/mha bin/.
+	@cp -r tools/* share/openMHA
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
 mha/frameworks: mha/libmha
