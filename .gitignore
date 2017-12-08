@@ -15,6 +15,7 @@
 
 # The readme recommends copying all plugins into one "bin" directory.
 bin
+lib
 
 # Editor backup and lock files
 *~
