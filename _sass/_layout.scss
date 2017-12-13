@@ -5,6 +5,7 @@ body {
 	font-size: 1.1em;
 	line-height: 1.6;
 	-webkit-font-smoothing: antialiased;
+	background-color: $background;
 }
 h1,
 h2,
@@ -148,9 +149,11 @@ aside {
 	width: 100%;
 	/* box-shadow: 0px 2px 1px $header; */
 	margin-bottom: 10px;
+	background-color: $background;
 	nav {
 		max-width: 800px;
 		margin: 0 auto;
+		background-color: $background;
 		ul.nav {
 			margin: 0;
 			padding: 0;
