@@ -132,6 +132,7 @@ Prerequisites:
 The following packages should be installed via macports:
 - libsndfile
 - pkgconfig
+- portaudio
 -optional:
  -octave +java 
  -octave-signal
