@@ -54,19 +54,6 @@ indices = strmatch('test_', files);
 for index = indices(:)'
     filename = files{index};
     start_time = clock;
-    mfile_stat = stat(filename)
-    logmsg(sprintf('%s: executing test#%d, implemented in file %s (mtime=%s)',...
-                   ctime(time), tests, filename, ctime(mfile_stat.mtime)));
-    fd = fopen('c:/timestamps.txt');
-    if (fd >= 0)
-        line = '';
-	while ~feof(fd)
-		line = fgetl(fd);
-                %% process line %% 
-	end
-        fclose(fd)
-        logmsg(['file timestamp: ', line]);
-    end 
     times{end+1,2} = filename;
     try
       tests = tests + 1;
