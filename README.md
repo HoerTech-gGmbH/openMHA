@@ -2,7 +2,7 @@
 
 HörTech Open Master Hearing Aid (openMHA)
 
-1. Content of the openMHA release 4.5.2 (2017-12-06)
+1. Content of the openMHA release 4.5.3 (2017-12-15)
 
 The software contains the source code of the openMHA Toolbox library, of the
 openMHA framework and command line application, and of a selection of algorithm
@@ -100,6 +100,7 @@ this release we concentrate on compilation on Ubuntu 16.04 for 64-bit PC
 processors (x86_64) and on Debian 8 (jessie) for the Beaglebone Black
 single-board ARM computer.
 
+## Linux
 Prerequisites:
 64-bit version of Ubuntu 16.04 or later,
 or a Beaglebone Black with Debian jessie installed.
@@ -107,7 +108,7 @@ or a Beaglebone Black with Debian jessie installed.
 with the following software packages installed:
 - g++-5 for Ubuntu, g++-4.9 for Debian
 - make
-- libsndfile1-dev,
+- libsndfile1-dev
 - libjack-jackd2-dev
 - jackd2
 - portaudio19-dev
@@ -120,8 +121,27 @@ openMHA.  The build process uses Octave + Java to run some tests after
 building openMHA.  If Octave is not available, this test will fail,
 but the produced openMHA will still work.
 
+## macOS
+Prerequisites:
+
+-macOS 10.10 or later.
+-XCode 7.2 or later
+-Jack2 for OSX http://jackaudio.org
+-MacPorts
+
+The following packages should be installed via macports:
+- libsndfile
+- pkgconfig
+-optional:
+ -octave +java 
+ -octave-signal
+ 
 The optional GUI (cf. openMHA_gui_manual.pdf) requires Java-enabled
 Octave in version >= 4.2.1.
+
+### Known Issues
+* There are some known issues with Octave under macOS. The mha gui may not work correctly with octave. As an alternative Matlab can be used.
+* The qjackctl version provided by the Jack distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp)
 
 6. Compilation instructions:
 
@@ -131,8 +151,7 @@ compile the MHA with ./configure && make
 6.1 Installation instructions:
 
 A very simple installation routine is provided together with the
-source code.  To collect the relevant binaries in a subdirectory
-"bin", execute
+source code. To collect the relevant binaries and libraries execute
 
 make install
 
@@ -144,6 +163,8 @@ export LD_LIBRARY_PATH=$PWD/bin
 You can also add the bin directory to the PATH environment variable:
 
 export PATH=$PATH:$PWD/bin
+
+Alternatively, the mha.sh script found in bin/mha.sh may be sourced.
 
 After this, you can invoke the MHA command line. Perform a quick test with
 
@@ -184,16 +205,6 @@ Extra packages are needed for generating documentation:
 - texlive
 - texlive-latex-extra
 
-<<<<<<< HEAD
-8. Running Unit Tests (Optional!) (for Developers):
-
-openMHA is starting to use the googletest for testing.  googletest is
-referenced as a git submodule.  To use it:
-
-   make test
-   # or: make coverage (requires lcov)
-=======
-
 9. References for individual algorithms.
 
 [1] Elko GW, Pong ATN. A Simple Adaptive First-order Differential
@@ -222,4 +233,3 @@ Processing. 2012;20(4):1383–1393.
 min-max estimation of the common part of acoustic feedback paths in
 hearing aids. IEEE Transactions on Audio, Speech, and Language
 Processing. 2016;24(2):366-377.
->>>>>>> master
