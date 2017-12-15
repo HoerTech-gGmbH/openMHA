@@ -1,4 +1,0 @@
-[submodule "external_libs/googletest"]
-	path = external_libs/googletest
-	url = https://github.com/google/googletest
-	ignore = dirty
