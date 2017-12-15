@@ -15,6 +15,7 @@
 
 # The readme recommends copying all plugins into one "bin" directory.
 bin
+lib
 
 # Editor backup and lock files
 *~
@@ -36,7 +37,7 @@ x86_64-linux-gcc-7
 i686-linux-gcc-5
 i686-MinGW-gcc-6
 armv7l-linux-gcc-4.9
-
+x86_64-Darwin-clang
 # coverage analysis artifacts
 coverage.info
 coverage
