@@ -78,6 +78,17 @@
     echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM)' ${MACCXXFLAGS}
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM)' ${MACCXXFLAGS}
     echo 'LDLIBS+='${MACLDLIBS}
+    if [ "x$(which octave)" = "x" ]
+    then
+	      if [ "x$(which matlab)" = "x" ]
+	      then
+            echo "WITH_TESTS=NO"
+	      else
+	          echo "MHA_TEST_COMMAND=matlab"
+	      fi
+    else
+	      echo "MHA_TEST_COMMAND=octave"
+    fi
 ) |tee config.mk
 
 # Local Variables:

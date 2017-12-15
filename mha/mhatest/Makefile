@@ -23,8 +23,12 @@ ifeq "$(findstring arm, $(COMPILERPREFIX))" "arm"
 octavetest:
 	@echo cannot execute automatic tests for cross-compiled MHA
 else
+ifeq "$(WITH_TESTS)" "yes"
 octavetest:
-	octave --no-gui --no-window-system --eval "set_environment;exit(~runtests())"
+	$(MHA_TEST_COMMAND) --no-gui --no-window-system --eval "set_environment;exit(~runtests())"
+else
+octavetest:
+endif
 endif
 
 reproducibilitytest:
