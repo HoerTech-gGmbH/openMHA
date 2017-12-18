@@ -19,8 +19,7 @@
     ARCH=`uname -m`
     echo ARCH=$ARCH
 
-    PLATFORM=`uname -s`
-    case $PLATFORM in
+    case `uname -s` in
         *Linux*)
             PLATFORM=linux
             echo PLATFORM=linux
@@ -29,7 +28,7 @@
             echo GCC_VER=${GCC_VER}
             echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
             ;;
-        *Cygwin*)
+        *Cygwin* | *Msys* | *MinGW* | *MINGW* )
             PLATFORM=MinGW
             echo PLATFORM=MinGW
             echo DYNAMIC_LIB_EXT=".dll"
@@ -37,22 +36,15 @@
             echo GCC_VER=${GCC_VER}
             echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
             ;;
-        Msys)
-            PLATFORM=MinGW
-            echo PLATFORM=MinGW
-            echo DYNAMIC_LIB_EXT=".dll"
-            GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
-            echo GCC_VER=${GCC_VER}
-            echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
-            ;;
-        Darwin)
+        *Darwin* )
+            PLATFORM=Darwin
             echo PLATFORM=Darwin
             echo DYNAMIC_LIB_EXT=".dylib"
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
             echo 'CXXFLAGS+=-Wno-error=unused-command-line-argument'
             echo TOOLSET=clang
             echo WITH_JACK=yes
-            MACLDLIBS+=-L/opt/local/lib
+            echo LDLIBS+='-L/opt/local/lib'
             MACCXXFLAGS+=-I/opt/local/include
     esac
     
@@ -77,18 +69,6 @@
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
     echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM)' ${MACCXXFLAGS}
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM)' ${MACCXXFLAGS}
-    echo 'LDLIBS+='${MACLDLIBS}
-    if [ "x$(which octave)" = "x" ]
-    then
-	      if [ "x$(which matlab)" = "x" ]
-	      then
-            echo "WITH_TESTS=NO"
-	      else
-	          echo "MHA_TEST_COMMAND=matlab -nodesktop -nosplash -nodisplay -r \"set_environment;exit(~runtests())\""
-	      fi
-    else
-	      echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval \"set_environment;exit(~runtests())\""
-    fi
 ) |tee config.mk
 
 # Local Variables:
