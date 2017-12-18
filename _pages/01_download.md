@@ -20,4 +20,4 @@ or download [__openMHA 4.5.3__](https://github.com/HoerTech-gGmbH/openMHA/archiv
 
 
 
-This package compiles on Ubuntu 16.04 (or later) for 64-bit processors (x86_64). See installation instructions in the [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) file for more details.
+This package compiles under Linux and Mac operating systems. See installation instructions in the [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) file for more details.
