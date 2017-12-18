@@ -15,7 +15,7 @@
 
 include ../../config.mk
 
-all: octavetest reproducibilitytest
+all: octavetest reproducibilitytest thumbsup
 
 unit-tests:
 
@@ -23,13 +23,21 @@ ifeq "$(findstring arm, $(COMPILERPREFIX))" "arm"
 octavetest:
 	@echo cannot execute automatic tests for cross-compiled MHA
 else
+ifneq "$(WITH_TESTS)" "no"
 octavetest:
-	octave --no-gui --no-window-system --eval "set_environment;exit(~runtests())"
+	$(MHA_TEST_COMMAND)
+else
+octavetest:
+endif
 endif
 
 reproducibilitytest:
 	@if [ -n "`git status --porcelain -uno`" ]; then (echo; echo "*******************************************************************"; echo "***" The following files have been modified since git check-out: "***";  echo "*******************************************************************"; git status --porcelain -uno; exit 1); fi
 	@if [ -n "`find ../plugins -type f -exec grep -- -modified '{}' ';'`" ] ; then (echo; echo "***********************************************************************"; echo "***" The following files carry a modified-since-git-check-out stamp: "***";  echo "***********************************************************************"; find ../plugins -type f -exec grep -- -modified '{}' ';'; exit 1); fi
+
+thumbsup: reproducibilitytest
+	@cat THUMBS.txt
+
 
 install: all
 
