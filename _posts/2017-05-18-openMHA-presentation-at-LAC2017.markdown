@@ -2,7 +2,7 @@
 layout: post
 title:  "openMHA presentation at LAC2017"
 date:   2017-05-18 08:00:00
-categories: news
+category: publication
 ---
 
 The openMHA pre-release was presented at the  

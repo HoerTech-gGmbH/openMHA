@@ -2,7 +2,7 @@
 layout: post
 title:  "2017 Release of openMHA available"
 date:   2017-06-21 08:00:00
-categories: news
+category: software
 ---
 
 The first major release of the openMHA is available!

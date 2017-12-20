@@ -2,7 +2,7 @@
 layout: post
 title:  "For the Patients' Benefit"
 date:   2016-10-26 08:00:00
-categories: news
+category: publication
 ---
 [Oldenburg University press release]
 ![Hearing researcher Prof. Dr. Volker Hohmann. Photo: University of Oldenburg](/images/csm_361-hohmann_01_ffd72f7994.jpg "Hearing researcher Prof. Dr. Volker Hohmann. Photo: University of Oldenburg")  

@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: startpage
 ---
 
 ## Open community platform for hearing aid algorithm research
@@ -11,9 +11,8 @@ The project *Open community platform for hearing aid algorithm research* funded 
 **openMHA** is an open-source software platform for real-time audio signal processing, licensed under [AGPL-3.0](https://github.com/HoerTech-gGmbH/openMHA/blob/master/COPYING).
 For download instructions see [Download](/download).
 
-|__!!!  Latest news:__ [openMHA 4.5.3 is available](/news/2017/12/15/openMHA-4.5.3-released)|
 
-See [News](/news) for more information and annoucements.
+
 
 
 

@@ -2,7 +2,7 @@
 layout: post
 title:  "openMHA presentation at DAGA2017"
 date:   2017-03-07 08:00:00
-categories: news
+category: publication
 ---
 
 The project and the openMHA pre-release was presented at the  

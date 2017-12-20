@@ -139,6 +139,26 @@ a.link_inline{
 	background: none;
 }
 
+tag{
+	background-color: $header;
+	display:inline-block;
+	line-height: 1.1em;
+	border-radius: 3px;
+	padding-left: 3px;
+		padding-right: 3px;
+	a{
+		vertical-align: top;
+		padding-left: 0px;
+		padding-right: 0px;
+		background: none;
+		font-size: 0.8em;
+		font-weight: normal;
+		&:hover,
+		&:active {
+			background: none;
+		}
+	}
+}
 
 /* Aside */
 

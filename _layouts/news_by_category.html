@@ -1,0 +1,39 @@
+---
+layout: default
+---
+
+{% capture page_subtitle %}Articles by category{% endcapture %}
+<p>
+<tag>{{ page.name }}</tag>
+</p>
+<div>
+  {% if site.categories[page.slug] %}
+    {% for post in site.categories[page.slug] %}
+      {% capture post_year %}{{ post.date | date: '%Y' }}{% endcapture %}
+      {% if forloop.first %}
+        <h2>{{ post_year }}</h2>
+        <div>
+      {% endif %}
+      {% unless forloop.first %}
+        {% assign previous_index = forloop.index0 | minus: 1 %}
+        {% capture previous_post_year %}{{ site.categories[page.slug][previous_index].date | date: '%Y' }}{% endcapture %}
+        {% if post_year != previous_post_year %}
+          </div>
+          <h2>{{ post_year }}</h2>
+          <div>
+        {% endif %}
+      {% endunless %}
+		<p>
+			<a class="link_inline" href="{{ post.url }}">
+			{{ post.title }} 
+			</a> 
+			<time>{{ post.date | date: "%b %-d" }}</time>
+		</p>
+      {% if forloop.last %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <p>There are no posts in this category.</p>
+  {% endif %}
+</div>

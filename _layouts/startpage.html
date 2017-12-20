@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+{% include head.html %}
+
+<body>
+	{% include header.html %}
+	<main>
+		<article>
+			{{ content }}
+		</article>
+		<h2>Latest news</h2><br/>
+		{% for post in site.posts limit:3 %}
+			{% assign category = site.my_categories | where: "slug", post.category %}
+			{% assign category = category[0] %}
+			{% if category %}
+				{% capture category_content %}<a class="label" href="{{ category.url }}">{{ category.name }}</a>{% endcapture %}
+		{% endif %}
+
+		<time>{{ post.date | date: "%b %-d, %Y" }}</time>
+		<h3><a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h3>
+		<tag>{{ category_content }}</tag>
+		<br/>
+		{% endfor %}
+		<br/>
+		<a href="{{site.baseurl}}/news">More</a> 
+		{% include footer.html %}
+	</main>
+</body>
+
+</html>

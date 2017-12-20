@@ -3,9 +3,20 @@ layout: default
 ---
 
 <h2>News</h2><br/>
-{% for post in site.posts %}
-		<time>{{ post.date | date: "%b %-d, %Y" }}</time>
-		<h3><a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h3><br/>
+	{% for post in site.posts%}
+		{% assign category = site.my_categories | where: "slug", post.category %}
+		{% assign category = category[0] %}
+		{% if category %}
+			{% capture category_content %}<a class="label" href="{{ category.url }}">{{ category.name }}</a>{% endcapture %}
+		{% endif %}
+
+	
+	<time>{{ post.date | date: "%b %-d, %Y" }}</time>
+	<h3><a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h3>
+	<tag>{{ category_content }}</tag>
+	<br/>
+	
+
 {% endfor %}
 
 <!-- <p>subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p> -->

@@ -2,7 +2,7 @@
 layout: post
 title:  "openMHA presentation at ASA2017"
 date:   2017-06-26 08:00:00
-categories: news
+category: publication
 ---
 
 The openMHA first major release was presented at the  

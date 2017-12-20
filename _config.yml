@@ -4,11 +4,25 @@ email: "hendrikkayser@openMHA.org"
 description: "openMHA"
 baseurl: ""
 url: "http://www.openMHA.org"
+
+collections:
+  my_categories:
+    output: true
+    permalink: /news/category/:name/
 # Build Settings
 sass:
   sass_dir: _sass
 include: ['_pages']
+markdown:    kramdown
 kramdown:
   input: GFM
   hard_wrap: false
 gems:
+
+defaults:
+ -
+  scope:
+   path: ""
+   type: my_categories
+  values:
+   layout: news_by_category
