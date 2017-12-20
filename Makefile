@@ -58,7 +58,7 @@ install: all
 	@mkdir -p bin
 	@mkdir -p lib
 	@find ./external_libs/ ./mha/ -name *$(DYNAMIC_LIB_EXT) -exec cp {} lib/. \;
-	@cp mha/frameworks/$(BUILD_DIR)/mha bin/.
+	@find  ./mha/frameworks -executable -type f -exec cp {} bin/. \;
 	@cp mha/tools/mha.sh bin/.
 
 uninstall:
