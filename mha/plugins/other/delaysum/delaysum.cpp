@@ -114,7 +114,7 @@ delaysum_if_t::delaysum_if_t(
       weights("weights of channels",
                 "[1.0 1.0]", 
                 "[0.0,["),
-      /* initialzing variable 'delay' with MHAParser::int_t(char* name, .... ) */
+      /* initializing variable 'delay' with MHAParser::int_t(char* name, .... ) */
       delay("delay in number of frames ","[0 0]","[0,["){
     
     /* Register variables to the configuration parser: */
