@@ -38,6 +38,7 @@
             echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
             ;;
         Darwin)
+            PLATFORM=Darwin
             echo PLATFORM=Darwin
             echo DYNAMIC_LIB_EXT=".dylib"
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
