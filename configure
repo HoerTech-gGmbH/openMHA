@@ -19,6 +19,7 @@
     ARCH=`uname -m`
     echo ARCH=$ARCH
 
+
     case `uname -s` in
         *Linux*)
             PLATFORM=linux
@@ -36,8 +37,7 @@
             echo GCC_VER=${GCC_VER}
             echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
             ;;
-        *Darwin* )
-            PLATFORM=Darwin
+        Darwin)
             echo PLATFORM=Darwin
             echo DYNAMIC_LIB_EXT=".dylib"
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
@@ -69,6 +69,17 @@
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
     echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM)' ${MACCXXFLAGS}
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM)' ${MACCXXFLAGS}
+    if [ "x$(which octave)" = "x" ]
+    then
+	      if [ "x$(which matlab)" = "x" ]
+	      then
+            echo "WITH_TESTS=NO"
+	      else
+	          echo "MHA_TEST_COMMAND=matlab -nodesktop -nosplash -nodisplay -r \"set_environment;exit(~runtests())\""
+	      fi
+    else
+	      echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval \"set_environment;exit(~runtests())\""
+    fi
 ) |tee config.mk
 
 # Local Variables:
