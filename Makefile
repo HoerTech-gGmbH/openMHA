@@ -30,16 +30,23 @@ MODULES = \
 	mha/libmha \
 	mha/frameworks \
 	mha/plugins \
-	external_libs \
-	mha/mhatest \
+	external_libs
 
 DOCMODULES = \
 	mha/doc/flowcharts \
         mha/doc/images \
 	mha/doc \
 
+EXECUTABLES= \
+	analysemhaplugin \
+	browsemhaplugins \
+	generatemhaplugindoc \
+	mha
 
 all: $(MODULES)
+
+test: all
+	$(MAKE) -C mha/mhatest
 
 .PHONY : $(MODULES) $(DOCMODULES) coverage
 
@@ -58,7 +65,7 @@ install: all
 	@mkdir -p bin
 	@mkdir -p lib
 	@find ./external_libs/ ./mha/ -name *$(DYNAMIC_LIB_EXT) -exec cp {} lib/. \;
-	@find  ./mha/frameworks -executable -type f -exec cp {} bin/. \;
+	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -exec cp {} bin/. \;
 	@cp mha/tools/mha.sh bin/.
 
 uninstall:
