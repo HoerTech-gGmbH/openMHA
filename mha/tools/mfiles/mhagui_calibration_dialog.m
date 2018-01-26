@@ -771,16 +771,20 @@ function sCalib = calib_current_calib
   cCalibDB = get_calib_db;
   sCalID = configdb.get_mhaconfig(mha_basic_cfg.mha,'calib_current',cCalibDB{1,1});
   sCalib = calib_get_calib( sCalID );
-  configdb.set_mhaconfig(mha_basic_cfg.mha,'calib_current',sCalib.id);
+  %configdb.set_mhaconfig(mha_basic_cfg.mha,'calib_current',sCalib.id);
   
 function calib_upload( sCalib )
   global mha_basic_cfg;
   if nargin < 1
     sCalib = calib_current_calib;
   end
+  if ~isfield(sCalib,'cfg')
+    % We have no calibration to upload. Do not alter existing settings.
+    return;
+  end
   if isempty(sCalib.cfg.calib_in.peaklevel) || ...
 	isempty(sCalib.cfg.calib_out.peaklevel)
-    sCalib = calib_default;
+    return; % do not alter calibration settings if we have no calibration
   end
   if length(sCalib.cfg.calib_in.peaklevel) ~= ...
 	mha_basic_cfg.nch.in
@@ -844,7 +848,7 @@ function [cCalDB,csCalibs] = get_calib_db
   libconfigdb();
   cCalDB = configdb.get_mhaconfig(mha_basic_cfg.mha,'calib_db',cell([2, ...
 		    0]));
-  cal = calib_default;
+  cal = struct('id','default'); %calib_default;
   cCalDB = configdb.smap_set(cCalDB,cal.id,cal);
   csCalibs = cCalDB(1,:);
   
