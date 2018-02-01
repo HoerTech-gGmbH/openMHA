@@ -59,7 +59,7 @@ install: all
 	@mkdir -p  $(DESTDIR)$(PREFIX)/lib
 	@find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \;
 	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \;
-	@cp mha/tools/mha.sh $(DESTDIR)$(PREFIX)/bin/.
+	@cp mha/tools/thismha.sh $(DESTDIR)$(PREFIX)/bin/.
 
 uninstall:
 
