@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
+# Copyright © 2014 2015 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -10,36 +10,16 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License, version 3 for more details.
 #
-# You should have received a copy of the GNU Affero General Public License, 
+# You should have received a copy of the GNU Affero General Public License,
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-# mha plugins makefile
-#
-# Plugins are grouped by category. Each category / plugin group is a
-# subdirectory.
+include ../../../config.mk
+include ../../../magic.mk
 
-include ../../config.mk
-include ../../magic.mk
+SUBDIRS = droptect
 
-SUBDIRS = \
-	core \
-	io \
-	stft \
-	compression \
-	signalhandling \
-	binaural \
-	other \
-	examples \
-	feedback \
-	acvariables \
-	rate \
-	generator \
-	lti \
-	analysis \
-
-include ../../rules.mk
+include ../../../rules.mk
 
 # Local Variables:
 # compile-command: "make"
-# coding: utf-8-unix
 # End:
