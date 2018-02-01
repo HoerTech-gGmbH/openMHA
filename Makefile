@@ -57,15 +57,14 @@ clean:
 install: all
 	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
 	@mkdir -p  $(DESTDIR)$(PREFIX)/lib
-	@find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(DESTDIR)$(PREFIX)/lib/{} > lib.txt \;
 	@find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \;
-	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(DESTDIR)$(PREFIX)/bin/{} > bin.txt \;
 	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \;
 	@cp mha/tools/mha.sh $(DESTDIR)$(PREFIX)/bin/.
 
 uninstall:
-	@rm -f $(shell cat lib.txt)
-	@rm -f $(shell cat bin.txt)
+
+	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(DESTDIR)$(PREFIX)/lib/{} \;)
+	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(DESTDIR)$(PREFIX)/bin/{} \;)
 	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
 
 
