@@ -30,16 +30,17 @@ MODULES = \
 	mha/libmha \
 	mha/frameworks \
 	mha/plugins \
-	external_libs \
-	mha/mhatest \
+	external_libs
 
 DOCMODULES = \
 	mha/doc/flowcharts \
-        mha/doc/images \
+  mha/doc/images \
 	mha/doc \
 
-
 all: $(MODULES)
+
+test: all
+	$(MAKE) -C mha/mhatest
 
 .PHONY : $(MODULES) $(DOCMODULES) coverage
 
