@@ -156,6 +156,8 @@ lib directory, like this:
 
     export LD_LIBRARY_PATH=$PREFIX/lib
 
+Please note that on macOS the corresponding environment variable is DYLD_LIBRARY_PATH
+
 You can also add the bin directory to the PATH environment variable:
 
     export PATH=$PATH:$PREFIX/bin
