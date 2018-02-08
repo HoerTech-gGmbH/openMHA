@@ -131,9 +131,9 @@ The following packages should be installed via macports:
 - pkgconfig
 - portaudio
 - optional:
-  - octave +java 
+  - octave +java
   - octave-signal
- 
+
 The optional GUI (cf. openMHA_gui_manual.pdf) requires Java-enabled
 Octave in version >= 4.2.1.
 
@@ -144,7 +144,7 @@ Octave in version >= 4.2.1.
 After downloading and unpacking the openMHA tarball, or cloning from github,
 compile the MHA with ./configure && make
 
-### Installation instructions:
+### Installation of self-compiled openMHA:
 
 A very simple installation routine is provided together with the
 source code. To collect the relevant binaries and libraries execute

@@ -60,6 +60,9 @@
 /** Version string of MHA kernel (major.minor) */
 #define MHA_VERSION_STRING MHA_XSTRF(MHA_VERSION_MAJOR) "." MHA_XSTRF(MHA_VERSION_MINOR)
 
+/** Version string of MHA kernel (major.minor.release) */
+#define MHA_RELEASE_VERSION_STRING MHA_XSTRF(MHA_VERSION_MAJOR) "." MHA_XSTRF(MHA_VERSION_MINOR) "." MHA_XSTRF(MHA_VERSION_RELEASE)
+
 /*****************************************************************************/
 /*                                                                           */
 /*   domain types                                                            */
