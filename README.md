@@ -201,6 +201,10 @@ Extra packages are needed for generating documentation:
 - texlive
 - texlive-latex-extra
 
+## Known Issues
+* There are some known issues with Octave under macOS. The mha gui may not work correctly with octave. As an alternative Matlab can be used.
+* The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp)
+
 ## References for individual algorithms.
 
 [1] Elko GW, Pong ATN. A Simple Adaptive First-order Differential
@@ -229,7 +233,3 @@ Processing. 2012;20(4):1383–1393.
 min-max estimation of the common part of acoustic feedback paths in
 hearing aids. IEEE Transactions on Audio, Speech, and Language
 Processing. 2016;24(2):366-377.
-
-## Known Issues
-* There are some known issues with Octave under macOS. The mha gui may not work correctly with octave. As an alternative Matlab can be used.
-* The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp)
