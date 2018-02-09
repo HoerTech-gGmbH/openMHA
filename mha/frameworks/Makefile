@@ -36,7 +36,7 @@ include ../../rules.mk
 CXXFLAGS += -I../../external_libs/$(PLATFORM_CC)/include
 CXXFLAGS += -I../libmha/src
 LDLIBS += -l$(MHATOOLBOX_NAME)
-LDFLAGS += -L../libmha/$(BUILD_DIR) "-Wl,-rpath=$(PREFIX)/lib"
+LDFLAGS += -L../libmha/$(BUILD_DIR)
 
 ifeq "linux" "$(PLATFORM)"
 LDLIBS += -ldl -lpthread
