@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2017 HörTech gGmbH
+// Copyright © 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,7 @@ public:
 identity_t::identity_t(const algo_comm_t& iac,
 		     const std::string&,
 		     const std::string&)
-    : MHAPlugin::plugin_t<int>("",ac)
+    : MHAPlugin::plugin_t<int>("",iac)
 {
 }
 

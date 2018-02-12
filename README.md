@@ -68,9 +68,14 @@ To install openMHA you have to type "y".
 The authentication issue will be resolved in the future.
 
 After installation, openMHA documentation is found in
-/usr/share/doc/openmha
+    /usr/share/doc/openmha
 and tools for GNU Octave/Matlab here:
-/usr/lib/openmha/mfiles
+    /usr/lib/openmha/mfiles
+
+We provide some examples together with the openMHA source code.
+When using debian packages, you can find the examples in a separate package,
+"openmha-examples". After installing the openmha-examples package, the examples
+can be found in below /usr/share/openmha/examples.
 
 To update openMHA when a new release is available run
 
