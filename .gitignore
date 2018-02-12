@@ -50,8 +50,6 @@ coverage
 # octave specific files
 mha/tools/mfiles/classpath.txt
 
-#
-.DS_Store
 # Local Variables:
 # coding: utf-8-unix
 # End:
