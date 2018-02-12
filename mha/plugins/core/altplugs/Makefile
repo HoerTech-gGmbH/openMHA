@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2016 2017 HörTech gGmbH
+# Copyright © 2014 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -10,17 +10,11 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License, version 3 for more details.
 #
-# You should have received a copy of the GNU Affero General Public License, 
+# You should have received a copy of the GNU Affero General Public License,
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-include ../../../config.mk
-include ../../../magic.mk
-
-SUBDIRS = dc dc_simple rmslevel softclip
-
-include ../../../rules.mk
+include ../../plugin.mk
 
 # Local Variables:
 # compile-command: "make"
-# coding: utf-8-unix
 # End:

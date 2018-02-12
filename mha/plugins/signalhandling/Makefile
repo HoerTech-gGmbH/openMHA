@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = combinechannels analysispath
+SUBDIRS = combinechannels analysispath split
 
 include ../../../rules.mk
 

@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = matrixmixer gain delay iirfilter
+SUBDIRS = matrixmixer gain delay iirfilter fader_spec fader_wave
 
 include ../../../rules.mk
 
