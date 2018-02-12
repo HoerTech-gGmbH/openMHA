@@ -156,20 +156,29 @@ source code. To collect the relevant binaries and libraries execute
 
     make install
 
-If you install openMHA to a non-standard location, you should set the environment variable LD_LIBRARY_PATH to point to your
-lib directory, like this:
+You can set the make variable PREFIX to point to the desired installation
+location. The default installation location is ".", the current directory.
+
+If you install openMHA to a non-standard location, you should set the
+environment variable LD_LIBRARY_PATH to point to your lib directory, like this:
 
     export LD_LIBRARY_PATH=$PREFIX/lib
 
-Please note that on macOS the corresponding environment variable is DYLD_LIBRARY_PATH
+The default prefix is the current working directory.  Please note that on
+macOS, the corresponding environment variable is named DYLD_LIBRARY_PATH.
 
 You can also add the bin directory to the PATH environment variable:
 
     export PATH=$PATH:$PREFIX/bin
 
-Alternatively, the thismha.sh script found in bin/thismha.sh may be sourced.
+Again, note that the default prefix is the current working directory.
 
-After this, you can invoke the MHA command line. Perform a quick test with
+Alternatively to the two settings above, the thismha.sh script found in
+bin/thismha.sh may be sourced to set these variables correctly for the
+current shell.
+
+After this, you can invoke the MHA command line application.
+Perform a quick test with
 
     mha ? cmd=quit
 
