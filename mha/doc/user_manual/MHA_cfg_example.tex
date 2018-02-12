@@ -1,5 +1,5 @@
 %%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
-%%% Copyright © 2017 HörTech gGmbH
+%%% Copyright © 2017 2018 HörTech gGmbH
 %%%
 %%% openMHA is free software: you can redistribute it and/or modify
 %%% it under the terms of the GNU Affero General Public License as published by
@@ -39,7 +39,8 @@ The input signal will be split in two frequency bands, using the \mha{}
 plugins \verb!fftfilterbank!. Only spectral processing is required, thus
 the plugin \verb!overlapadd! will be
 used by the framework. The corresponding configuration file for this
-plugin is \emph{example\_dc\_live.cfg}.
+plugin is \emph{example\_dc.cfg}, which can be found in
+the directory \verb!mha/examples/01-dynamic-compression!.
 
 %\mha{} configuration files usually start with an identification line:
 %\begin{verbatim}
@@ -158,20 +159,23 @@ mha.overlapadd.mhachain.combinechannels.outchannels = 2
 Finally, we specify the input and output audio files to be processed as 
 follows:
 \begin{verbatim}
-io.in = mha/configurations/AudioFiles/1speaker_diffNoise_2ch.wav
-io.out = mha/configurations/AudioFiles/1speaker_diffNoise_2ch_OUT.wav
+io.in = 1speaker_diffNoise_2ch.wav
+io.out = 1speaker_diffNoise_2ch_OUT.wav
 \end{verbatim}
 The configuration we described so far is provided with this release 
-in the file \emph{example\_dc.cfg}. Now that we created a complete \mha{} hearing aid
+in the file \emph{example\_dc.cfg}.
+Now that we created a complete \mha{} hearing aid
 algorithm configuration file, In the next step, we want to start an \mha{}
 framework with this configuration.
 %
-From the terminal, assuming the working directory is the main 
-directory of the \mha{}, all binaries are in the directory \verb!./bin/! 
-and path of \verb!mha! is in the \verb!PATH! environment variable 
-(see \emph{README.md}),  one can write
+In the terminal, change the working directory to the
+\verb!mha/examples/01-dynamic-compression! 
+directory of the \mha{}.
+All binaries of the \verb!mha! should be in the executable search
+\verb!PATH! (environment variable, see \emph{README.md}).
+Then, MHA processing can be started with
 \begin{verbatim}
-mha ?read:mha/configurations/example_dc.cfg cmd=start cmd=quit
+mha ?read:example_dc.cfg cmd=start cmd=quit
 \end{verbatim}
 %
 This will process the file \emph{1speaker\_diffNoise\_2ch.wav} and output 
