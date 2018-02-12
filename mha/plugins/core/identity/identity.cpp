@@ -29,7 +29,7 @@ public:
 identity_t::identity_t(const algo_comm_t& iac,
 		     const std::string&,
 		     const std::string&)
-    : MHAPlugin::plugin_t<int>("",ac)
+    : MHAPlugin::plugin_t<int>("",iac)
 {
 }
 
