@@ -1,7 +1,4 @@
-# A localisation plug-in for the MHA framework.
-Marc Joliet <marc.joliet@uni-oldenburg.de>
-Hendrik Kayser <hendrik.kayser@uni-oldenburg.de>
-Kamil Adiloglu <k.adiloglu@hoertech.de>
+# A localisation plug-in for the openMHA framework.
 
 ## Introduction
 
@@ -16,7 +13,7 @@ on GCC-PHAT (see [0] and [1]).  This is done as a triplet of plug-ins for openMH
 Furthermore, this project contains an assortment of (vaguely) related software,
 namely:
 
-- a Python class for communicating with an MHA instance
+- a Python class for communicating with an openMHA instance
 - an HTML5 based visualisation of the localisation
 
 
@@ -35,9 +32,6 @@ The project is roughly structured as follows:
 
 - The Python class and the HTML5 based visualisation are both in the directory
   `visualisation_web/`.
-
-Finally, there are two top-level scripts, `write_matrices_cfg.m` and
-`start_mha.sh`, which will be explained later.
 
 ## Installation
 
@@ -152,10 +146,10 @@ MATLAB and Octave, and `visualisation_web/connect_to_webapp.py` for Python.
 Both work basically the same way: they return a function (in MATLAB/Octave a
 function *handle*) with which you can send data to the TCP server, along with
 the object that encapsulates the TCP connection.  Additionally, the test file
-`test_tcp_server.m` is provided for MATLAB/Octave, which sends test data to the
-TCP server.  See the documentation in the aforementioned files for more
-information (e.g., `help test_tcp_server`, `pydoc
-visualisation_web/connect_to_webapp.py`).
+`./tools/test_tcp_server.m` is provided for MATLAB/Octave, which sends test
+data to the TCP server. See the documentation in the aforementioned files for
+more information (e.g., `help test_tcp_server`,
+`pydoc visualisation_web/connect_to_webapp.py`).
 
 ### The Visualisation Web Applications
 
