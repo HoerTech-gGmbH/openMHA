@@ -6,8 +6,7 @@ Kamil Adiloglu <k.adiloglu@hoertech.de>
 ## Introduction
 
 This project is at its core an implementation of a localisation algorithm based
-on GCC-PHAT (see [0] and [1]).  This is done as a triplet of plug-ins for the
-[Master Hearing Aid (MHA)](https://hoertech.de/web_en/produkte/mha.shtml):
+on GCC-PHAT (see [0] and [1]).  This is done as a triplet of plug-ins for openMHA.
 
 - feature extraction, i.e., the actual GCC-PHAT computation,
 - classification (linear SVM followed by a sigmoid transform), and
@@ -17,13 +16,9 @@ on GCC-PHAT (see [0] and [1]).  This is done as a triplet of plug-ins for the
 Furthermore, this project contains an assortment of (vaguely) related software,
 namely:
 
-- a reference implementation of the algorithm in Matlab,
-- a Python class for communicating with an MHA instance (analogous to the
-  Matlab interface that is distributed with MHA),
-- an HTML5 based visualisation of the localisation, along with an example
-  MHA configuration, and
-- miscellaneous prototype work (a handful of Matlab scripts and IPython
-  notebooks).
+- a Python class for communicating with an MHA instance
+- an HTML5 based visualisation of the localisation
+
 
 [0] C. Knapp and G. C. Carter, “The generalized correlation method for
 estimation of time delay,” IEEE Transactions on Acoustics, Speech and Signal
@@ -38,35 +33,21 @@ Acoustic Echo and Noise Control (IWAENC 2014), pp. 100 -- 104, Antibes, France,
 
 The project is roughly structured as follows:
 
-- All plug-in source code is located in the `src/` directory, with one
-  subdirectory per plug-in.
-- The Matlab reference implementation by Hendrik Kayser is located in the
-  directory `localisation_matlab/`.
 - The Python class and the HTML5 based visualisation are both in the directory
   `visualisation_web/`.
-- An example MHA configuration (e.g., to be used with the visualisation) lies
-  in the `mha_config/` directory.
-- Some prototyping work written in Python can be found in `ipython_notebooks/`
-  in the form of IPython notebooks (which contain some potentially interesting
-  interactive demos).  The Matlab visualisation prototypes reside in
-  `visualisation_prototypes/`.
 
 Finally, there are two top-level scripts, `write_matrices_cfg.m` and
 `start_mha.sh`, which will be explained later.
 
 ## Installation
 
-The preferred way of installing this project is, naturally, "The Easy Way".  If
-you need (or want) to compile the MHA plug-ins yourself, check "Manually
-Compiling the MHA Plug-Ins".  If you cannot use conda for some reason, see
-"Getting the Python Dependencies Without Conda".
+The preferred way of installing this project is, naturally, "The Easy Way".
+If you cannot use conda for some reason, see "Getting the Python Dependencies 
+Without Conda".
 
 ### The Easy Way
 
-<!-- TODO: starting with which version? -->
-You will, of course, require an MHA installation.  Assuming you have a recent
-version (released in 2015 or later), it will already contain the required
-plug-ins.
+You will, of course, require an openMHA installation.
 
 The next step is installing the dependencies of the visualisation itself.  The
 recommended way is to use [conda](http://conda.pydata.org/docs/).  For this
@@ -95,40 +76,6 @@ browser should work.  Note that newer browsers should generally yield better
 performance (see for example Mozilla's Servo project for what future browsers
 will most likely look like) and should thus be given preference.
 
-### Manually Compiling the MHA Plug-Ins
-
-In order to compile the plug-ins yourself, you may use the SCons based build
-system included in this repository, for which the following will additionally
-be required:
-
-- a C++ compiler (tested with GCC and clang), and
-- [SCons](http://www.scons.org) (tested with SCons 2.3.x).
-
-Note that the compiler must be compatible with the version of MHA you have
-installed.  For this purpose the file name of the MHA ZIP distribution contains
-the name and version of the compiler it was compiled with.  It should be enough
-to have a compiler that has a compatible C++ ABI, however, when in doubt, use
-the same version.
-
-Once you have everything up and running, you run a command like the following
-to build the plug-ins:
-
-    scons MHA_PATH=/path/to/MHA
-
-You can also pass `CC` and `CXX` to change the compiler, and `debug` to do a
-debug build.  Builds are done out-of-source in `build-release/` and
-`build-debug/`, depending on the value of the `debug` option.  Note that this
-build system uses a variable caching mechanism, so you generally only need to
-set variables once.  Once the plug-ins have compiled, you may run
-
-    scons install DESTDIR=/install/path
-
-to install the resulting plug-ins into a single directory (by default
-`plugins/`).  If the directory does not exist, it will be created for you.
-
-See the output of `scons --help` and `scons --help-options` for more
-information.
-
 ### Getting the Python Dependencies Without Conda
 
 If you cannot use conda, or do not want to, then you must install the following
@@ -141,35 +88,8 @@ packages (e.g., with `pip` or the system package manager):
 
 ## Users Guide
 
-Once you have successfully installed the plug-ins, you can get to the
-interesting part: running the plug-ins.
-
-If you just want to try out the visualisation, you can simply run the
-`start_mha.sh` script and/or skip to the section "Launching the Visualisation",
-otherwise continue normally.  Note that this script expects the plug-ins to be
-located in `plugins/` by default (which is the default installation path of the
-SCons build system), though you can override this behaviour with the `-p`
-option.  See the output of `start_mha.sh -h` for (slightly) more info.
-
-This guide is structured as follows:  the first two sections are devoted to
-actually starting the software, the first of which can be skipped if you wish
-to feed your own data into the visualisation.  After that, the general
-structure of the visualisation will be explained, followed by a description of
-the Python servers.
-
-### Launching MHA
-
-Since you are expected to already know how to configure and run MHA prior to
-getting these plug-ins running, please refer to their built-in documentation.
-Hint: use the `?allvars` MHA command to list all variables, which will also
-show their documentation. (Since MHA plug-ins are in general self-documenting,
-explaining the plug-in variables here would be rather redundant.)
-
-The one thing that must be noted is that the file `mha_config/matrices.cfg` is
-generated from the model data in the file `localisation_matlab/modelData.mat`
-by the script `write_matrices_cfg.m`.  If you make any changes to the model
-data, you must re-run the script first in order for the MHA plug-ins to use
-them. (If you have any questions on the model data itself, ask Hendrik).
+The general structure of the visualisation will be explained, followed by a
+description of the Python servers.
 
 ### Launching the Visualisation
 
@@ -460,11 +380,9 @@ server will return a "file not found" error and nothing will happen.
 #### Security Concerns
 
 The web applications and Python servers are very much *not* designed with
-security in mind.  Despite best efforts to handle all error cases, the authors
-are *not* security experts (web or otherwise).  Thus, the HTTP and WebSocket
-servers only listen on localhost by default.  If you want to make them
-accessible within a network, it is *strongly* recommended to make sure that
-they cannot be reached from the internet.
+security in mind. Thus, the HTTP and WebSocket servers only listen on localhost
+by default.  If you want to make them accessible within a network, it is
+*strongly* recommended to make sure that they cannot be reached from the internet.
 
 Note that the TCP server *only* listens on localhost, since it may receive
 arbitrary data and is thus a gaping security hole.  Running it on a different
