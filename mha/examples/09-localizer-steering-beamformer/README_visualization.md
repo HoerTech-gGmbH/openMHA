@@ -52,9 +52,9 @@ By executing the commands
     source activate doasvm_demo  # Linux
     activate doasvm_demo         # Windows
 
-in the top-level directory of this repository, a conda environment that is
-identical to the one used to develop and test this project will be created and
-activated.
+in the directory where this README_visualization.md file is located.
+A conda environment that is identical to the one used to develop and
+test this project will be created and activated.
 
 If you wish to send data to the TCP server (see "Structure of the
 Visualisation" below) from within MATLAB, you will additionally require the
@@ -67,8 +67,7 @@ importantly — *WebSocket* support.  See
 [here](http://caniuse.com/#feat=websockets) for a list of browsers that
 *should* work.  The visualisation was tested with Firefox, but any modern
 browser should work.  Note that newer browsers should generally yield better
-performance (see for example Mozilla's Servo project for what future browsers
-will most likely look like) and should thus be given preference.
+performance and should thus be given preference.
 
 ### Getting the Python Dependencies Without Conda
 
@@ -108,7 +107,7 @@ exists in two variants), and a set of web applications that run in a browser.
 The web applications are written in HTML 5 and JavaScript.  Each of them
 displays a live webcam feed and show a plot on top of it (except for the polar
 plot, which lacks the webcam feed).  The plotting itself — which is implemented
-using the excellent [D3](http://d3js.org) JavaScript library — takes up most of
+using the [D3](http://d3js.org) JavaScript library — takes up most of
 the code.  The data it displays is retrieved from either of the Python servers
 over a WebSocket in the form of plain JSON (i.e., the data is sent as a string,
 as opposed to being serialised and transferred as binary data).
@@ -153,7 +152,7 @@ more information (e.g., `help test_tcp_server`,
 
 ### The Visualisation Web Applications
 
-The user facing part of the visualisation is (obviously) the web application.
+The user facing part of the visualisation is the web application.
 It consists of three components: a live webcam feed, a real-time plot, and
 various user input elements.
 
@@ -373,13 +372,13 @@ server will return a "file not found" error and nothing will happen.
 
 #### Security Concerns
 
-The web applications and Python servers are very much *not* designed with
+The web applications and Python servers are *not* designed with
 security in mind. Thus, the HTTP and WebSocket servers only listen on localhost
 by default.  If you want to make them accessible within a network, it is
 *strongly* recommended to make sure that they cannot be reached from the internet.
 
 Note that the TCP server *only* listens on localhost, since it may receive
-arbitrary data and is thus a gaping security hole.  Running it on a different
+arbitrary data and is thus a security hole.  Running it on a different
 host than the one that sends it data is *not* supported.
 
 #### Usability Notes
