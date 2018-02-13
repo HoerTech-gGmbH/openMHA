@@ -51,6 +51,9 @@ addpath ([working_dir 'tools/mfiles/']);
 % MHA binaries path
 mhapath = [working_dir '../bin/'];
 
+% MHA libraries path
+mha_lib_path = [working_dir '../lib/'];
+
 % MHA binaries path
 mha_config_path=[working_dir 'configurations/'];
 
@@ -59,7 +62,7 @@ javaaddpath( [working_dir 'tools/mfiles/mhactl_java.jar'] );
 
 % define environment
 setenv('MHA_INSTALL_DIR', mhapath );
-setenv('LD_LIBRARY_PATH',[mhapath] );
+setenv('LD_LIBRARY_PATH',[mha_lib_path] );
 setenv('MHA_CONFIG_PATH', mha_config_path);
 
 if isoctave
@@ -150,7 +153,7 @@ vMSG = zeros(lenX,1);
 
 %1. to start MHA from Matlab
 mha = mha_start;
-mha_query(mha,'','read:${MHA_CONFIG_PATH}example_afc.cfg' );
+mha_query(mha,'','read:example_afc.cfg' );
 
 
 %get the length of the delay
