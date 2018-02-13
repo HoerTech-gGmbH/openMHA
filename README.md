@@ -18,6 +18,7 @@ plugins forming a basic hearing aid processing chain featuring
 - simple upsampling and downsampling plugins
 - STFT cyclic aliasing prevention
 - adaptive feedback cancellation [6]
+- probabilistic sound source localization [7]
 
 ## Citation in publications
 
@@ -249,3 +250,8 @@ Processing. 2012;20(4):1383–1393.
 min-max estimation of the common part of acoustic feedback paths in
 hearing aids. IEEE Transactions on Audio, Speech, and Language
 Processing. 2016;24(2):366-377.
+
+[7] Kayser H, Anemüller J, A discriminative learning approach to 
+probabilistic acoustic source localization. In: International Workshop
+on Acoustic Echo and Noise Control (IWAENC 2014); 2014. p. 100–104.
+
