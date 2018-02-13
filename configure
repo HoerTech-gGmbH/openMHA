@@ -16,11 +16,32 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 (
+    PREFIX="./"
+for arg in "$@"; do
+    case "$arg" in
+    --prefix=*)
+        PREFIX=`echo $arg | sed 's/--prefix=//'`
+        ;;
+
+    --debug)
+        DEBUG="-g";;
+
+    --help)
+        echo 'usage: ./configure [options]'
+        echo 'options:'
+        echo '  --prefix=<path>: installation prefix'
+        echo '  --debug : include debug symbols'
+        echo 'all invalid options are silently ignored'
+        exit 0
+        ;;
+    esac
+done
+
     ARCH=`uname -m`
     echo ARCH=$ARCH
 
-    PLATFORM=`uname -s`
-    case $PLATFORM in
+
+    case `uname -s` in
         *Linux*)
             PLATFORM=linux
             echo PLATFORM=linux
@@ -29,15 +50,7 @@
             echo GCC_VER=${GCC_VER}
             echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
             ;;
-        *Cygwin*)
-            PLATFORM=MinGW
-            echo PLATFORM=MinGW
-            echo DYNAMIC_LIB_EXT=".dll"
-            GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
-            echo GCC_VER=${GCC_VER}
-            echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
-            ;;
-        Msys)
+        *Cygwin* | *Msys* | *MinGW* | *MINGW* )
             PLATFORM=MinGW
             echo PLATFORM=MinGW
             echo DYNAMIC_LIB_EXT=".dll"
@@ -46,18 +59,19 @@
             echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
             ;;
         Darwin)
+            PLATFORM=Darwin
             echo PLATFORM=Darwin
             echo DYNAMIC_LIB_EXT=".dylib"
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
             echo 'CXXFLAGS+=-Wno-error=unused-command-line-argument'
             echo TOOLSET=clang
             echo WITH_JACK=yes
-            MACLDLIBS+=-L/opt/local/lib
+            echo LDLIBS+='-L/opt/local/lib'
             MACCXXFLAGS+=-I/opt/local/include
     esac
     
-    echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
-    uname -m|grep -q -e "x86_64" && (echo "CFLAGS+=-fPIC";echo "CXXFLAGS+=-fPIC")
+    #echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
+    echo PREFIX=$PREFIX
     pkg-config alsa && (echo "WITH_ALSA=yes")
     pkg-config jack && (echo "WITH_JACK=yes")
     if [ "x$PLATFORM" = "xMinGW" ]
@@ -75,9 +89,8 @@
             ;;
     esac
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
-    echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM)' ${MACCXXFLAGS}
-    echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM)' ${MACCXXFLAGS}
-    echo 'LDLIBS+='${MACLDLIBS}
+    echo 'CXXFLAGS+=-Wall -Werror -std=c++11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
+    echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     if [ "x$(which octave)" = "x" ]
     then
 	      if [ "x$(which matlab)" = "x" ]

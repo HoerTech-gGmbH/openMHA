@@ -1,0 +1,55 @@
+body {
+    font: 16px sans-serif;
+    text-align: center;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.axis path {
+    stroke: none;
+}
+
+.axis .minor {
+    stroke-width: 1px;
+}
+
+[class="z axis"] line,
+[class="z axis"] path {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.line {
+    fill: white;
+    fill-opacity: 0.2;
+    stroke: steelblue;
+    stroke-width: 4.0px;
+}
+
+#video-container {
+    position: relative;
+    height: 320px;
+    overflow-y: hidden;
+    z-index: 0;
+}
+
+video {
+    margin-top: -200px;
+}
+
+#d3plot {
+    position: relative;
+    margin-top: -250px;
+    margin-left: -38px;
+    z-index: 1;
+}
+
+text {
+    text-anchor: end;
+}

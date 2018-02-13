@@ -224,7 +224,7 @@ std::string mhaserver_t::received_group(const std::string& cmd)
 " --lockstr=str | -l str    create a port lockfile with content 'str'\n"\
 
 #define GREETING_TEXT \
-"The Open Master Hearing Aid (openMHA) server\n"\
+"The Open Master Hearing Aid (openMHA) server version " MHA_RELEASE_VERSION_STRING "\n"\
 "Copyright (c) 2005-2017 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
 "\n\n"\
 "This program comes with ABSOLUTELY NO WARRANTY; "\
