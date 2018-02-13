@@ -36,6 +36,7 @@ SUBDIRS = \
 	generator \
 	lti \
 	analysis \
+	directional \
 
 include ../../rules.mk
 
