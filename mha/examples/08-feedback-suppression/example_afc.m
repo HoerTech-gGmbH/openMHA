@@ -35,7 +35,7 @@ if isoctave
   pkg load signal;
 end
  %% signal settings
-[vX,fs] = audioread('../../configurations/AudioFiles/male_long.wav');
+[vX,fs] = audioread('male_long.wav');
 vX = vX./sqrt(mean(vX.^2))*10^(-20/20);
 lenX=length(vX);
 

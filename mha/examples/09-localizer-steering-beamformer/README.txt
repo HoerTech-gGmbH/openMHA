@@ -1,7 +1,7 @@
-This directory contains an MHA setup which estimates the direction of
+This directory contains an openMHA setup which estimates the direction of
 arrival of sounds captured with 4 hearing aid microphones, and
-which then controls a beamformer algorithm to steer to the most
-coherent sound source.
+which then controls a beamformer algorithm to steer to the most likely
+direction of a localized (coherent) sound source.
 
 In addition to the signal processing, a browser-based visualization
 of the direction-of-arrival estimation can be started.
