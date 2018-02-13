@@ -54,16 +54,12 @@ mhapath = [working_dir '../bin/'];
 % MHA libraries path
 mha_lib_path = [working_dir '../lib/'];
 
-% MHA binaries path
-mha_config_path=[working_dir 'configurations/'];
-
 % java path
 javaaddpath( [working_dir 'tools/mfiles/mhactl_java.jar'] );
 
 % define environment
 setenv('MHA_INSTALL_DIR', mhapath );
 setenv('LD_LIBRARY_PATH',[mha_lib_path] );
-setenv('MHA_CONFIG_PATH', mha_config_path);
 
 if isoctave
   pkg load signal;
@@ -130,7 +126,7 @@ vG = [zeros(dG,1); G];  % forward path
 Lg = length(vG);        % length of forward path
 
 % Load input signal
-[vX,fs] = audioread('../../configurations/AudioFiles/male_long.wav');
+[vX,fs] = audioread('male_long.wav');
 vX = single(vX./sqrt(mean(vX.^2))*10^(-20/20));
 lenX = 80*fs;     % length of input signal
 ff=single(fir1(64,.01,'high')); % high-pass filtering of signal, recommended by Sven E. Nordholm
