@@ -45,7 +45,7 @@
 #define MHA_VERSION_MINOR 5
 
 /** Release number of MHA */
-#define MHA_VERSION_RELEASE 4
+#define MHA_VERSION_RELEASE 5
 
 /** Build number of MHA (currently unused) */
 #define MHA_VERSION_BUILD 0

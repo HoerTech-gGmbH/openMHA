@@ -44,12 +44,19 @@ coverage
 *.gcda
 *.gcno
 *.pyc
+
+# Apple-specific
+.DS_Store
+
 # octave specific files
 mha/tools/mfiles/classpath.txt
 
 # python cache
 mha/examples/09-localizer-steering-beamformer/visualisation_web/__pycache__
 mha/examples/09-localizer-steering-beamformer/Output/*
+
+# from patching
+*.rej
 
 # Local Variables:
 # coding: utf-8-unix

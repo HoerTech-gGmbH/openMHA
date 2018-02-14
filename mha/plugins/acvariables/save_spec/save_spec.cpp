@@ -42,6 +42,8 @@ MHAPLUGIN_CALLBACKS(save_spec,save_spec_t,spec,spec)
     MHAPLUGIN_DOCUMENTATION(save_spec,"AC-variables","")
 
 // Local Variables:
-// compile-command: "make -C ../../.."
+// compile-command: "make"
 // c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
 // End:

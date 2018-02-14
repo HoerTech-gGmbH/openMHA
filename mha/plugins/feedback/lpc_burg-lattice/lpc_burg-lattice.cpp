@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2016 2017 HörTech gGmbH
+// Copyright © 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -182,3 +182,10 @@ MHAPLUGIN_DOCUMENTATION(lpc_burg-lattice,
         "\\end{eqnarray}\n"
         "Note that the previous estimate of $\\kappa$, which is given by $\\kappa(m,2)$ is saved in the AC space."
         )
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

@@ -1,5 +1,22 @@
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// Copyright © 2014 2015 2016 2018 HörTech gGmbH
+//
+// openMHA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, version 3 of the License.
+//
+// openMHA is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License, version 3 for more details.
+//
+// You should have received a copy of the GNU Affero General Public License, 
+// version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
 /*
- * This plugin computes the GCC-PHAT given the stereo time domain signal, which is forwarded to the next plugin in the chain unaltered.
+ * This plugin computes the GCC-PHAT given the stereo time domain
+ * signal, which is forwarded to the next plugin in the chain
+ * unaltered.
  */
 
 #include "doasvm_feature_extraction.h"
@@ -202,3 +219,9 @@ MHAPLUGIN_DOCUMENTATION(doasvm_feature_extraction,
         "This plugin computes the generalized cross correlation with phase transform (GCC-PHAT). The input to this plugin is a stereo time domain signal. The GCC-PHAT matrix is saved into the AC space."
         )
 
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

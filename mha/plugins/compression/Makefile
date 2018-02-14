@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = dc dc_simple rmslevel
+SUBDIRS = dc dc_simple rmslevel softclip
 
 include ../../../rules.mk
 

@@ -153,3 +153,10 @@ MHAPLUGIN_DOCUMENTATION(acConcat_wave,
         "AC-variables",
         "This plugin concatenates two or more waveforms in the given order into a new waveform all living in the AC space."
         )
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:
