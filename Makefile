@@ -34,14 +34,8 @@ MODULES = \
 
 DOCMODULES = \
 	mha/doc/flowcharts \
-        mha/doc/images \
+  mha/doc/images \
 	mha/doc \
-
-EXECUTABLES= \
-	analysemhaplugin \
-	browsemhaplugins \
-	generatemhaplugindoc \
-	mha
 
 all: $(MODULES)
 
@@ -62,15 +56,17 @@ clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
 install: all
-	@mkdir -p bin
-	@mkdir -p lib
-	@find ./external_libs/ ./mha/ -name *$(DYNAMIC_LIB_EXT) -exec cp {} lib/. \;
-	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -exec cp {} bin/. \;
-	@cp mha/tools/mha.sh bin/.
+	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
+	@mkdir -p  $(DESTDIR)$(PREFIX)/lib
+	@find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \;
+	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \;
+	@cp mha/tools/thismha.sh $(DESTDIR)$(PREFIX)/bin/.
 
 uninstall:
-	@rm -rf bin
-	@rm -rf lib
+
+	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(DESTDIR)$(PREFIX)/lib/{} \;)
+	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(DESTDIR)$(PREFIX)/bin/{} \;)
+	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
 
 
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)

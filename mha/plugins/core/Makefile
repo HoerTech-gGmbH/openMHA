@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = route mhachain
+SUBDIRS = route mhachain identity
 
 include ../../../rules.mk
 

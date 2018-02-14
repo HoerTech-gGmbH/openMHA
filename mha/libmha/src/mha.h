@@ -45,7 +45,7 @@
 #define MHA_VERSION_MINOR 5
 
 /** Release number of MHA */
-#define MHA_VERSION_RELEASE 3
+#define MHA_VERSION_RELEASE 4
 
 /** Build number of MHA (currently unused) */
 #define MHA_VERSION_BUILD 0
@@ -59,6 +59,9 @@
 
 /** Version string of MHA kernel (major.minor) */
 #define MHA_VERSION_STRING MHA_XSTRF(MHA_VERSION_MAJOR) "." MHA_XSTRF(MHA_VERSION_MINOR)
+
+/** Version string of MHA kernel (major.minor.release) */
+#define MHA_RELEASE_VERSION_STRING MHA_XSTRF(MHA_VERSION_MAJOR) "." MHA_XSTRF(MHA_VERSION_MINOR) "." MHA_XSTRF(MHA_VERSION_RELEASE)
 
 /*****************************************************************************/
 /*                                                                           */

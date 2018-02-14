@@ -16,6 +16,27 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 (
+    PREFIX="./"
+for arg in "$@"; do
+    case "$arg" in
+    --prefix=*)
+        PREFIX=`echo $arg | sed 's/--prefix=//'`
+        ;;
+
+    --debug)
+        DEBUG="-g";;
+
+    --help)
+        echo 'usage: ./configure [options]'
+        echo 'options:'
+        echo '  --prefix=<path>: installation prefix'
+        echo '  --debug : include debug symbols'
+        echo 'all invalid options are silently ignored'
+        exit 0
+        ;;
+    esac
+done
+
     ARCH=`uname -m`
     echo ARCH=$ARCH
 
@@ -49,8 +70,8 @@
             MACCXXFLAGS+=-I/opt/local/include
     esac
     
-    echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
-    uname -m|grep -q -e "x86_64" && (echo "CFLAGS+=-fPIC";echo "CXXFLAGS+=-fPIC")
+    #echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
+    echo PREFIX=$PREFIX
     pkg-config alsa && (echo "WITH_ALSA=yes")
     pkg-config jack && (echo "WITH_JACK=yes")
     if [ "x$PLATFORM" = "xMinGW" ]
@@ -68,8 +89,8 @@
             ;;
     esac
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
-    echo 'CXXFLAGS+=-Wall -Werror -std=c++11 $(OPTIM)' ${MACCXXFLAGS}
-    echo 'CFLAGS+=-Wall -Werror -std=gnu11 $(OPTIM)' ${MACCXXFLAGS}
+    echo 'CXXFLAGS+=-Wall -Werror -std=c++11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
+    echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     if [ "x$(which octave)" = "x" ]
     then
 	      if [ "x$(which matlab)" = "x" ]
