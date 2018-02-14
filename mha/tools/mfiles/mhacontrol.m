@@ -52,9 +52,9 @@ function mhacontrol( hostname, port, b_wait_fh, advanced_callback )
     mha_get_basic_cfg_network( mha );
     %waitbar(0.25,hsplash);
     set(wbh,'XData',[0,0.25]);drawnow;
-    if isfield(mha_basic_cfg.base,'transducers')
-      mhagui_calibration_dialog( 'upload', mha );
-    end
+    %if isfield(mha_basic_cfg.base,'transducers')
+    %  mhagui_calibration_dialog( 'upload', mha );
+    %end
     set(wbh,'XData',[0,0.5]);drawnow;
     %waitbar(0.75,hsplash);
     if isfield(mha_basic_cfg.base,'MHAIOJack')
