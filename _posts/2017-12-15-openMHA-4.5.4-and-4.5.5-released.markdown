@@ -1,0 +1,16 @@
+---
+layout: post
+title:  "openMHA 4.5.4 and 4.5.5 released"
+date:   2018-02-14 08:00:00
+category: software
+tags: [release, 4.5.4, 4.5.5]
+---
+
+In release 4.5.4 openMHA is extended with a set of plugins that implement a probabilistic sound source localization algorithm. The method applies machine learning techniques and provides the probability of sound source presence for a given set of directions the underlying model has been trained on.
+
+A live example that demonstrates automatically controlled spatial filtering with a 4-channel binaural hearing aid setup is provided: The beamformer, which was previously available in openMHA, is steered based on sound source probability. A web-browser based visualization tool of the localizer's output is also included. This demonstrator was developed at University of Oldenburg in the [Research Unit FOR1732 "Individualized Hearing Acoustics"](https://www.uni-oldenburg.de/en/for-1732/).
+Furthermore the set of plugins for signal handling was extended - amongst others an all-purpose resampling plugin providing enhanced resampling functionality and quality was added.
+
+Changes in release 4.5.5 are related to a fix in the calibration settings of the mhacontrol tool for Octave/Matlab following user requests ([Github issue #4](https://github.com/HoerTech-gGmbH/openMHA/issues/4)).
+
+See [Download](/download) for details.
