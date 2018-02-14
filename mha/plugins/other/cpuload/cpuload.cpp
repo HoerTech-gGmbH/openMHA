@@ -82,3 +82,10 @@ void cpuload_t::prepare(mhaconfig_t& cf)
 
 MHAPLUGIN_CALLBACKS(cpuload,cpuload_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(cpuload,cpuload_t,wave,wave)
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 2
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

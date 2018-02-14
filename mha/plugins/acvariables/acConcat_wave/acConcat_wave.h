@@ -71,3 +71,10 @@ private:
 };
 
 #endif // ACCONCAT_WAVE_H
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

@@ -211,3 +211,10 @@ void interface_t::prepare(mhaconfig_t& cf)
 }
 
 MHAPLUGIN_CALLBACKS(noisePowProposedScale,noisePowProposedScale::interface_t,spec,spec)
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

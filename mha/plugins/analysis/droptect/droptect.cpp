@@ -185,3 +185,10 @@ mha_spec_t * droptect_t::process(mha_spec_t * signal)
 
 MHAPLUGIN_CALLBACKS(droptect,droptect_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION(droptect,"analysis","")
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

@@ -120,7 +120,9 @@ void fader_if_t::update_cfg(void)
 
 MHAPLUGIN_CALLBACKS(fader_spec,fader_if_t,spec,spec)
 
-
-// Local variables:
-// compile-command: "make -C ../../linux install"
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
 // End:

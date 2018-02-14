@@ -107,5 +107,8 @@ MHAPLUGIN_CALLBACKS(softclip,softclip_t,wave,wave)
     MHAPLUGIN_DOCUMENTATION(softclip,"level","")
 
 // Local Variables:
-// compile-command: "make -C ../../linux install"
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
 // End:

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2013 2014 2015 2016 HörTech gGmbH
+// Copyright © 2013 2014 2015 2016 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -1199,7 +1199,7 @@ MHAPLUGIN_DOCUMENTATION(split,"signalflow",
 )
 
 // Local Variables:
-// compile-command: "make -C ../../.. mhaplugins"
+// compile-command: "make"
 // c-basic-offset: 4
 // indent-tabs-mode: nil
 // End:

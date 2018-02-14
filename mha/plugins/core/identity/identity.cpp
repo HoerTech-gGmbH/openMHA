@@ -64,4 +64,6 @@ MHAPLUGIN_DOCUMENTATION(identity,
 // Local variables:
 // compile-command: "make"
 // c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
 // End:

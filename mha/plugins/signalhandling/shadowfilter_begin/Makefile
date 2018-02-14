@@ -17,4 +17,5 @@ include ../../plugin.mk
 
 # Local Variables:
 # compile-command: "make"
+# coding: utf-8-unix
 # End:
