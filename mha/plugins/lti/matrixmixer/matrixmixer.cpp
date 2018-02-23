@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2010 2012 2013 2014 2015 2017 HörTech gGmbH
+// Copyright © 2005 2006 2010 2012 2013 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -10,7 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License, version 3 for more details.
 //
-// You should have received a copy of the GNU Affero General Public License, 
+// You should have received a copy of the GNU Affero General Public License,
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mha_plugin.hh"
@@ -54,8 +54,13 @@ private:
 matmix_t::matmix_t(const algo_comm_t& iac,
                    const std::string&,
                    const std::string&)
-    : MHAPlugin::plugin_t<cfg_t>("Matrix mixer",iac),
-      mixer("mixer matrix, one row vector for each output channel","[[1 0];[0 1]]"),
+    : MHAPlugin::plugin_t<cfg_t>("Matrix mixer plugin, can mix all input"
+                                 " channels into\n"
+                                 "any number of output channels"
+                                 " with configurable weights.",iac),
+      mixer("Mixer matrix, one row vector for each output channel.\n"
+            "The number of columns must match the number of input channels.",
+            "[[1 0];[0 1]]"),
       ci(0),
       co(0)
 {
@@ -176,7 +181,57 @@ void matmix_t::update_m(void)
 
 MHAPLUGIN_CALLBACKS(matrixmixer,matrixmixer::matmix_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(matrixmixer,matrixmixer::matmix_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow","")
+MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow",
+"The \\texttt{matrixmixer} plugin can combine the signal from multiple input "
+"channels into any number of output channels, with defined mixing weights."
+"\n\n"
+"Example: To combine the two channels of a stereo signal into a single (mono) "
+"channel, configure the \\texttt{matrixmixer} plugin variable \\texttt{m} as"
+"\n\n"
+"\\verb|m = [[1.0 1.0]]|"
+"\n\n"
+"which sets causes the first and the second channel to be multiplied with a "
+"weight of 1 before they are mixed (by adding them together) to form a "
+"single output channel."
+"\n\n"
+"It is also possible to mix the channels with weights different from 1:"
+"\n\n"
+"\\verb|m = [[1 0.5]]|"
+"\n\n"
+"This attenuates the second channel by multiplying all samples in that channel "
+"with 0.5 before mixing it with the first channel.  "
+"The configuration variable \\texttt{m} expects a matrix of float values.  "
+"The examples above showed a matrix with only one row, which resulted in only "
+"one output channel being produced by the \\texttt{matrixmixer} plugin. "
+"To produce more output channels, more rows can be specified for matrix "
+"\\texttt{m}:"
+"\n\n"
+"\\verb|m = [[1 0];[0 1]]|"
+"\n\n"
+"This is the identity matrix for two channels. "
+"This matrix does not change the signal. "
+"The following setting would swap the first two channels:"
+"\n\n"
+"\\verb|m = [[0 1];[1 0]]|"
+"\n\n"
+"The next setting would create a 4-channel signal output from a stereo signal, "
+"where the first two channels are the original stereo channels, the third is "
+"the sum of the two stereo channels, and the fourth output channel is the "
+"difference of the two stereo channels:"
+"\n\n"
+"\\verb|m = [[0 1];[1 0];[1 1];[1 -1]]|"
+"\n\n"
+"The following example would duplicate a single input channel to two output"
+" channels:"
+"\n\n"
+"\\verb|m = [[1];[1]]|"
+"\n\n"
+"To summarize and generalize, you need to configure the variable \\texttt{m} "
+"with a matrix with float values. "
+"The matrix needs to have as many columns as the \\texttt{matrixmixer} "
+"receives input channels, and as many rows as you want \\texttt{matrixmixer} "
+"to produce output channels."
+)
 
 // Local Variables:
 // compile-command: "make"
