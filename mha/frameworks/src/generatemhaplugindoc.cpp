@@ -70,6 +70,12 @@ latex_doc_t::latex_doc_t(const std::string& plugname_,const std::string& plugin_
 
 std::string latex_doc_t::get_latex_doc()
 {
+    std::string plugin_subsection_macro = "\\paragraph";
+    if (plugin_macro == "\\subsection")
+        plugin_subsection_macro = "\\subsubsection";
+    if (plugin_macro == "\\section")
+        plugin_subsection_macro = "\\subsection";
+    
     std::string retv("");
     retv += "\\" + plugin_macro + "{" + latex_plugname + "}\n\\label{plug:" + plugname + "}\n\n";
     retv += "\\index{" + latex_plugname + " (MHA plugin)}\n";
