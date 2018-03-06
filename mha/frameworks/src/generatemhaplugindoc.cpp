@@ -90,7 +90,7 @@ std::string latex_doc_t::get_latex_doc()
     if( detailed_doc.size() )
         retv += "\\paragraph{Detailed description}\n\n" + loader.get_documentation() + "\n\n";
     retv += "\\paragraph{Supported domains}\n\nThe MHA plugin {\\tt " 
-        + latex_plugname + "} supportes these signal domains:\n\\begin{itemize}\n";
+        + latex_plugname + "} supports these signal domains:\n\\begin{itemize}\n";
     mha_domain_t indom, outdom;
     unsigned int n_domains(0);
     for( indom = 0; indom < MHA_DOMAIN_MAX; indom++ ) 
