@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 HörTech gGmbH
+// Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -301,7 +301,7 @@ MHAPLUGIN_DOCUMENTATION(overlapadd,"overlapadd",
             "impulse response of the filter (represented by all algorithms between\n"
             "FFT and inverse FFT) is shorter than the zero padding length.  The\n"
             "windowing in both stages of the overlap-add mechanism is plotted in\n"
-            "Fig.\\ \\ref{fig:overlapadd} for $M=2P$ (50\% overlap).\n"
+            "Fig.\\ \\ref{fig:overlapadd} for $M=2P$ (50\\% overlap).\n"
             "\n"
             "The total delay between input and output of a real-time system with\n"
             "fragment size $P$ and an overlap-add based linear-phase filter, is the\n"

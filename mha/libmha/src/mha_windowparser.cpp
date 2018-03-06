@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2007 2013 2016 HörTech gGmbH
+// Copyright © 2007 2013 2016 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -38,6 +38,8 @@ MHAWindow::base_t MHAParser::window_t::get_window(unsigned int len) const
     MHAParser::window_t::wtype_t wt(get_type());
     MHAWindow::fun_t w(len,wnd_funs[wt]);
     if( wt == MHAParser::window_t::wnd_user ){
+        // a user window is initialized with all ones (rectangle).
+        // We can replace the ones by applying the window to the ones.
         MHAWindow::user_t user_wnd(user.data);
         user_wnd(w);
     }
