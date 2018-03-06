@@ -1,5 +1,5 @@
 {
-  "phabricator.uri" : "https://dev.openmha.org"
-,
-  "arc.land.onto.default" : "development"
+  "phabricator.uri" : "https://dev.openmha.org",
+  "arc.land.onto.default" : "development",
+  "repository.callsign" : "OMD"
 }
