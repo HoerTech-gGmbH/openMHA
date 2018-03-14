@@ -181,7 +181,7 @@ void matmix_t::update_m(void)
 
 MHAPLUGIN_CALLBACKS(matrixmixer,matrixmixer::matmix_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(matrixmixer,matrixmixer::matmix_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow",
+MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow mixing panning",
 "The \\texttt{matrixmixer} plugin can combine the signal from multiple input "
 "channels into any number of output channels, with defined mixing weights."
 "\n\n"
@@ -190,7 +190,7 @@ MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow",
 "\n\n"
 "\\verb|m = [[1.0 1.0]]|"
 "\n\n"
-"which sets causes the first and the second channel to be multiplied with a "
+"which causes the first and the second channel to be multiplied with a "
 "weight of 1 before they are mixed (by adding them together) to form a "
 "single output channel."
 "\n\n"
@@ -231,6 +231,9 @@ MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow",
 "The matrix needs to have as many columns as the \\texttt{matrixmixer} "
 "receives input channels, and as many rows as you want \\texttt{matrixmixer} "
 "to produce output channels."
+"\n\n"
+""
+                        
 )
 
 // Local Variables:
