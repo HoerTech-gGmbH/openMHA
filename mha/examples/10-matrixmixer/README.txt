@@ -20,5 +20,7 @@ the comments in the config file for more information.
 
 example-karaoke-filter.cfg
 
-example-karaoke-filter demonstrates a simple karaoke filter that
-removes the voice from some stereo music recordings.
+example-karaoke-filter demonstrates a simple karaoke filter that can
+remove the voice from some stereo music recordings. Refer to the
+comments in the config file for more information.  The comments also
+contains an exercises at the bottom of the file.

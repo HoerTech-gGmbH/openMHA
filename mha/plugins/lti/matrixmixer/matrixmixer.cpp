@@ -232,8 +232,10 @@ MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow mixing panning",
 "receives input channels, and as many rows as you want \\texttt{matrixmixer} "
 "to produce output channels."
 "\n\n"
-""
-                        
+"Example configurations and example input files are contained in the "
+"matrixmixer examples directory.  "
+"Please refer to the README file in this directory for an explanation of "
+"the different examples."
 )
 
 // Local Variables:
