@@ -486,6 +486,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
     \brief C++ wrapper macro for the plugin interface
 
+    \param prefix internal parameter to avoid name clashes in static plugins
     \param classname The name of the plugin class
     \param indom Input domain (\c wave or \c spec)
     \param outdom Output domain (\c wave or \c spec)
@@ -525,6 +526,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
     \brief Wrapper macro for the plugin documentation interface
 
+    \param prefix internal parameter to avoid name clashes in static plugins
     \param cat Space separated list of categories to which belong the plugin (as const char*)
     \param doc Documentation of the plugin (as const char*)
 
@@ -577,7 +579,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
     \brief Wrapper macro for the plugin documentation interface
 
-    \param plugin The file name of the plugin without the .so or .dll extension
+    \param plugname The file name of the plugin without the .so or .dll extension
     \param cat Space separated list of categories to which belong the plugin (as const char*)
     \param doc Documentation of the plugin (as const char*)
 
