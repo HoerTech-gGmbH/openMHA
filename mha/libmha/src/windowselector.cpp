@@ -55,33 +55,33 @@ void windowselector_t::update_parser()
 const MHAWindow::base_t& windowselector_t::get_window_data(unsigned length)
 {
     if( !wnd ) {
-	switch(wndtype.data.get_index()){
-	case 0 : // rect
-	    wnd = new MHAWindow::rect_t(length);
-	    break;
-	case 1 : // bartlett
-	    wnd = new MHAWindow::bartlett_t(length);
-	    break;
-	case 2 : // hanning
-	    wnd = new MHAWindow::hanning_t(length);
-	    break;
-	case 3 : // hamming
-	    wnd = new MHAWindow::hamming_t(length);
-	    break;
-	case 4 : // blackman
-	    wnd = new MHAWindow::blackman_t(length);
-	    break;
-	case 5 : // user
-	    if( userwnd.data.size() != length )
-		throw MHA_Error(__FILE__,__LINE__,
-				"wave2spec: User window size (%d) is not window length (%d).",
-				userwnd.data.size(),length);
-	    wnd = new MHAWindow::user_t(userwnd.data);
-	    break;
-	default:
-	    throw MHA_ErrorMsg("Unknown window type.");
-	}
-	*wnd ^= wndexp.data;
+        switch(wndtype.data.get_index()){
+        case 0 : // rect
+            wnd = new MHAWindow::rect_t(length);
+            break;
+        case 1 : // bartlett
+            wnd = new MHAWindow::bartlett_t(length);
+            break;
+        case 2 : // hanning
+            wnd = new MHAWindow::hanning_t(length);
+            break;
+        case 3 : // hamming
+            wnd = new MHAWindow::hamming_t(length);
+            break;
+        case 4 : // blackman
+            wnd = new MHAWindow::blackman_t(length);
+            break;
+        case 5 : // user
+            if( userwnd.data.size() != length )
+                throw MHA_Error(__FILE__,__LINE__,
+                                "wave2spec: User window size (%d) is not window length (%d).",
+                                userwnd.data.size(),length);
+            wnd = new MHAWindow::user_t(userwnd.data);
+            break;
+        default:
+            throw MHA_ErrorMsg("Unknown window type.");
+        }
+        *wnd ^= wndexp.data;
     }
     return *wnd;
 }
