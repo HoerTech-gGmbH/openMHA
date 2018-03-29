@@ -1,5 +1,8 @@
-function test_wave2spec
+function test_wave2spec_compare_spectra
 % Testing the analysis part of overlap-add when hanning window is used.
+% STFT spectra computed with MHA plugin wave2spec are compared to spectra
+% computed with matlab/octave.  Test performed for 3 different combinations
+% of FFT length, window length, and hopsize.
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2005 2006 2007 2015 2018 HörTech gGmbH
