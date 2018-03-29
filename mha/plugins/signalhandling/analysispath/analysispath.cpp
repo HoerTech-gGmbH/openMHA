@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 HörTech gGmbH
+// Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -27,8 +27,6 @@
 #include "mha_os.h"
 #include "mhapluginloader.h"
 #include "mha_algo_comm.hh"
-
-#define DEBUG(x) std::cerr << __FILE__ << ":" << __LINE__ << ": " << #x << "=" << x << std::endl
 
 class analysepath_t
 {
@@ -171,8 +169,6 @@ analysepath_t::analysepath_t(unsigned int nchannels_in,
       flag_terminate_inner_thread(false),
       input_to_process(0)
 {
-    //DEBUG(inner_fragsize);
-    //DEBUG(size(inner_input));
     if( inner_out_domain == MHA_WAVEFORM ){
 	if( !inner_process_wave2wave )
 	    throw MHA_Error(__FILE__,__LINE__,"No waveform to waveform process callback provided.");
@@ -184,7 +180,7 @@ analysepath_t::analysepath_t(unsigned int nchannels_in,
     if(fifo_len_blocks < 1)
 	throw MHA_Error(__FILE__,__LINE__,"FIFO length to short (%d)",fifo_len_blocks);
 
-    // Initialize the mutexe
+    // Initialize the mutex
     pthread_mutex_init(&ProcessMutex, NULL);
 
     // Initialize the condition variable
@@ -193,16 +189,7 @@ analysepath_t::analysepath_t(unsigned int nchannels_in,
     bool setting_priority = thread_priority > 0;
     if (setting_priority) {
         pthread_attr_init(&attr);
-        //if (thread_scheduler == "SCHED_OTHER")
-        //    pthread_attr_setschedpolicy(&attr, scheduler = SCHED_OTHER);
-        //else if (thread_scheduler == "SCHED_RR")
-        //    pthread_attr_setschedpolicy(&attr, scheduler = SCHED_RR);
-        //else if (thread_scheduler == "SCHED_FIFO")
-            pthread_attr_setschedpolicy(&attr, scheduler = SCHED_FIFO);
-        //else
-        //    throw MHA_Error(__FILE__,__LINE__,
-        //                    "Unknown thread scheduler \"%s\" specified",
-        //                    thread_scheduler.c_str());
+        pthread_attr_setschedpolicy(&attr, scheduler = SCHED_FIFO);
         priority.sched_priority = thread_priority;
         pthread_attr_setschedparam(&attr, &priority);
     }
@@ -213,15 +200,10 @@ analysepath_t::analysepath_t(unsigned int nchannels_in,
     if (setting_priority) {
         pthread_setschedparam(thread, scheduler, &priority);
     }
-//    if( priority >= 0 )
-//        activate(THR_NEW_LWP|THR_JOINABLE|THR_SCHED_FIFO,1,0,priority);
-//    else 
-//	activate();
 }
 
 analysepath_t::~analysepath_t()
 {
-    //DEBUG(1);
     flag_terminate_inner_thread = true;
 
     input_to_process = 1;
@@ -237,8 +219,6 @@ analysepath_t::~analysepath_t()
 
     // Cancel the thread
     pthread_cancel(thread);
-    // wait();
-    //DEBUG(2);
 }
 
 class plug_t : private MHAKernel::algo_comm_class_t, public PluginLoader::mhapluginloader_t  {
@@ -349,7 +329,6 @@ void analysispath_if_t::prepare(mhaconfig_t& conf)
 				  plug->get_process_wave(),
 				  plug->get_process_spec(),
 				  plug->get_handle(),
-				  //plug->get_ac(),
 				  ac,
 				  *acspace_template,
 				  inner_conf.domain,

@@ -25,7 +25,6 @@
 #include "dc_afterburn.h"
 
 #include "mha_defs.h"
-#define DEBUG(x) std::cerr << __FILE__ << ":" << __LINE__ << " " #x "=" << x <<  " in " << __MHA_FUN__ << std::endl
 
 namespace multibandcompressor {
 
