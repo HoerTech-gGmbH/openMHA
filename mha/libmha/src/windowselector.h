@@ -21,23 +21,60 @@
 #include "mha_event_emitter.h"
 #include "mha_events.h"
 
+/** A combination of mha parser variables to describe an overalapadd analysis
+ * window.  Provides a method to get the window samples as an instance of
+ * MHAWindow::base_t when needed. */
 class windowselector_t {
 public:
+    /** constructor creates the mha parser variables that describe an
+     * overlapadd analysis window.
+     * @param default_type name of the default analysis window type.
+     *                     Must be one of: "rect", "bartlett", "hanning",
+     *                     "hamming", "blackman"
+     */
     windowselector_t(const std::string& default_type);
+
+    /** destructor frees window data that were allocated */
     ~windowselector_t();
-    void set_length(unsigned int len);
-    const MHAWindow::base_t& current();
+
+    /** re-computes the window if required.
+     * @param length the desired window length in samples
+     * return the window's samples as a constref to MHAWindow::base_t instance.
+     *        The referenced instance lives until the window parameters are
+     *        changed, or this windowselector_t instance is destroyed. */
+    const MHAWindow::base_t& get_window_data(unsigned length);
+
+    /** insert the window parameters "wndtype", "wndexp", and "userwnd" as 
+     * mha configuration parameters into the given mha configuration parser.
+     * @param p The configuration parser where to insert the window parameters.
+     *          E.g. the plugin wave2spec's interface class. */
     void insert_items(MHAParser::parser_t* p);
+
+    /** A collector event that fires when any of the window parameters managed
+     * here is written to. */
     MHAEvents::emitter_t updated;
 private:
-    void update();
+    /** invalidates any allocated window samples. */
+    void invalidate_window_data();
+    
+    /** invoked when a parser parameter changes.  Calls
+     * invalidate_window_data() and emits the updated event. */
     void update_parser();
+
+    /** Storage for the window data returned by get_window_data() */
     MHAWindow::base_t* wnd;
+
+    /** parser variable for window type */
     MHAParser::kw_t wndtype;
+
+    /** parser variable for window exponent */
     MHAParser::float_t wndexp;
+
+    /** parser variable for user window samples to use */
     MHAParser::vfloat_t userwnd;
+
+    /** patchbay to watch for changes for the parser variables */
     MHAEvents::patchbay_t<windowselector_t> patchbay;
-    unsigned int length;
 };
 
 #endif

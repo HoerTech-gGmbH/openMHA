@@ -179,7 +179,6 @@ void spec2wave_if_t::prepare(mhaconfig_t& t)
         throw MHA_ErrorMsg("spec2wave: Spectral input is required.");
     t.domain = MHA_WAVEFORM;
     tftype = t;
-    window_config.set_length(tftype.fftlen);
     update();
 }
 
@@ -191,8 +190,17 @@ mha_wave_t* spec2wave_if_t::process(mha_spec_t* spec_in)
 
 void spec2wave_if_t::update()
 {
-    if( tftype.fftlen )
-        push_config(new spec2wave_t(tftype.fftlen,tftype.wndlen,tftype.fragsize,tftype.channels,ramplen.data,window_config.current()));
+    if (is_prepared()) {
+        if( tftype.fftlen )
+            push_config(new spec2wave_t(tftype.fftlen,
+                                        tftype.wndlen,
+                                        tftype.fragsize,
+                                        tftype.channels,
+                                        ramplen.data,
+                                        window_config.get_window_data(tftype.fftlen)));
+        else
+            throw MHA_ErrorMsg("unsuitable fftlen == 0");
+    }
 }
 
 MHAPLUGIN_CALLBACKS(spec2wave,spec2wave_if_t,spec,wave)
@@ -202,7 +210,6 @@ MHAPLUGIN_CALLBACKS(spec2wave,spec2wave_if_t,spec,wave)
   "resynthesis. The parameters are taken from the framework overlap add\n"
   "parameters. After the inverse Fourier transform, hanning window ramps\n"
   "are applied to the previously zero-padded regions.\n"
-  
   )
 
 // Local Variables:
