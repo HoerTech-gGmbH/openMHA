@@ -114,22 +114,22 @@ void shadowfilter_begin_t::prepare(mhaconfig_t& tf)
 
 MHAPLUGIN_CALLBACKS(shadowfilter_begin,shadowfilter_begin::shadowfilter_begin_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION(shadowfilter_begin,
-	"overlapadd",
-	"The plugins 'shadowfilter\\_begin' and 'shadowfilter\\_end' (section\n"
-	"\\ref{plug:shadowfilter_end}) are designed to measure the gains\n"
-	"produced by any spectral plugins and apply those gains to audio\n"
-	"channels not passed to the algorithm. This method can be used to\n"
-	"process a mixed signal, but apply the same gains to the unmixed signal\n"
-	"parts seperately. For a stereo mixed signal, this can be done by\n"
-	"reading the mixed signal from channels 1 and 2, the desired signal\n"
-	"from channels 3 and 4, and the competing signal from channels 5 and\n"
-	"6. The 'shadowfilter\\_begin' plugin hides channels 3 to 6 from the\n"
-	"plugin, and remembers the input spectrae for all channels. The\n"
-	"'shadowfilter\\_end' plugin compares the processed output signal\n"
-	"(channels 1 and 2) with its input spectrum and derives complex gains\n"
-	"produced by the algorithm (without any knowledge of the algorithm).\n"
-	"The same gains are applied to channels 3 to 6."
-	)
+        "overlapadd",
+        "The plugins 'shadowfilter\\_begin' and 'shadowfilter\\_end' (section\n"
+        "\\ref{plug:shadowfilter_end}) are designed to measure the gains\n"
+        "produced by any spectral plugins and apply those gains to audio\n"
+        "channels not passed to the algorithm. This method can be used to\n"
+        "process a mixed signal, but apply the same gains to the unmixed signal\n"
+        "parts seperately. For a stereo mixed signal, this can be done by\n"
+        "reading the mixed signal from channels 1 and 2, the desired signal\n"
+        "from channels 3 and 4, and the competing signal from channels 5 and\n"
+        "6. The 'shadowfilter\\_begin' plugin hides channels 3 to 6 from the\n"
+        "plugin, and remembers the input spectrae for all channels. The\n"
+        "'shadowfilter\\_end' plugin compares the processed output signal\n"
+        "(channels 1 and 2) with its input spectrum and derives complex gains\n"
+        "produced by the algorithm (without any knowledge of the algorithm).\n"
+        "The same gains are applied to channels 3 to 6."
+        )
 
 // Local Variables:
 // compile-command: "make"

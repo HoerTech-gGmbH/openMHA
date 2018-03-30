@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License,
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-// mhainfo: plugin
 #include <math.h>
 #include "mha_defs.h"
 #include "mha_plugin.hh"
@@ -100,7 +99,7 @@ void softclip_t::prepare(mhaconfig_t& tf)
 void softclip_t::update()
 {
     if( tftype.channels )
-	push_config(new cfg_t(attack.data,decay.data,tftype.channels,start_limit.data,slope_db.data,tftype.srate));
+        push_config(new cfg_t(attack.data,decay.data,tftype.channels,start_limit.data,slope_db.data,tftype.srate));
 }
  
 MHAPLUGIN_CALLBACKS(softclip,softclip_t,wave,wave)

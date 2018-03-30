@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2017 HörTech gGmbH
+// Copyright © 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -55,7 +55,7 @@ private:
     MHASignal::waveform_t PH1mean;
     MHA_AC::waveform_t noisePow;
 
-    //gkc debug:
+    // gkc debug:
     MHA_AC::waveform_t inputPow;
     MHA_AC::waveform_t snrPost1Debug;
     MHA_AC::waveform_t GLRDebug;
@@ -77,12 +77,12 @@ private:
 };
 
 noisePowProposed::noisePowProposed(const mhaconfig_t& cf,
-				   algo_comm_t ac,
-				   const std::string& name,
-				   float alphaPH1mean,
-				   float alphaPSD,
-				   float q,
-				   float xiOptDb)
+                                   algo_comm_t ac,
+                                   const std::string& name,
+                                   float alphaPH1mean,
+                                   float alphaPSD,
+                                   float q,
+                                   float xiOptDb)
     : noisyPer(cf.fftlen/2+1,cf.channels),
       PH1mean(cf.fftlen/2+1,cf.channels),
       noisePow(ac,name,cf.fftlen/2+1,cf.channels,false),
@@ -203,7 +203,7 @@ mha_spec_t* interface_t::process(mha_spec_t* s)
 void interface_t::prepare(mhaconfig_t& cf)
 {
     if( cf.domain != MHA_SPECTRUM )
-	throw MHA_Error(__FILE__,__LINE__,"Only spectral processing is supported");
+        throw MHA_Error(__FILE__,__LINE__,"Only spectral processing is supported");
     update_cfg();
     poll_config()->insert();
 }

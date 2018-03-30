@@ -25,26 +25,26 @@
 class wave2spec_t : public MHA_AC::spectrum_t {
 public:
     wave2spec_t(unsigned int nfft,
-		unsigned int nwnd_,
-		unsigned int nwndshift_,
-		unsigned int nch,
-		mha_real_t wndpos,
-		const MHAWindow::base_t& window,
-		algo_comm_t ac,
-		std::string algo);
+                unsigned int nwnd_,
+                unsigned int nwndshift_,
+                unsigned int nch,
+                mha_real_t wndpos,
+                const MHAWindow::base_t& window,
+                algo_comm_t ac,
+                std::string algo);
     mha_spec_t* process(mha_wave_t*);
     ~wave2spec_t();
 private:
     void calc_pre_wnd(MHASignal::waveform_t&,const MHASignal::waveform_t&);
     unsigned int nwnd;
     unsigned int nwndshift;
-    mha_fft_t ft;	//!< FFT class
-    unsigned int npad1;	//!< length of zero padding before window
-    unsigned int npad2;	//!< length of zero padding after window
+    mha_fft_t ft;       //!< FFT class
+    unsigned int npad1; //!< length of zero padding before window
+    unsigned int npad2; //!< length of zero padding after window
     MHAWindow::base_t window;
     MHASignal::waveform_t calc_in;
     MHASignal::waveform_t in_buf;
-    MHASignal::spectrum_t spec_in;	//!< non-interleaved, complex, fftlen
+    MHASignal::spectrum_t spec_in;      //!< non-interleaved, complex, fftlen
 };
 
 class wave2spec_if_t : public MHAPlugin::plugin_t<wave2spec_t> {
@@ -67,29 +67,29 @@ private:
 void wave2spec_t::calc_pre_wnd(MHASignal::waveform_t& dest,const MHASignal::waveform_t& src)
 {
     if( dest.num_frames != npad1 + nwnd + npad2 )
-	throw MHA_ErrorMsg("destination has wrong length");
+        throw MHA_ErrorMsg("destination has wrong length");
     if( src.num_frames != nwnd )
-	throw MHA_Error(__FILE__,__LINE__,"Source has wrong length: %d (window length is %d)",src.num_frames,nwnd);
+        throw MHA_Error(__FILE__,__LINE__,"Source has wrong length: %d (window length is %d)",src.num_frames,nwnd);
     if( dest.num_channels != src.num_channels )
-	throw MHA_ErrorMsg("channel count mismatch");
+        throw MHA_ErrorMsg("channel count mismatch");
     unsigned int k;
     dest.copy_from_at(npad1,nwnd,src,0);
     for( k=0; k<nwnd; k++ )
-	dest.scale_frame(npad1+k,window[k]);
+        dest.scale_frame(npad1+k,window[k]);
     for( k=0; k<npad1; k++ )
-	dest.assign_frame(k,0);
+        dest.assign_frame(k,0);
     for( k=npad1 + nwnd; k<dest.num_frames; k++ )
-	dest.assign_frame(k,0);
+        dest.assign_frame(k,0);
 }
 
 wave2spec_t::wave2spec_t(unsigned int nfft,
-			 unsigned int nwnd_,
-			 unsigned int nwndshift_,
-			 unsigned int nch,
-			 mha_real_t wndpos,
-			 const MHAWindow::base_t& window_,
-			 algo_comm_t ac,
-			 std::string algo)
+                         unsigned int nwnd_,
+                         unsigned int nwndshift_,
+                         unsigned int nch,
+                         mha_real_t wndpos,
+                         const MHAWindow::base_t& window_,
+                         algo_comm_t ac,
+                         std::string algo)
     : MHA_AC::spectrum_t(ac,algo,nfft/2+1,nch,false),
       nwnd(nwnd_),
       nwndshift(nwndshift_),
@@ -151,9 +151,9 @@ void wave2spec_if_t::prepare(mhaconfig_t& t)
     if( t.domain != MHA_WAVEFORM )
         throw MHA_ErrorMsg("wave2spec: waveform input is required.");
     if( return_wave.data )
-	t.domain = MHA_WAVEFORM;
+        t.domain = MHA_WAVEFORM;
     else
-	t.domain = MHA_SPECTRUM;
+        t.domain = MHA_SPECTRUM;
     t.fftlen = nfft.data;
     t.wndlen = nwnd.data;
     if( t.fragsize > t.wndlen )

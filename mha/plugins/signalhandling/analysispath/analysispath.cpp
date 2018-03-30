@@ -13,11 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-//#include <ace/Task.h>
-#ifdef min // an ugly gift from windows headers
-#undef min
-#undef max
-#endif
 #include "mha_signal.hh"
 #include "mha_fifo.h"
 #include "mha_plugin.hh"
@@ -32,16 +27,16 @@ class analysepath_t
 {
 public:
     analysepath_t(unsigned int nchannels_in,
-		  unsigned int outer_fragsize,
-		  unsigned int inner_fragsize,
-		  int priority,
-		  MHAProc_wave2wave_t inner_proc_wave2wave,
-		  MHAProc_wave2spec_t inner_proc_wave2spec,
-		  void* ilibdata,
-		  algo_comm_t outer_ac,
-		  const MHA_AC::acspace2matrix_t& acspace_template,
-		  mha_domain_t inner_out_domain,
-		  unsigned int fifo_len_blocks);
+                  unsigned int outer_fragsize,
+                  unsigned int inner_fragsize,
+                  int priority,
+                  MHAProc_wave2wave_t inner_proc_wave2wave,
+                  MHAProc_wave2spec_t inner_proc_wave2spec,
+                  void* ilibdata,
+                  algo_comm_t outer_ac,
+                  const MHA_AC::acspace2matrix_t& acspace_template,
+                  mha_domain_t inner_out_domain,
+                  unsigned int fifo_len_blocks);
     virtual ~analysepath_t();
     void rt_process(mha_wave_t*);
     virtual int svc();
@@ -85,13 +80,13 @@ void analysepath_t::rt_process(mha_wave_t* outer_input)
                         "got %d input channels, expected %d.",
                         outer_input->num_channels, inner_input.num_channels);
     if( wave_fifo.get_available_space() >= size(outer_input) )
-	wave_fifo.write(outer_input->buf,size(outer_input));
+        wave_fifo.write(outer_input->buf,size(outer_input));
     if( ac_fifo.get_fill_count() > 0 ){
-	ac_fifo.read(&outer_ac_copy,1);
-	outer_ac_copy.insert(outer_ac);
+        ac_fifo.read(&outer_ac_copy,1);
+        outer_ac_copy.insert(outer_ac);
     }
     if( has_inner_error )
-	throw inner_error;
+        throw inner_error;
 
     if ((mutex_val = pthread_mutex_lock(&ProcessMutex)) == 0) {
         input_to_process++;
@@ -108,18 +103,16 @@ int analysepath_t::svc()
     mha_wave_t * inner_output_wave = NULL;
     mha_spec_t * inner_output_spec = NULL;
     try {
-	while(!flag_terminate_inner_thread){
-	    if( (wave_fifo.get_fill_count() >= size(inner_input)) && (ac_fifo.get_available_space() > 0) ){
-		wave_fifo.read(inner_input.buf,size(inner_input));
-		if( inner_out_domain == MHA_WAVEFORM )
-		    inner_process_wave2wave(libdata,&inner_input,&inner_output_wave);
-		else
-		    inner_process_wave2spec(libdata,&inner_input,&inner_output_spec);
-		inner_ac_copy.update();
-		ac_fifo.write(&inner_ac_copy,1);
-	    }else{
-		// sleeping is not nice, implement half-blocking FIFO instead...
-                // mha_msleep(1);
+        while(!flag_terminate_inner_thread){
+            if( (wave_fifo.get_fill_count() >= size(inner_input)) && (ac_fifo.get_available_space() > 0) ){
+                wave_fifo.read(inner_input.buf,size(inner_input));
+                if( inner_out_domain == MHA_WAVEFORM )
+                    inner_process_wave2wave(libdata,&inner_input,&inner_output_wave);
+                else
+                    inner_process_wave2spec(libdata,&inner_input,&inner_output_spec);
+                inner_ac_copy.update();
+                ac_fifo.write(&inner_ac_copy,1);
+            }else{
                 // Wait for reading to finish
                 if ((mutex_val = pthread_mutex_lock(&ProcessMutex)) == 0) {
 
@@ -131,29 +124,29 @@ int analysepath_t::svc()
                     pthread_mutex_unlock(&ProcessMutex);
                 }
 
-	    }
+            }
         }
     }
     catch (MHA_Error & e) {
-	std::cerr << Getmsg(e) << std::endl;
-	inner_error = e;
-	has_inner_error = true;
+        std::cerr << Getmsg(e) << std::endl;
+        inner_error = e;
+        has_inner_error = true;
         return -1;
     }
     return 0;
 }
 
 analysepath_t::analysepath_t(unsigned int nchannels_in,
-			     unsigned int outer_fragsize,
-			     unsigned int inner_fragsize,
-			     int thread_priority,
-			     MHAProc_wave2wave_t inner_proc_wave2wave,
-			     MHAProc_wave2spec_t inner_proc_wave2spec,
-			     void* ilibdata,
-			     algo_comm_t iouter_ac,
-			     const MHA_AC::acspace2matrix_t& acspace_template,
-			     mha_domain_t iinner_out_domain,
-			     unsigned int fifo_len_blocks)
+                             unsigned int outer_fragsize,
+                             unsigned int inner_fragsize,
+                             int thread_priority,
+                             MHAProc_wave2wave_t inner_proc_wave2wave,
+                             MHAProc_wave2spec_t inner_proc_wave2spec,
+                             void* ilibdata,
+                             algo_comm_t iouter_ac,
+                             const MHA_AC::acspace2matrix_t& acspace_template,
+                             mha_domain_t iinner_out_domain,
+                             unsigned int fifo_len_blocks)
     : inner_process_wave2wave(inner_proc_wave2wave),
       inner_process_wave2spec(inner_proc_wave2spec),
       inner_input(inner_fragsize,nchannels_in),
@@ -170,15 +163,15 @@ analysepath_t::analysepath_t(unsigned int nchannels_in,
       input_to_process(0)
 {
     if( inner_out_domain == MHA_WAVEFORM ){
-	if( !inner_process_wave2wave )
-	    throw MHA_Error(__FILE__,__LINE__,"No waveform to waveform process callback provided.");
+        if( !inner_process_wave2wave )
+            throw MHA_Error(__FILE__,__LINE__,"No waveform to waveform process callback provided.");
     }else{
-	if( !inner_process_wave2spec )
-	    throw MHA_Error(__FILE__,__LINE__,"No waveform to spectrum process callback provided.");
+        if( !inner_process_wave2spec )
+            throw MHA_Error(__FILE__,__LINE__,"No waveform to spectrum process callback provided.");
     }
 
     if(fifo_len_blocks < 1)
-	throw MHA_Error(__FILE__,__LINE__,"FIFO length to short (%d)",fifo_len_blocks);
+        throw MHA_Error(__FILE__,__LINE__,"FIFO length to short (%d)",fifo_len_blocks);
 
     // Initialize the mutex
     pthread_mutex_init(&ProcessMutex, NULL);
@@ -254,7 +247,7 @@ private:
 
 analysispath_if_t::analysispath_if_t(algo_comm_t iac,std::string th,std::string al)
     : MHAPlugin::plugin_t<analysepath_t>(
-	"Split-up of signal analysis and filtering, with asychronous processing of filter path and thread-safe exchange of filter parameters as AC variables.",iac),
+        "Split-up of signal analysis and filtering, with asychronous processing of filter path and thread-safe exchange of filter parameters as AC variables.",iac),
       libname("inner plugin name, receives adapted fragment size",""),
       fragsize("fragment size of inner plugin","200","[1,]"), 
       fifolen("length of double buffer in inner fragment size","10","[1,]"),
@@ -301,20 +294,20 @@ analysispath_if_t::~analysispath_if_t()
     if( plug )
         delete plug;
     if( acspace_template )
-	delete acspace_template;
+        delete acspace_template;
     acspace_template = NULL;
 }
 
 void analysispath_if_t::prepare(mhaconfig_t& conf)
 {
     if( fragsize.data < (int)conf.fragsize )
-	throw MHA_Error(__FILE__,__LINE__,"Inner fragment size must be at least the same as outer fragment size (inner: %d, outer: %d)",fragsize.data, conf.fragsize);
+        throw MHA_Error(__FILE__,__LINE__,"Inner fragment size must be at least the same as outer fragment size (inner: %d, outer: %d)",fragsize.data, conf.fragsize);
     if( !plug )
         throw MHA_ErrorMsg("No plugin was loaded.");
     if( conf.domain != MHA_WAVEFORM )
         throw MHA_ErrorMsg("Only waveform data can be processed.");
     if( acspace_template )
-	throw MHA_Error(__FILE__,__LINE__,"Internal bug.");
+        throw MHA_Error(__FILE__,__LINE__,"Internal bug.");
     mhaconfig_t inner_conf = conf;
     inner_conf.fragsize = fragsize.data;
     // sugest configuration to inner plugin, query requirements:
@@ -323,16 +316,16 @@ void analysispath_if_t::prepare(mhaconfig_t& conf)
     acspace_template->insert(ac);
     // update the configuration, create an instance of the double buffer:
     push_config(new analysepath_t(conf.channels,
-				  conf.fragsize,
-				  fragsize.data,
-				  priority.data,
-				  plug->get_process_wave(),
-				  plug->get_process_spec(),
-				  plug->get_handle(),
-				  ac,
-				  *acspace_template,
-				  inner_conf.domain,
-				  fifolen.data));
+                                  conf.fragsize,
+                                  fragsize.data,
+                                  priority.data,
+                                  plug->get_process_wave(),
+                                  plug->get_process_spec(),
+                                  plug->get_handle(),
+                                  ac,
+                                  *acspace_template,
+                                  inner_conf.domain,
+                                  fifolen.data));
 }
 
 void analysispath_if_t::release()
@@ -340,7 +333,7 @@ void analysispath_if_t::release()
     if( plug )
         plug->release();
     if( acspace_template )
-	delete acspace_template;
+        delete acspace_template;
     acspace_template = NULL;
 }
 
@@ -372,22 +365,22 @@ plug_t::plug_t(const std::string& libname,const std::string& chain,const std::st
 
 MHAPLUGIN_CALLBACKS(analysispath,analysispath_if_t,wave,wave)
     MHAPLUGIN_DOCUMENTATION(analysispath,
-	"signalflow",
-	"In many signal processing scenarios, the signal analysis\n"
-	"requires larger block sizes and more processing time than\n"
-	"the filtering itself. If the filters do not change rapidly,\n"
-	"the filter coefficients can be processed independently from\n"
-	"the filter process. This is realized in this plugin: A copy\n"
-	"of the input signal is stored in a double buffer, which is\n"
-	"then processed asynchronously in a thread with lower priority.\n"
-	"At the same time, a snapshot of the AC space (or a subset of it)\n"
-	"can be transferred from the analysis thread to the main\n"
-	"processing thread.\n\n"
-	"\\MHAfigure{Schematic signal flow in the analsysis path scenario.}{analysispath_sigflow}\n\n"
-	"Please note that the AC variables which should be copied to the\n"
-	"processing thread must exist after the prepare() callback and should\n"
-	"not change their size during run-time."
-	)
+        "signalflow",
+        "In many signal processing scenarios, the signal analysis\n"
+        "requires larger block sizes and more processing time than\n"
+        "the filtering itself. If the filters do not change rapidly,\n"
+        "the filter coefficients can be processed independently from\n"
+        "the filter process. This is realized in this plugin: A copy\n"
+        "of the input signal is stored in a double buffer, which is\n"
+        "then processed asynchronously in a thread with lower priority.\n"
+        "At the same time, a snapshot of the AC space (or a subset of it)\n"
+        "can be transferred from the analysis thread to the main\n"
+        "processing thread.\n\n"
+        "\\MHAfigure{Schematic signal flow in the analsysis path scenario.}{analysispath_sigflow}\n\n"
+        "Please note that the AC variables which should be copied to the\n"
+        "processing thread must exist after the prepare() callback and should\n"
+        "not change their size during run-time."
+        )
 
 /*
  * Local variables:

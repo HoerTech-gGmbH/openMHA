@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2010 2013 2014 2015 HörTech gGmbH
+// Copyright © 2005 2006 2010 2013 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,13 +20,13 @@
 class ac2wave_t {
 public:
     ac2wave_t(unsigned int frames_,
-	      unsigned int channels_, 
-	      algo_comm_t ac_, 
-	      std::string name_,
-	      float gain_in_,
-	      float gain_ac_,
-	      unsigned int delay_in_,
-	      unsigned int delay_ac_);
+              unsigned int channels_, 
+              algo_comm_t ac_, 
+              std::string name_,
+              float gain_in_,
+              float gain_ac_,
+              unsigned int delay_in_,
+              unsigned int delay_ac_);
     mha_wave_t* process(mha_wave_t*);
 private:
     unsigned int frames;
@@ -104,10 +104,10 @@ ac2wave_if_t::ac2wave_if_t(const algo_comm_t& iac,
                            const std::string& ith,
                            const std::string& ial)
     : MHAPlugin::plugin_t<ac2wave_t>(
-	"Mix the main input signal with a waveform stored into AC\n"
-	"variables. Main and AC signal can be attenuated or delayed\n"
-	"by integer fragments.\n\n"
-	"Spectral input is discarded and replaced by a zero signal.\n\n",iac),
+        "Mix the main input signal with a waveform stored into AC\n"
+        "variables. Main and AC signal can be attenuated or delayed\n"
+        "by integer fragments.\n\n"
+        "Spectral input is discarded and replaced by a zero signal.\n\n",iac),
       name("AC variable name",""),
       gain_in("Linear gain for main input signal","0"),
       gain_ac("Linear gain for AC input signal","1"),
@@ -139,13 +139,13 @@ mha_wave_t* ac2wave_if_t::process(mha_wave_t* s)
 void ac2wave_if_t::update()
 {
     if( prepared )
-	push_config(new ac2wave_t(tftype.fragsize,
-				  tftype.channels,
-				  ac,name.data,
-				  gain_in.data,
-				  gain_ac.data,
-				  delay_in.data,
-				  delay_ac.data));
+        push_config(new ac2wave_t(tftype.fragsize,
+                                  tftype.channels,
+                                  ac,name.data,
+                                  gain_in.data,
+                                  gain_ac.data,
+                                  delay_in.data,
+                                  delay_ac.data));
 }
 
 void ac2wave_if_t::prepare(mhaconfig_t& tf)
