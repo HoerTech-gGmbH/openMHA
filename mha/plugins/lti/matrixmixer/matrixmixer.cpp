@@ -186,7 +186,8 @@ MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow mixing panning",
 "channels into any number of output channels, with defined mixing weights."
 "\n\n"
 "Example: To combine the two channels of a stereo signal into a single (mono) "
-"channel, configure the \\texttt{matrixmixer} plugin variable \\texttt{m} as"
+"channel, configure the \\texttt{matrixmixer} plugin configuration variable "
+"\\texttt{m} as"
 "\n\n"
 "\\verb|m = [[1.0 1.0]]|"
 "\n\n"
@@ -203,8 +204,8 @@ MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow mixing panning",
 "The configuration variable \\texttt{m} expects a matrix of float values.  "
 "The examples above showed a matrix with only one row, which resulted in only "
 "one output channel being produced by the \\texttt{matrixmixer} plugin. "
-"To produce more output channels, more rows can be specified for matrix "
-"\\texttt{m}:"
+"To produce more output channels, more rows (separated by semicolons) "
+"can be specified for matrix \\texttt{m}:"
 "\n\n"
 "\\verb|m = [[1 0];[0 1]]|"
 "\n\n"
@@ -236,6 +237,12 @@ MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow mixing panning",
 "matrixmixer examples directory.  "
 "Please refer to the README file in this directory for an explanation of "
 "the different examples."
+"\n\n"
+"A matlab/octave test exercising the matrixmixer plugin in six different "
+"configurations can be found in the mhatest directory in file "
+"\\texttt{test\\_matrixmixer.m}. "
+"This test file is executed together with the other "
+"system-level tests when invoking \\texttt{make test}."
 )
 
 // Local Variables:
