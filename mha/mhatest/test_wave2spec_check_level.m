@@ -24,8 +24,7 @@ function test_wave2spec_check_level
   for stft_index = 1:size(stft_parameters, 1)
     
     % All window types that wave2spec knows:
-    window_types = {'hanning','rect','hamming','bartlett','blackman'};
-                                %FIXME: ,'user'}; is missing
+    window_types = {'hanning','rect','hamming','bartlett','blackman','user'};
 
     for window_index = 1:size(window_types, 2)
 
