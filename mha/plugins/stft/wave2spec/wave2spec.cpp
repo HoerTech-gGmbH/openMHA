@@ -129,9 +129,7 @@ wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const s
         "Audio data is collected up to wndlen, than windowed with\n"
         "the given window function, zero padded up to fftlength\n"
         "(symmetric zero padding or asymmetric zero padding possible),\n"
-        "and Fast-Fourier-transformed.\n\n"
-	"Note: The level scaling is only correct for a Hanning window\n"
-	"and apropriate overlapping parameters.\n\n",iac),
+        "and Fast-Fourier-transformed.",iac),
       nfft("FFT lengths","512","[1,]"),
       nwnd("window length/samples","400","[1,]"),
       wndpos("window position\n(0 = beginning, 0.5 = symmetric zero padding, 1 = end)","0.5","[0,1]"),
@@ -211,25 +209,61 @@ void wave2spec_if_t::process(mha_wave_t* wave_in,mha_wave_t** sout)
 MHAPLUGIN_CALLBACKS(wave2spec,wave2spec_if_t,wave,spec)
 MHAPLUGIN_PROC_CALLBACK(wave2spec,wave2spec_if_t,wave,wave)
 
-    MHAPLUGIN_DOCUMENTATION(wave2spec,"overlapadd",
-"This plugin performs a FFT. The parameters are taken from the overlap\n"
-"add parameters of the framework. For each chunk of the waveform\n"
-"stream, the input data is multiplied with a Hanning window, zero\n"
-"padded to the FFT length and Fourier transformed. Please note that\n"
-"usually the window shift is less than the window length. In this case\n"
-"the short time fourier transform does not exactly correspond to the\n"
-"input waveform fragment.\n"
-"\n"
-"The absolute window shift is identical to the fragment size, e.g.\\ to\n"
-"achieve a window shift of 50\\%, configure a fragment size of wndlen/2.\n"
-"\n"
-"A copy of the output spectrum is stored in the AC space in a variable\n"
-"of same name as the configured plugin name. It is recommended to use\n"
-"the function \\verb!MHA_AC::get_var_spectrum()! to receive this\n"
-"spectrum in other plugins. See the MHA reference handbook or the\n"
-"header file {\\tt mha\\_algo\\_comm.h} for details, and see section \\ref{plug:overlapadd} for a description of the overlap-add method.\n"
-"\n"
-	)
+MHAPLUGIN_DOCUMENTATION\
+(wave2spec, "overlapadd",
+ "This plugin performs the domain transformation from time-domain "
+ "waveform signal to short-time fourier transform (STFT) signal in "
+ "the spectral domain.  "
+ 
+ "This plugin can be used as the analysis part of a complete "
+ "overlap-add procedure.  "
+
+ "Audio signal data is collected up to the length of the analysis "
+ "window. "
+
+ "The hop-size is equal to the audio block size that this "
+ "plugin receives. "
+ 
+ "Window size and FFT length are configurable through the "
+ "configuration variables of this plugin. "
+
+ "\n\n"
+
+ "The shape of the analysis window is also configurable: "
+ "Several pre-defined window shapes can be selected, and also "
+ "a completely user-defined window shape. "
+
+ "In addition, a configurable exponent can be applied to all samples "
+ "of the window before it is used. "
+
+ "\n\n"
+ 
+ "During processing, the input data samples are multiplied with the "
+ "samples of the analysis window, zero "
+ "padded to the FFT length and Fourier transformed. "
+
+ "Please note that "
+ "usually the window shift is less than the window length. "
+
+ "In this case the short time fourier transform does not exactly "
+ "correspond to the current input waveform block, because the analysis "
+ "window still contains samples from the previous invocation(s). "
+ 
+ "The absolute window shift is identical to the fragment size, e.g.\\ to "
+ "achieve a window shift of 50\\%, configure a fragment size of wndlen/2."
+
+ "\n\n"
+
+ "A copy of the output spectrum is stored in the AC space in a variable\n"
+ "of same name as the configured plugin name. It is recommended to use\n"
+ "the function \\verb!MHA_AC::get_var_spectrum()! to receive this\n"
+ "spectrum in other plugins. See the MHA developer manual or the\n"
+ "header file {\\tt mha\\_algo\\_comm.h} for details; "
+
+ "and see section \\ref{plug:overlapadd} for a description of the "
+ "overlap-add method.\n"
+ "\n"
+ )
 
 // Local Variables:
 // compile-command: "make"
