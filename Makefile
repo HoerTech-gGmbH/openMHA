@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -24,30 +24,58 @@
 #
 # or add the COMPILERPREFIX variable to config.mk
 
+include config.mk
+
 MODULES = \
 	mha/libmha \
 	mha/frameworks \
 	mha/plugins \
-        mha/doc \
-	external_libs \
+	external_libs
+
+DOCMODULES = \
+	mha/doc/flowcharts \
+  mha/doc/images \
+	mha/doc \
 
 all: $(MODULES)
 
-.PHONY : $(MODULES)
+test: all
+	$(MAKE) -C mha/mhatest
 
-$(MODULES:external_libs=):
+.PHONY : $(MODULES) $(DOCMODULES) coverage
+
+$(MODULES:external_libs=) $(DOCMODULES):
 	$(MAKE) -C $@
 
 external_libs:
-	$(MAKE) -j 1 -C $@
+	$(MAKE) -C $@
+
+doc: mha/doc
 
 clean:
-	for m in $(MODULES); do $(MAKE) -C $$m clean; done
+	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
+
+install: all
+	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
+	@mkdir -p  $(DESTDIR)$(PREFIX)/lib
+	@find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \;
+	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \;
+	@cp mha/tools/thismha.sh $(DESTDIR)$(PREFIX)/bin/.
+
+uninstall:
+
+	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(DESTDIR)$(PREFIX)/lib/{} \;)
+	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(DESTDIR)$(PREFIX)/bin/{} \;)
+	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
+
 
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
 mha/frameworks: mha/libmha
 mha/plugins: mha/libmha mha/frameworks
+mha/mhatest: mha/plugins mha/frameworks
+mha/doc: mha/doc/images all
+mha/doc/images: mha/doc/flowcharts
 
 # Local Variables:
 # coding: utf-8-unix

@@ -36,7 +36,7 @@ namespace MHAEvents {
     };
     
     /**
-       \brief Claas for emitting MHA events
+       \brief Class for emitting \mha events
 
        Use the template claas MHAEvents::patchbay_t for connecting to
        an emitter.

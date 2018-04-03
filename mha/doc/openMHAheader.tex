@@ -1,0 +1,135 @@
+%%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
+%%% Copyright © 2005 2006 2007 2008 2009 2011 2013 2017 2018 HörTech gGmbH
+%%%
+%%% openMHA is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as published by
+%%% the Free Software Foundation, version 3 of the License.
+%%%
+%%% openMHA is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License, version 3 for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License, 
+%%% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+% Latex header for doxygen 1.8.11
+% adapted for openMHA
+\documentclass[11pt,a4paper,twoside]{article}
+
+% Packages required by doxygen
+\usepackage{fixltx2e}
+\usepackage{calc}
+\usepackage{../../openMHAdoxygen}
+\setlength{\headheight}{13.6pt}
+\usepackage[export]{adjustbox} % also loads graphicx
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{makeidx}
+\usepackage{multicol}
+\usepackage{multirow}
+\PassOptionsToPackage{warn}{textcomp}
+\usepackage{textcomp}
+\usepackage[nointegrals]{wasysym}
+\usepackage[table]{xcolor}
+
+% Font selection
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{amssymb}
+\usepackage{sectsty}
+\renewcommand{\familydefault}{\sfdefault}
+\allsectionsfont{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\renewcommand{\DoxyLabelFont}{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\newcommand{\+}{\discretionary{\mbox{\scriptsize$\hookleftarrow$}}{}{}}
+
+% Page & text layout
+\usepackage{geometry}
+\geometry{%
+  a4paper,%
+  top=2.5cm,%
+  bottom=2.5cm,%
+  left=2.5cm,%
+  right=2.5cm%
+}
+\tolerance=750
+\hfuzz=15pt
+\hbadness=750
+\setlength{\emergencystretch}{15pt}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{3ex plus 2ex minus 2ex}
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@parafont%
+  }%
+}
+\renewcommand{\subparagraph}{%
+  \@startsection{subparagraph}{5}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@subparafont%
+  }%
+}
+\makeatother
+
+% Headers & footers
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\renewcommand{\sectionmark}[1]{%
+  \markright{\thesection\ #1}%
+}
+\fancyhead[LE]{\fancyplain{}{\bfseries\thepage}}
+\fancyhead[CE]{\fancyplain{}{}}
+\fancyhead[RE]{\fancyplain{}{\bfseries\leftmark}}
+\fancyhead[LO]{\fancyplain{}{\bfseries\rightmark}}
+\fancyhead[CO]{\fancyplain{}{}}
+\fancyhead[RO]{\fancyplain{}{\bfseries\thepage}}
+\fancyfoot[LE]{\fancyplain{}{}}
+\fancyfoot[CE]{\fancyplain{}{}}
+\fancyfoot[RE]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2018 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[LO]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2018 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[CO]{\fancyplain{}{}}
+\fancyfoot[RO]{\fancyplain{}{}}
+
+% Indices & bibliography
+\usepackage{natbib}
+\usepackage{tocloft}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{4}
+\addtolength{\cftsubsecnumwidth}{5pt}
+\makeindex
+
+% Custom commands
+\newcommand{\clearemptydoublepage}{%
+  \newpage{\pagestyle{empty}\cleardoublepage}%
+}
+
+\usepackage{caption}
+\captionsetup{labelsep=space,justification=centering,font={bf},singlelinecheck=off,skip=4pt,position=top}
+
+%===== C O N T E N T S =====
+
+\begin{document}
+
+\MHAtitle{Plugin Developers' Manual}
+\newpage
+\MHAcopyright{}
+\newpage
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+%--- Begin generated contents ---
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "openMHA_application_manual"
+%%% indent-tabs-mode: nil
+%%% coding: utf-8-unix
+%%% End: 

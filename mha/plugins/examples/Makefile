@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = example1 example2 example3 example4 example5
+SUBDIRS = example1 example2 example3 example4 example5 example6
 
 include ../../../rules.mk
 

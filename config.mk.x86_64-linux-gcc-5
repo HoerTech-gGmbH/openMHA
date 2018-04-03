@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -24,14 +24,8 @@ BUILD_DIR=x86_64-linux-gcc-5
 CXXFLAGS+=-std=c++11
 CFLAGS+=-fPIC -O3  -msse -msse2 -mfpmath=sse -ffast-math -fomit-frame-pointer -fno-finite-math-only
 CXXFLAGS+=-fPIC -O3  -msse -msse2 -mfpmath=sse -ffast-math -fomit-frame-pointer -fno-finite-math-only
-WITH_HASP=yes
 WITH_ALSA=yes
 WITH_JACK=yes
-WITH_BOOST=yes
-WITH_GTKMM=yes
-WITH_FREENECT=yes
-WITH_JAVA=yes
-WITH_SWIG3=yes
 HAS_WARNING_UNUSED_LOCAL_TYPEDEFS=yes
 CXXFLAGS+=-Wall -Werror
 CFLAGS+=-Wall -Werror

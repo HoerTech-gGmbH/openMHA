@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2008 2009 2011 2012 2013 2015 2016 HörTech gGmbH
+// Copyright © 2004 2008 2009 2011 2012 2013 2015 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -779,7 +779,7 @@ unsigned short Connection::get_peer_port()
     return ntohs(peer_addr.sin_port);
 }
 
-MHA_TCP::Connection::Connection(SOCKET _fd) throw(MHA_Error)
+MHA_TCP::Connection::Connection(SOCKET _fd)
     : read_event(0),
       write_event(0),
       closed(false),

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2010 2012 2014 2015 HörTech gGmbH
+// Copyright © 2005 2006 2007 2010 2012 2014 2015 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -13,15 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-// mhainfo: plugin
+
 /*
- * An simple example MHA plugin written in C++
+ * A simple example \mha plugin written in C++
  *
  * This plugin scales one channel of the input signal, working in the
  * spectral domain. The scale factor and the scaled channel number is made
  * accessible to the configuration structure.
  *
- * This plugin implementation uses the C++ macros for standard MHA
+ * This plugin implementation uses the C++ macros for standard \mha
  * plugins and a template class for algorithms with a thread safe
  * configuration space. The second item is important if the
  * configuration will be changed at runtime.
@@ -87,7 +87,7 @@ private:
  *
  * The base class MHAParser::parser_t provides the configuration
  * interface, the base class MHAPlugin::plugin_t provides standard
- * methods for MHA plugins (i.e. error handling) and functionality for
+ * methods for \mha plugins (i.e. error handling) and functionality for
  * thread safe runtime configuration.
  *
  * Implementation see below.

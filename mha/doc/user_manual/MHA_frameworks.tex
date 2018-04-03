@@ -1,0 +1,263 @@
+%%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
+%%% Copyright © 2005 2006 2007 2008 2011 2012 2013 2017 HörTech gGmbH
+%%%
+%%% openMHA is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as published by
+%%% the Free Software Foundation, version 3 of the License.
+%%%
+%%% openMHA is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License, version 3 for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License, 
+%%% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+%\section{The MHA Frameworks}
+
+\section{The \mhad{}}\label{sec:linuxmhaserver}\label{sec:frameworks}
+
+The \mhad{} ('mha' on \Linux{}) provides a control interface for 
+the configuration and connects to the audio abstraction layer via the \mhad{} IO modules.
+%
+The text based user interface is available through a TCP network
+socket.
+%
+External network clients, e.g.\ telnet, Netcat or the \Octave{}/\Matlab{} control
+interface function 'mhactl' (see \secpageref{sec:mhactl}) can be used
+to access this interface.
+%
+Multiple IO modules are available in the audio abstraction layer,
+which encapsulate the platform dependency (see
+\secpageref{sec:audioabstraction}).
+%
+
+The \mhad{} and all of its plugins can be configured with the \mha{}
+configuration language (see \secpageref{sec:script} and \secpageref{sec:scenarios}).
+%
+
+
+\subsection{Invocation of 'mha'}
+
+If the \mhad{} is invoked without any command line arguments, it
+starts a network service on TCP port 33337, loopback network interface,
+accepting connections from the local host, expecting configuration language
+commands.
+%
+The behaviour of the server can be controlled through a set of command
+line options:
+%
+\begin{description}
+\item\verb!--quiet | -q!\\Suppress the output, do not show any
+greeting text or error messages.
+\item\verb!--port=portno | -s portno!\\Set the port number to which
+  the \mhad{} should bind (default: 33337). 
+  If port number is 0, 
+  then the operating system chooses a free port for the mha to bind to.
+\item\verb!--announce=port | -a port!\\ If given, then the \mha{} connects to 
+  this TCP port on the localhost after it has established its own TCP server 
+  socket, and announces its process ID and the TCP server port in use, and
+  closes the connection again. 
+\item\verb!--interface=if | -i if!\\Set the network interface to which
+the \mhad{} should bind (default: 127.0.0.1).
+\item\verb!--daemon | -d!\\Start the \mhad{} in daemon
+  mode. This means that after a \mha{} server was closed (via the \mha{}
+  command 'cmd=quit'), the \mhad{} will wait for a new
+  connections. In daemon mode the \mhad{} can be stopped by killing
+  the daemon process or by pressing {\tt Ctrl-C} at the console.
+\item\verb!--ok-ack=str | -o str!\\Set the acknowledgement string for
+  accepted \mha{} command lines (default value is '(MHA:success)').
+\item\verb!--fail-ack=str | -f str!\\Set the acknowledgement string
+  for rejected \mha{} command lines (default value is
+  '(MHA:failure)').
+\item\verb!--log=logfile!\\Set the log file to 'logfile'
+  (default: /dev/null).
+\item\verb!--help | -h!\\Print an overview about the command line
+  arguments.
+\item\verb!--lockstr=str | -l str!\\Create a file with name 'portno'
+and write the text 'str' into that file. The file is removed after the
+\mha{} session is closed.
+\item\verb!--license!\\Print the license agreement.
+\end{description}
+
+Additional command line arguments which are not recognised as options
+will be interpreted as \mha{} configuration language commands and sent to the
+\mhad{} after allocation, before accepting other input.
+%
+In daemon mode, these \mha{} configuration language commands are interpreted at the 
+start of each session.
+
+\verb!mha --daemon ?read:defaults.cfg! will read
+configuration file named \emph{default.cfg} for each session.
+%
+Clients for the \mhad{} are the \Octave{}/\Matlab{} tool 'mhactl' and any
+telnet client (not part of the distribution).
+
+The \mhad{} searches for \mha{} plugins in the system library paths, or in
+the directories given in the environment variable {\tt
+MHA\_LIBRARY\_PATH}.
+%
+Multiple paths can be separated by a semicolon.
+
+\textbf{Warning}
+
+The \mhad{} accepts connections from any host that can reach
+the configured network interface.
+%
+Sender authentication and transport encryption is not implemented.
+%
+We therefore strongly recommend to use the \mhad{} only in a
+physically separated network or behind a firewall.
+%
+We explicitly do not take any liability in case of abuse of patient
+data transmitted to the \mhad{} or any other interference.
+
+Please do not modify the acknowledgement strings if a communication
+with the \Octave{}/\Matlab{} tool 'mhactl' is required.
+
+\subsection{Configuration variables of the \mhad{}}
+
+In the following list the configuration variables of the \mhad{} are
+described. These variables are accessible through the parser interface
+(e.g.\ console input, TCP).
+%
+A configuration file with these settings can be read by sending a {\tt
+?read:filename.cfg} command to the configuration interface. See also
+\secpageref{sec:script} for details.
+
+\begin{description}
+  \mhavardesc{nchannels\_in}{Number of input audio channels.}
+  
+  \mhavardesc{fragsize}{The fragment size in samples per audio
+    channel. If 'MHAIOJack' is used, this has to match the JACK
+    fragment size (see \secpageref{sec:scenarios} for an example).}
+  
+  \mhavardesc{srate}{Sampling rate in Hz. Please note that JACK allows only a
+    fixed sampling rate given at the invocation of 'jackd'.}
+  
+  \mhavardesc{mhalib}{The MHA processing library name (e.g.\ 'transducers', 'mhachain'  or 'db').}
+  
+  \mhavardesc{iolib}{The IO plugin library name (e.g.\ 'MHAIOJack' or
+  'MHAIOFile'), see \secpageref{sec:audioabstraction}.}
+  
+  \mhavardesc{cmd}{This variable controls the operation state of the
+    \mhad{}. The valid states (nop, prepare, start, stop, release,
+    quit) of the \mhad{} are described in \secpageref{sec:fwstates}.}
+
+  \mhavardesc{mha}{This subparser contains the configuration of the
+    processing library.}
+  
+\mhavardesc{io}{This subparser contains the configuration of the IO
+    library.}
+
+\mhavardesc{sleep}{This special command waits on the normal execution of commands
+   while \mha{} continues processing audio. The number of seconds waited is given by the right-hand side
+   e.g. {\tt sleep = 5} waits 5 seconds.}
+
+\end{description}
+
+\subsection{States of the \mhad{}}%
+\label{sec:fwstates}\index{states}%
+
+The states of the \mhad{} are controlled by setting the {\tt cmd}
+variable. After configuring all modules of the \mha{} (Framework and
+Plugins), the configuration can be prepared to be ready for signal
+processing by setting {\tt cmd=prepare}. This will also validate the
+configuration; on error the prepare command will be rejected. Setting
+{\tt cmd=start} tells the IO plugin to start the signal processing,
+and accordingly setting {\tt cmd=stop} will cause the IO plugin to
+stop processing. Invoking {\tt cmd=release} brings the IO plugin into
+an unlocked state. The session can be closed with {\tt cmd=quit}. See
+\figref{MHA-fw-states} for an overview.
+
+\MHAfigure[][0.7\linewidth]{States of the \mhad{}}{MHA-fw-states}
+
+\subsection{Audio abstraction layer}%
+\label{sec:audioabstraction}
+
+The audio abstraction layer connects the audio backbone, i.e.,
+JACK (see \secpageref{sec:jack}) or audio files, with the \mhad{}.
+%
+This layer consists of two modules: 'MHAIOJack' for low delay real
+time processing with the JACK audio server (see \secpageref{sec:jack})
+on \Linux{} and 'MHAIOFile' for file to file processing.
+
+\paragraph{The 'MHAIOJack' audio IO module}%
+\index{MHAIOJack}%
+\index{Jack Audio Connection Kit}%
+
+The module 'MHAIOJack' provides communication with the JACK audio
+server.
+%
+When the \mhad{} is prepared for processing, this module connects to a
+running JACK server and validates its parameters. The input and output
+ports of the MHA can be connected to any other JACK ports through the
+\mha{} configuration (see below) or externally. Please note, that
+MHAIOJack currently supports only fixed sample rates and fragment
+sizes. Changing the fragment size of JACK while processing will stop
+the \mha{} processing thread. 
+
+Variables of the 'MHAIOJack' module:
+
+\begin{description}
+\mhavardesc{name}{Name of the JACK client. This variable only needs to
+  be modified if multiple instances of MHA should run simultaneously.}
+
+\mhavardesc{con\_in}{Connection list for input \mha{} ports with one
+  entry for each port, e.g.\ {\tt con\_in = [alsa\_pcm:capture\_1
+    alsa\_pcm:capture\_2]}. The ports are reconnected at any time the
+  variable is accessed. Ports can be disconnected by using a colon as
+  a port name. To achieve multiple connections to one \mha{} port, please
+  use external connection tools, e.g. 'qjackctl' or 'jack\_connect'.}
+
+\mhavardesc{con\_out}{Connection list for output \mha{} ports with one
+  entry for each port, e.g.\
+  {\tt con\_out = [alsa\_pcm:playback\_1 alsa\_pcm:playback\_2]}.}
+
+\mhavardesc{names\_in}{Labels of \mha{} input ports (empty for auto-generated labels).}
+
+\mhavardesc{names\_out}{Labels of \mha{} output ports (empty for auto-generated labels).}
+
+\end{description}
+
+In the node \verb!ports!, monitor variables filled with available
+hardware and software ports of Jack can be found.
+
+\MHAfigure[][\linewidth]{Typical session using the \mhad{} and Jack}{linuxfw_screenshot}
+
+\paragraph{The 'MHAIOFile' audio IO module}%
+\index{MHAIOFile}%
+\index{file processing}%
+\index{audio file}%
+\index{file!audio}%
+\label{sec:MHAIOFile}%
+
+The module 'MHAIOFile' provides file to file processing with the
+\mha{}. Input and output file name can be configured. After the \mhad{}
+is started (\verb!cmd=start!), the whole input file will be
+processed and the processed data will be written to the output
+file. The start command will wait until the processing is finished.
+The files are opened when preparing the \mhad{} and closed when
+releasing the \mhad{}. The file and data format of the output file
+is inherited from the input file, e.g. if the input file is a 32 bit
+WAVE file, also the output file will be. The plugin supports most
+commonly used file formats.
+
+The variables of 'MHAIOFile' are:
+
+\begin{description}
+\mhavardesc{in}{Input file name.}
+\mhavardesc{out}{Output file name.}
+\mhavardesc{output\_sample\_format}{Output sample format, or 'input' to copy format specification from input file.}
+\mhavardesc{startsample}{First sample to be processed.}
+\mhavardesc{length}{Number of samples to be processed by one start command, or zero for all.}
+\mhavardesc{strict\_channel\_match}{Require same channel count in \mha{} and input sound file. If yes, an error message is created if the channel count doesn't match, otherwise additional channels are ignored and missing channels are filled with zeros.}
+\mhavardesc{strict\_srate\_match}{Require same sample rate in \mha{} and sound file. If yes then an error is reported if the sample rate does not match, otherwise the sample rate of the sound file is ignored (no re-sampling).}
+\end{description}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "openMHA_application_manual"
+%%% indent-tabs-mode: nil
+%%% coding: utf-8-unix
+%%% End: 

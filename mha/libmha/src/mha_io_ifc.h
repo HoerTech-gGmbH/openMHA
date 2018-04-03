@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2013 2016 HörTech gGmbH
+// Copyright © 2005 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 
 #include "mha.h"
 
-/**\internal
+/**
 
 \brief Event handler for signal stream
 
@@ -28,7 +28,7 @@ processing will be performed in this callback.
 */
 typedef int (*IOProcessEvent_t)(void* handle,mha_wave_t* sIn,mha_wave_t** sOut);
 
-/**\internal
+/**
 
 \brief Event handler for stop event
 
@@ -38,7 +38,7 @@ return immediatly.
 */
 typedef void (*IOStoppedEvent_t)(void* handle, int proc_err, int io_err);
 
-/**\internal
+/**
 
 \brief Event handler for start event
 

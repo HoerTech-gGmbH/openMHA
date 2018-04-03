@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2008 2009 2010 2011 2012 2013 2016 HörTech gGmbH
+// Copyright © 2006 2008 2009 2010 2011 2012 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -102,7 +102,7 @@ protected:
 // forward reference for the friend test class.
 class Test_mha_drifter_fifo_t;
 
-/** \internal
+/** 
  * A FIFO class for blocksize adaptation without Synchronization.
  * Features: 
  * delay concept (desired, minimum and maximum delay),
@@ -122,28 +122,36 @@ class mha_drifter_fifo_t : public mha_fifo_t<T> {
 
     /** Flag set to true when write is called the first time. */
     bool writer_started;
+
     /** Flag set to true when read is called for the first time. */
     bool reader_started;
 
     /** The number of xruns seen by the writer since object instantiation */
     unsigned writer_xruns_total;
+
     /** The number of xruns seen by the reader since object instantiation */
     unsigned reader_xruns_total;
+
     /** The number of xruns seen by the writer since the last start of
      * processing. */
     unsigned writer_xruns_since_start;
+
     /** The number of xruns seen by the reader since the last start of
      * processing */
     unsigned reader_xruns_since_start;
+
     /** The number of xruns seen by the writer in succession. 
      * Reset to 0 every time a write succeeds without xrun. */
     unsigned writer_xruns_in_succession;
+
     /** The number of xruns seen by the reader in succession.
      * Reset to 0 every time a read succeeds without xrun. */
     unsigned reader_xruns_in_succession;
+
     /** A limit to the number of xruns seen in succession during write
      * before the data transmission through the FIFO is stopped. */
     unsigned maximum_writer_xruns_in_succession_before_stop;
+
     /** A limit to the number of xruns seen in succession during read
      * before the data transmission through the FIFO is stopped. */
     unsigned maximum_reader_xruns_in_succession_before_stop;

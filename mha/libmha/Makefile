@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2016 HörTech gGmbH
+# Copyright © 2013 2014 2016 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -16,10 +16,12 @@
 include ../../config.mk
 include ../../magic.mk
 
-TARGETS=libMHAToolbox$(DYNAMIC_LIB_EXT)
+libmha = lib$(MHATOOLBOX_NAME)
+
+TARGETS=$(libmha)$(DYNAMIC_LIB_EXT)
 
 include ../../rules.mk
-include ./private.mk
+-include ./private.mk
 
 OBJECTS = \
 	mha_parser.o mha_error.o mha_errno.o \
@@ -60,7 +62,7 @@ OBJECTS += $(MHA_FFTW_OBJECTS) $(MHA_RFFTW_OBJECTS)
 
 CXXFLAGS += -I../../external_libs/$(PLATFORM_CC)/include
 
-$(BUILD_DIR)/libMHAToolbox$(DYNAMIC_LIB_EXT): $(OBJECTS:%.o=$(BUILD_DIR)/%.o)
+$(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT): $(OBJECTS:%.o=$(BUILD_DIR)/%.o)
 
 ifeq "MinGW" "$(PLATFORM)"
 LDLIBS += -Wl,--out-implib,$(basename $@).a

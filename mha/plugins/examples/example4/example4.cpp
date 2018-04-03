@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2005 2006 2007 2009 2010 2014 2015 HörTech gGmbH
+// Copyright © 2004 2005 2006 2007 2009 2010 2014 2015 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -13,9 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-// mhainfo: plugin
+
 /*
- * An simple example MHA plugin written in C++
+ * A simple example \mha plugin written in C++
  *
  * This plugin scales one channel of the input signal, working in the
  * time domain. The scale factor and the scaled channel number is made
@@ -46,8 +46,8 @@ class example4_t : public MHAPlugin::plugin_t<int> {
     void on_prereadaccess();
 public:
     /** This constructor initializes the configuration language
-     * variables and inserts them into the MHA configuration tree.
-     * It connects the MHA Events triggered by these configuration variables
+     * variables and inserts them into the \mha configuration tree.
+     * It connects the \mha Events triggered by these configuration variables
      * to the respective callbacks. */
     example4_t(algo_comm_t & ac,
                const std::string & chain_name,
@@ -81,8 +81,8 @@ example4_t::example4_t(algo_comm_t & ac,
                        const std::string & chain_name,
                        const std::string & algo_name)
     : MHAPlugin::plugin_t<int>("This plugin multiplies the sound signal"
-                          " in one audio channel by a factor.  It works"
-                   " in the spectral domain.",ac),
+                               " in one audio channel by a factor.  It works"
+                               " in the spectral domain.",ac),
       scale_ch("Index of audio channel to scale. Indices start from 0."
                " Only channels with even indices may be scaled.",
                "0",

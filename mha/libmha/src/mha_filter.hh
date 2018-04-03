@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010  HörTech gGmbH
-// Copyright © 2011 2012 2013 2014 2016 HörTech gGmbH
+// Copyright © 2011 2012 2013 2014 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@
 #include "mha_plugin.hh"
 #include <valarray>
 
-/** \internal
+/**
     \ingroup mhatoolbox
     \file mha_filter.hh
     \brief Header file for IIR filter classes
@@ -268,12 +268,12 @@ namespace MHAFilter {
 
         This class implements an infinite impulse response filter.
         Since it inherits from MHAParser::parser_t, it can easily be integrated
-        in the MHA configuration tree.  It provides the configuration language
+        in the \mha configuration tree.  It provides the configuration language
         variables "A" (vector of recursive filter coefficients) and "B" (vector
         of non-recursive filter coefficients). 
 
         The filter instance reacts to changes in filter coefficients through
-        the MHA configuration language, and uses the updated coefficients in
+        the \mha configuration language, and uses the updated coefficients in
         the next invocation of the filter method. 
 
         Update of the coefficients is thread-safe and non-blocking. 

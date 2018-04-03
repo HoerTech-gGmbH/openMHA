@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2003 2004 2005 2006 2008 2009 2013 2016 HörTech gGmbH
+// Copyright © 2003 2004 2005 2006 2008 2009 2013 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -14,12 +14,10 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-   \internal
    \file   mha_error.cpp
-   \brief  Implementation of MHA error handling
+   \brief  Implementation of \mha error handling
    
    This file forms a seperate library.
-   
 */
 
 #include "mha_error.hh"
@@ -41,10 +39,9 @@
 
 /**
    \ingroup mhatoolbox
-   \defgroup mhaerror Error handling in the MHA
+   \defgroup mhaerror Error handling in the \mha
 
    Errors are reported to the user via the MHA_Error exception.
-
 */
 
 
@@ -53,8 +50,8 @@
    \class MHA_Error
    \brief Error reporting exception class
    
-   This class is used for error handling in the MHA. It is used by the
-   MHA kernel and by the MHA toolbox library. Please note that
+   This class is used for error handling in the \mha. It is used by the
+   \mha kernel and by the \mha toolbox library. Please note that
    exceptions should not be used accross ANSI-C interfaces. It is
    necessary to catch exceptions within the library.
 
@@ -62,10 +59,9 @@
    error message.
  */
 
-/**\internal
- * Compute number of digits in an unsigned integer.
- */
-static unsigned digits(unsigned n)
+namespace mha_error_helpers {
+/* Compute number of digits in an unsigned integer. */
+unsigned digits(unsigned n)
 {
     // The following is the iteration version of the recursion
     // return (n<10) ? 1 : (1+digits(n/10));
@@ -74,6 +70,26 @@ static unsigned digits(unsigned n)
         {}
     return digits;
 }
+unsigned snprintf_required_length(const char * formatstring, ...)
+{
+    // We need a char pointer to point somewhere for snprintf
+    char dummy = 0;
+    // But we tell snprintf that this buffer has zero length.
+    constexpr size_t ZERO_SIZE = 0U;
+    
+    va_list variadic_argument_list;
+    va_start(variadic_argument_list, formatstring);
+
+    // When there is too little space in the target string to hold the result
+    // of an snprintf, snprintf will still return the number of bytes required
+    // to hold the complete string (excluding the terminating 0).
+    int result =
+        vsnprintf(&dummy, ZERO_SIZE, formatstring, variadic_argument_list);
+    va_end(variadic_argument_list);
+    return result;
+}
+} // namespace mha_error_helpers
+using namespace mha_error_helpers;
 
 /** 
     Create an instance of a MHA_Error.

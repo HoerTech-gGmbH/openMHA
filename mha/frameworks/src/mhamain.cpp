@@ -1,6 +1,6 @@
-// This file is part of the Open HörTech Master Hearing Aid (openMHA)
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2011 2012 2013 HörTech gGmbH
-// Copyright © 2014 2016 HörTech gGmbH
+// Copyright © 2014 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,6 @@
 #include "mha_parser.hh"
 #include <getopt.h>
 #include <stdarg.h>
-#include "mha_license.h"
 #include <fstream>
 #include <unistd.h>
 #include <stdlib.h>
@@ -223,10 +222,9 @@ std::string mhaserver_t::received_group(const std::string& cmd)
 " --log=logfile             activate logging to logfile\n"\
 " --help | -h               show this help screen\n"\
 " --lockstr=str | -l str    create a port lockfile with content 'str'\n"\
-" --license                 print the license agreement\n"\
 
 #define GREETING_TEXT \
-"The Open Master Hearing Aid (openMHA) server\n"\
+"The Open Master Hearing Aid (openMHA) server version " MHA_RELEASE_VERSION_STRING "\n"\
 "Copyright (c) 2005-2017 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
 "\n\n"\
 "This program comes with ABSOLUTELY NO WARRANTY; "\
@@ -234,7 +232,6 @@ std::string mhaserver_t::received_group(const std::string& cmd)
 "This is free software, and you are welcome to redistribute it \n"\
 "under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3; \n"\
 "for details see file COPYING.\n\n"
-
 
 void create_lock(unsigned int p,std::string s)
 {
@@ -277,7 +274,6 @@ extern "C" int mhamain(int argc, char* argv[])
             {"fail-ack", 1, NULL, 'f'},
             {"lockstr",  1, NULL, 'l'},
             {"log",      1, NULL, 'm'},
-            {"license",  0, NULL, 'z'},
             {"daemon",   0, NULL, 'd'},
             {NULL,       0, NULL, 0  }
         };
@@ -314,10 +310,6 @@ extern "C" int mhamain(int argc, char* argv[])
         }
 #endif
                 break;
-            case 'z' :
-                printf(LICENSE_AGREEMENT);
-                exit(0);
-                // break not needed, exit does not return
             case 'l' :
                 lock_str = optarg;
                 b_create_lock = true;

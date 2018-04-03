@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2008 2009 2013 2014 2015 2016 HörTech gGmbH
+// Copyright © 2005 2006 2008 2009 2013 2014 2015 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -43,7 +43,7 @@ static char user_err_msg[MAX_USER_ERR];
 
 
 /* ======================================================================== */
-/**\internal 
+/** 
  * The parser interface of the IOTCP library. */
 class io_tcp_parser_t : public MHAParser::parser_t
 {
@@ -251,7 +251,7 @@ io_tcp_parser_t::io_tcp_parser_t()
 }
 
 /* ========================================================================= */
-/**\internal
+/**
  * Sound data handling of io tcp library.
  */
 class io_tcp_sound_t {
@@ -270,7 +270,7 @@ private:
     /** Storage for input signal. */
     MHASignal::waveform_t* s_in;
 
-    /**\internal This union helps in conversion of floats from host byte
+    /** This union helps in conversion of floats from host byte
      * order to network byte order and back again. */
     union float_union {
         float f;
@@ -280,7 +280,7 @@ private:
 
     /** Check if mha_real_t is a usable 32-bit floating point type.
      * @throw MHA_Error if mha_real_t is not compatible to 32-bit float. */
-    static void check_sound_data_type() throw (MHA_Error);
+    static void check_sound_data_type();
 
 public:
     /** Initialize sound data handling.  Checks sound data type by calling
@@ -338,7 +338,7 @@ io_tcp_sound_t::io_tcp_sound_t(int _fragsize, float _samplerate)
     check_sound_data_type();
 }
 
-void io_tcp_sound_t::check_sound_data_type() throw(MHA_Error)
+void io_tcp_sound_t::check_sound_data_type()
 {
     float_union data;
     if (sizeof(float) != sizeof(unsigned int))
@@ -426,7 +426,7 @@ std::string io_tcp_sound_t::hton(const mha_wave_t * s_out)
 }
 
 /* ========================================================================= */
-/**\internal
+/**
  * TCP sound-io library's interface to the framework callbacks. */
 class io_tcp_fwcb_t {
 private:

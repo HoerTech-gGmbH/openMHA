@@ -1,28 +1,45 @@
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// Copyright © 2005 2006 2007 2009 2013 2017 HörTech gGmbH
+//
+// openMHA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, version 3 of the License.
+//
+// openMHA is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License, version 3 for more details.
+//
+// You should have received a copy of the GNU Affero General Public License, 
+// version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
-\defgroup example_tut Writing MHA Plugins. A step-by-step tutorial 
+\defgroup example_tut Writing \mha Plugins. A step-by-step tutorial 
 
-\brief A step-by-step tutorial on writing MHA plugins.
+\brief A step-by-step tutorial on writing \mha plugins.
 
-The MHA development distribution contains a small number of example MHA 
-plugins as C++ source code.
-With their increasing complexity they help understanding
-the concepts of MHA plugin programming. This tutorial explains
-the basic parts of the example files.
+\mha contains a small number of example plugins as C++ source code.
+They are meant to help developers in understanding the concepts 
+of \mha plugin programming starting from the simplest example 
+and increasing in complexity. This tutorial explains the basic 
+parts of the example files.
 
 \section ex1 example1.cpp
 \dontinclude example1.cpp
 
 The example plugin file \c example1.cpp demonstrates the easiest way to
-implement a MHA Plugin. 
+implement an \mha Plugin. 
 It attenuates the sound signal in the first channel by multiplying the sound
 samples with a factor.
-The plugin class exports 5 methods, 
-but only 2 of them need a non-empty implementation.
+The plugin class MHAPlugin::plugin_t exports several methods, 
+but only two of them need a non-empty implementation: \c prepare() method 
+is a pure virtual function and \c process() is called when signal processing 
+starts.
 
 \skip mha_plugin.hh
 \until Do nothing in release
 
-Every plugin implementation should include the mha_plugin.hh header
+Every plugin implementation should include the 'mha_plugin.hh' header
 file.  C++ helper classes for plugin development are declared in this
 header file, and most header files needed for plugin development are
 included by mha_plugin.hh. 
@@ -31,12 +48,12 @@ The class plugin1_t inherits from the class MHAPlugin::plugin_t, which
 then inherits from MHAParser::parser_t -- the configuration language
 interface in the method "parse".  Our plugin class therefore exports
 the working "parse" method inherited from MHAParser::parser_t, and the
-plugin is visible in the MHA configuration tree.
+plugin is visible in the \mha configuration tree.
 
 The constructor has to accept 3 parameters of correct types.
 In this simple example, we do not make use of them.
 
-The release method is used to free resources after signal processing.
+The \c release() method is used to free resources after signal processing.
 In this simple example, we do not allocate resources, so there is no need to
 free them.
 
@@ -44,12 +61,12 @@ free them.
 \skip prepare(
 \until }
 \param signal_info Contains information about the input signal's parameters,
-                   see \ref mhaconfig_t.
+                  see \ref mhaconfig_t.
 
-The prepare method of the plugin is called before the signal
+The \c prepare() method of the plugin is called before the signal
 processing starts, when the input signal parameters like domain,
 number of channels, frames per block, and sampling rate are known.
-The prepare method can check these values and raise an exception if the 
+The \c prepare() method can check these values and raise an exception if the 
 plugin cannot cope with them, as is done here.
 The plugin can also change these values if the signal processing performed 
 in the plugin results in an output signal with different parameters.
@@ -58,16 +75,16 @@ therefore they are not modified here.
 
 \subsection ex1_sigproc The signal processing method
 
-\skip process
+\skip process(
 \until };
 
 \param signal Pointer to the input signal structure mha_wave_t.
 \return Pointer to the output signal structure. 
-        The input signal structure may be reused 
-        if the signal has the same domain and dimensions.
+       The input signal structure may be reused 
+       if the signal has the same domain and dimensions.
 
-The plugin works on time domain input signal (indicated by the data type 
-of the process method's parameter).
+The plugin works with time domain input signal (indicated by the data type 
+mha_wave_t of the process method's parameter).
 It scales the first channel by a factor of 0.1. The output
 signal reuses the structure that previously contained the input signal
 (in-place processing).
@@ -78,7 +95,8 @@ Plugins have to export C functions as their interface (to avoid C++
 name-mangling issues and other incompatibilities when mixing plugins
 compiled with different C++ compilers).
 
-\until CALLBACKS
+\skip MHAPLUGIN
+\until CALLBACKS(
 
 This macro takes care of accessing the C++ class from the C functions
 required as the plugin's interface.  It implements the C funtions and
@@ -95,30 +113,31 @@ type \ref MHA_Error may be raised by your plugin.
 If your code uses different Exception classes, you will have to catch them
 yourself before control leaves your plugin class, and maybe report the error
 by throwing an instance of MHA_Error.
-This is important, because (1) C++ exceptions cannot cross the plugin
-interface, which is in C, and (2) there is no error handling code for your
-exception classes in the MHA framework anyways.
+This is important, because: (1) C++ exceptions cannot cross the plugin interface, 
+which is in C, and (2) there is no error handling code for your exception classes 
+in the \mha framework anyways.
 
 \section ex2 example2.cpp
 
 \dontinclude example2.cpp
 
-This file is another simple example MHA Plugin written in C++. 
-This plugin also
-scales one channel of the input signal, working in the time
+This is another simple example of \mha plugin written in C++. 
+This plugin also scales one channel of the input signal, working in the time
 domain.
-The scale factor and which channel to scale (index number) are made
-accessible to the configuration language.
+The scale factor and which channel to scale (index number) 
+are made accessible to the configuration language.
 
 The algorithm is again implemented as a C++ class.
-The variables \c scale_ch and \c factor
-denote the channel number and scale factor of the scaling.
+
 
 \skip example2_t
 \until }
 
+\param scale_ch -- the channel number to be scaled \param factor -- the scale factor of
+the scaling.
+
 This class again inherits from the template class MHAPlugin::plugin_t
-for intergration with the MHA configuration language.  The two data
+for intergration with the \mha configuration language.  The two data
 members serve as externally visible configuration variables.  All
 methods of this class have a non-empty implementation.
 
@@ -130,33 +149,33 @@ methods of this class have a non-empty implementation.
 The constructor invokes the superclass constructor with a string
 parameter.  This string parameter serves as the help text that
 describes the functionality of the plugin.
-The constructor registers configuration variables with the MHA
+The constructor registers configuration variables with the \mha
 configuration tree and sets their default values and permitted ranges.
 The minimum permitted value for both variables is zero, 
 and there is no maximum limit 
 (apart from the limitations of the underlying C data type).
 The configuration variables have to be registered with the parser node
-instance using the insert_item method.
+instance using the MHAParser::parser_t::insert_item method.
 
 \subsection ex2_prepare The prepare method
 
 \until }
-\param signal_info Contains information about the input signal's parameters,
-                   see \ref mhaconfig_t.
+\param signal_info -- contains information about the input signal's parameters,
+                  see \ref mhaconfig_t.
 
 The user may have changed the configuration variables before preparing
-the MHA plugin.
-A consequence is that it is not sufficient any more to check if the
+the \mha plugin.
+A consequence of this is that it is not sufficient any more to check if the
 input signal has at least 1 audio channel.
 
 Instead, this prepare method checks that the input signal has enough
-channels so that the current value of scale_ch.data is a valid channel index,
-i.e. 0 \f$\le\f$ scale_ch.data < signal_info.channels.
-The prepare method does not have to check that 0 \f$\le\f$ scale_ch.data,
+channels so that the current value of \c scale_ch.data is a valid channel index,
+i.e. 0 \f$\le\f$ \c scale_ch.data < \c signal_info.channels.
+The prepare method does not have to check that 0 \f$\le\f$ \c scale_ch.data,
 since this is guaranteed by the valid range setting of the configuration
 variable.
 
-The prepare method then modifies the valid range of the scale_ch variable,
+The prepare method then modifies the valid range of the \c scale_ch variable,
 it modifies the upper bound so that the user cannot set the variable to a
 channel index higher than the available channels.
 Setting the range is done using a string parameter. 
@@ -164,14 +183,14 @@ The prepare method contatenates a string of the form "[0,n[".
 n is the number of channels in the input signal, and is used here as
 an exclusive upper boundary. 
 To convert the number of channels into a string, a helper function for
-string conversion from the MHA Toolbox is used. 
+string conversion from the \mha Toolbox is used. 
 This function is overloaded and works for several data types.
 
 It is safe to assume that the value of configuration variables does not 
 change while the prepare method executes,
-since MHA preparation is triggered from a configuration language command,
-and the MHA configuration language parser is busy and cannot accept
-other commands until all MHA plugins are prepared 
+since \mha preparation is triggered from a configuration language command,
+and the \mha configuration language parser is busy and cannot accept
+other commands until all \mha plugins are prepared 
 (or one of them stops the process by raising an exception).
 As we will see later in this tutorial, 
 the same assumption cannot be made for the process method.
@@ -184,7 +203,7 @@ the same assumption cannot be made for the process method.
 The release method should undo the state changes that were performed
 by the prepare method. 
 In this example, the prepare method has reduced the valid range of the 
-scale_ch, so that only valid channels could be selected during signal
+\c scale_ch, so that only valid channels could be selected during signal
 processing.
 
 The release method reverts this change by setting the valid range back
@@ -193,12 +212,11 @@ to its original value, "[0,[".
 \subsection ex2_process The signal processing method
 
 \until }
-\until CALLBACKS
 
 The processing function uses the current values of the configuration
 variables to scale every frame in the selected audio channel.
 
-Please note that the value of each configuration variable can change while 
+Note that the value of each configuration variable can change while 
 the processing method executes, since the process method usually executes in 
 a different thread than the configuration interface.
 
@@ -229,14 +247,14 @@ different memory address.
 
 There is also a consistency problem if you take the combination of two 
 "safe" datatypes. 
-The MHA provides a mechanism that can cope with these types of problems.
+The \mha provides a mechanism that can cope with these types of problems.
 This thread-safe runtime configuration update mechanism is introduced in
 example 5.
 
 \section ex3 example3.cpp
 \dontinclude example3.cpp
 
-This example introduces the MHA Event mechanism.
+This example introduces the \mha Event mechanism.
 Plugins that provide configuration variable can receive a callback from the 
 parser base class when a configuration variable is accessed
 through the configuration language interface.
@@ -246,7 +264,7 @@ only even channel indices are permitted when selecting the audio
 channel to scale.
 This restriction cannot be ensured by setting the range of the channel
 index configuration variable.
-Instead, the event mechanism of MHA configuration variables is used.
+Instead, the event mechanism of \mha configuration variables is used.
 Configuration variables emit 4 different events, and your plugin can
 connect callback methods that are called when the events are triggered.
 These events are:
@@ -267,7 +285,7 @@ changes the value of this variable.
 <b>prereadaccess</b>
 
 \li triggered before the value of a configuration variable is read,
-i.e. the value of said variable can be changed by the callback to implement
+i.e. the value of the requested variable can be changed by the callback to implement
 computation on demand.
 
 All of these callbacks are executed in the configuration thread. 
@@ -281,7 +299,7 @@ but your processing method can execute in parallel and may change values.
 \skip example3_t
 \until patchbay
 
-This plugin exposes another configuration variable, "prepared", that keeps 
+This plugin exposes another configuration variable, \c "prepared", that keeps 
 track of the prepared state of the plugin.
 This is a read-only (monitor) integer variable, 
 i.e. its value can only be changed by your plugin's C++ code. 
@@ -299,7 +317,7 @@ This plugin exposes 4 callback methods that are triggered by events.
 Multiple events (from the same or different configuration variables)
 can be connected to the same callback method, if desired.
 
-This example plugin uses the valuechanged event to check that the
+This example plugin uses the \c valuechanged event to check that the \c
 scale_ch configuration variable is only set to valid values.
 
 The other callbacks only cause log messages to stdout, but the comments
@@ -314,7 +332,7 @@ useful.
 The constructor of monitor variables does not take a parameter for setting
 the initial value. The single parameter here is the help text describing the
 contents of the read-only variable. 
-If the initial value should differ from 0, then the .data member of the
+If the initial value should differ from 0, then the .\c data member of the
 configuration variable has to be set to the initial value in the plugin
 constructor's body explicitly, as is done here for demonstration although
 the initial value of this monitor variable is 0.
@@ -353,7 +371,7 @@ The signal processing member function is the same as in example 2.
 \skip writeaccess
 \until CALLBACKS
 
-When the writeaccess or valuechanged callbacks throw an MHAError exception,
+When the \c writeaccess or \c valuechanged callbacks throw an MHAError exception,
 then the change made to the value of the configuration variable is reverted.
 
 If multiple event sources are connected to a single callback method, 
@@ -384,18 +402,18 @@ The prepare method now checks that the signal domain is MHA_SPECTRUM.
 The signal processing member function works on the spectral signal 
 instead of the wave signal as before.
 
-The mha_spectrum_t instance stores the complex (mha_complex_t) 
+The mha_spec_t instance stores the complex (mha_complex_t) 
 spectral signal for positive frequences only (since the waveform signal
 is always real).
 The num_frames member of mha_spec_t actually denotes the number of STFT 
 bins.
 
-Different from mha_wave_t, a multichannel signal is stored non-interleaved
-in the signal buffer.
+Please note that different from mha_wave_t, a multichannel signal in mha_spec_t 
+is stored non-interleaved in the signal buffer.
 
 Some arithmetic operations are defined on struct mha_complex_t to 
 facilitate efficient complex computations. 
-The *= operator used here (defined for real and for complex arguments)
+The \c *= operator used here (defined for real and for complex arguments)
 is one of them.
 
 \subsection ex4_interface Connecting the C++ class with the C plugin interface
@@ -404,7 +422,7 @@ is one of them.
 
 
 When connecting a class that performs spectral processing with the C interface,
-use spec instead of wave as the domain indicator.
+use \c spec instead of \c wave as the domain indicator.
 
 \section ex5 example5.cpp
 \dontinclude example5.cpp
@@ -413,14 +431,14 @@ Many algorithms use complex operations to transform the user space
 variables into run time configurations.  If this takes a noticeable
 time (e.g. more than 100-500 \f$\mu\f$ sec), 
 the update of the runtime configuration
-can not take place in the real time processing thread. Furthermore the
+can not take place in the real time processing thread. Furthermore, the
 parallel access to complex structures may cause unpredictable results
 if variables are read while only parts of them are written to
 memory (cf. section \ref ex2_consistency). 
 To handle these situations, a special C++ template class \ref
 MHAPlugin::plugin_t was designed.
 This class helps keeping all access to the configuration language variables
-in the configuration thread rather than in the processing thread.
+in the \b configuration thread rather than in the \b processing thread.
 
 The runtime configuration class \c example5_t is the parameter of the
 template class MHAPlugin::plugin_t. Its constructor converts the user
@@ -428,7 +446,7 @@ variables into a runtime configuration.
 Because the constructor executes in the configuration thread,
 there is no harm if the constructor takes a long time. All
 other member functions and data members of the runtime configurations are
-accessed only from the signal processing thread (real time thread).
+accessed only from the signal processing thread (real-time thread).
 
 \skip example5_t
 \until }
@@ -446,7 +464,7 @@ help of a MHAEvents::patchbay_t instance.
 The constructor of the runtime configuration analyses and validates
 the user variables. 
 If the configuration is invalid, an exception of type \ref MHA_Error is thrown.
-This will cause the MHA configuration language command which caused the change
+This will cause the \mha configuration language command which caused the change
 to fail: 
 The modified configuration language variable is then reset to its original
 value, 
@@ -491,7 +509,7 @@ The prepare method ensures that a valid runtime configuration exists by
 creating a new runtime configuration from the current configuration language
 variables.
 If the configuraion is invalid, then an exception of type \ref MHA_Error
-is raised and the preparation of the MHA fails with an error message.
+is raised and the preparation of the \mha fails with an error message.
 
 \skip ::prepare
 \until }
@@ -523,7 +541,7 @@ code and error message.
 \section ex6 example6.cpp
 \dontinclude example6.cpp
 
-This last example is the same as before but additionally creates an
+This last example is the same as the previous one, but it additionally creates an
 'Algorithm Communication Variable' (AC variable). It calculates the
 RMS level of a given channel and stores it into this variable. The
 variable can be accessed by any other algorithm in the same chain. To
@@ -540,11 +558,11 @@ and other detailed informations please see \ref algocomm.
 
 \latexonly \par~\par\vfill\par~\par\endlatexonly
 
-\section DebuggingMHAplugins Debugging MHA plugins
+\section DebuggingMHAplugins Debugging \mha plugins
 
-Suppose you would want to step through the code of your mha plugin with a 
+Suppose you would want to step through the code of your \mha plugin with a 
 debugger.  This example details how to use the linux gdb debugger to
-inspect the example6_t::prepare() and example6_t::process() routines of
+inspect the \c example6_t::prepare() and \c example6_t::process() routines of
 \ref ex6
 example 6.
 
@@ -552,7 +570,9 @@ First, make sure that your plugin is compiled with the compiler option to
 include debugging symbols: Apply the -ggdb switch to all gcc, g++ invocations.
 
 Once the plugin is compiled, with debugging symbols, create a test
-configuration. For example 6, you could use
+configuration. For example 6, assuming there is an audio file named 
+input.wav in your working directory, you could create a configuration 
+file named `debugexample6.cfg', with the following content:
 
 \verbatim
 # debugexample6.cfg
@@ -568,60 +588,68 @@ mha.channel = 1
 cmd=start
 \endverbatim
 
-Start gdb using
+Assuming all your binaries and shared-object libraries 
+are in your `bin' directory (see README.md), you could 
+start gdb using
 \verbatim
 $ export MHA_LIBRARY_PATH=$PWD/bin 
 $ gdb $MHA_LIBRARY_PATH/mha
 \endverbatim
 
 Set breakpoints in prepare and process methods, and start execution.
-Note that specifying the breakpoint by symbol (example6_t::prepare) does not yet
-work, as the symbol lives in the MHA plugin that has not yet been loaded.
+Note that specifying the breakpoint by symbol (\c example6_t::prepare) does not yet
+work, as the symbol lives in the \mha plugin that has not yet been loaded.
 Specifying by line number works, however.
 Specifying the breakpoint by symbol also works once the plugin is loaded
-(i.e. when the debugger stops in the first break point).
+(i.e. when the debugger stops in the first break point). You can set the 
+breakpoints like this (example shown here is run in gdb version 7.11.1):
 
 \verbatim
-(gdb) b example6.cpp:215
-No source file named example6.cpp.
-Make breakpoint pending on future shared library load? (y or [n]) y
-
-Breakpoint 1 (example6.cpp:215) pending.
 (gdb) run ?read:debugexample6.cfg
-Starting program: /home/tobias/autobuild_mha/mha/bin/i686-linux-gcc-3.3/mha ?read:debugexample6.cfg
+Starting program: {openMHA_directory}/bin/mha ?read:debugexample6.cfg
 [Thread debugging using libthread_db enabled]
-The Master Hearing Aid (MHA) server
-(c) 2005-2009 HoerTech gGmbH, Marie-Curie-Str. 2, D-26129 Oldenburg, Germany
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+The Open Master Hearing Aid (openMHA) server
+Copyright (c) 2005-2017 HoerTech gGmbH, D-26129 Oldenburg, Germany
 
-By starting this program you accept the license agreement
-provided with this software.
+This program comes with ABSOLUTELY NO WARRANTY; for details see file COPYING.
+This is free software, and you are welcome to redistribute it 
+under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3; 
+for details see file COPYING.
 
-[New Thread 0xb7d2f6b0 (LWP 21903)]
-[Switching to Thread 0xb7d2f6b0 (LWP 21903)]
 
-Breakpoint 1, example6_t::prepare (this=0x821ec38, tfcfg=@0x8213f38)
-    at ../src/examples/example6.cpp:215
-215         if( tfcfg.domain != MHA_WAVEFORM )
-Current language:  auto; currently c++
-(gdb) b example6_t::process
-Breakpoint 2 at 0xb795b6af: file ../src/examples/example6.cpp, line 186.
+Breakpoint 1, example6_t::prepare (this=0x6478b0, tfcfg=...)
+    at example6.cpp:192
+192	    if( tfcfg.domain != MHA_WAVEFORM )
+(gdb) b example6.cpp:162
+Breakpoint 2 at 0x7ffff589744a: file example6.cpp, line 162.
 (gdb) c
 Continuing.
 \endverbatim
 
-Next stop is the process() method. You can now examine and change the
-variables, step through the program as needed.
+Where `{openMHA_directory}' is the directory where openMHA is 
+located (which should also be your working directory in this case). 
+Next stop is the \c process() method. You can now examine and change the
+variables, step through the program as needed (using, for example `n' to 
+step in the next line):
 
 \verbatim
-Breakpoint 3, example6_t::process (this=0x821ec38, wave=0x821eb7c)
-    at ../src/examples/example6.cpp:186
-186         poll_config();
-(gdb) p *wave
-$1 = {buf = 0x823abf8, num_channels = 2, num_frames = 64, channel_info = 0x0}
+Breakpoint 2, example6_t::process (this=0x7ffff6a06c0d, wave=0x10a8b550)
+    at example6.cpp:162
+162	{
+(gdb) n
+163	    poll_config();
 (gdb) 
 \endverbatim
 
 */
 
-/*  LocalWords:  MHA plugin Matlab Configurator
+/* LocalWords:  \mha plugin Matlab Configurator
  */
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

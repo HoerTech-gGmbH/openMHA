@@ -38,8 +38,6 @@ public:
 private:
     // output signal
     MHASignal::waveform_t out;
-    // number of input channels
-    int numchannels_in;
     // vector of weights
     std::vector<mha_real_t> weights;
     // vector of delays
@@ -71,7 +69,6 @@ delaysum_t::delaysum_t(unsigned int inumchannels_in,
                        std::vector<mha_real_t> iweights,
                        std::vector<int> idelay)
     : out(fragsize,1), //initialize the output signal (only one channel)
-      numchannels_in(inumchannels_in),
       weights(iweights),
       delay(idelay),
       in_buffer(fragsize,inumchannels_in){
@@ -117,7 +114,7 @@ delaysum_if_t::delaysum_if_t(
       weights("weights of channels",
                 "[1.0 1.0]", 
                 "[0.0,["),
-      /* initialzing variable 'delay' with MHAParser::int_t(char* name, .... ) */
+      /* initializing variable 'delay' with MHAParser::int_t(char* name, .... ) */
       delay("delay in number of frames ","[0 0]","[0,["){
     
     /* Register variables to the configuration parser: */
@@ -162,7 +159,7 @@ void delaysum_if_t::update_cfg()
 void delaysum_if_t::release(){
 }
 }
-MHAPLUGIN_CALLBACKS(delaysum,delaysum_if_t,wave,wave)
+MHAPLUGIN_CALLBACKS(delaysum,delaysum::delaysum_if_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION(delaysum,"delay and sum ","")
 
 // Local Variables:

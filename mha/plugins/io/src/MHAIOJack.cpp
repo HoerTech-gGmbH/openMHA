@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2007 2008 2010 2012 2013 2014 2015 2016 HörTech gGmbH
+// Copyright © 2005 2007 2008 2010 2012 2013 2014 2015 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,10 +22,12 @@
 #include "mhajack.h"
 #include <unistd.h>
 
-
+/** 
+    \brief JACK IO
+*/
 namespace MHAIOJack {
 
-    /** \internal
+    /** 
         \brief Main class for JACK IO
         
         This class registers a JACK client. JACK and framework states are
@@ -147,7 +149,7 @@ void io_jack_t::get_all_output_ports()
     get_ports(ports_out_all.data,JackPortIsOutput);
 }
 
-/** \internal
+/** 
     \brief Connect the input ports when connection variable is accessed
   
 */
@@ -156,7 +158,7 @@ void io_jack_t::reconnect_inports()
     connect_input(connections_in.data);
 }
 
-/** \internal
+/** 
     \brief Connect the output ports when connection variable is accessed
   
 */
@@ -165,7 +167,7 @@ void io_jack_t::reconnect_outports()
     connect_output(connections_out.data);
 }
 
-/** \internal
+/** 
     \brief Allocate buffers, activate JACK client and install internal ports
   
 */

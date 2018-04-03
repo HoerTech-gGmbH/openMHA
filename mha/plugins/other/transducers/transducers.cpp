@@ -32,6 +32,7 @@ public:
     MHAParser::float_t tau_decay;
     MHAParser::float_t tau_clip;
     MHAParser::float_t threshold;
+    MHAParser::float_t hardlimit;
     MHAParser::float_t slope;
     MHAParser::bool_t linear;
     MHAParser::float_mon_t clipped;
@@ -47,6 +48,7 @@ private:
     MHAFilter::o1flt_maxtrack_t decay;
     MHAFilter::o1flt_lowpass_t clipmeter;
     mha_real_t threshold;
+    mha_real_t hardlimit;
     mha_real_t slope;
     bool linear;
 };
@@ -57,6 +59,7 @@ softclipper_variables_t::softclipper_variables_t()
       tau_decay("decay filter time constant / s","0.005","[0,]"),
       tau_clip("clipping meter time constant / s","1","[0,]"),
       threshold("start point on linear scale (hard clipping at 1.0)","0.6","[0,]"),
+      hardlimit("hard limit","1","]0,]"),
       slope("compression factor","0.5","[0,1]"),
       linear("input/output function is linear on linear (yes) or logarithmic (no) scale","no"),
       clipped("clipped ratio"),
@@ -65,6 +68,7 @@ softclipper_variables_t::softclipper_variables_t()
     insert_item("tau_attack",&tau_attack);
     insert_item("tau_decay",&tau_decay);
     insert_item("threshold",&threshold);
+    insert_member(hardlimit);
     insert_item("slope",&slope);
     insert_item("linear",&linear);
     insert_item("tau_clip",&tau_clip);
@@ -77,6 +81,7 @@ softclipper_t::softclipper_t(const softclipper_variables_t& v,const mhaconfig_t&
       decay(std::vector<mha_real_t>(tf.channels,v.tau_decay.data),tf.srate),
       clipmeter(std::vector<mha_real_t>(1,v.tau_clip.data),tf.srate),
       threshold(v.threshold.data),
+      hardlimit(v.hardlimit.data),
       slope(v.slope.data),
       linear(v.linear.data)
 {
@@ -102,7 +107,7 @@ mha_real_t softclipper_t::process(mha_wave_t* s)
         }
         rclipped = clipmeter( 0, clipped );
     }
-    MHASignal::limit(*s,-1,1);
+    MHASignal::limit(*s,-hardlimit,hardlimit);
     return rclipped;
 }
 

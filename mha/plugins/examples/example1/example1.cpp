@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2007 2009 2010 2014 2015 HörTech gGmbH
+// Copyright © 2004 2007 2009 2010 2014 2015 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -13,9 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-// mhainfo: plugin
+
 /*
- * The simplest example MHA plugin
+ * The simplest example of an \mha plugin.
  *
  * This plugin scales one channel of the input signal, working in the
  * time domain.
@@ -26,12 +26,12 @@
 /** This C++ class implements the simplest example plugin for the
  * step-by-step tutorial.  It inherits from MHAPlugin::plugin_t for
  * correct integration in the configuration language interface.  */
-class plugin1_t : public MHAPlugin::plugin_t<int> {
+class example1_t : public MHAPlugin::plugin_t<int> {
 public:
   /** Do-nothing constructor.  The constructor has to take these three
    * arguments, but it does not have to use them. However, the base
    * class has to be initialized. */
-  plugin1_t(algo_comm_t & ac,
+  example1_t(algo_comm_t & ac,
             const std::string & chain_name,
             const std::string & algo_name)
       : MHAPlugin::plugin_t<int>("",ac)
@@ -85,11 +85,11 @@ public:
 };
 
 /*
- * This macro connects the plugin1_t class with the MHA plugin C interface
+ * This macro connects the example1_t class with the \mha plugin C interface
  * The first argument is the class name, the other arguments define the 
  * input and output domain of the algorithm.
  */
-MHAPLUGIN_CALLBACKS(example1,plugin1_t,wave,wave)
+MHAPLUGIN_CALLBACKS(example1,example1_t,wave,wave)
 
 /*
  * This macro creates code classification of the plugin and for
@@ -102,7 +102,7 @@ MHAPLUGIN_CALLBACKS(example1,plugin1_t,wave,wave)
  */
 MHAPLUGIN_DOCUMENTATION(example1,
     "example",
-    "The {\\bf simplest} example MHA plugin\n\n"
+    "The {\\bf simplest} example of an \\mha{} plugin.\n\n"
     "This plugin scales one channel of the input signal, working in the "
     "time domain."
     )

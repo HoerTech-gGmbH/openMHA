@@ -1,41 +1,51 @@
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// Copyright © 2017 HörTech gGmbH
+//
+// openMHA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, version 3 of the License.
+//
+// openMHA is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License, version 3 for more details.
+//
+// You should have received a copy of the GNU Affero General Public License, 
+// version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
 * \mainpage Overview
-*\section str Structure
-* The openMHA can be split into four major components (see
-* Figure for an overview):
-* 	- The openMHA command line application
-* 	- Signal processing plugins
-* 	- Audio input-output (IO) plugins
-* 	- The openMHA toolbox library
+* The H&ouml;rTech Open Master Hearing Aid (\mha), is a development and evaluation 
+* software platform that is able to execute hearing aid signal processing in real-time
+* on standard computing hardware with a low delay between sound input and output.
+* \section str Structure
+* The openMHA can be split into four major components :
+* 	- \ref mhascript "The openMHA command line application (MHA)"
+* 	- \ref plugif "Signal processing plugins"
+* 	- Audio input-output (IO) plugins (see io_file_t, MHAIOJack, io_parser_t, io_tcp_parser_t)
+* 	- \ref mhatoolbox "The openMHA toolbox library"
 * 	.
 * 
 * \image html structure_openmha.png
+* \image latex structure_openmha.pdf "openMHA structure" width=0.4\textwidth
 *
-* The openMHA command line application acts as a plugin host.
+* \ref mhascript "The openMHA command line application (MHA)" acts as a plugin host.
 * It can load signal processing plugins as well as audio input-output
 * (IO) plugins.
 * Additionally, it provides the command line configuration interface and
 * a TCP/IP based configuration interface.
 * Several IO plugins exist:
-* For real-time signal processing, commonly the ``MHAIOJack'' plugin is
-* used, which provides an interface to the Jack Audio Connection Kit (JACK)
+* For real-time signal processing, commonly the \mha MHAIOJack plugin (see plugins' manual) is
+* used, which provides an interface to the Jack Audio Connection Kit (JACK).
 * Other IO plugins provide audio file access or TCP/IP-based processing.
 *
-* openMHA plugins provide the audio signal processing capabilities and
+* \ref plugif "\mha plugins" provide the audio signal processing capabilities and
 * audio signal handling.
 * Typically, one openMHA plugin implements one specific algorithm.
 * The complete virtual hearing aid signal processing can be achieved by
-* a combination of several openMHA plugins.
+* a combination of several openMHA plugins. 
 *
-* The openMHA toolbox library ``libMHAToolbox'' provides reusable data
-* structures and signal processing classes.
-* Examples are class templates for the implementation of openMHA plugins,
-* and container classes for audio data.
-* Furthermore, several filter classes in temporal or spectral domain,
-* filter banks, and hearing aid specific classes are provided in this
-* library.
-*
-* \section pltf Platroform Services and Conventions
+* \section pltf Platform Services and Conventions
 *
 * The openMHA platform offers some services and conventions to
 * algorithms implemented in plugins, that make it especially well suited
@@ -58,10 +68,10 @@
 * the complete processing has to be as short as possible.
 *
 * Similar to some other platforms, the openMHA allows also arbitrary data to be
-* exchanged between plugins through a mechanism called
-* ``algorithm communication variables''
+* exchanged between plugins through a mechanism called \ref algocomm
+* "algorithm communication variables"
 * or short
-* ``AC vars''.
+* "AC vars".
 * This mechanism is commonly used to share data such as filter
 * coefficients or filter states.
 *
@@ -150,11 +160,15 @@
 * of the user of the openMHA to perform calibration
 * measurements and adapt the openMHA settings to make sure that this
 * calibration convention is met.
-* We provide the plugin \emph{transducers} (cf. section
-* \ref{sec:transducers}) which can be configured to perform the
-* necessary signal adjustments in most situations.
+* We provide the plugin \c transducers which can be configured to perform the
+* necessary signal adjustments.
 *
 *
-* You can find detailed explanation of plugins in \ref plugindoc page. A detailed 
-* step by step explanation of plugin development is given in \ref example_tut.
 */
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

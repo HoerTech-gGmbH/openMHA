@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2007 2009 2011 2013 2014 2015 2016 HörTech gGmbH
+// Copyright © 2005 2007 2009 2011 2013 2014 2015 2016 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,9 @@
 #include <sndfile.h>
 
 #define DEBUG(x) std::cerr << __FILE__ << ":" << __LINE__ << " " << #x " = " << x << std::endl
-
+/**
+    \brief File IO
+*/
 class io_file_t : public MHAParser::parser_t
 {
 public:
@@ -68,7 +70,7 @@ private:
 };
 
 
-/** \internal
+/** 
     \brief Remove FILE client and deallocate internal ports and buffers
   
 */
@@ -83,7 +85,7 @@ void io_file_t::release()
     s_file_in = NULL;
 }
 
-/** \internal
+/** 
     \brief Allocate buffers, activate FILE client and install internal ports
   
 */

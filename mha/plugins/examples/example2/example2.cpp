@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2005 2006 2007 2009 2010 2014 2015 HörTech gGmbH
+// Copyright © 2004 2005 2006 2007 2009 2010 2014 2015 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
 
 
 /*
- * A simple example MHA plugin written in C++
+ * A simple example of an \mha plugin written in C++
  *
  * This plugin scales one channel of the input signal, working in the
  * time domain. The scale factor and the scaled channel number is made
@@ -34,7 +34,7 @@ class example2_t : public MHAPlugin::plugin_t<int> {
     MHAParser::float_t factor;
 public:
     /** This constructor initializes the configuration language
-     * variables and inserts them into the MHA configuration tree. */
+     * variables and inserts them into the \mha configuration tree. */
     example2_t(algo_comm_t & ac,
                const std::string & chain_name,
                const std::string & algo_name);
@@ -67,7 +67,7 @@ example2_t::example2_t(algo_comm_t & ac,
                        const std::string & chain_name,
                        const std::string & algo_name)
     : MHAPlugin::plugin_t<int>("This plugin multiplies the sound signal"
-                   " in one audio channel by a factor",ac),
+                               " in one audio channel by a factor",ac),
       scale_ch("Index of audio channel to scale. Indices start from 0.",
                "0",
                "[0,["),
@@ -105,8 +105,7 @@ mha_wave_t * example2_t::process(mha_wave_t * signal)
 {
     unsigned int frame;
     for(frame = 0; frame < signal->num_frames; frame++)
-        signal->buf[signal->num_channels * frame + scale_ch.data] *= 
-            factor.data;
+        value(signal,frame,scale_ch.data) *= factor.data;
     return signal;
 }
 
