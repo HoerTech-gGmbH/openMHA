@@ -72,15 +72,15 @@ private:
     /** Lowpass filter coefficients */
     MHASignal::waveform_t* lp_coeffs;
 
-    /** Decomb filter coefficients */
+    /** Decomb-Filter coefficients */
     std::vector<MHASignal::waveform_t*> decomb_coeffs;
 
     /** ADMs */
     std::vector<adm_t *> adms;
 
 private:
-    /** Index checking for all internal arrays
-     * \throw MHA_Error if index is out of range */
+    /** Index checking for all internal arrays. 
+    @throw MHA_Error if index out of range. */
     inline void check_index(unsigned index) const
     { if (index >= adms.size()) throw MHA_ErrorMsg("BUG:Index out of range"); }
 
@@ -166,20 +166,20 @@ adm_rtconfig_t::adm_rtconfig_t(unsigned nchannels_in,
     lp_coeffs = adm_fir_lp((unsigned int)fs,5000,6000,lp_order);
     for (std::vector<adm_t>::size_type i = 0; i < num_adms(); ++i) {
         if (front_channels[i] < 0)
-            throw MHA_ErrorMsg("Front_channels vector contains negative"
+            throw MHA_ErrorMsg("front_channels vector contains negative"
                              " channel index");
         if (rear_channels[i] < 0)
-            throw MHA_ErrorMsg("Rear_channels vector contains negative"
+            throw MHA_ErrorMsg("rear_channels vector contains negative"
                              " channel index");
         if (front_channels[i] >= int(nchannels_in))
-            throw MHA_Error(__FILE__, __LINE__,
-                            "Front_channels vector contains channel index"
+            throw MHA_Error(__FILE__, __LINE__, 
+                            "front_channels vector contains channel index"
                             " %d, but there are only %d input channels"
                             " (channel indices start from zero)",
                             front_channels[i], int(nchannels_in));
         if (rear_channels[i] >= int(nchannels_in))
             throw MHA_Error(__FILE__, __LINE__,
-                            "Rear_channels vector contains channel index"
+                            "rear_channels vector contains channel index"
                             " %d, but there are only %d input channels"
                             " (channel indices start from zero)",
                             rear_channels[i], int(nchannels_in));

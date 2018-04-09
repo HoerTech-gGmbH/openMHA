@@ -184,7 +184,7 @@ namespace ADM {
   class ADM {
   public:
     /**
-     * Create adaptive differential microphone
+     * Create Adaptive Differential Microphone
      *
      * @param fs
      *   Sampling rate / Hz
@@ -250,7 +250,7 @@ namespace ADM {
       if (external_beta >= 0)
         m_beta = external_beta;
       else {
-        // lowpass filter signals used in adaption
+        // low pass filter signals used in adaption
         F lp_back_facing = m_lp_bf.process(back_facing);
         F lp_comb_result = m_lp_result.process(comb_result);
         
