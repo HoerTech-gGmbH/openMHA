@@ -96,6 +96,9 @@ public:
         \param lp_order       Filter order of FIR lowpass filter for adaptation
         \param decomb_order   Filter order of FIR compensation filter
                               (compensates for comb filter characteristic)
+        \param tau_beta       Time constants of the lowpass filter used for
+                              averaging the power of the output signal used for
+                              adaptation
         \param mu_beta        Adaptation step sizes
      */
     adm_rtconfig_t(unsigned nchannels_in,
@@ -106,6 +109,7 @@ public:
                    const std::vector<mha_real_t> & distances,
                    const int lp_order,
                    const int decomb_order,
+                   const std::vector<mha_real_t> & tau_beta,
                    const std::vector<mha_real_t> & mu_beta);
 
     virtual ~adm_rtconfig_t();
@@ -133,6 +137,7 @@ adm_rtconfig_t::adm_rtconfig_t(unsigned nchannels_in,
                                const std::vector<mha_real_t> & distances,
                                const int lp_order,
                                const int decomb_order,
+                               const std::vector<mha_real_t> & tau_beta,
                                const std::vector<mha_real_t> & mu_beta)
     : front_channels(front_channels_),
       rear_channels(rear_channels_),
@@ -156,6 +161,12 @@ adm_rtconfig_t::adm_rtconfig_t(unsigned nchannels_in,
                         "Number of configured distances (%d) does not match"
                         " the number of output channels (%d)",
                         int(distances.size()), int(nchannels_out));
+    }
+    if (tau_beta.size() != nchannels_out) {
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Number of configured values for tau_beta (%d) does not"
+                        " match the number of output channels (%d)",
+                        int(tau_beta.size()), int(nchannels_out));
     }
     if (mu_beta.size() != nchannels_out) {
         throw MHA_Error(__FILE__,__LINE__,
@@ -185,7 +196,8 @@ adm_rtconfig_t::adm_rtconfig_t(unsigned nchannels_in,
                             rear_channels[i], int(nchannels_in));
         decomb_coeffs[i] = adm_fir_decomb((unsigned int)fs,distances[i],decomb_order);
         adms[i] = new adm_t(fs, distances[i], lp_order, lp_coeffs->buf,
-                            decomb_order, decomb_coeffs[i]->buf, mu_beta[i]);
+                            decomb_order, decomb_coeffs[i]->buf,
+                            tau_beta[i], mu_beta[i]);
     }
 }
 
@@ -219,6 +231,7 @@ private:
     MHAParser::int_t bypass;
     MHAParser::float_t beta;
     MHAParser::vfloat_t mu_beta;
+    MHAParser::vfloat_t tau_beta;
     MHAParser::vfloat_mon_t coeff_lp;
     MHAParser::vfloat_mon_t coeff_decomb;
 
@@ -250,7 +263,9 @@ adm_if_t::adm_if_t(const algo_comm_t& ac,
              "0", "[0,2]"),
       beta("Explicit fixed beta (-1 for adaptive filtering)","-1"),
       mu_beta("Adaptation step size for each set of ADMs (e.g. left and right)",
-              "[1e-4 1e-4]", "[0,1]"),
+              "[1e-4 1e-4]", "[0,]"),
+      tau_beta("time constant / s of low pass filter for averaging power of "
+               "output signal\n(used for adaptation)","[50e-3]","[0,]"),
       coeff_lp("Lowpass coefficients"),
       coeff_decomb("Decomb coefficients"),
       input_channels(0)
@@ -263,6 +278,7 @@ adm_if_t::adm_if_t(const algo_comm_t& ac,
     insert_item("bypass", &bypass);
     insert_member(beta);
     insert_item("mu_beta", &mu_beta);
+    insert_member(tau_beta);
     insert_item("coeff_lp",&coeff_lp);
     insert_item("coeff_decomb",&coeff_decomb);
     patchbay.connect(&writeaccess, this, &adm_if_t::update);
@@ -324,6 +340,7 @@ void adm_if_t::update()
                                    distances.data,
                                    lp_order.data,
                                    decomb_order.data,
+                                   tau_beta.data,
                                    mu_beta.data));
 }
 
