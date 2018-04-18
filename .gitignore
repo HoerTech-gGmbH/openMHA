@@ -34,8 +34,11 @@ mha/tools/mfiles/octave-workspace
 # platform-specific directories where build artifacts are stored.
 x86_64-linux-gcc-5
 x86_64-linux-gcc-7
+x86_64-linux-clang
 i686-linux-gcc-5
 i686-MinGW-gcc-6
+i686-MinGW-gcc-7
+x86_64-MinGW-gcc-7
 armv7l-linux-gcc-4.9
 x86_64-Darwin-clang
 # coverage analysis artifacts
