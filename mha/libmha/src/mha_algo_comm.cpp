@@ -451,7 +451,7 @@ int MHAKernel::algo_comm_class_t::get_var(void* handle,const char* name,comm_var
 {
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p) 
+        if ((!p) || (!p->local_is_var(name)))
             return -1;
         p->local_get_var(name,var);
         return 0;
@@ -466,7 +466,7 @@ int MHAKernel::algo_comm_class_t::get_var_int(void* handle,const char* name,int*
 {
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p) 
+        if ((!p) || (!p->local_is_var(name)))
             return -1;
         comm_var_t var;
         if( !ivar ){
@@ -492,7 +492,7 @@ int MHAKernel::algo_comm_class_t::get_var_float(void* handle,const char* name,fl
 {
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p) 
+        if ((!p) || (!p->local_is_var(name)))
             return -1;
         comm_var_t var;
         if( !ivar ){
