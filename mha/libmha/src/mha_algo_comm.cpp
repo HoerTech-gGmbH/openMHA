@@ -228,8 +228,6 @@ text files, acsave, are available.
 
 */
 
-std::string last_error_str;
-
 algo_comm_t algo_comm_default = {
     NULL,
     MHAKernel::algo_comm_class_t::insert_var,
@@ -372,7 +370,7 @@ int MHAKernel::algo_comm_class_t::insert_var(void* handle,const char* name,comm_
         return 0;
     }
     catch(MHA_Error&e){
-        last_error_str=e.get_msg();
+        (void)e;
         return -2;
     }
 }
@@ -392,7 +390,7 @@ int MHAKernel::algo_comm_class_t::insert_var_int(void* handle,const char* name,i
         return 0;
     }
     catch(MHA_Error&e){
-        last_error_str=e.get_msg();
+        (void)e;
         return -2;
     }
 }
@@ -412,7 +410,7 @@ int MHAKernel::algo_comm_class_t::insert_var_float(void* handle,const char* name
         return 0;
     }
     catch(MHA_Error&e){
-        last_error_str=e.get_msg();
+        (void)e;
         return -2;
     }
 }
@@ -427,7 +425,7 @@ int MHAKernel::algo_comm_class_t::remove_var(void* handle,const char* name)
         return 0;
     }
     catch(MHA_Error&e){
-        last_error_str=e.get_msg();
+        (void)e;
         return -2;
     }
 }
@@ -442,7 +440,7 @@ int MHAKernel::algo_comm_class_t::remove_ref(void* handle,void* ref)
         return 0;
     }
     catch(MHA_Error&e){
-        last_error_str=e.get_msg();
+        (void)e;
         return -2;
     }
 }
@@ -457,7 +455,7 @@ int MHAKernel::algo_comm_class_t::get_var(void* handle,const char* name,comm_var
         return 0;
     }
     catch(MHA_Error&e){
-        last_error_str=e.get_msg();
+        (void)e;
         return -2;
     }
 }
@@ -483,7 +481,7 @@ int MHAKernel::algo_comm_class_t::get_var_int(void* handle,const char* name,int*
         return 0;
     }
     catch(MHA_Error&e){
-        last_error_str=e.get_msg();
+        (void)e;
         return -2;
     }
 }
@@ -509,7 +507,7 @@ int MHAKernel::algo_comm_class_t::get_var_float(void* handle,const char* name,fl
         return 0;
     }
     catch(MHA_Error&e){
-        last_error_str=e.get_msg();
+        (void)e;
         return -2;
     }
 }
@@ -533,7 +531,7 @@ const char* MHAKernel::algo_comm_class_t::get_error(int e)
     switch( e ){
         case 0 : return "Success";
         case -1 : return "Invalid handle";
-        case -2 : return last_error_str.c_str();
+        case -2 : return "Invalid or non-existing variable name";
         case -3 : return "string truncated";
         default: return "Unknwon error";
     }
