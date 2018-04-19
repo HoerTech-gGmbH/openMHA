@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2005 2013 2016 HörTech gGmbH
+// Copyright © 2004 2005 2013 2016 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -228,6 +228,36 @@ text files, acsave, are available.
 
 */
 
+#define AC_SUCCESS 0
+#define AC_INVALID_HANDLE -1
+#define AC_INVALID_NAME -2
+#define AC_STRING_TRUNCATED -3
+#define AC_INVALID_OUTPTR -4
+#define AC_TYPE_MISMATCH -5
+#define AC_DIM_MISMATCH -6
+
+const char* MHAKernel::algo_comm_class_t::get_error(int e)
+{
+    switch( e ){
+    case AC_SUCCESS:
+        return "Success";
+    case AC_INVALID_HANDLE:
+        return "Invalid handle";
+    case AC_INVALID_NAME:
+        return "Invalid or non-existing variable name";
+    case AC_STRING_TRUNCATED:
+        return "string truncated";
+    case AC_INVALID_OUTPTR:
+        return "Invalid output pointer";
+    case AC_TYPE_MISMATCH:
+        return "The variable has unexpected type";
+    case AC_DIM_MISMATCH:
+        return "The variable has unexpected dimension";
+    default:
+        return "Unknwon error";
+    }
+}
+
 algo_comm_t algo_comm_default = {
     NULL,
     MHAKernel::algo_comm_class_t::insert_var,
@@ -365,13 +395,13 @@ int MHAKernel::algo_comm_class_t::insert_var(void* handle,const char* name,comm_
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
         if(!p) 
-            return -1;
+            return AC_INVALID_HANDLE;
         p->local_insert_var(name,var);
-        return 0;
+        return AC_SUCCESS;
     }
     catch(MHA_Error&e){
         (void)e;
-        return -2;
+        return AC_INVALID_NAME;
     }
 }
 
@@ -380,18 +410,18 @@ int MHAKernel::algo_comm_class_t::insert_var_int(void* handle,const char* name,i
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
         if(!p) 
-            return -1;
+            return AC_INVALID_HANDLE;
         comm_var_t var;
         var.data_type = MHA_AC_INT;
         var.num_entries = 1;
         var.stride = 1;
         var.data = ivar;
         p->local_insert_var(name,var);
-        return 0;
+        return AC_SUCCESS;
     }
     catch(MHA_Error&e){
         (void)e;
-        return -2;
+        return AC_INVALID_NAME;
     }
 }
 
@@ -400,18 +430,18 @@ int MHAKernel::algo_comm_class_t::insert_var_float(void* handle,const char* name
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
         if(!p) 
-            return -1;
+            return AC_INVALID_HANDLE;
         comm_var_t var;
         var.data_type = MHA_AC_FLOAT;
         var.num_entries = 1;
         var.stride = 1;
         var.data = ivar;
         p->local_insert_var(name,var);
-        return 0;
+        return AC_SUCCESS;
     }
     catch(MHA_Error&e){
         (void)e;
-        return -2;
+        return AC_INVALID_NAME;
     }
 }
 
@@ -420,13 +450,13 @@ int MHAKernel::algo_comm_class_t::remove_var(void* handle,const char* name)
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
         if(!p) 
-            return -1;
+            return AC_INVALID_HANDLE;
         p->local_remove_var(name);
-        return 0;
+        return AC_SUCCESS;
     }
     catch(MHA_Error&e){
         (void)e;
-        return -2;
+        return AC_INVALID_NAME;
     }
 }
 
@@ -435,13 +465,13 @@ int MHAKernel::algo_comm_class_t::remove_ref(void* handle,void* ref)
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
         if(!p) 
-            return -1;
+            return AC_INVALID_HANDLE;
         p->local_remove_ref(ref);
-        return 0;
+        return AC_SUCCESS;
     }
     catch(MHA_Error&e){
         (void)e;
-        return -2;
+        return AC_INVALID_NAME;
     }
 }
 
@@ -449,14 +479,16 @@ int MHAKernel::algo_comm_class_t::get_var(void* handle,const char* name,comm_var
 {
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if ((!p) || (!p->local_is_var(name)))
-            return -1;
+        if (!p)
+            return AC_INVALID_HANDLE;
+        if (!p->local_is_var(name))
+            return AC_INVALID_NAME;
         p->local_get_var(name,var);
-        return 0;
+        return AC_SUCCESS;
     }
     catch(MHA_Error&e){
         (void)e;
-        return -2;
+        return AC_INVALID_NAME;
     }
 }
 
@@ -464,25 +496,25 @@ int MHAKernel::algo_comm_class_t::get_var_int(void* handle,const char* name,int*
 {
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if ((!p) || (!p->local_is_var(name)))
-            return -1;
+        if (!p)
+            return AC_INVALID_HANDLE;
+        if (!p->local_is_var(name))
+            return AC_INVALID_NAME;
         comm_var_t var;
         if( !ivar ){
-            throw MHA_ErrorMsg("Invalid variable pointer.");
+            return AC_INVALID_OUTPTR;
         }
         p->local_get_var(name,&var);
         if( var.data_type != MHA_AC_INT )
-            throw MHA_Error(__FILE__,__LINE__,
-                            "The variable \"%s\" is not of type int.",name);
+            return AC_TYPE_MISMATCH;
         if( var.num_entries != 1 )
-            throw MHA_Error(__FILE__,__LINE__,
-                            "The variable \"%s\" has dimension != 1.",name);
+            return AC_DIM_MISMATCH;
         *ivar = *((int*)(var.data));
-        return 0;
+        return AC_SUCCESS;
     }
     catch(MHA_Error&e){
         (void)e;
-        return -2;
+        return AC_INVALID_NAME;
     }
 }
 
@@ -490,25 +522,24 @@ int MHAKernel::algo_comm_class_t::get_var_float(void* handle,const char* name,fl
 {
     try{
         algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if ((!p) || (!p->local_is_var(name)))
-            return -1;
+        if (!p)
+            return AC_INVALID_HANDLE;
+        if (!p->local_is_var(name))
+            return AC_INVALID_NAME;
         comm_var_t var;
-        if( !ivar ){
-            throw MHA_ErrorMsg("Invalid variable pointer.");
-        }
+        if( !ivar )
+            return AC_INVALID_OUTPTR;
         p->local_get_var(name,&var);
         if( var.data_type != MHA_AC_FLOAT )
-            throw MHA_Error(__FILE__,__LINE__,
-                            "The variable \"%s\" is not of type float.",name);
+            return AC_TYPE_MISMATCH;
         if( var.num_entries != 1 )
-            throw MHA_Error(__FILE__,__LINE__,
-                            "The variable \"%s\" has dimension != 1.",name);
+            return AC_DIM_MISMATCH;
         *ivar = *((float*)(var.data));
-        return 0;
+        return AC_SUCCESS;
     }
     catch(MHA_Error&e){
         (void)e;
-        return -2;
+        return AC_INVALID_NAME;
     }
 }
 
@@ -517,24 +548,13 @@ int MHAKernel::algo_comm_class_t::get_entries(void* handle,char* ret,unsigned in
 {
     algo_comm_class_t* p = algo_comm_safe_cast(handle);
     if(!p) 
-        return -1;
+        return AC_INVALID_HANDLE;
     memset(ret,0,len);
     std::string sres = p->local_get_entries();
     strncpy(ret,sres.c_str(),len-1);
     if( sres.size() >= len )
-        return -3;
-    return 0;
-}
-
-const char* MHAKernel::algo_comm_class_t::get_error(int e)
-{
-    switch( e ){
-        case 0 : return "Success";
-        case -1 : return "Invalid handle";
-        case -2 : return "Invalid or non-existing variable name";
-        case -3 : return "string truncated";
-        default: return "Unknwon error";
-    }
+        return AC_STRING_TRUNCATED;
+    return AC_SUCCESS;
 }
 
 int MHAKernel::algo_comm_class_t::is_var(void* handle,const char* name)
