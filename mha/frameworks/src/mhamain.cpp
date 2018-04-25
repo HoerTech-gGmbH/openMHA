@@ -225,7 +225,7 @@ std::string mhaserver_t::received_group(const std::string& cmd)
 
 #define GREETING_TEXT \
 "The Open Master Hearing Aid (openMHA) server version " MHA_RELEASE_VERSION_STRING "\n"\
-"Copyright (c) 2005-2017 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
+"Copyright (c) 2005-2018 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
 "\n\n"\
 "This program comes with ABSOLUTELY NO WARRANTY; "\
 "for details see file COPYING.\n"\

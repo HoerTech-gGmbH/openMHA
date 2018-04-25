@@ -24,8 +24,6 @@ public:
           basename(ial){};
     mha_wave_t* process(mha_wave_t* s)
     {
-        //poll_config();
-        //cfg->insert();
         cfg->copy(*s);
         return s;
     };

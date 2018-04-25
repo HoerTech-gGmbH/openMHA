@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
-// Copyright © 2013 2014 2016 2017 HörTech gGmbH
+// Copyright © 2013 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -1707,103 +1707,6 @@ namespace MHASignal {
     private:
         MHASignal::waveform_t phase;
     };
-}
-
-/**
-   \ingroup mhasignal
-   \brief Collection of Window types
-*/
-namespace MHAWindow {
-
-    /**
-       \brief Common base for window types
-    */
-    class base_t : public MHASignal::waveform_t {
-    public:
-        /** 
-            \brief Constructor
-            \param len Window length in samples.
-        */
-        base_t(unsigned int len);
-        /**
-           \brief Copy constructor
-           \param src Source to be copied
-        */
-        base_t(const MHAWindow::base_t& src);
-        void operator()(mha_wave_t&) const;/**< \brief Apply window to waveform segment (reference) */
-        void operator()(mha_wave_t*) const;/**< \brief Apply window to waveform segment (pointer) */
-        void ramp_begin(mha_wave_t&) const;/**< \brief Apply a ramp at the begining */
-        void ramp_end(mha_wave_t&) const;/**< \brief Apply a ramp at the end */
-    };
-
-    float rect(float);///<\brief Rectangular window function
-    float bartlett(float);///<\brief Bartlett window function
-    float hanning(float);///<\brief Hanning window function
-    float hamming(float);///<\brief Hamming window function
-    float blackman(float);///<\brief Blackman window function
-
-    /**
-       \brief Generic window based on a generator function
-
-       The generator function should return a valid window function in
-       the interval [-1,1[.
-    */
-    class fun_t : public MHAWindow::base_t {
-    public:
-        /**
-           \brief Constructor.
-           \param n Window length
-           \param fun Generator function, i.e. MHAWindow::hanning()
-           \param xmin Start value of window, i.e. -1 for full window or 0 for fade-out ramp.
-           \param xmax Last value of window, i.e. 1 for full window
-           \param min_included Flag if minimum value is included
-           \param max_included Flag if maximum value is included
-        */
-        fun_t(unsigned int n,float (*fun)(float),float xmin=-1,float xmax=1,bool min_included=true,bool max_included=false);
-    };
-
-    /** \brief Rectangular window */
-    class rect_t : public MHAWindow::fun_t {
-    public:
-        rect_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::rect){};
-    };
-
-    /** \brief Bartlett window */
-    class bartlett_t : public MHAWindow::fun_t {
-    public:
-        bartlett_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::bartlett){};
-    };
-
-    /** \brief von-Hann window */
-    class hanning_t : public MHAWindow::fun_t {
-    public:
-        hanning_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::hanning){};
-    };
-
-    /** \brief Hamming window */
-    class hamming_t : public MHAWindow::fun_t {
-    public:
-        hamming_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::hamming){};
-    };
-
-    /** \brief Blackman window */
-    class blackman_t : public MHAWindow::fun_t {
-    public:
-        blackman_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::blackman){};
-    };
-
-    /** \brief User defined window */
-    class user_t : public MHAWindow::base_t {
-    public:
-        /** \brief Constructor
-            \param wnd User defined window
-        */
-        user_t(const std::vector<mha_real_t>& wnd);
-    };
-
-}
-
-namespace MHASignal {
     
     class stat_t {
     public:

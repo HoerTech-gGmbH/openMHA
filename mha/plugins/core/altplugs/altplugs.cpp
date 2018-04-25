@@ -18,7 +18,7 @@
 #include "mhapluginloader.h"
 #include "mha_defs.h"
 #include "mha_algo_comm.hh"
-
+#include "mha_windowparser.h"
 
 class mhaplug_cfg_t : private MHAKernel::algo_comm_class_t, public PluginLoader::mhapluginloader_t
 {

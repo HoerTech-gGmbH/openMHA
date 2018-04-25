@@ -102,11 +102,23 @@ wave2spec_t::wave2spec_t(unsigned int nfft,
 {
     window *= sqrt((float)nfft/window.sumsqr());
     ft = mha_fft_new( nfft );
+    if (window.num_channels != 1U)
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The wave2spec:%s analysis window storage should have"
+                        " only 1 channel, has %u",
+                        algo.c_str(), window.num_channels);
+    comm_var_t cv = {MHA_AC_MHAREAL, window.num_frames, 1U, window.buf};
+    int err = ac.insert_var(ac.handle,(algo + "_wnd").c_str(), cv);
+    if (err)
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Unable to insert wave2spec window into AC space as '%s':\n%s",
+                        (algo + "_wnd").c_str(), ac.get_error(err));
 }
 
 wave2spec_t::~wave2spec_t()
 {
     mha_fft_free( ft );
+    ac.remove_ref(ac.handle, window.buf);
 }
 
 mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)

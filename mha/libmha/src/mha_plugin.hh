@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2011 2012 2013 HörTech gGmbH
-// Copyright © 2014 2015 2016 2017 HörTech gGmbH
+// Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -486,7 +486,6 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
     \brief C++ wrapper macro for the plugin interface
 
-    \param prefix internal parameter to avoid name clashes in static plugins
     \param classname The name of the plugin class
     \param indom Input domain (\c wave or \c spec)
     \param outdom Output domain (\c wave or \c spec)
@@ -526,7 +525,6 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
     \brief Wrapper macro for the plugin documentation interface
 
-    \param prefix internal parameter to avoid name clashes in static plugins
     \param cat Space separated list of categories to which belong the plugin (as const char*)
     \param doc Documentation of the plugin (as const char*)
 
@@ -579,7 +577,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
     \brief Wrapper macro for the plugin documentation interface
 
-    \param plugname The file name of the plugin without the .so or .dll extension
+    \param plugin The file name of the plugin without the .so or .dll extension
     \param cat Space separated list of categories to which belong the plugin (as const char*)
     \param doc Documentation of the plugin (as const char*)
 

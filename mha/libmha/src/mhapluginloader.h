@@ -187,6 +187,7 @@ namespace MHAParser {
         void process(mha_spec_t* sIn,mha_wave_t** sOut){ plug->process(sIn,sOut);};
         mhaconfig_t get_cfin() const {return cf_in_;};
         mhaconfig_t get_cfout() const {return cf_out_;};
+        const std::string & get_last_name() const {return last_name;}
     protected:
         PluginLoader::mhapluginloader_t* plug;
     private:

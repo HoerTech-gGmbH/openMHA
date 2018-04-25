@@ -28,195 +28,195 @@
 
 namespace multibandcompressor {
 
-    class plugin_signals_t {
-    public:
-        plugin_signals_t(unsigned int channels,unsigned int bands);
-        void update_levels(MHAOvlFilter::fftfb_t*,mha_spec_t* s_in);
-        void apply_gains(MHAOvlFilter::fftfb_t*,DynComp::dc_afterburn_t& burn,mha_spec_t* s_out);
-    private:
-        MHASignal::waveform_t plug_level;
-        MHASignal::waveform_t gain;
-    public:
-        mha_wave_t* plug_output;
-    };
+class plugin_signals_t {
+public:
+    plugin_signals_t(unsigned int channels,unsigned int bands);
+    void update_levels(MHAOvlFilter::fftfb_t*,mha_spec_t* s_in);
+    void apply_gains(MHAOvlFilter::fftfb_t*,DynComp::dc_afterburn_t& burn,mha_spec_t* s_out);
+private:
+    MHASignal::waveform_t plug_level;
+    MHASignal::waveform_t gain;
+public:
+    mha_wave_t* plug_output;
+};
 
-    plugin_signals_t::plugin_signals_t(unsigned int channels,unsigned int bands)
-        : plug_level(1,bands*channels),
-          gain(bands,channels),
-          plug_output(&plug_level)
-    {}
+plugin_signals_t::plugin_signals_t(unsigned int channels,unsigned int bands)
+    : plug_level(1,bands*channels),
+      gain(bands,channels),
+      plug_output(&plug_level)
+{}
 
-    void plugin_signals_t::update_levels(MHAOvlFilter::fftfb_t*pFb,mha_spec_t* s_in)
-    {
-        plug_output = &plug_level;
-        pFb->get_fbpower(&gain,s_in);
-        unsigned int band;
-        unsigned int channel;
-        for(band=0;band<gain.num_frames;band++)
-            for(channel=0;channel<gain.num_channels;channel++){
-                // Factor 2 because get_fbpower ignores the negative frequencies.
-                gain.value(band,channel) = sqrt(2*gain.value(band,channel));
-                plug_output->buf[band+channel*gain.num_frames] =
-                    gain.value(band,channel);
-            }
-    }
-
-    void plugin_signals_t::apply_gains(MHAOvlFilter::fftfb_t* pFb,DynComp::dc_afterburn_t& burn, mha_spec_t* s_out)
-    {
-        unsigned int band;
-        unsigned int channel;
-        mha_real_t Lin(0);
-        for(band=0;band<gain.num_frames;band++)
-            for(channel=0;channel<gain.num_channels;channel++){
-                Lin = gain.value(band,channel);
-                gain.value(band,channel) = 
-                    plug_output->buf[band+channel*gain.num_frames] /
-                    std::max(1e-20f,gain.value(band,channel));
-                burn.burn(gain.value(band,channel),Lin,band,channel);
-            }
-        pFb->apply_gains(s_out,s_out,&gain);
-    }
-
-
-    class fftfb_plug_t : public MHAOvlFilter::fftfb_t {
-    public:
-        fftfb_plug_t(MHAOvlFilter::fftfb_vars_t&,const mhaconfig_t& cfg,algo_comm_t ac,std::string alg);
-        void insert();
-    private:
-        /** vector of nominal center frequencies / Hz */
-        MHA_AC::waveform_t cfv;
-        /** vector of edge frequencies / Hz */
-        MHA_AC::waveform_t efv;
-        /** vector of band-weigths (sum of squared fft-bin-weigths)/num_frames */
-        MHA_AC::waveform_t bwv;
-    };
-
-    fftfb_plug_t::fftfb_plug_t(MHAOvlFilter::fftfb_vars_t& vars,const mhaconfig_t& cfg,algo_comm_t ac,std::string alg)
-        : MHAOvlFilter::fftfb_t(vars,cfg.fftlen,cfg.srate),
-          cfv(ac,alg+"_cf",nbands(),1,false),
-          efv(ac,alg+"_ef",nbands()+1,1,false),
-          bwv(ac,alg+"_band_weights",nbands(),1,false)
-    {
-        std::vector<mha_real_t> cfhz = get_cf_hz();
-        std::vector<mha_real_t> efhz = get_ef_hz();
-        unsigned int kfb, kfr;
-        for(kfb=0;kfb<nbands();kfb++) {
-            cfv[kfb] = cfhz[kfb];
-            efv[kfb] = efhz[kfb];
-            bwv[kfb] = 0.0f;
-            for (kfr=bin1(kfb); kfr < bin2(kfb); kfr++) {
-                bwv[kfb] += w(kfr,kfb) * w(kfr,kfb);
-            }
-            bwv[kfb] /= (cfg.fftlen/2+1);
+void plugin_signals_t::update_levels(MHAOvlFilter::fftfb_t*pFb,mha_spec_t* s_in)
+{
+    plug_output = &plug_level;
+    pFb->get_fbpower(&gain,s_in);
+    unsigned int band;
+    unsigned int channel;
+    for(band=0;band<gain.num_frames;band++)
+        for(channel=0;channel<gain.num_channels;channel++){
+            // Factor 2 because get_fbpower ignores the negative frequencies.
+            gain.value(band,channel) = sqrt(2*gain.value(band,channel));
+            plug_output->buf[band+channel*gain.num_frames] =
+                gain.value(band,channel);
         }
-        if( nbands() )
-            efv[nbands()] = efhz[nbands()];
-    }
+}
 
-    void fftfb_plug_t::insert()
-    {
-        cfv.insert();
-        efv.insert();
-        bwv.insert();
-    }
-
-    class interface_t : public MHAPlugin::plugin_t<fftfb_plug_t>,
-                        public MHAOvlFilter::fftfb_vars_t {
-    public:
-        interface_t(const algo_comm_t&,
-                    const std::string&,
-                    const std::string&);
-        void prepare(mhaconfig_t&);
-        void release();
-        mha_spec_t* process(mha_spec_t*);
-    private:
-        int num_channels;
-        DynComp::dc_afterburn_t burn;
-        MHAEvents::patchbay_t<interface_t> patchbay;
-        void update_cfg();
-        std::string algo;
-        MHAParser::mhapluginloader_t plug;
-        plugin_signals_t* plug_sigs;
-    };
-
-    /** \internal
-
-        Default values are set and MHA configuration variables registered into the parser.
-
-        \param ac_     algorithm communication handle
-        \param th     chain name
-        \param al     algorithm name
-    */
-    interface_t::interface_t(const algo_comm_t& ac_,
-                             const std::string& th,
-                             const std::string& al)
-        : MHAPlugin::plugin_t<fftfb_plug_t>("Multiband compressor framework based on level in overlapping filter bands.",ac_),
-        MHAOvlFilter::fftfb_vars_t(static_cast<MHAParser::parser_t&>(*this)),
-          num_channels(0),
-          algo(al),
-          plug(*this,ac),
-          plug_sigs(NULL)
-    {
-        set_node_id("multibandcompressor");
-        insert_member(burn);
-        std::string ch_name(al+"_nch");
-        ac.insert_var_int(ac.handle, ch_name.c_str(), &num_channels);
-    }
-
-    void interface_t::prepare(mhaconfig_t& tf)
-    {
-        if( tf.domain != MHA_SPECTRUM )
-            throw MHA_ErrorMsg("Only spectral processing is supported.");
-        num_channels = input_cfg().channels;
-        update_cfg();
-        poll_config();
-        cfg->insert();
-        mhaconfig_t gain_actor_cfg;
-        memset(&gain_actor_cfg,0,sizeof(gain_actor_cfg));
-        gain_actor_cfg.channels = input_cfg().channels*cfg->nbands();
-        gain_actor_cfg.fragsize = 1;
-        gain_actor_cfg.srate = input_cfg().srate/input_cfg().fragsize;
-        gain_actor_cfg.domain = MHA_WAVEFORM;
-        mhaconfig_t gain_actor_cfg_out(gain_actor_cfg);
-        plug.prepare(gain_actor_cfg);
-        try{
-            PluginLoader::mhaconfig_compare(gain_actor_cfg_out,gain_actor_cfg,"Multibandcompressor:gain actor: ");
-            plug_sigs = new plugin_signals_t(input_cfg().channels,cfg->nbands());
+void plugin_signals_t::apply_gains(MHAOvlFilter::fftfb_t* pFb,DynComp::dc_afterburn_t& burn, mha_spec_t* s_out)
+{
+    unsigned int band;
+    unsigned int channel;
+    mha_real_t Lin(0);
+    for(band=0;band<gain.num_frames;band++)
+        for(channel=0;channel<gain.num_channels;channel++){
+            Lin = gain.value(band,channel);
+            gain.value(band,channel) = 
+                plug_output->buf[band+channel*gain.num_frames] /
+                std::max(1e-20f,gain.value(band,channel));
+            burn.burn(gain.value(band,channel),Lin,band,channel);
         }
-        catch(...){
-            plug.release();
-            throw;
-        }
-    }
+    pFb->apply_gains(s_out,s_out,&gain);
+}
 
-    void interface_t::release()
-    {
+
+class fftfb_plug_t : public MHAOvlFilter::fftfb_t {
+public:
+    fftfb_plug_t(MHAOvlFilter::fftfb_vars_t&,const mhaconfig_t& cfg,algo_comm_t ac,std::string alg);
+    void insert();
+private:
+    /** vector of nominal center frequencies / Hz */
+    MHA_AC::waveform_t cfv;
+    /** vector of edge frequencies / Hz */
+    MHA_AC::waveform_t efv;
+    /** vector of band-weigths (sum of squared fft-bin-weigths)/num_frames */
+    MHA_AC::waveform_t bwv;
+};
+
+fftfb_plug_t::fftfb_plug_t(MHAOvlFilter::fftfb_vars_t& vars,const mhaconfig_t& cfg,algo_comm_t ac,std::string alg)
+    : MHAOvlFilter::fftfb_t(vars,cfg.fftlen,cfg.srate),
+      cfv(ac,alg+"_cf",nbands(),1,false),
+      efv(ac,alg+"_ef",nbands()+1,1,false),
+      bwv(ac,alg+"_band_weights",nbands(),1,false)
+{
+    std::vector<mha_real_t> cfhz = get_cf_hz();
+    std::vector<mha_real_t> efhz = get_ef_hz();
+    unsigned int kfb, kfr;
+    for(kfb=0;kfb<nbands();kfb++) {
+        cfv[kfb] = cfhz[kfb];
+        efv[kfb] = efhz[kfb];
+        bwv[kfb] = 0.0f;
+        for (kfr=bin1(kfb); kfr < bin2(kfb); kfr++) {
+            bwv[kfb] += w(kfr,kfb) * w(kfr,kfb);
+        }
+        bwv[kfb] /= (cfg.fftlen/2+1);
+    }
+    if( nbands() )
+        efv[nbands()] = efhz[nbands()];
+}
+
+void fftfb_plug_t::insert()
+{
+    cfv.insert();
+    efv.insert();
+    bwv.insert();
+}
+
+class interface_t : public MHAPlugin::plugin_t<fftfb_plug_t>,
+                    public MHAOvlFilter::fftfb_vars_t {
+public:
+    interface_t(const algo_comm_t&,
+                const std::string&,
+                const std::string&);
+    void prepare(mhaconfig_t&);
+    void release();
+    mha_spec_t* process(mha_spec_t*);
+private:
+    int num_channels;
+    DynComp::dc_afterburn_t burn;
+    MHAEvents::patchbay_t<interface_t> patchbay;
+    void update_cfg();
+    std::string algo;
+    MHAParser::mhapluginloader_t plug;
+    plugin_signals_t* plug_sigs;
+};
+
+/** \internal
+
+    Default values are set and MHA configuration variables registered into the parser.
+
+    \param ac_     algorithm communication handle
+    \param th     chain name
+    \param al     algorithm name
+*/
+interface_t::interface_t(const algo_comm_t& ac_,
+                         const std::string& th,
+                         const std::string& al)
+    : MHAPlugin::plugin_t<fftfb_plug_t>("Multiband compressor framework based on level in overlapping filter bands.",ac_),
+      MHAOvlFilter::fftfb_vars_t(static_cast<MHAParser::parser_t&>(*this)),
+      num_channels(0),
+      algo(al),
+      plug(*this,ac),
+      plug_sigs(NULL)
+{
+    set_node_id("multibandcompressor");
+    insert_member(burn);
+    std::string ch_name(al+"_nch");
+    ac.insert_var_int(ac.handle, ch_name.c_str(), &num_channels);
+}
+
+void interface_t::prepare(mhaconfig_t& tf)
+{
+    if( tf.domain != MHA_SPECTRUM )
+        throw MHA_ErrorMsg("Only spectral processing is supported.");
+    num_channels = input_cfg().channels;
+    update_cfg();
+    poll_config();
+    cfg->insert();
+    mhaconfig_t gain_actor_cfg;
+    memset(&gain_actor_cfg,0,sizeof(gain_actor_cfg));
+    gain_actor_cfg.channels = input_cfg().channels*cfg->nbands();
+    gain_actor_cfg.fragsize = 1;
+    gain_actor_cfg.srate = input_cfg().srate/input_cfg().fragsize;
+    gain_actor_cfg.domain = MHA_WAVEFORM;
+    mhaconfig_t gain_actor_cfg_out(gain_actor_cfg);
+    plug.prepare(gain_actor_cfg);
+    try{
+        PluginLoader::mhaconfig_compare(gain_actor_cfg_out,gain_actor_cfg,"Multibandcompressor:gain actor: ");
+        plug_sigs = new plugin_signals_t(input_cfg().channels,cfg->nbands());
+    }
+    catch(...){
         plug.release();
-        if( plug_sigs ){
-            delete plug_sigs;
-            plug_sigs = NULL;
-        }
-        burn.unset_fb_pars();
+        throw;
     }
+}
 
-    void interface_t::update_cfg()
-    {
-        fftfb_plug_t* fb(new fftfb_plug_t(static_cast<MHAOvlFilter::fftfb_vars_t&>(*this),input_cfg(),ac,algo));
-        push_config(fb);
-        burn.set_fb_pars(fb->get_cf_hz(),input_cfg().channels,input_cfg().srate/input_cfg().fragsize);
+void interface_t::release()
+{
+    plug.release();
+    if( plug_sigs ){
+        delete plug_sigs;
+        plug_sigs = NULL;
     }
+    burn.unset_fb_pars();
+}
 
-    mha_spec_t* interface_t::process(mha_spec_t* s)
-    {
-        poll_config();
-        if( plug_sigs ){
-            burn.update_burner();
-            plug_sigs->update_levels(cfg,s);
-            plug.process(plug_sigs->plug_output,&(plug_sigs->plug_output));
-            plug_sigs->apply_gains(cfg,burn,s);
-        }
-        return s;
+void interface_t::update_cfg()
+{
+    fftfb_plug_t* fb(new fftfb_plug_t(static_cast<MHAOvlFilter::fftfb_vars_t&>(*this),input_cfg(),ac,algo));
+    push_config(fb);
+    burn.set_fb_pars(fb->get_cf_hz(),input_cfg().channels,input_cfg().srate/input_cfg().fragsize);
+}
+
+mha_spec_t* interface_t::process(mha_spec_t* s)
+{
+    poll_config();
+    if( plug_sigs ){
+        burn.update_burner();
+        plug_sigs->update_levels(cfg,s);
+        plug.process(plug_sigs->plug_output,&(plug_sigs->plug_output));
+        plug_sigs->apply_gains(cfg,burn,s);
     }
+    return s;
+}
 
 }
 

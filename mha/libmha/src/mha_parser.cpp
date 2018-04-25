@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 2011 HörTech gGmbH
-// Copyright © 2012 2013 2014 2016 2017 HörTech gGmbH
+// Copyright © 2012 2013 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -1293,11 +1293,11 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
     }
 }
 
-
 #ifndef DOXY_PARSE
 // doxygen does not understand this:
 template void MHAParser::StrCnv::str2val<std::string>(const std::string& s,std::vector<std::string>& v);
 template void MHAParser::StrCnv::str2val<int>(const std::string& s,std::vector<int>& v);
+template void MHAParser::StrCnv::str2val<float>(const std::string&,std::vector<float>&);
 template void MHAParser::StrCnv::str2val<mha_complex_t>(const std::string&,std::vector<mha_complex_t>&);
 template void MHAParser::StrCnv::str2val<int>(const std::string&,std::vector<std::vector<int> >&);
 template void MHAParser::StrCnv::str2val<float>(const std::string&,std::vector<std::vector<float> >&);

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2013 2014 2016 HörTech gGmbH
+// Copyright © 2006 2013 2014 2016 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,6 +20,7 @@
 #include "mha_signal.hh"
 #include "mha_event_emitter.h"
 #include "mha_events.h"
+#include "mha_windowparser.h"
 
 /** A combination of mha parser variables to describe an overalapadd analysis
  * window.  Provides a method to get the window samples as an instance of
@@ -80,6 +81,7 @@ private:
 #endif
 
 // Local Variables:
+// compile-command: "make -C .."
 // mode: c++
 // coding: utf-8-unix
 // c-basic-offset: 4

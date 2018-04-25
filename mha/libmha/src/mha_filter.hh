@@ -19,6 +19,7 @@
 
 #include "mha_toolbox.h"
 #include "mha_plugin.hh"
+#include "mha_windowparser.h"
 #include <valarray>
 
 /**
