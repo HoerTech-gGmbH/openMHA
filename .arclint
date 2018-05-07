@@ -7,7 +7,10 @@
   "linters": {
     "Basic Text": {
       "text.max-line-length": 80,
-      "type": "text"
+      "type": "text",
+      "severity.rules":  {
+      "(5$)" : "disabled"
+      }
     },
     "Static C++ analyser": {
       "type": "cppcheck",
