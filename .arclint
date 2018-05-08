@@ -8,6 +8,7 @@
     "Basic Text": {
       "text.max-line-length": 80,
       "type": "text",
+      "exclude": "(\\.md)$",
       "severity.rules":  {
       "(5$)" : "disabled"
       }
