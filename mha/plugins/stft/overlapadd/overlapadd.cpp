@@ -108,6 +108,9 @@ overlapadd_t::overlapadd_t(mhaconfig_t spar_in,
     case MHAParser::window_t::wnd_bartlett :
         break;
     case MHAParser::window_t::wnd_user :
+        throw MHA_Error(__FILE__,__LINE__,
+                        "overlapadd plugin does not support user-defined windows."
+                        " Use wave2spec for user-defined analysis windows.");
         break;
     }
     prewnd *= scale_fac;
@@ -181,7 +184,7 @@ overlapadd_if_t::overlapadd_if_t(const algo_comm_t& iac,const std::string&,const
       nfft("FFT length","512","[1,]"),
       nwnd("window length/samples","400","[1,]"),
       wndpos("window position\n(0 = beginning, 0.5 = symmetric zero padding, 1 = end)","0.5","[0,1]"),
-      window("window type"),
+      window("window type", false), // no user-defined windows
       wndexp("window exponent to be applied to all elements of window function","1"),
       zerowindow("zero padding post window type"),
       plugloader(*this,iac),
