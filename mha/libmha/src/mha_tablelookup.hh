@@ -167,6 +167,12 @@ namespace MHATableLookup {
         void set_xfun(float (*pXFun)(float));
         void set_yfun(float (*pYFun)(float));
         void set_xyfun(float (*pYFun)(float,float));
+        /** returns the min and max x of all mesh points that are
+         * stored in the lookup table, i.e. after transformation with
+         * xfun, if any. Not real-time safe */
+        std::pair<mha_real_t,mha_real_t> get_xlimits() const
+        { return std::pair<mha_real_t,mha_real_t>(mXY.begin()->first,
+                                                  mXY.rbegin()->first); }
     private:
         std::map<mha_real_t,mha_real_t> mXY;
         float (*xfun)(float);
