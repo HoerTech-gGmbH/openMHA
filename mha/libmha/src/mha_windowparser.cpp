@@ -141,18 +141,13 @@ float (*wnd_funs[])(float) = {
     MHAWindow::rect
 };
 
-MHAParser::window_t::window_t(const std::string& help,
-                              bool support_user_window)
+MHAParser::window_t::window_t(const std::string& help)
     : MHAParser::parser_t(help),
-      wtype("Window type.","hanning",
-            support_user_window
-            ? "[rect hanning hamming blackman bartlett user]"
-            : "[rect hanning hamming blackman bartlett]"),
+      wtype("Window type.","hanning","[rect hanning hamming blackman bartlett user]"),
       user("User provided window (used if window type==user).","[]","")
 {
     insert_item("type",&wtype);
-    if (support_user_window)
-      insert_item("user",&user);
+    insert_item("user",&user);
 }
 
 MHAWindow::base_t MHAParser::window_t::get_window(unsigned int len) const

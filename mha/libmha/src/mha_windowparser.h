@@ -144,11 +144,7 @@ namespace MHAParser {
                        wnd_bartlett=4,
                        wnd_user=5 } wtype_t;
         /// \brief Constructor to create parser class.
-        /// \param help Help string of the window parser.
-        /// \param support_user_window whether this window parser should
-        ///                            allow the user-defined window type.
-        window_t(const std::string& help="Window type configuration.",
-                 bool support_user_window = true);
+        window_t(const std::string& help="Window type configuration.");
         /// \brief Create a window instance, use default parameters.
         MHAWindow::base_t get_window(unsigned int len) const;
         /// \brief Create a window instance.
