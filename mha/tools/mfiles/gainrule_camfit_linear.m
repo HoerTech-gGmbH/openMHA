@@ -21,7 +21,7 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
 % variable CAMFIT_MAXOUT before this function is called.
   
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2007 2011 2013 2015 2016 2017 HörTech gGmbH
+% Copyright © 2007 2011 2013 2015 2016 2017 2018 HörTech gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
