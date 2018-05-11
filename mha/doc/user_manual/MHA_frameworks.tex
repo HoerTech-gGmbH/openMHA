@@ -125,6 +125,28 @@ A configuration file with these settings can be read by sending a {\tt
 ?read:filename.cfg} command to the configuration interface. See also
 \secpageref{sec:script} for details.
 
+Note that the variables \texttt{fragsize}, and \texttt{srate} need to
+be set before loading the sound I/O library by assigning a value to
+\texttt{iolib}, and they cannot be changed after loading the sound I/O
+library. This is because some sound APIs require this knowledge (about
+block size and sampling rate) already when the API is first
+initialized, and in these APIs block size and/or sampling rate cannot
+be changed thereafter.
+%
+For the same reason, it it also not possible to change the sound I/O
+library by assigning a different value to iolib after the initial
+assignment.
+%
+For historic reasons, the variable mhalib can also not be changed
+after initial assignment, but this will most likely be relaxed in a
+future release.
+%
+When the MHA is in prepared state, the number of input channels
+\texttt{nchannels\_in} cannot be changed.
+%
+When an MHA variable cannot be changed, then it is "locked", and
+attempts to write to it will cause an error.
+
 \begin{description}
   \mhavardesc{nchannels\_in}{Number of input audio channels.}
   
