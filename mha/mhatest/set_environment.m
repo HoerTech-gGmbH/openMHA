@@ -44,6 +44,9 @@ else
   dirs = unique(dirs);
   setenv('MHA_LIBRARY_PATH',strjoin(dirs,';'));
 end
+if isoctave()
+  pkg load signal;
+end
 
 function result = find_all_plugins(git_dir, build_dir)
 if strfind(build_dir, 'MinGW')
