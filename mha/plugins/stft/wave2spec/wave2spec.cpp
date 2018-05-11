@@ -275,6 +275,18 @@ MHAPLUGIN_DOCUMENTATION\
  "and see section \\ref{plug:overlapadd} for a description of the "
  "overlap-add method.\n"
  "\n"
+
+ "Example configurations for the wave2spec plugin are available in the "
+ "short-time-fourier-transform examples directory, and in the matlab/octave "
+ "tests exercising this plugin in the mhatest directory.  "
+ "These test files are executed together with the other "
+ "system-level tests when invoking \\texttt{make test}.  "
+ "Please note that you need to have the signal processing package "
+ "installed in order to sucessfully execute all tests for this "
+ "plugin.\\footnote{In octave, the package can be installed with "
+ "\\texttt{pkg install -forge signal} from within octave.}"
+
+ "\n\n"
  )
 
 // Local Variables:
