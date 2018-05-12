@@ -9,7 +9,7 @@ function [vIsoThrDB, vsF] = isothr(vsDesF);
             0   80.0
            20   78.5
            25   68.7
-         31.5   59.5
+           31.5 59.5
            40   51.1
            50   44.0
            63   37.5
