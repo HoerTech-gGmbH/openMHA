@@ -509,6 +509,63 @@ TEST(blockprocessing_polyphase_resampling_t, test_44100_17400_512_64_roundtrip)
   ASSERT_NEAR(0.0f, zero, 0.017);
 }
 
+TEST(blockprocessing_polyphase_resampling_t, test_48k_16k_64_20_roundtrip)
+{
+  unsigned nchannels = 1U;
+  float outer_srate = 48000.0f;
+  unsigned outer_fragsize = 64U;
+  float inner_srate = 16000.0f;
+  unsigned inner_fragsize = 20U;
+  float nyquist_ratio = 0.850000024f;
+  float irslen = 0.000699999975f;
+  MHAFilter::blockprocessing_polyphase_resampling_t
+    to(outer_srate, outer_fragsize,
+       inner_srate, inner_fragsize,
+       nyquist_ratio, irslen, nchannels, true);
+  MHAFilter::blockprocessing_polyphase_resampling_t
+    fro(inner_srate, inner_fragsize,
+        outer_srate, outer_fragsize,
+        nyquist_ratio, irslen, nchannels, false);
+
+  MHASignal::waveform_t s64(64U, 1U);
+  MHASignal::waveform_t o64(64U, 1U);
+  MHASignal::waveform_t p64(64U, 1U);
+  MHASignal::waveform_t s20(20U, 1U);
+
+  // A frequency with multiple waveforms in the outer buffer
+  double f = 4.0/outer_fragsize*outer_srate;
+  for (unsigned frame = 0U; frame < outer_fragsize; ++frame)
+    for (unsigned channel = 0U; channel < nchannels; ++channel)
+      s64.value(frame,channel) =
+        sin(frame/outer_srate*2.0*M_PI*f) * (channel*2.0-1.0);
+
+  //FILE * fo =  fopen("output","w");
+  for (unsigned i = 0U; i <= unsigned(outer_srate)/outer_fragsize; ++i) {
+    to.write(s64);
+    for(unsigned j = 0U; to.can_read(); j++) {
+      to.read(s20);
+      fro.write(s20);
+    }
+    ::assign(p64,o64);
+    fro.read(o64);
+    //pfile(fo,o64);
+  }
+  //fclose(fo);
+  mha_real_t min = 1.0f, max = -1.0f, zero = -1.0f;
+  for (unsigned frame = 0U; frame < outer_fragsize; ++frame) {
+    min = std::min(min, o64.value(frame, 0));
+    max = std::max(max, o64.value(frame, 0));
+    if (fabsf(zero) > fabsf(o64.value(frame, 0)))
+      zero = o64.value(frame, 0);
+    for (unsigned channel = 0U; channel < nchannels; ++channel) {
+      ASSERT_NEAR(o64.value(frame, channel), p64.value(frame, channel), 1e-4);
+    }
+  }
+  ASSERT_NEAR(-1.0f, min, 1e-3);
+  ASSERT_NEAR(1.0f, max, 1e-3);
+  ASSERT_NEAR(0.0f, zero, 0.017);
+}
+
 // Local Variables:
 // compile-command: "make -C .. unit-tests"
 // coding: utf-8-unix
