@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2016 2017 HörTech gGmbH
+# Copyright © 2013 2014 2016 2017 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -73,6 +73,8 @@ $(MHA_FFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(FFTW_LIB)
 
 $(MHA_RFFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(RFFTW_LIB)
 	ar x $< $(notdir $@) && mv $(notdir $@) $@
+
+$(BUILD_DIR)/unit-test-runner: LDFLAGS += -L$(BUILD_DIR) -lopenmha
 
 # Local Variables:
 # coding: utf-8-unix
