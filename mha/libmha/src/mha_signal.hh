@@ -914,19 +914,45 @@ namespace MHASignal {
     };
 
     /** A ringbuffer class for time domain audio signal, which makes no
-        assumptions with respect to fragment size. */
+        assumptions with respect to fragment size.
+        
+        Blocks of audio signal can be placed into the ringbuffer using
+        the #write method.  Individual audio samples can be accessed
+        and altered using the #value method.  Blocks of audio data can
+        be deleted from the ringbuffer using the #discard method.
+    */
     class ringbuffer_t : private waveform_t {
-        /// identifies place with oldest frame in ringbuffer
+
+        /// Index of oldest frame in underlying storage for the ringbuffer.
+        /// This value is added to the frame parameter of the #value method,
+        /// and this value is altered when #discard is called.
         unsigned next_read_frame_index;
-        /// identifies place to store next frame in ringbuffer
+
+        /// Index of first free frame in underlying storage.  Next
+        /// frame to be stored will be placed here.
         unsigned next_write_frame_index;
+
     public:
-        /** Creates new ringbuffer.
-            @param frames Size of ringbuffer. Maximum frames can be stored in
-                          ringbuffer.
+        /** Creates new ringbuffer for time domain signal.
+            Constructor allocates enough storage so that \a frames
+            audio samples can be stored in the ringbuffer.
+
+            @param frames Size of ringbuffer in samples per channel.
+                          Maximum number of frames that can be stored
+                          in the ringbuffer at one time.  This number
+                          cannot be changed after instance creation.
+
             @param channels Number of audio channels.
-            @param prefilled_frames Number of frames to be prefilled with zero
-                          values
+   
+            @param prefilled_frames Number of frames to be prefilled
+                          with zero values.  Many applications of a
+                          ringbuffer require the introduction of a
+                          delay.  In practice, this delay is achieved
+                          by inserting silence audio samples (zeros)
+                          into the ringbuffer before the start of the
+                          actual signal is inserted for the first
+                          time.
+
             @throw MHA_Error if prefilled_frames > frames
         */
         ringbuffer_t(unsigned frames,
@@ -942,6 +968,11 @@ namespace MHASignal {
         }
 
         /** Access to value stored in ringbuffer.
+         *
+         * \a frame index is relative to the oldest frame stored in
+         * the ringbuffer, therefore, the meaning of the \a frame
+         * changes when the #discard method is called.
+         *
          * @param frame frame index, 0 corresponds to oldest frame stored.
          * @param channel audio channel
          * @return reference to contained sample value
@@ -960,7 +991,7 @@ namespace MHASignal {
                                      % num_frames,
                                      channel);
         }
-        /** Discards the oldest frames 
+        /** Discards the oldest frames. 
          * Makes room for new #write, alters base frame index for #value
          * @param frames how many frames to discard.
          * @throw MHA_Error if frames > #contained_frames*/
@@ -974,11 +1005,13 @@ namespace MHASignal {
             next_read_frame_index %= num_frames;
         }
         /** Copies the contents of the signal into the ringbuffer if there is
-            space
+            enough space.
             @param signal New signal to be appended to the signal already
                 present in the ringbuffer
-            @throw MHA_Error if there is not enough space or if the channel
-                count mismatches.
+ 
+            @throw MHA_Error if there is not enough space or if the
+                channel count mismatches.  Nothing is copied if the
+                space is insufficient.
         */
         void write(mha_wave_t & signal) {
             if (signal.num_channels != num_channels) 

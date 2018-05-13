@@ -331,6 +331,49 @@ TEST(polyphase_resampling_t, filter_underflow) {
   }
 }
 
+/* parameters for polyphase resampling tests */
+struct polyphase_parameters_t {
+  unsigned n_up;
+  unsigned n_down;
+  mha_real_t nyquist_ratio;
+  unsigned input_capacity;
+  unsigned n_channels;
+  unsigned irslen;
+  unsigned n_prefill;
+};
+
+/* a parameterizable fixture for testing readable_frames / underflow
+ * conditions */
+class test_underflow_t :
+  public ::testing::TestWithParam<polyphase_parameters_t> {
+};
+
+TEST_P(test_underflow_t, can_read_available_samples_but_not_more) {
+  polyphase_parameters_t p = GetParam();
+  MHAFilter::polyphase_resampling_t resampler(p.n_up, p.n_down,
+                                              p.nyquist_ratio, p.irslen,
+                                              p.input_capacity,
+                                              p.n_channels, p.n_prefill);
+  unsigned available_frames = resampler.readable_frames();
+  EXPECT_GT(available_frames, 0U);
+
+  MHASignal::waveform_t all_readable(available_frames, p.n_channels);
+  MHASignal::waveform_t one_sample_too_many(1U, p.n_channels);
+
+  resampler.read(all_readable);
+  EXPECT_EQ(0U, resampler.readable_frames());
+  EXPECT_THROW(resampler.read(one_sample_too_many), MHA_Error);
+}
+
+struct polyphase_parameters_t params[] = {
+  //n_up, n_down, nyq_ratio, in_cap, ch, irslen,   n_prefill
+  {  58U,   147U,      0.8f,  1024U, 2U, 147U*32U, (147U*32U-1U)/58U+1U},
+  {   1U,     3U,     0.85f,   219U, 1U,      34U,                  94U},
+};
+
+INSTANTIATE_TEST_CASE_P(InstantiationName, test_underflow_t, ::testing::ValuesIn(params));
+                        
+
 TEST(polyphase_resampling_t,readable_frames) {
 #define MAKE_NEW_POLYPHASE \
   unsigned n_up = 58U; \
@@ -558,7 +601,7 @@ TEST(blockprocessing_polyphase_resampling_t, test_48k_16k_64_20_roundtrip)
     if (fabsf(zero) > fabsf(o64.value(frame, 0)))
       zero = o64.value(frame, 0);
     for (unsigned channel = 0U; channel < nchannels; ++channel) {
-      ASSERT_NEAR(o64.value(frame, channel), p64.value(frame, channel), 1e-4);
+      ASSERT_NEAR(o64.value(frame, channel), p64.value(frame, channel), 1e-3);
     }
   }
   ASSERT_NEAR(-1.0f, min, 1e-3);
