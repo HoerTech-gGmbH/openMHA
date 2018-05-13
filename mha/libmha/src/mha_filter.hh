@@ -1018,7 +1018,7 @@ namespace MHAFilter {
          * a read operation can still fail if there are not enough
          * past samples present to perform the filtering for the first
          * output sample.  This could only happen if the constructor
-         * parameters \a n_ringbuffer or \n_prefill have been chosen
+         * parameters \a n_ringbuffer or \a n_prefill have been chosen
          * too small, because otherwise the method #read ensures that
          * enough past samples are present to compute the next target
          * sample. */
