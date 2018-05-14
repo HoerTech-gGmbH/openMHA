@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2007 2008 2013 2016 HörTech gGmbH
+// Copyright © 2006 2007 2008 2013 2016 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -70,6 +70,12 @@ latex_doc_t::latex_doc_t(const std::string& plugname_,const std::string& plugin_
 
 std::string latex_doc_t::get_latex_doc()
 {
+    std::string plugin_subsection_macro = "\\paragraph";
+    if (plugin_macro == "\\subsection")
+        plugin_subsection_macro = "\\subsubsection";
+    if (plugin_macro == "\\section")
+        plugin_subsection_macro = "\\subsection";
+    
     std::string retv("");
     retv += "\\" + plugin_macro + "{" + latex_plugname + "}\n\\label{plug:" + plugname + "}\n\n";
     retv += "\\index{" + latex_plugname + " (MHA plugin)}\n";
@@ -84,7 +90,7 @@ std::string latex_doc_t::get_latex_doc()
     if( detailed_doc.size() )
         retv += "\\paragraph{Detailed description}\n\n" + loader.get_documentation() + "\n\n";
     retv += "\\paragraph{Supported domains}\n\nThe MHA plugin {\\tt " 
-        + latex_plugname + "} supportes these signal domains:\n\\begin{itemize}\n";
+        + latex_plugname + "} supports these signal domains:\n\\begin{itemize}\n";
     mha_domain_t indom, outdom;
     unsigned int n_domains(0);
     for( indom = 0; indom < MHA_DOMAIN_MAX; indom++ ) 

@@ -22,7 +22,7 @@ data, the underlying library functions offer ways for extension to
 more parameters.
 
 Typically, the fitting is controlled via the graphical interface
-\verb!mhacontrol!. This document decribes solutions for selecting
+\verb!mhacontrol!. This document decries solutions for selecting
 auditory profiles from the data base manually and to upload fittings
 to an MHA instance.
 
@@ -59,7 +59,7 @@ sAud = csAud{end};
 \end{verbatim}
 Here, the data base is automatically loaded.
 
-To import air conduction thresholds from an XLS sheet, one can use
+To import air conduction thresholds from an xls sheet, one can use
 \begin{verbatim}
 xlsname = 'myaud.xls';
 h.db_xlsimport( xlsname );
@@ -69,7 +69,7 @@ clientdb();
 The xls file needs to follow a special formatting: The first row is
 interpreted as a header row. The field A1 may contain any text, the
 fields B1, C1, D1, etc. need to specify the side and frequency in a
-string, e.g., ``l125''. The fields are not case sensitiv and may
+string, e.g., ``l125''. The fields are not case sensitive and may
 contain spaces. The frequencies must be given in Hz. The side
 identifier can be 'l' or 'r'. The first column must contain the client
 identifier, which are converted into upper case during the import

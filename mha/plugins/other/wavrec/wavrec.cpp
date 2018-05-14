@@ -59,7 +59,7 @@ private:
 wavrec_t::wavrec_t(const algo_comm_t& iac,const std::string&,const std::string& algo_name)
     : MHAPlugin::plugin_t<wavwriter_t>("wav file recorder",iac),
       record("Record session. Each write access with argument \"yes\" will start a\n"
-	     "new file with current time and date as a name.","no"),
+             "new file with current time and date as a name.","no"),
       fifolen("Length of FIFO in samples","262144","[2,]"),
       minwrite("Minimal write length (must be less then fifolen)","65536","[1,]"),
       prefix("Path (including path delimiter) and file prefix",""),
@@ -110,77 +110,74 @@ wavwriter_t::wavwriter_t(bool active,const mhaconfig_t& cf,unsigned int fifosize
       data(new float[fifosize])
 {
     if(minw_ >= fifosize )
-	throw MHA_Error(__FILE__,__LINE__,"minwrite must be less then fifosize (minwrite: %d, fifosize: %d)",minw_,fifosize);
+        throw MHA_Error(__FILE__,__LINE__,"minwrite must be less then fifosize (minwrite: %d, fifosize: %d)",minw_,fifosize);
     if( (cf_.channels == 0) || (cf_.srate==0) )
-	act_ = false;
+        act_ = false;
     if( act_ ){
-	std::string fname;
-	if( use_date ){
-	    time_t tm(time(NULL));
+        std::string fname;
+        if( use_date ){
+            time_t tm(time(NULL));
 #ifdef _WIN32
-	    fname = ctime(&tm);
+            fname = ctime(&tm);
 #else
-	    char timestr[28];
-	    fname = ctime_r(&tm,timestr);
+            char timestr[28];
+            fname = ctime_r(&tm,timestr);
 #endif
-	    fname.erase(fname.size()-1,1);
-	    MHAParser::strreplace(fname,":","-");
-	    MHAParser::strreplace(fname,"Mon "," ");
-	    MHAParser::strreplace(fname,"Tue "," ");
-	    MHAParser::strreplace(fname,"Wed "," ");
-	    MHAParser::strreplace(fname,"Thu "," ");
-	    MHAParser::strreplace(fname,"Fri "," ");
-	    MHAParser::strreplace(fname,"Sat "," ");
-	    MHAParser::strreplace(fname,"Sun "," ");
-	    MHAParser::strreplace(fname," ","_");
-	}
-	fname = prefix+fname+".wav";
-	//DEBUG(fname);
-	SF_INFO sfinfo;
-	memset(&sfinfo,0,sizeof(sfinfo));
-	sfinfo.samplerate = (int)cf_.srate;
-	sfinfo.channels = cf_.channels;
-	sfinfo.format = SF_FORMAT_WAV|SF_FORMAT_FLOAT|SF_ENDIAN_FILE;
-//	DEBUG(sfinfo.samplerate);
-	//DEBUG(sfinfo.channels);
-	sf = sf_open(fname.c_str(),SFM_WRITE,&sfinfo);
-	if( !sf )
-	    throw MHA_Error(__FILE__,__LINE__,"Unable to create sound file %s: %s",fname.c_str(),sf_strerror(sf));
-	pthread_create(&writethread,NULL,&wavwriter_t::write_thread,this);
+            fname.erase(fname.size()-1,1);
+            MHAParser::strreplace(fname,":","-");
+            MHAParser::strreplace(fname,"Mon "," ");
+            MHAParser::strreplace(fname,"Tue "," ");
+            MHAParser::strreplace(fname,"Wed "," ");
+            MHAParser::strreplace(fname,"Thu "," ");
+            MHAParser::strreplace(fname,"Fri "," ");
+            MHAParser::strreplace(fname,"Sat "," ");
+            MHAParser::strreplace(fname,"Sun "," ");
+            MHAParser::strreplace(fname," ","_");
+        }
+        fname = prefix+fname+".wav";
+        SF_INFO sfinfo;
+        memset(&sfinfo,0,sizeof(sfinfo));
+        sfinfo.samplerate = (int)cf_.srate;
+        sfinfo.channels = cf_.channels;
+        sfinfo.format = SF_FORMAT_WAV|SF_FORMAT_FLOAT|SF_ENDIAN_FILE;
+        sf = sf_open(fname.c_str(),SFM_WRITE,&sfinfo);
+        if( !sf )
+            throw MHA_Error(__FILE__,__LINE__,"Unable to create sound file %s: %s",fname.c_str(),sf_strerror(sf));
+        pthread_create(&writethread,NULL,&wavwriter_t::write_thread,this);
     }
 }
 
 wavwriter_t::~wavwriter_t()
 {
     if( act_ ){
-	close_session = true;
-	pthread_join(writethread,NULL);
+        close_session = true;
+        pthread_join(writethread,NULL);
     }
     if( sf )
-	sf_close(sf);
+        sf_close(sf);
     delete [] data;
 }
     
 void wavwriter_t::process(mha_wave_t* s)
 {
     if( act_ )
-	fifo.write(s->buf,std::min(fifo.get_available_space(),size(s)));
+        fifo.write(s->buf,std::min(fifo.get_available_space(),size(s)));
 }
 
 void wavwriter_t::write_thread()
 {
     while(!close_session){
-	mha_msleep(1);
-	if( sf && (fifo.get_fill_count() > minw_) ){
-	    unsigned int frames = fifo.get_fill_count()/cf_.channels;
-	    fifo.read(data,frames*cf_.channels);
-	    sf_writef_float(sf,data,frames);
-	}
+        mha_msleep(1);
+        if( sf && (fifo.get_fill_count() > minw_) ){
+            unsigned int frames = fifo.get_fill_count()/cf_.channels;
+            fifo.read(data,frames*cf_.channels);
+            sf_writef_float(sf,data,frames);
+        }
     }
     if( sf && fifo.get_fill_count() ){
-	unsigned int frames = fifo.get_fill_count()/cf_.channels;
-	fifo.read(data,frames*cf_.channels);
-	sf_writef_float(sf,data,frames);
+        unsigned int frames = fifo.get_fill_count()/cf_.channels;
+        fifo.read(data,frames*cf_.channels);
+        sf_writef_float(sf,data,frames);
     }
 }
 

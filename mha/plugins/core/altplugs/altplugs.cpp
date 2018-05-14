@@ -18,7 +18,7 @@
 #include "mhapluginloader.h"
 #include "mha_defs.h"
 #include "mha_algo_comm.hh"
-
+#include "mha_windowparser.h"
 
 class mhaplug_cfg_t : private MHAKernel::algo_comm_class_t, public PluginLoader::mhapluginloader_t
 {
@@ -110,54 +110,54 @@ altplugs_t::altplugs_t(algo_comm_t iac,const char* chain,const char* algo)
 void altplugs_t::proc_ramp(mha_wave_t* s)
 {
     if( ramp_counter ){
-	poll_config();
-	unsigned int k=0;
-	while( ramp_counter && (k < s->num_frames) ){
-	    if( cfg->num_frames > ramp_counter ){
-		for(unsigned int ch=0;ch < s->num_channels; ch++)
-		    value(s,k,ch) *= cfg->buf[ramp_counter];
-	    }else{
-		for(unsigned int ch=0;ch < s->num_channels; ch++)
-		    value(s,k,ch) = 0.0f;
-	    }
-	    ramp_counter--;
-	    k++;
-	}
+        poll_config();
+        unsigned int k=0;
+        while( ramp_counter && (k < s->num_frames) ){
+            if( cfg->num_frames > ramp_counter ){
+                for(unsigned int ch=0;ch < s->num_channels; ch++)
+                    value(s,k,ch) *= cfg->buf[ramp_counter];
+            }else{
+                for(unsigned int ch=0;ch < s->num_channels; ch++)
+                    value(s,k,ch) = 0.0f;
+            }
+            ramp_counter--;
+            k++;
+        }
     }
 }
 
 void altplugs_t::process(mha_wave_t* sIn,mha_wave_t** sOut)
 {
     if( selected_plug )
-	selected_plug->process(sIn,sOut);
+        selected_plug->process(sIn,sOut);
     else
-	*sOut = fallback_wave;
+        *sOut = fallback_wave;
     proc_ramp(*sOut);
 }
 
 void altplugs_t::process(mha_spec_t* sIn,mha_wave_t** sOut)
 {
     if( selected_plug )
-	selected_plug->process(sIn,sOut);
+        selected_plug->process(sIn,sOut);
     else
-	*sOut = fallback_wave;
+        *sOut = fallback_wave;
     proc_ramp(*sOut);
 }
 
 void altplugs_t::process(mha_wave_t* sIn,mha_spec_t** sOut)
 {
     if( selected_plug )
-	selected_plug->process(sIn,sOut);
+        selected_plug->process(sIn,sOut);
     else
-	*sOut = fallback_spec;
+        *sOut = fallback_spec;
 }
 
 void altplugs_t::process(mha_spec_t* sIn,mha_spec_t** sOut)
 {
     if( selected_plug )
-	selected_plug->process(sIn,sOut);
+        selected_plug->process(sIn,sOut);
     else
-	*sOut = fallback_spec;
+        *sOut = fallback_spec;
 }
 
 void altplugs_t::prepare(mhaconfig_t& cf)
@@ -165,20 +165,20 @@ void altplugs_t::prepare(mhaconfig_t& cf)
     cfin = cf;
     cfout = cf; // initialization for the no-plugins case
     for(unsigned int k=0;k<plugs.size();k++){
-	cf = cfin;
-	try{
-	    plugs[k]->prepare(cf);
-	}
-	catch(...){
-	    for(unsigned int kin=0;kin<k;kin++)
-		plugs[kin]->release();
-	    throw;
-	}
-	if( k==0 ){
-	    cfout = cf;
-	}else{
-	    PluginLoader::mhaconfig_compare(cfout,cf,plugs[k]->get_configname());
-	}
+        cf = cfin;
+        try{
+            plugs[k]->prepare(cf);
+        }
+        catch(...){
+            for(unsigned int kin=0;kin<k;kin++)
+                plugs[kin]->release();
+            throw;
+        }
+        if( k==0 ){
+            cfout = cf;
+        }else{
+            PluginLoader::mhaconfig_compare(cfout,cf,plugs[k]->get_configname());
+        }
     }
     tftype = cfout;
     fallback_wave = new MHASignal::waveform_t(cfout.fragsize,cfout.channels);
@@ -190,7 +190,7 @@ void altplugs_t::prepare(mhaconfig_t& cf)
 void altplugs_t::release()
 {
     for(unsigned int k=0;k<plugs.size();k++){
-	plugs[k]->release();
+        plugs[k]->release();
     }
     delete fallback_wave;
     delete fallback_spec;
@@ -206,24 +206,24 @@ void altplugs_t::update_ramplen()
 void altplugs_t::event_add_plug()
 {
     if( add_plug.data.size() ){
-	mhaplug_cfg_t* plug;
-	plug = new mhaplug_cfg_t(ac,add_plug.data,use_own_ac.data);
-	try{
-	    if( prepared ){
-		mhaconfig_t cf(cfin);
-		plug->prepare(cf);
-		PluginLoader::mhaconfig_compare(cfout,cf,plug->get_configname());
-	    }
-	    if( plug->has_parser() )
-		insert_item(plug->get_configname(),plug);
-	    if( !added_via_plugs )
-		parser_plugs.data.push_back(add_plug.data);
-	    plugs.push_back(plug);
-	}
-	catch(...){
-	    delete plug;
-	    throw;
-	}
+        mhaplug_cfg_t* plug;
+        plug = new mhaplug_cfg_t(ac,add_plug.data,use_own_ac.data);
+        try{
+            if( prepared ){
+                mhaconfig_t cf(cfin);
+                plug->prepare(cf);
+                PluginLoader::mhaconfig_compare(cfout,cf,plug->get_configname());
+            }
+            if( plug->has_parser() )
+                insert_item(plug->get_configname(),plug);
+            if( !added_via_plugs )
+                parser_plugs.data.push_back(add_plug.data);
+            plugs.push_back(plug);
+        }
+        catch(...){
+            delete plug;
+            throw;
+        }
     }
     add_plug.data = "";
     update_selector_list();
@@ -234,25 +234,25 @@ void altplugs_t::event_delete_plug()
     mhaplug_cfg_t* plug(NULL);
     std::string oname;
     for(unsigned int k=0;k<plugs.size();k++){
-	if( plugs[k]->get_configname() == delete_plug.data ){
-	    plug = plugs[k];
-	    oname = plug->get_origname();
-	    plugs.erase(plugs.begin()+k);
-	    if( plug == selected_plug ){
-		select_plug.data.set_index(0);
-		selected_plug = NULL;
-	    }
-	    force_remove_item(plug->get_configname());
-	    delete_plug.data = "";
-	    delete plug;
-	    for(unsigned int klist=0;klist<parser_plugs.data.size();klist++){
-		if( parser_plugs.data[klist] == oname ){
-		    parser_plugs.data.erase(parser_plugs.data.begin()+klist);
-		    break;
-		}
-	    }
-	    break;
-	}
+        if( plugs[k]->get_configname() == delete_plug.data ){
+            plug = plugs[k];
+            oname = plug->get_origname();
+            plugs.erase(plugs.begin()+k);
+            if( plug == selected_plug ){
+                select_plug.data.set_index(0);
+                selected_plug = NULL;
+            }
+            force_remove_item(plug->get_configname());
+            delete_plug.data = "";
+            delete plug;
+            for(unsigned int klist=0;klist<parser_plugs.data.size();klist++){
+                if( parser_plugs.data[klist] == oname ){
+                    parser_plugs.data.erase(parser_plugs.data.begin()+klist);
+                    break;
+                }
+            }
+            break;
+        }
     }
     update_selector_list();
 }
@@ -261,8 +261,8 @@ void altplugs_t::event_select_plug()
 {
     mhaplug_cfg_t* plug(NULL);
     for(unsigned int k=0;k<plugs.size();k++){
-	if( plugs[k]->get_configname() == select_plug.data.get_value() )
-	    plug = plugs[k];
+        if( plugs[k]->get_configname() == select_plug.data.get_value() )
+            plug = plugs[k];
     }
     selected_plug = plug;
     ramp_counter = ramp_len;
@@ -272,13 +272,13 @@ void altplugs_t::event_set_plugs()
 {
     added_via_plugs = true;
     try{
-	for(unsigned int k=0;k<parser_plugs.data.size();k++)
-	    add_plug.parse("="+parser_plugs.data[k]);
-	added_via_plugs = false;
+        for(unsigned int k=0;k<parser_plugs.data.size();k++)
+            add_plug.parse("="+parser_plugs.data[k]);
+        added_via_plugs = false;
     }
     catch(...){
-	added_via_plugs = false;
-	throw;
+        added_via_plugs = false;
+        throw;
     }
 }
 
@@ -288,8 +288,8 @@ void altplugs_t::update_selector_list()
     std::vector<std::string> plist;
     plist.push_back("(none)");
     for(unsigned int k=0;k<plugs.size();k++){
-	plist.push_back(plugs[k]->get_configname());
-	nondefault_labels.data.push_back(plugs[k]->get_configname());
+        plist.push_back(plugs[k]->get_configname());
+        nondefault_labels.data.push_back(plugs[k]->get_configname());
     }
     std::string splist(MHAParser::StrCnv::val2str(plist));
     select_plug.data.set_entries(splist);
@@ -299,10 +299,10 @@ std::string altplugs_t::parse(const std::string& arg)
 {
     MHAParser::expression_t x(arg,".=?");
     if( x.lval == "current" ){
-	if( selected_plug ){
-	    return selected_plug->parse(x.op+x.rval);
-	}else
-	    throw MHA_ErrorMsg("No plugin is selected (current is invalid)!");
+        if( selected_plug ){
+            return selected_plug->parse(x.op+x.rval);
+        }else
+            throw MHA_ErrorMsg("No plugin is selected (current is invalid)!");
     }
     return MHAPlugin::plugin_t<MHAWindow::fun_t>::parse(arg);
 }
@@ -313,13 +313,13 @@ MHAPLUGIN_PROC_CALLBACK(altplugs,altplugs_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(altplugs,altplugs_t,spec,wave)
 MHAPLUGIN_PROC_CALLBACK(altplugs,altplugs_t,wave,spec)
 MHAPLUGIN_DOCUMENTATION(altplugs,
-			"signalflow",
-			"The plugin {\\tt altplugs} allows configuration of alternative plugins.\n"
-			"The plugin used for processing can be selected via the {\\tt select} variable at any time.\n"
-			"Any plugins can be used as alternative plugins, with the only limitations that input and output domain and signal dimension is equal for all alternative plugins.\n"
-			"Plugins can be renamed using the \":\" operator.\n\n"
-			"This plugin is automatically located by the graphical user interface {\tt mhacontrol} and used for an algorithm selection panel.\n"
-			)
+                        "signalflow",
+                        "The plugin {\\tt altplugs} allows configuration of alternative plugins.\n"
+                        "The plugin used for processing can be selected via the {\\tt select} variable at any time.\n"
+                        "Any plugins can be used as alternative plugins, with the only limitations that input and output domain and signal dimension is equal for all alternative plugins.\n"
+                        "Plugins can be renamed using the \":\" operator.\n\n"
+                        "This plugin is automatically located by the graphical user interface {\tt mhacontrol} and used for an algorithm selection panel.\n"
+                        )
 
 
 /*

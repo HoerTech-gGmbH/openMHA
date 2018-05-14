@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -51,6 +51,7 @@ external_libs:
 	$(MAKE) -C $@
 
 doc: mha/doc
+	cp -i mha/doc/*.pdf .
 
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
@@ -68,6 +69,18 @@ uninstall:
 	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(DESTDIR)$(PREFIX)/bin/{} \;)
 	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
 
+
+googletest: mha/mhatest
+	$(MAKE) -C external_libs googlemock
+
+unit-tests: googletest $(patsubst %,%-subdir-unit-tests,$(MODULES))
+$(patsubst %,%-subdir-unit-tests,$(MODULES)): all
+	$(MAKE) -C $(@:-subdir-unit-tests=) unit-tests
+
+coverage: unit-tests
+	lcov --capture --directory mha --output-file coverage.info
+	genhtml coverage.info --prefix $$PWD/mha --output-directory $@
+	x-www-browser ./coverage/index.html
 
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs

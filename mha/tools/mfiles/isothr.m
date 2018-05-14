@@ -1,30 +1,58 @@
 function [vIsoThrDB, vsF] = isothr(vsDesF);
-% WARNING: source 
 % [vIsoThrDB, vsF] = isothr(vsDesF);
 %
-% author: Jens-E. Appell
-%
-% values from 20 Hz to 12500 Hz are taken from ISO 226 (1985-05-01)
-% values at 14000 Hz and 15000 Hz are taken from ISO-Threshold-table
-% in Klaus Bethges thesis.
+% values from 20 Hz to 12500 Hz are taken from ISO 226:2003(E)
+% values from 14000 Hz to 18000 Hz are taken from ISO 389-7:2005
 % values at 0 and 20000 Hz are not taken from ISO Threshold contour !!
-  vThr = [ 80    74.3 65.0  56.3   48.4 41.7 35.5  29.8 25.1 20.7 ...
-           16.8 13.8 11.2 8.9   7.2 6.0 5.0  4.4 4.2 3.8  2.6 1.0 ...
-           -1.2 -3.6 -3.9 -1.1 6.6 15.3 16.4 11.6    16.0 24.1    70.0]';
-  vsF  =1000*[0.0    0.02 0.025 0.0315 0.04 0.05 0.063 0.08 0.1 ...
-              0.125 0.16 0.2  0.25 0.315 0.4 0.5 0.63 0.8 1.0 1.25 ...
-              1.6 2.0 2.5  3.15 4.0  5.0  6.3 8.0  10.  12.5    14.0 ...
-              15.0    20.0]';
+
+  iso226_389 = [
+            0   80.0
+           20   78.5
+           25   68.7
+           31.5 59.5
+           40   51.1
+           50   44.0
+           63   37.5
+           80   31.5
+          100   26.5
+          125   22.1
+          160   17.9
+          200   14.4
+          250   11.4
+          315    8.6
+          400    6.2
+          500    4.4
+          630    3.0
+          800    2.2
+         1000    2.4
+         1250    3.5
+         1600    1.7
+         2000   -1.3
+         2500   -4.2
+         3150   -6.0
+         4000   -5.4
+         5000   -1.5
+         6300    6.0
+         8000   12.6
+        10000   13.9
+        12500   12.3
+	
+        14000   18.4
+        16000   40.2
+        18000   73.2
+        20000   70.0
+  ];
+  vThr = iso226_389(:,2);
+  vsF  = iso226_389(:,1);
+  
   if( ~isempty( find( vsDesF < 50 ) ) )
     warning('frequency values below 50 Hz set to 50 Hz');
     vsDesF(find( vsDesF < 50 )) = 50;
   end
+
   if nargin > 0,
     vIsoThrDB = interp1(vsF,vThr,vsDesF,'linear','extrap');
     vsF = vsDesF;
   else,
     vIsoThrDB = vThr;
   end;
-
-
-

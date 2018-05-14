@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Source this script to set up the MHA build that this script is part of.
 
 drop_from_path()

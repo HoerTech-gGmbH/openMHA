@@ -45,8 +45,8 @@ public:
   /** This constructor initializes the configuration language
    * variables and inserts them into the MHA configuration tree. */
   droptect_t(algo_comm_t & ac,
-	     const std::string & chain_name,
-	     const std::string & algo_name);
+             const std::string & chain_name,
+             const std::string & algo_name);
 
   void prepare(mhaconfig_t & signal_info);
 
@@ -58,13 +58,13 @@ droptect_t::droptect_t(algo_comm_t & ac,
                        const std::string & chain_name,
                        const std::string & algo_name)
   : MHAPlugin::plugin_t<int>("Plugin detects dropouts in channels that"
-			     " have a constant spectrum",ac),
+                             " have a constant spectrum",ac),
     dropouts("Number of dropouts detected since last reset or start"),
     consecutive_dropouts("Number of consecutive dropouts"),
     blocks("Number of blocks processed since last reset or start"),
     reset("Setting to yes clears number of dropouts and blocks","no"),
     threshold("Threshold level in dB. All blocks below this threshold are"
-	      " considered to be dropouts", "50","[,]"),
+              " considered to be dropouts", "50","[,]"),
     current_powspec(0),
     filtered_powspec(0),
     tau("Time constant for filtering power spectra","0.2","[,]"),
@@ -90,9 +90,9 @@ void droptect_t::prepare(mhaconfig_t & signal_info)
         throw MHA_Error(__FILE__, __LINE__,
                         "This plugin can only process spectrum signals.");
     current_powspec = new MHASignal::waveform_t(signal_info.fftlen/2+1,
-						signal_info.channels);
+                                                signal_info.channels);
     filtered_powspec = new MHASignal::waveform_t(signal_info.fftlen/2+1,
-						 signal_info.channels);
+                                                 signal_info.channels);
     blocks.data = 0;
     dropouts.data.resize(0);
     consecutive_dropouts.data.resize(0);
@@ -103,8 +103,8 @@ void droptect_t::prepare(mhaconfig_t & signal_info)
     period = signal_info.fragsize / signal_info.srate;
     filtered_powspec_mon.data.resize(0);
     filtered_powspec_mon.data.resize(signal_info.channels,
-				     std::vector<float>(signal_info.fftlen/2+1,
-							0.0f));
+                                     std::vector<float>(signal_info.fftlen/2+1,
+                                                        0.0f));
 }
 
 void droptect_t::release(void)
@@ -135,46 +135,46 @@ mha_spec_t * droptect_t::process(mha_spec_t * signal)
       printf("level too low\n");
     } else {
       if (filter_activated[channel]) {
-	bool dropout = false;
-	for (unsigned k = 0; k < signal->num_frames; ++k) {
-	  if ((value(current_powspec,k,channel) > quad_thresh / 3000 ||
-		value(filtered_powspec,k,channel) > quad_thresh / 3000) &&
-	       (value(current_powspec,k,channel) == 0 ||
-		value(filtered_powspec,k,channel) == 0 ||
-		value(current_powspec,k,channel) / value(filtered_powspec,k,channel) < 0.5 ||
-		value(current_powspec,k,channel) / value(filtered_powspec,k,channel) > 2)) {
-	    dropouts.data[channel]++;
-	    consecutive_dropouts.data[channel]++;
-	    dropout = true;
-	    printf("level differs in channel %d bin %d: filtered=%g,current=%g\n",channel,k,filtered_powspec->value(k,channel),current_powspec->value(k,channel));
-	    break;
-	  }
-	}
-	if (!dropout)
-	  for (unsigned k = 0; k < signal->num_frames; ++k) {
-	    filtered_powspec->value(k,channel) *= alpha;
-	    filtered_powspec_mon.data[channel][k] = 
-	      (filtered_powspec->value(k,channel) +=
-	       current_powspec->value(k,channel) * (1-alpha));
-	    consecutive_dropouts.data[channel] = 0;
-	  }
-	else { // dropout
-	  if (consecutive_dropouts.data[channel] > 10) {
-	    for (unsigned k = 0; k < signal->num_frames; ++k) {
-	      filtered_powspec_mon.data[channel][k] = 
-		filtered_powspec->value(k,channel) =
-		current_powspec->value(k,channel);
-	    }
-	    consecutive_dropouts.data[channel] = 0;
-	  }
-	}
+        bool dropout = false;
+        for (unsigned k = 0; k < signal->num_frames; ++k) {
+          if ((value(current_powspec,k,channel) > quad_thresh / 3000 ||
+                value(filtered_powspec,k,channel) > quad_thresh / 3000) &&
+               (value(current_powspec,k,channel) == 0 ||
+                value(filtered_powspec,k,channel) == 0 ||
+                value(current_powspec,k,channel) / value(filtered_powspec,k,channel) < 0.5 ||
+                value(current_powspec,k,channel) / value(filtered_powspec,k,channel) > 2)) {
+            dropouts.data[channel]++;
+            consecutive_dropouts.data[channel]++;
+            dropout = true;
+            printf("level differs in channel %d bin %d: filtered=%g,current=%g\n",channel,k,filtered_powspec->value(k,channel),current_powspec->value(k,channel));
+            break;
+          }
+        }
+        if (!dropout)
+          for (unsigned k = 0; k < signal->num_frames; ++k) {
+            filtered_powspec->value(k,channel) *= alpha;
+            filtered_powspec_mon.data[channel][k] = 
+              (filtered_powspec->value(k,channel) +=
+               current_powspec->value(k,channel) * (1-alpha));
+            consecutive_dropouts.data[channel] = 0;
+          }
+        else { // dropout
+          if (consecutive_dropouts.data[channel] > 10) {
+            for (unsigned k = 0; k < signal->num_frames; ++k) {
+              filtered_powspec_mon.data[channel][k] = 
+                filtered_powspec->value(k,channel) =
+                current_powspec->value(k,channel);
+            }
+            consecutive_dropouts.data[channel] = 0;
+          }
+        }
       } else {
-	for (unsigned k = 0; k < signal->num_frames; ++k) {
-	  filtered_powspec_mon.data[channel][k] = 
-	    filtered_powspec->value(k,channel) =
-	    current_powspec->value(k,channel);
-	}
-	filter_activated[channel] = true;
+        for (unsigned k = 0; k < signal->num_frames; ++k) {
+          filtered_powspec_mon.data[channel][k] = 
+            filtered_powspec->value(k,channel) =
+            current_powspec->value(k,channel);
+        }
+        filter_activated[channel] = true;
       }
     }
   }

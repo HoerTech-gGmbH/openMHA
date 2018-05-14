@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2014 2015 2017 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -12,12 +12,6 @@
 //
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
-
-
-/*
- * Single channel noise reduction algorithm from Breithaupt et al,
- * based on cepstral smoothing. This is the MHA interface class.
- */
 
 #include "mha_defs.h"
 #include "mha_error.hh"
@@ -185,7 +179,6 @@ void spec2wave_if_t::prepare(mhaconfig_t& t)
         throw MHA_ErrorMsg("spec2wave: Spectral input is required.");
     t.domain = MHA_WAVEFORM;
     tftype = t;
-    window_config.set_length(tftype.fftlen);
     update();
 }
 
@@ -197,8 +190,17 @@ mha_wave_t* spec2wave_if_t::process(mha_spec_t* spec_in)
 
 void spec2wave_if_t::update()
 {
-    if( tftype.fftlen )
-        push_config(new spec2wave_t(tftype.fftlen,tftype.wndlen,tftype.fragsize,tftype.channels,ramplen.data,window_config.current()));
+    if (is_prepared()) {
+        if( tftype.fftlen )
+            push_config(new spec2wave_t(tftype.fftlen,
+                                        tftype.wndlen,
+                                        tftype.fragsize,
+                                        tftype.channels,
+                                        ramplen.data,
+                                        window_config.get_window_data(tftype.fftlen)));
+        else
+            throw MHA_ErrorMsg("unsuitable fftlen == 0");
+    }
 }
 
 MHAPLUGIN_CALLBACKS(spec2wave,spec2wave_if_t,spec,wave)
@@ -208,7 +210,6 @@ MHAPLUGIN_CALLBACKS(spec2wave,spec2wave_if_t,spec,wave)
   "resynthesis. The parameters are taken from the framework overlap add\n"
   "parameters. After the inverse Fourier transform, hanning window ramps\n"
   "are applied to the previously zero-padded regions.\n"
-  
   )
 
 // Local Variables:

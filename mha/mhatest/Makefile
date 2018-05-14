@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2005 2009 2011 2013 2015 2017 HörTech gGmbH
+# Copyright © 2005 2009 2011 2013 2015 2017 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -35,10 +35,14 @@ reproducibilitytest:
 	@if [ -n "`git status --porcelain -uno`" ]; then (echo; echo "*******************************************************************"; echo "***" The following files have been modified since git check-out: "***";  echo "*******************************************************************"; git status --porcelain -uno; exit 1); fi
 	@if [ -n "`find ../plugins -type f -exec grep -- -modified '{}' ';'`" ] ; then (echo; echo "***********************************************************************"; echo "***" The following files carry a modified-since-git-check-out stamp: "***";  echo "***********************************************************************"; find ../plugins -type f -exec grep -- -modified '{}' ';'; exit 1); fi
 
-thumbsup: reproducibilitytest
+thumbsup: reproducibilitytest octavetest
 	@cat THUMBS.txt
 
 
 install: all
 
 clean:
+
+# Local Variables:
+# coding: utf-8-unix
+# End:
