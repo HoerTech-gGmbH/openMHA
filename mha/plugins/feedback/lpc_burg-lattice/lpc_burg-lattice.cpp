@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /*
  * This plugin works sample-wise.  Therefore it has to be configured so
  * that sample wise signal processing occurs

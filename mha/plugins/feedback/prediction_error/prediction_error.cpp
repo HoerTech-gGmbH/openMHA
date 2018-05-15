@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2017 HörTech gGmbH
+// Copyright © 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -14,7 +14,10 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
- * This plugin is an extension of the nlms_wave plugin and computes not only the nlms estimate of the feedback path but also performs the necessary steps for delaying the input and output signals as well as the prewhitening using the LPC coefficients.
+ * This plugin is an extension of the nlms_wave plugin and computes
+ * not only the nlms estimate of the feedback path but also performs
+ * the necessary steps for delaying the input and output signals as
+ * well as the prewhitening using the LPC coefficients.
  */
 
 #include "prediction_error.h"

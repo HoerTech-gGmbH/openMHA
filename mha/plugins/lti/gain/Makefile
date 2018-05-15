@@ -1,10 +1,10 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2014 2015 2017 2018 HörTech gGmbH
+# Copyright © 2014 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, version 3 of the License.
-# 
+#
 # openMHA is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
