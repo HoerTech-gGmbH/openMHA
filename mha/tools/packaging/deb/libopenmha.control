@@ -1,0 +1,6 @@
+Section: contrib/sound
+Suggests: qjackctl
+Maintainer: Giso Grimm <g.grimm@hoertech.de>
+Description: HoerTech openMHA library
+  Open community platform for hearing aid algorithm research.
+Homepage: http://www.openmha.org/
