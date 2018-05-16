@@ -234,21 +234,21 @@ function [csList,csPresets] = mhagui_conpreset_list(mha)
   end
   csPresets = configdb.smap_set(csPresets,'disconnect',sPreset);
   for k=1:length(csInNames)
-    sPreset.ports_in{k} = sprintf('alsa_pcm:capture_%d',mod(k-1,2)+1);
+    sPreset.ports_in{k} = sprintf('system:capture_%d',mod(k-1,2)+1);
     if ~isempty(strfind(csInNames{k},'left'))
-      sPreset.ports_in{k} = 'alsa_pcm:capture_1';
+      sPreset.ports_in{k} = 'system:capture_1';
     end
     if ~isempty(strfind(csInNames{k},'right'))
-      sPreset.ports_in{k} = 'alsa_pcm:capture_2';
+      sPreset.ports_in{k} = 'system:capture_2';
     end
   end
   for k=1:length(csOutNames)
-    sPreset.ports_out{k} = sprintf('alsa_pcm:playback_%d',mod(k-1,2)+1);
+    sPreset.ports_out{k} = sprintf('system:playback_%d',mod(k-1,2)+1);
     if ~isempty(strfind(csOutNames{k},'left'))
-      sPreset.ports_out{k} = 'alsa_pcm:playback_1';
+      sPreset.ports_out{k} = 'system:playback_1';
     end
     if ~isempty(strfind(csOutNames{k},'right'))
-      sPreset.ports_out{k} = 'alsa_pcm:playback_2';
+      sPreset.ports_out{k} = 'system:playback_2';
     end
   end
   csPresets = configdb.smap_set(csPresets,'stereo i/o',sPreset);

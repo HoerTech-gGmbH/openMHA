@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 HörTech gGmbH
+// Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -59,8 +59,8 @@ overlapadd_t::overlapadd_t(mhaconfig_t spar_in,
                            const MHAParser::window_t& zerowindow,
                            float& prescale_fac,float& postscale_fac)
     : fft(mha_fft_new(spar_in.fftlen)),
-      prewnd(window.get_window(spar_in.wndlen)),
-      postwnd(window.get_window(spar_in.fftlen)),
+      prewnd((spar_in.wndlen)),
+      postwnd((spar_in.fftlen)),
       wave_in1(spar_in.wndlen,spar_in.channels),
       wave_out1(spar_in.fftlen,spar_in.channels),
       spec_in(spar_in.fftlen/2+1,spar_in.channels),
@@ -77,8 +77,32 @@ overlapadd_t::overlapadd_t(mhaconfig_t spar_in,
         throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change window length from %d to %d.",spar_in.wndlen,spar_out.wndlen);
     if( spar_in.fftlen != spar_out.fftlen )
         throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change FFT length from %d to %d.",spar_in.fftlen,spar_out.fftlen);
-    prewnd ^= wexp;
-    postwnd ^= 1.0-wexp;
+
+    if (wexp != 1.0f && wexp != 0.0f && spar_in.fftlen != spar_in.wndlen)
+        throw MHA_Error(__FILE__,__LINE__,
+                        "window exponent (%f) other than exactly 1.0 or 0.0"
+                        " only makes sense when window length (%u) is equal to"
+                        " fft length (%u)",
+                        wexp, spar_in.wndlen, spar_in.fftlen);
+
+    if (wexp == 0.0f) {
+        // exponent is zero, fill window with all ones
+        prewnd.assign(1.0f);
+    } else {
+        prewnd.copy(window.get_window(spar_in.wndlen));
+        // apply the exponent
+        prewnd ^= wexp;
+     }
+
+    if (wexp == 1.0f) {
+        // post window exponent 1-wexp is zero, fill post window with all ones
+        postwnd.assign(1.0f);
+    } else {
+        postwnd.copy(window.get_window(spar_in.fftlen));
+        // apply the remainder of the exponent
+        postwnd ^= 1.0-wexp;
+    }
+
     if( n_pad1 ){
         MHAWindow::base_t pad1wnd(zerowindow.get_window(n_pad1,-1,0));
         pad1wnd.ramp_begin(postwnd);
@@ -301,7 +325,7 @@ MHAPLUGIN_DOCUMENTATION(overlapadd,"overlapadd",
             "impulse response of the filter (represented by all algorithms between\n"
             "FFT and inverse FFT) is shorter than the zero padding length.  The\n"
             "windowing in both stages of the overlap-add mechanism is plotted in\n"
-            "Fig.\\ \\ref{fig:overlapadd} for $M=2P$ (50\% overlap).\n"
+            "Fig.\\ \\ref{fig:overlapadd} for $M=2P$ (50\\% overlap).\n"
             "\n"
             "The total delay between input and output of a real-time system with\n"
             "fragment size $P$ and an overlap-add based linear-phase filter, is the\n"

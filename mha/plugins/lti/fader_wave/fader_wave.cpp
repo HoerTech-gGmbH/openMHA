@@ -10,7 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License, version 3 for more details.
 //
-// You should have received a copy of the GNU Affero General Public License,
+// You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mha_plugin.hh"
@@ -44,19 +44,19 @@ level_adapt_t::level_adapt_t(mhaconfig_t cf,mha_real_t adapt_len,std::vector<flo
       l_old(l_old_)
 {
     if( l_new.size() != cf.channels )
-	throw MHA_Error(__FILE__,__LINE__,"Invalid number of entries in new level vector (expected %d, got %d).",cf.channels,l_new.size());
+        throw MHA_Error(__FILE__,__LINE__,"Invalid number of entries in new level vector (expected %d, got %d).",cf.channels,l_new.size());
     if( l_old.size() != cf.channels )
-	throw MHA_Error(__FILE__,__LINE__,"Invalid number of entries in previous level vector (expected %d, got %d).",cf.channels,l_old.size());
+        throw MHA_Error(__FILE__,__LINE__,"Invalid number of entries in previous level vector (expected %d, got %d).",cf.channels,l_old.size());
 }
 
 void level_adapt_t::update_frame()
 {
     unsigned int k, ch;
     for(k=0;k<num_frames;k++){
-	for( ch=0;ch<num_channels;ch++ )
-	    value(k,ch) = wnd.buf[pos]*l_new[ch]+(1.0f-wnd.buf[pos])*l_old[ch];
-	if( pos )
-	    pos--;
+        for( ch=0;ch<num_channels;ch++ )
+            value(k,ch) = wnd.buf[pos]*l_new[ch]+(1.0f-wnd.buf[pos])*l_old[ch];
+        if( pos )
+            pos--;
     }
 }
 
@@ -91,17 +91,17 @@ fader_wave_if_t::fader_wave_if_t(algo_comm_t iac,const char*,const char*)
 void fader_wave_if_t::set_level()
 {
     if( prepared ){
-	if( level_adaptor::cfg )
-	    level_adaptor::push_config(new level_adapt_t(tftype,ramplen.data,gain.data,level_adaptor::cfg->get_level()));
-	else
-	    level_adaptor::push_config(new level_adapt_t(tftype,ramplen.data,gain.data,std::vector<float>(tftype.channels,0.0f)));
+        if( level_adaptor::cfg )
+            level_adaptor::push_config(new level_adapt_t(tftype,ramplen.data,gain.data,level_adaptor::cfg->get_level()));
+        else
+            level_adaptor::push_config(new level_adapt_t(tftype,ramplen.data,gain.data,std::vector<float>(tftype.channels,0.0f)));
     }
 }
 
 void fader_wave_if_t::prepare(mhaconfig_t& tf)
 {
     if( tf.domain != MHA_WAVEFORM )
-	throw MHA_ErrorMsg("Only waveform processing supported.");
+        throw MHA_ErrorMsg("Only waveform processing supported.");
     tftype = tf;
     prepared = true;
     set_level();
@@ -116,7 +116,7 @@ void fader_wave_if_t::release()
 mha_wave_t* fader_wave_if_t::process(mha_wave_t* s)
 {
     if( level_adaptor::cfg->can_update() )
-	level_adaptor::poll_config();
+        level_adaptor::poll_config();
     level_adaptor::cfg->update_frame();
     *s *= *level_adaptor::cfg;
     return s;
@@ -131,5 +131,7 @@ MHAPLUGIN_DOCUMENTATION(fader_wave,"signalflow gain","")
  * Local Variables:
  * compile-command: "make"
  * c-basic-offset: 4
+ * indent-tabs-mode: nil
+ * coding: utf-8-unix
  * End:
  */

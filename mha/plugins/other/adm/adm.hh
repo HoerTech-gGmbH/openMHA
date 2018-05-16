@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2006 2014 2016 2017 HörTech gGmbH
+// Copyright © 2004 2006 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -184,7 +184,7 @@ namespace ADM {
   class ADM {
   public:
     /**
-     * Create adaptive differential microphone
+     * Create Adaptive Differential Microphone
      *
      * @param fs
      *   Sampling rate / Hz
@@ -206,16 +206,16 @@ namespace ADM {
      *   class uses linear phase FIR filters only, only the first half
      *   (order/2 + 1)of the coefficients will be read (coefficients
      *   for linear-phase FIR filters are symmetric).
-     * @param mu_beta
-     *   Adaptation step size for each set of ADMs (e.g. left and right)
      * @param tau_beta
      *   Time constant of the lowpass filter used for averaging the power of
      *   the output signal
+     * @param mu_beta
+     *   adaption speed
      */
     ADM(F fs, F dist,
         unsigned lp_order, const F* lp_alphas,
         unsigned decomb_order, const F* decomb_alphas,
-        F mu_beta, F tau_beta = F(50e-3));
+        F tau_beta = F(50e-3), F mu_beta = F(1e-4));
 
     /**
      * ADM processes one frame
@@ -250,7 +250,7 @@ namespace ADM {
       if (external_beta >= 0)
         m_beta = external_beta;
       else {
-        // lowpass filter signals used in adaption
+        // low pass filter signals used in adaption
         F lp_back_facing = m_lp_bf.process(back_facing);
         F lp_comb_result = m_lp_result.process(comb_result);
         
@@ -336,7 +336,7 @@ namespace ADM {
   ADM<F>::ADM(F fs, F dist,
               unsigned lp_order, const F* lp_alphas,
               unsigned decomb_order, const F* decomb_alphas,
-              F mu_beta, F tau_beta)
+              F tau_beta, F mu_beta)
     : m_delay_front(dist / C * fs, DELAY_FREQ, fs),
       m_delay_back(dist / C * fs, DELAY_FREQ, fs),
       m_lp_bf(lp_order, lp_alphas),

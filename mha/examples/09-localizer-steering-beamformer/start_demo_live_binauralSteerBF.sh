@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # This script starts a live demo of a 4-channel binaural beamformer that is
 # steered by a probabilistic sound source localization algorithm.
 # Note that in this example configuration file a localization model and

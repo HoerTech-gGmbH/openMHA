@@ -56,14 +56,6 @@ function mhacontrol( hostname, port, b_wait_fh, advanced_callback )
       mhagui_calibration_dialog( 'upload', mha );
     end
     set(wbh,'XData',[0,0.5]);drawnow;
-    %waitbar(0.75,hsplash);
-    if isfield(mha_basic_cfg.base,'MHAIOJack')
-      try
-	mhagui_jackconnection_manager( 'upload', mha );
-      catch
-	warning(lasterr);
-      end
-    end
     set(wbh,'XData',[0,0.75]);drawnow;
     %waitbar(0.5,hsplash);
     set(wbh,'XData',[0,1]);drawnow;
@@ -102,10 +94,6 @@ function setup_windowmenus
 	   'Callback',@start_calib);
     uimenu(h,'Label','Level meter',...
 	   'Callback',@start_levelmeter);
-  end
-  if isfield(mha_basic_cfg.base,'MHAIOJack')
-    uimenu(h,'Label','Connection manager',...
-	   'Callback',@start_audio_connection);
   end
   uimenu(h,'Label','Generic control interface',...
 	 'Callback',@start_generic_gui);
@@ -243,13 +231,6 @@ function fh = setup_ctlgui(advanced_callback)
   %
   [p,ps] = mhacontrol_panel([340 80],230,'Administration:',[0.8 0.7 0.7]);
   uih = [];
-  if isfield(mha_basic_cfg.base,'MHAIOJack')
-    uih(end+1) = ...
-	uicontrol(fh,'Style','Pushbutton',...
-		  'Callback',@start_audio_connection,...
-		  'String','Audio connections',...
-		  'Position',[11 ps-length(uih)*60 278 50]+p);
-  end
 % if isfield(mha_basic_cfg.base,'transducers')
 %   uih(end+1) = ...
 %	uicontrol(fh,'Style','Pushbutton',...
@@ -351,9 +332,6 @@ function start_calib( varargin )
   
 function start_mpoconfig( varargin )
   mpoconfig(get_mha);
-  
-function start_audio_connection( varargin )
-  mhagui_jackconnection_manager( 'gui', get_mha );
   
 function start_mhagui(varargin)
   cb = get(gcbo,'UserData');

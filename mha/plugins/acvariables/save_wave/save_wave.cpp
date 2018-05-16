@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2009 2010 2013 2014 2015 HörTech gGmbH
+// Copyright © 2005 2006 2007 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,8 +24,6 @@ public:
           basename(ial){};
     mha_wave_t* process(mha_wave_t* s)
     {
-        //poll_config();
-	//cfg->insert();
         cfg->copy(*s);
         return s;
     };
@@ -34,8 +32,8 @@ public:
         if( tf.domain != MHA_WAVEFORM )
             throw MHA_ErrorMsg("save_wave: Only waveform processing is supported.");
         push_config(new MHA_AC::waveform_t(ac,basename,tf.fragsize,tf.channels,false));
-	poll_config();
-	cfg->insert();
+        poll_config();
+        cfg->insert();
     }
 private:
     std::string basename;

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
+// Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -10,7 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License, version 3 for more details.
 //
-// You should have received a copy of the GNU Affero General Public License,
+// You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mha_parser.hh"
@@ -24,22 +24,22 @@ namespace gain {
 class scaler_t : public MHASignal::waveform_t {
 public:
     scaler_t(const unsigned int& channels,
-	     const MHAParser::vfloat_t& gains);
+             const MHAParser::vfloat_t& gains);
 };
 
 scaler_t::scaler_t(const unsigned int& channels,
-		    const MHAParser::vfloat_t& gains)
+                    const MHAParser::vfloat_t& gains)
     : MHASignal::waveform_t(1,channels)
 {
     if( (gains.data.size() != channels) && (gains.data.size() != 1) )
-	throw MHA_Error(__FILE__,__LINE__,
-			"The number of entries in the gain vector must be either %d (one per channel) or 1 (same gains for all channels)", channels);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The number of entries in the gain vector must be either %d (one per channel) or 1 (same gains for all channels)", channels);
     if( gains.data.size() == 1 ){
-	for(unsigned int ch=0;ch<num_channels;ch++)
-	    value(0,ch) = pow(10.0,0.05*gains.data[0]);
+        for(unsigned int ch=0;ch<num_channels;ch++)
+            value(0,ch) = pow(10.0,0.05*gains.data[0]);
     }else{
-	for(unsigned int ch=0;ch<num_channels;ch++)
-	    value(0,ch) = pow(10.0,0.05*gains.data[ch]);
+        for(unsigned int ch=0;ch<num_channels;ch++)
+            value(0,ch) = pow(10.0,0.05*gains.data[ch]);
     }
 }
 
@@ -63,8 +63,8 @@ private:
 };
 
 gain_if_t::gain_if_t(const algo_comm_t& iac,
-		     const std::string&,
-		     const std::string&)
+                     const std::string&,
+                     const std::string&)
     : MHAPlugin::plugin_t<scaler_t>("Gain plugin:\n\nApply a gain to each channel",iac),
       gains("Gain in dB","[0]","[-16,16]"),
       bbgain("Broadband gain in dB\n(setting of broad band gain overrides band gain)","0","[-16,16]"),
@@ -86,7 +86,7 @@ void gain_if_t::prepare(mhaconfig_t& tf)
 {
     tftype = tf;
     if( tftype.channels )
-	update_gain();
+        update_gain();
 }
 
 void gain_if_t::release()
@@ -100,8 +100,8 @@ mha_wave_t* gain_if_t::process(mha_wave_t* s)
     CHECK_EXPR(cfg->num_channels == s->num_channels);
     unsigned int k,ch;
     for(ch=0;ch<s->num_channels;ch++)
-	for(k=0;k<s->num_frames;k++)
-	    value(s,k,ch) *= value(cfg,0,ch);
+        for(k=0;k<s->num_frames;k++)
+            value(s,k,ch) *= value(cfg,0,ch);
     return s;
 }
 
@@ -111,22 +111,22 @@ mha_spec_t* gain_if_t::process(mha_spec_t* s)
     CHECK_EXPR(cfg->num_channels == s->num_channels);
     unsigned int k,ch;
     for(ch=0;ch<s->num_channels;ch++)
-	for(k=0;k<s->num_frames;k++)
-	    value(s,k,ch) *= value(cfg,0,ch);
+        for(k=0;k<s->num_frames;k++)
+            value(s,k,ch) *= value(cfg,0,ch);
     return s;
 }
 
 void gain_if_t::update_gain()
 {
     if( tftype.channels )
-	push_config(new scaler_t(tftype.channels,gains));
+        push_config(new scaler_t(tftype.channels,gains));
 }
 
 void gain_if_t::update_bbgain()
 {
     if( tftype.channels ){
-	gains.data = std::vector<float>(tftype.channels,bbgain.data);
-	update_gain();
+        gains.data = std::vector<float>(tftype.channels,bbgain.data);
+        update_gain();
     }
 }
 
@@ -140,15 +140,15 @@ void gain_if_t::update_minmax()
     gains.set_range(s);
     bbgain.set_range(s);
     for(unsigned int ch=0;ch<gains.data.size();ch++){
-	if( gains.data[ch] < vmin.data )
-	    gains.data[ch] = vmin.data;
-	if( gains.data[ch] > vmax.data )
-	    gains.data[ch] = vmax.data;
+        if( gains.data[ch] < vmin.data )
+            gains.data[ch] = vmin.data;
+        if( gains.data[ch] > vmax.data )
+            gains.data[ch] = vmax.data;
     }
     if( bbgain.data < vmin.data )
-	bbgain.data = vmin.data;
+        bbgain.data = vmin.data;
     if( bbgain.data > vmax.data )
-	bbgain.data = vmax.data;
+        bbgain.data = vmax.data;
     update_gain();
 }
 
@@ -161,4 +161,6 @@ MHAPLUGIN_PROC_CALLBACK(gain,gain::gain_if_t,spec,spec)
 // Local variables:
 // compile-command: "make"
 // c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
 // End:

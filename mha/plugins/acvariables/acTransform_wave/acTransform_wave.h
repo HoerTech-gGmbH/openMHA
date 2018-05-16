@@ -1,4 +1,4 @@
-// This file is part of the HörTech Master Hearing Aid (MHA)
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2015 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
@@ -12,7 +12,6 @@
 //
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
-
 
 #ifndef ACTRANSFORM_WAVE_H
 #define ACTRANSFORM_WAVE_H

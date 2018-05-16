@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2011 2013 2015 HörTech gGmbH
-// Copyright © 2016 2017 HörTech gGmbH
+// Copyright © 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,9 +23,6 @@
 #include "mha_tablelookup.hh"
 #include <limits>
 #include "speechnoise.h"
-
-#define DEBUG(x) std::cerr << __FILE__ << ":" << __LINE__ << " " << #x " = " << x << std::endl
-
 
 
 /*
@@ -434,7 +431,6 @@ MHAOvlFilter::fftfb_t::fftfb_t(MHAOvlFilter::fftfb_vars_t& par, unsigned int nff
      fftlen(nfft),
      samplingrate(fs)
 {
-    //DEBUG(nfft);
     unsigned int ch, fr;
     mha_real_t f;
     if(num_channels){

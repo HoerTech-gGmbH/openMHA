@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2016 2017 HörTech gGmbH
+# Copyright © 2016 2017 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -76,6 +76,19 @@ $(BUILD_DIR)/fftw.is_configured: $(BUILD_DIR)/.directory
 	sleep 0.01 && touch fftw-2.1.5/Makefile.in
 	cd fftw-2.1.5/. && ./configure --enable-static --disable-shared --prefix="$(EXTERNAL_LIBS)/$(BUILD_DIR)" --bindir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/bin --libdir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/lib --includedir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/include  --enable-float --enable-type-prefix --disable-fast-install --disable-fortran
 	cd "$(EXTERNAL_LIBS)" && touch $@
+
+
+googlemock: $(BUILD_DIR)/googlemock.is_configured
+
+$(BUILD_DIR)/googlemock.is_configured: \
+	$(BUILD_DIR)/lib/.directory $(BUILD_DIR)/include/.directory
+	touch $@	
+	git submodule update --init --recursive
+	cd googletest/googlemock/make && $(MAKE)
+	cp googletest/googlemock/make/gmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
+	cp -ax googletest/googletest/include/gtest $(BUILD_DIR)/include/
+	cp -ax googletest/googlemock/include/gmock $(BUILD_DIR)/include/
+	touch $@
 
 # Local Variables:
 # compile-command: "make"

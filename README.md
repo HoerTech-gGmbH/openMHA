@@ -2,7 +2,7 @@
 
 HörTech Open Master Hearing Aid (openMHA)
 
-## Content of the openMHA release 4.5.5 (2018-02-14)
+## Content of the openMHA release 4.5.6 (2018-05-16)
 
 The software contains the source code of the openMHA Toolbox library, of the
 openMHA framework and command line application, and of a selection of algorithm
@@ -15,7 +15,7 @@ plugins forming a basic hearing aid processing chain featuring
  - a delay-and-sum beamformer
  - a MVDR beamformer [4]
 - single-channel noise reduction [5]
-- simple upsampling and downsampling plugins
+- resampling and filter plugins
 - STFT cyclic aliasing prevention
 - adaptive feedback cancellation [6]
 - probabilistic sound source localization [7]
@@ -52,55 +52,63 @@ Update the list of available packages:
     sudo apt-get update
 
 This will give you a warning:
-
-    W: The repository 'http://mha.hoertech.de/hoertech/xenial Release' does not have a Release file.
-    N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
-    N: See apt-secure(8) manpage for repository creation and user configuration details.
-
+```
+W: The repository 'http://mha.hoertech.de/hoertech/xenial Release' does not have a Release file.
+N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
+N: See apt-secure(8) manpage for repository creation and user configuration details.`
+```
 Install openMHA:
-
-    sudo apt-get install openmha
+```
+sudo apt-get install openmha
+```
 
 This will give you again an authentication warning:
+```
 WARNING: The following packages cannot be authenticated! openmha libopenmha Install these packages without verification? [y/N]
+```
+
+
 
 To install openMHA you have to type "y".
 
 The authentication issue will be resolved in the future.
 
 After installation, openMHA documentation is found in
-    /usr/share/doc/openmha
-and tools for GNU Octave/Matlab here:
-    /usr/lib/openmha/mfiles
+`/usr/share/doc/openmha`
+and tools for GNU Octave/Matlab in `/usr/lib/openmha/mfiles`
 
 We provide some examples together with the openMHA source code.
 When using debian packages, you can find the examples in a separate package,
-"openmha-examples". After installing the openmha-examples package, the examples
-can be found in below /usr/share/openmha/examples.
+*openmha-examples*. After installing the openmha-examples package:
+```
+sudo apt-get install openmha-examples
+```
+the examples can be found in `/usr/share/openmha/examples`.
 
-To update openMHA when a new release is available run
+NOTE: If you want to use the example files we recommend to make a copy in your home directory as they are located in a system-wide read-only directory. Some of the examples may require changes to work with the current audio hardware setup and need write access to store output.  
 
-    sudo apt-get install --only-upgrade openmha
-
-
+For updating openMHA when a new release is available run
+```
+sudo apt-get install --only-upgrade openmha
+```
 
 ## Source Code Overview
 
-Together with the MHA source code, we deliver the source code for the FFTW
+Together with the openMHA source code, we deliver the source code for the FFTW
 library, version 2.1.5, below the directory external_libs.
-All openMHA source code lives under the directory mha: The MHA Toolbox
+All openMHA source code lives under the directory mha: The openMHA Toolbox
 Library can be found in the sub-directory mha/libmha. It contains the
-implementation of the MHA configuration language, of signal processing
-primitives and also many signal processing algorithms to by used in MHA
-plugins. The MHA command line application and its support framework
+implementation of the openMHA configuration language, of signal processing
+primitives and also many signal processing algorithms to by used in openMHA
+plugins. The openMHA command line application and its support framework
 can be found in the sub-directory mha/frameworks. The plugins contained in this
 release can be found in the sub-directory mha/plugins. The IO libraries,
-that connect the MHA e.g. to the sound card for live processing, or to sound
+that connect openMHA, e.g., to the sound card for live processing, or to sound
 files for offline processing, are also found here.
 
 ## Compiling from source
 
-The MHA source code has to be compiled before the MHA can be used. While MHA in
+The openMHA source code has to be compiled before openMHA can be used. While openMHA in
 general can be compiled for many operating systems and hardware platforms, in
 this release we concentrate on compilation on Ubuntu 16.04 for 64-bit PC
 processors (x86_64) and on Debian 8 (jessie) for the Beaglebone Black
@@ -110,7 +118,7 @@ single-board ARM computer.
 64-bit version of Ubuntu 16.04 or later,
 or a Beaglebone Black with Debian jessie installed.
 
-with the following software packages installed:
+... with the following software packages installed:
 - g++-5 for Ubuntu, g++-4.9 for Debian
 - make
 - libsndfile1-dev
@@ -118,19 +126,19 @@ with the following software packages installed:
 - jackd2
 - portaudio19-dev
 - optional:
-  - octave with the signal package and default-jre (e.g. openjdk-8-jre
+  - GNU Octave with the signal package and default-jre (e.g. openjdk-8-jre
     and openjdk-8-jdk for Debian 9)
 
-octave and default-jre are not essential for building or running the
-openMHA.  The build process uses Octave + Java to run some tests after
+Octave and default-jre are not essential for building or running openMHA.  
+The build process uses Octave + Java to run some tests after
 building openMHA.  If Octave is not available, this test will fail,
-but the produced openMHA will still work.
+but the produced openMHA will work.
 
 #### macOS
 - macOS 10.10 or later.
-- XCode 7.2 or later
-- Jack2 for OSX http://jackaudio.org
-- MacPorts
+- XCode 7.2 or later (available from App Store)
+- Jack2 for OSX http://jackaudio.org (also available from MacPorts)
+- MacPorts https://www.macports.org
 
 The following packages should be installed via macports:
 - libsndfile
@@ -145,10 +153,13 @@ Octave in version >= 4.2.1.
 
 
 
-### Compilation instructions:
+### Compilation instructions for Linux and macOS:
 
 After downloading and unpacking the openMHA tarball, or cloning from github,
-compile the MHA with ./configure && make
+compile openMHA with by typing in a terminal (while in the openMHA directory)
+```
+./configure && make
+```
 
 ### Installation of self-compiled openMHA:
 
@@ -160,30 +171,41 @@ source code. To collect the relevant binaries and libraries execute
 You can set the make variable PREFIX to point to the desired installation
 location. The default installation location is ".", the current directory.
 
-If you install openMHA to a non-standard location, you should set the
-environment variable LD_LIBRARY_PATH to point to your lib directory, like this:
+You should then add the openMHA installation directory to the system search path for libraries
 
-    export LD_LIBRARY_PATH=$PREFIX/lib
+under __Linux__:
+```
+    export LD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
+```
+under __macOS__:
+```
+    export DYLD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
+```
 
-The default prefix is the current working directory.  Please note that on
-macOS, the corresponding environment variable is named DYLD_LIBRARY_PATH.
 
-You can also add the bin directory to the PATH environment variable:
+as well as to the search path for executables:
+```
+export PATH=<YOUR-MHA-DIRECTORY>/bin:$PATH
+```
 
-    export PATH=$PATH:$PREFIX/bin
 
-Again, note that the default prefix is the current working directory.
+
+
 
 Alternatively to the two settings above, the thismha.sh script found in
-bin/thismha.sh may be sourced to set these variables correctly for the
-current shell.
+the openMHA bin directory may be sourced to set these variables correctly for the
+current shell:
 
-After this, you can invoke the MHA command line application.
+```
+source <YOUR-MHA-DIRECTORY>/bin/thismha.sh
+```
+
+After this, you can invoke the openMHA command line application.
 Perform a quick test with
 
     mha ? cmd=quit
 
-Which should print the default configuration of the MHA without any plugins
+Which should print the default configuration of the openMHA without any plugins
 loaded.
 
 
@@ -204,10 +226,12 @@ User manuals are provided in PDF format.  Recreating them from source is
 normally not necessary.
 
 User manuals for different levels of usability in PDF format are
-provided with this release.  These files can also be generated by
-typing 'make doc' in the terminal.  The new manuals will be created in
-the ./mha/doc/ directory.  In addition, html documentation is
-generated in ./mha/doc/mhadoc/html/ and ./mha/doc/mhaplugins/html/
+provided with this release.  These files can also be re-generated by
+typing './configure && make doc' in the terminal (./configure is only
+needed if file config.mk has not yet been created).  The new manuals
+will be created in the ./mha/doc/ directory.  In addition, html
+documentation is generated in ./mha/doc/mhadoc/html/ and
+./mha/doc/mhaplugins/html/
 
 Prerequisites for recreating the documents (Optional!):
 Extra packages are needed for generating documentation:
@@ -218,9 +242,11 @@ Extra packages are needed for generating documentation:
 - texlive
 - texlive-latex-extra
 
-## Known Issues
-* There are some known issues with Octave under macOS. The mha gui may not work correctly with octave. As an alternative Matlab can be used.
-* The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp)
+## Known issues
+* There are some known issues with Octave under macOS. The openMHA gui may not work correctly with octave. As an alternative Matlab can be used.
+* The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp) (May not be necessary any more, check for yourself).
+
+* On some Apple machines jack needs to be run with root privileges to get real-time priority.
 
 ## References for individual algorithms.
 
@@ -251,7 +277,6 @@ min-max estimation of the common part of acoustic feedback paths in
 hearing aids. IEEE Transactions on Audio, Speech, and Language
 Processing. 2016;24(2):366-377.
 
-[7] Kayser H, Anemüller J, A discriminative learning approach to 
+[7] Kayser H, Anemüller J, A discriminative learning approach to
 probabilistic acoustic source localization. In: International Workshop
 on Acoustic Echo and Noise Control (IWAENC 2014); 2014. p. 100–104.
-
