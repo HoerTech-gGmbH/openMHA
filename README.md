@@ -2,7 +2,7 @@
 
 HörTech Open Master Hearing Aid (openMHA)
 
-## Content of the openMHA release 4.5.6 (2018-05-15)
+## Content of the openMHA release 4.5.6 (2018-05-16)
 
 The software contains the source code of the openMHA Toolbox library, of the
 openMHA framework and command line application, and of a selection of algorithm
