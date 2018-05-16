@@ -85,8 +85,9 @@ sudo apt-get install openmha-examples
 ```
 the examples can be found in `/usr/share/openmha/examples`.
 
+NOTE: If you want to use the example files we recommend to make a copy in your home directory as they are located in a system-wide read-only directory. Some of the examples may require changes to work with the current audio hardware setup and need write access to store output.  
 
-To update openMHA when a new release is available run
+For updating openMHA when a new release is available run
 ```
 sudo apt-get install --only-upgrade openmha
 ```
@@ -117,7 +118,7 @@ single-board ARM computer.
 64-bit version of Ubuntu 16.04 or later,
 or a Beaglebone Black with Debian jessie installed.
 
-with the following software packages installed:
+... with the following software packages installed:
 - g++-5 for Ubuntu, g++-4.9 for Debian
 - make
 - libsndfile1-dev
