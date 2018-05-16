@@ -82,6 +82,10 @@ coverage: unit-tests
 	genhtml coverage.info --prefix $$PWD/mha --output-directory $@
 	x-www-browser ./coverage/index.html
 
+deb: unit-tests
+	$(MAKE) -C mha/tools/packaging/deb pack
+
+
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
 mha/frameworks: mha/libmha
