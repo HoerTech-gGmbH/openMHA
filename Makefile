@@ -70,11 +70,11 @@ uninstall:
 	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
 
 
-googletest: mha/mhatest
+googletest: test
 	$(MAKE) -C external_libs googlemock
 
-unit-tests: googletest $(patsubst %,%-subdir-unit-tests,$(MODULES))
-$(patsubst %,%-subdir-unit-tests,$(MODULES)): all
+unit-tests: $(patsubst %,%-subdir-unit-tests,$(MODULES))
+$(patsubst %,%-subdir-unit-tests,$(MODULES)): all googletest
 	$(MAKE) -C $(@:-subdir-unit-tests=) unit-tests
 
 coverage: unit-tests
