@@ -60,11 +60,15 @@ namespace delaysum{
         void release();
     private:
         void update_cfg();
-        ///Relative weights for each channel. Order is [chan0, chan1, ...]
+        
+        /// Linear weights to be multiplied with the audio signal, one
+        /// factor for each channel.  Order is [chan0, chan1, ...]
         MHAParser::vfloat_t weights;
 
+        /// vector of channel-specific delays, in samples.
         MHAParser::vint_t delay;
-        //        The patchbay to react to config changes.
+        
+        /// The patchbay to react to config changes.
         MHAEvents::patchbay_t<delaysum_if_t> patchbay;
     };
 
@@ -107,10 +111,10 @@ namespace delaysum{
                                            "channels into a single output "
                                            "channel after applying channel-"
                                            "specific weights and delays.",iac),
-        weights("weights of channels","[1 1]","Each entry is multiplied to its"
-                "respective channel. Needs one entry per channel."),
-        delay("delay in number of frames ","[0 0]","The nth channel is delayed "
-              "by the number of frames found in the nth entry.")
+        weights("weights of channels.  Each entry is multiplied to its\n"
+                "respective channel.  Needs one entry per channel.","[1 1]","[,]"),
+        delay("delay in number of frames. The nth channel is delayed\n"
+              "by the number of frames found in the nth entry. ","[0 0]","[,]")
     {
         insert_item("weights",&weights);
         insert_item("delay",&delay);
