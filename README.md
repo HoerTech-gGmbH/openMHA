@@ -52,37 +52,41 @@ Update the list of available packages:
     sudo apt-get update
 
 This will give you a warning:
-
-    W: The repository 'http://mha.hoertech.de/hoertech/xenial Release' does not have a Release file.
-    N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
-    N: See apt-secure(8) manpage for repository creation and user configuration details.
-
+```
+W: The repository 'http://mha.hoertech.de/hoertech/xenial Release' does not have a Release file.
+N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
+N: See apt-secure(8) manpage for repository creation and user configuration details.`
+```
 Install openMHA:
-
-    sudo apt-get install openmha
+```
+sudo apt-get install openmha
+```
 
 This will give you again an authentication warning:
+```
 WARNING: The following packages cannot be authenticated! openmha libopenmha Install these packages without verification? [y/N]
+```
+
+
 
 To install openMHA you have to type "y".
 
 The authentication issue will be resolved in the future.
 
 After installation, openMHA documentation is found in
-    /usr/share/doc/openmha
-and tools for GNU Octave/Matlab here:
-    /usr/lib/openmha/mfiles
+`/usr/share/doc/openmha`
+and tools for GNU Octave/Matlab in `/usr/lib/openmha/mfiles`
 
 We provide some examples together with the openMHA source code.
 When using debian packages, you can find the examples in a separate package,
-"openmha-examples". After installing the openmha-examples package, the examples
-can be found in below /usr/share/openmha/examples.
+*openmha-examples*. After installing the openmha-examples package, the examples
+can be found in `/usr/share/openmha/examples`.
+
 
 To update openMHA when a new release is available run
-
-    sudo apt-get install --only-upgrade openmha
-
-
+```
+sudo apt-get install --only-upgrade openmha
+```
 
 ## Source Code Overview
 
@@ -128,9 +132,9 @@ but the produced openMHA will still work.
 
 #### macOS
 - macOS 10.10 or later.
-- XCode 7.2 or later
-- Jack2 for OSX http://jackaudio.org
-- MacPorts
+- XCode 7.2 or later (available from App Store)
+- Jack2 for OSX http://jackaudio.org (also available from MacPorts)
+- MacPorts https://www.macports.org
 
 The following packages should be installed via macports:
 - libsndfile
@@ -148,7 +152,10 @@ Octave in version >= 4.2.1.
 ### Compilation instructions:
 
 After downloading and unpacking the openMHA tarball, or cloning from github,
-compile the MHA with ./configure && make
+compile the MHA with by typing in a terminal (while in the openMHA directory)
+```
+./configure && make
+```
 
 ### Installation of self-compiled openMHA:
 
@@ -160,23 +167,24 @@ source code. To collect the relevant binaries and libraries execute
 You can set the make variable PREFIX to point to the desired installation
 location. The default installation location is ".", the current directory.
 
-If you install openMHA to a non-standard location, you should set the
-environment variable LD_LIBRARY_PATH to point to your lib directory, like this:
+You should then add the openMHA installation directory the system search path for
+libraries and executables, like so:
 
-    export LD_LIBRARY_PATH=$PREFIX/lib
+```
+    export LD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
+    export PATH=<YOUR-MHA-DIRECTORY>/bin:$PATH
+```
 
-The default prefix is the current working directory.  Please note that on
-macOS, the corresponding environment variable is named DYLD_LIBRARY_PATH.
-
-You can also add the bin directory to the PATH environment variable:
-
-    export PATH=$PATH:$PREFIX/bin
-
-Again, note that the default prefix is the current working directory.
+The default installation pathis the current working directory.  Please note that on
+macOS, LD_LIBRARY_PATH is named DYLD_LIBRARY_PATH.
 
 Alternatively to the two settings above, the thismha.sh script found in
-bin/thismha.sh may be sourced to set these variables correctly for the
-current shell.
+bin may be sourced to set these variables correctly for the
+current shell:
+
+```
+source <YOUR-MHA-DIRECTORY>/bin/thismha.sh
+```
 
 After this, you can invoke the MHA command line application.
 Perform a quick test with
@@ -222,7 +230,9 @@ Extra packages are needed for generating documentation:
 
 ## Known Issues
 * There are some known issues with Octave under macOS. The mha gui may not work correctly with octave. As an alternative Matlab can be used.
-* The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp)
+* The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp) (May not be necessary any more, check for yourself)
+
+* On some Apple machines jack needs to be run with root privileges to get real-time priority.
 
 ## References for individual algorithms.
 
