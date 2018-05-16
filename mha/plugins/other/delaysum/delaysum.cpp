@@ -114,7 +114,7 @@ namespace delaysum{
         weights("weights of channels.  Each entry is multiplied to its\n"
                 "respective channel.  Needs one entry per channel.","[1 1]","[,]"),
         delay("delay in number of frames. The nth channel is delayed\n"
-              "by the number of frames found in the nth entry. ","[0 0]","[,]")
+              "by the number of frames found in the nth entry. ","[0 0]","[0,]")
     {
         insert_item("weights",&weights);
         insert_item("delay",&delay);
