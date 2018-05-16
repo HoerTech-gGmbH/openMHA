@@ -1,33 +1,32 @@
-{
-  "exclude": [
-    "(^external_libs\/)",
-    "(\\.xfig)",
-    "(\\.eps)"
-  ],
-  "linters": {
-    "Basic Text": {
-      "text.max-line-length": 80,
-      "type": "text",
-      "exclude": "(\\.md$)",
-      "severity.rules":  {
-      "(5$)" : "disabled"
-      }
-    },
-    "Static C++ analyser": {
-      "type": "cppcheck",
-      "include": [
-        "(\\.c$)",
-        "(\\.h$)"
-      ]
-    },
-    "Merge-Conflicts": {
-      "type": "merge-conflict"
-    },
-    "Filename Checks": {
-      "type": "filename"
-    },
-    "File Permissions": {
-      "type": "chmod"
+    {
+        "exclude": [
+            "(^external_libs\/)",
+            "(\\.xfig)",
+            "(\\.eps)"
+        ],
+        "linters": {
+            "Basic Text": {
+                "text.max-line-length": 80,
+                "type": "text",
+                "severity": {
+                    "5": "disabled"
+                }
+            },
+            "Static C++ analyser": {
+                "type": "cppcheck",
+                "include": [
+                    "(\\.c$)",
+                    "(\\.h$)"
+                ]
+            },
+            "Merge-Conflicts": {
+                "type": "merge-conflict"
+            },
+            "Filename Checks": {
+                "type": "filename"
+            },
+            "File Permissions": {
+                "type": "chmod"
+            }
+        }
     }
-  }
-}
