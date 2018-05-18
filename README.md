@@ -37,47 +37,47 @@ publications at the end of this README.
 
 ## Installation from binary packages on Ubuntu.
 
-First, add the package source with the openMHA Debian packages to your system:
+First, add the package source with the openMHA installation packages to your system:
 
-under Ubuntu 16.04
+In Ubuntu 18.04:
+
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 104A07F9
+    sudo apt-add-repository 'deb http://apt.openmha.org/ubuntu bionic universe'
+    
+In Ubuntu 16.04:
 
     sudo apt-add-repository 'deb http://mha.hoertech.de/hoertech/xenial /'
-
-under Ubuntu 14.04
-
-    sudo apt-add-repository 'deb http://mha.hoertech.de/hoertech/trusty /'
-
-Update the list of available packages:
-
     sudo apt-get update
 
-This will give you a warning:
+For Ubuntu 16.04, this will give you a warning:
 ```
 W: The repository 'http://mha.hoertech.de/hoertech/xenial Release' does not have a Release file.
 N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
 N: See apt-secure(8) manpage for repository creation and user configuration details.`
 ```
+
 Install openMHA:
 ```
 sudo apt-get install openmha
 ```
 
-This will give you again an authentication warning:
+For Ubuntu 16.04, this will give you again an authentication warning:
 ```
-WARNING: The following packages cannot be authenticated! openmha libopenmha Install these packages without verification? [y/N]
+WARNING: The following packages cannot be authenticated! openmha libopenmha
+Install these packages without verification? [y/N]
 ```
 
 
 
 To install openMHA you have to type "y".
 
-The authentication issue will be resolved in the future.
+These authentication issues have been solved for Ubuntu 18.04 starting with openMHA release 4.5.7.
 
 After installation, openMHA documentation is found in
 `/usr/share/doc/openmha`
 and tools for GNU Octave/Matlab in `/usr/lib/openmha/mfiles`
 
-We provide some examples together with the openMHA source code.
+We provide some examples together with the openMHA.
 When using debian packages, you can find the examples in a separate package,
 *openmha-examples*. After installing the openmha-examples package:
 ```
@@ -86,6 +86,8 @@ sudo apt-get install openmha-examples
 the examples can be found in `/usr/share/openmha/examples`.
 
 NOTE: If you want to use the example files we recommend to make a copy in your home directory as they are located in a system-wide read-only directory. Some of the examples may require changes to work with the current audio hardware setup and need write access to store output.  
+
+Algorithm developers interested in implementing their own plugins should also install the development package libopenmha-dev.
 
 For updating openMHA when a new release is available run
 ```
@@ -110,24 +112,23 @@ files for offline processing, are also found here.
 
 The openMHA source code has to be compiled before openMHA can be used. While openMHA in
 general can be compiled for many operating systems and hardware platforms, in
-this release we concentrate on compilation on Ubuntu 16.04 for 64-bit PC
+this release we concentrate on compilation on Ubuntu 18.04 for 64-bit PC
 processors (x86_64) and on Debian 8 (jessie) for the Beaglebone Black
 single-board ARM computer.
 ### Prerequisites
 #### Linux
-64-bit version of Ubuntu 16.04 or later,
+64-bit version of Ubuntu 18.04 or later,
 or a Beaglebone Black with Debian jessie installed.
 
 ... with the following software packages installed:
-- g++-5 for Ubuntu, g++-4.9 for Debian
+- g++-7 for Ubuntu, g++-4.9 for Debian
 - make
 - libsndfile1-dev
 - libjack-jackd2-dev
 - jackd2
 - portaudio19-dev
 - optional:
-  - GNU Octave with the signal package and default-jre (e.g. openjdk-8-jre
-    and openjdk-8-jdk for Debian 9)
+  - GNU Octave with the signal package and default-jre (e.g. openjdk-8-jre for Debian 9)
 
 Octave and default-jre are not essential for building or running openMHA.  
 The build process uses Octave + Java to run some tests after
