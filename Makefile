@@ -70,17 +70,21 @@ uninstall:
 	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
 
 
-googletest: mha/mhatest
+googletest: test
 	$(MAKE) -C external_libs googlemock
 
-unit-tests: googletest $(patsubst %,%-subdir-unit-tests,$(MODULES))
-$(patsubst %,%-subdir-unit-tests,$(MODULES)): all
+unit-tests: $(patsubst %,%-subdir-unit-tests,$(MODULES))
+$(patsubst %,%-subdir-unit-tests,$(MODULES)): all googletest
 	$(MAKE) -C $(@:-subdir-unit-tests=) unit-tests
 
 coverage: unit-tests
 	lcov --capture --directory mha --output-file coverage.info
 	genhtml coverage.info --prefix $$PWD/mha --output-directory $@
 	x-www-browser ./coverage/index.html
+
+deb: unit-tests
+	$(MAKE) -C mha/tools/packaging/deb pack
+
 
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
