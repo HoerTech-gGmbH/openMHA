@@ -109,7 +109,7 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
     sGt.(side) = (sGt.(side) + abs(sGt.(side))) / 2;
     
     % where output level is greater than max_output_level, reduce gain
-    output_levels = sGt.(side) + repmat(sFitmodel.levels(:),1,length(insertion_gains.(side)));
+    output_levels = sGt.(side) + repmat(sFitmodel.levels(:),1,length(Gmin.(side)));
     safe_output_levels = min(output_levels, max_output_level);
     sGt.(side) = sGt.(side) - (output_levels - safe_output_levels);
 

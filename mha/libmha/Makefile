@@ -74,7 +74,7 @@ $(MHA_FFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(FFTW_LIB)
 $(MHA_RFFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(RFFTW_LIB)
 	ar x $< $(notdir $@) && mv $(notdir $@) $@
 
-$(BUILD_DIR)/unit-test-runner: LDFLAGS += -L$(BUILD_DIR) -lopenmha
+$(BUILD_DIR)/unit-test-runner: LDFLAGS += -L$(BUILD_DIR) -Wl,-rpath=./$(BUILD_DIR) -lopenmha
 
 # Local Variables:
 # coding: utf-8-unix

@@ -41,7 +41,7 @@ plugins) will be \verb!transducers!.
 %
 This plugin is used for calibrating the input and output signals.
 %
-The input signal will be split into two frequency bands, using the
+The input signal is then split into two frequency bands, using the
 \mha{} plugin \verb!fftfilterbank!.
 %
 Spectral processing is used in this example to perform the dynamic
@@ -225,16 +225,26 @@ This will process the file \emph{1speaker\_diffNoise\_2ch.wav} and output
 \index{framework configuration}%
 \index{configuration!framework}%
 
-In this section we will use the configuration settings described in the previous section 
-while using the JACK server as the audio backend. While in the previous section
+In this section we will use the configuration settings described in
+the previous section while using the JACK server as the audio
+backend.\footnote{To run the JACK server reliably with small buffer
+  sizes, please optimize your operating system for low-delay audio. In
+  the case of Ubuntu, please install and boot a lowlatency linux
+  kernel, answer "yes" to the question "Enable realtime process
+  priority?" when installing jackd2, and add your user to the group
+  "audio".
+}
+%
+While in the previous section
 we could  set the number of 
 input channels, fragment size and sampling rate of the framework freely,
 when using JACK the fragment size
 and sampling rate have to match the values used by the JACK server.
 %
-Here we assume that the JACK server runs with a fragment size
-of 64 samples, so that the overlap in the overlap-add method uses the same
-50\% signal overlap as before (see page \pageref{overlapexplanation}).
+Here we assume that the JACK server runs at sampling rate 44100 with a
+fragment size of 64 samples, so that the overlap in the overlap-add
+method uses the same 50\% signal overlap as before (see page
+\pageref{overlapexplanation}).
 %
 Later we will show how to use a double buffer for those
 situations, where it is not possible to start JACK with the desired
@@ -262,7 +272,7 @@ properly (see \verb!README.md!).
 The JACK server needs to be told which hardware input and output ports should be
 connected to the mha:
 \begin{verbatim}
-io.con_in = [system:capture_5 system:capture_6]
+io.con_in = [system:capture_1 system:capture_2]
 io.con_out = [system:playback_1 system:playback_2]
 \end{verbatim}
 Please replace the port names by the ports you want to connect
