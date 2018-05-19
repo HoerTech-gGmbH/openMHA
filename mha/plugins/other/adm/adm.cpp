@@ -265,7 +265,7 @@ adm_if_t::adm_if_t(const algo_comm_t& ac,
       mu_beta("Adaptation step size for each set of ADMs (e.g. left and right)",
               "[1e-4 1e-4]", "[0,]"),
       tau_beta("time constant / s of low pass filter for averaging power of "
-               "output signal\n(used for adaptation)","[50e-3]","[0,]"),
+               "output signal\n(used for adaptation)","[50e-3 50e-3]","[0,]"),
       coeff_lp("Lowpass coefficients"),
       coeff_decomb("Decomb coefficients"),
       input_channels(0)
