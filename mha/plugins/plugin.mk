@@ -127,5 +127,4 @@ LDLIBS += -l$(MHATOOLBOX_NAME)
 
 # Local Variables:
 # coding: utf-8-unix
-# coding: utf-8-unix
 # End:
