@@ -10,7 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License, version 3 for more details.
 //
-// You should have received a copy of the GNU Affero General Public License,
+// You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #define MHAPLUGIN_OVERLOAD_OUTDOMAIN
@@ -18,7 +18,7 @@
 #include "mhapluginloader.h"
 #include "mha_defs.h"
 #include "mha_algo_comm.hh"
-
+#include "mha_windowparser.h"
 
 class mhaplug_cfg_t : private MHAKernel::algo_comm_class_t, public PluginLoader::mhapluginloader_t
 {

@@ -1,0 +1,13 @@
+README.md,usr/share/doc/openmha/
+external_libs/fftw-2.1.5/matlab/fftw.m,usr/lib/openmha/mfiles/
+mha/frameworks/${BUILD_DIR}/analysemhaplugin,usr/bin/
+mha/frameworks/${BUILD_DIR}/browsemhaplugins,usr/bin/
+mha/frameworks/${BUILD_DIR}/generatemhaplugindoc,usr/bin/
+mha/frameworks/${BUILD_DIR}/mha,usr/bin/
+mha/frameworks/${BUILD_DIR}/testalsadevice,usr/bin/
+mha/tools/mfiles/*.m,usr/lib/openmha/mfiles/
+mha/tools/mfiles/*.mat,usr/share/openmha/
+mha/tools/mfiles/mhactl_java.jar,usr/lib/openmha/mfiles/
+mha/tools/mfiles/*.cfg,usr/share/openmha/
+*.pdf,usr/share/doc/openmha/
+mha/plugins/**/*.so,/usr/lib

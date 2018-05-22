@@ -10,8 +10,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License, version 3 for more details.
 //
-// You should have received a copy of the GNU Affero General Public License,
+// You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+/*
+ * This plugin works sample-wise.  Therefore it has to be configured so
+ * that sample wise signal processing occurs
+ */
 
 #include <cmath>
 #include "lpc_burg-lattice.h"
@@ -127,7 +132,6 @@ void lpc_burglattice::prepare(mhaconfig_t & signal_info)
     if (signal_info.domain != MHA_WAVEFORM)
         throw MHA_Error(__FILE__, __LINE__,
                         "This plugin can only process waveform signals.");
-
 
     /* make sure that a valid runtime configuration exists: */
     update_cfg();

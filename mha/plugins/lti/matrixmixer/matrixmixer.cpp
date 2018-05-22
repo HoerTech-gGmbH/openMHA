@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2010 2012 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2005 2006 2010 2012 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -10,7 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License, version 3 for more details.
 //
-// You should have received a copy of the GNU Affero General Public License,
+// You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mha_plugin.hh"
@@ -54,7 +54,7 @@ private:
 matmix_t::matmix_t(const algo_comm_t& iac,
                    const std::string&,
                    const std::string&)
-    : MHAPlugin::plugin_t<cfg_t>("Matrix mixer plugin, can mix all input"
+    : MHAPlugin::plugin_t<cfg_t>("Matrix mixer plugin, can mix multiple input"
                                  " channels into\n"
                                  "any number of output channels"
                                  " with configurable weights.",iac),
@@ -204,30 +204,42 @@ MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow mixing panning",
 "The configuration variable \\texttt{m} expects a matrix of float values.  "
 "The examples above showed a matrix with only one row, which resulted in only "
 "one output channel being produced by the \\texttt{matrixmixer} plugin. "
-"To produce more output channels, more rows (separated by semicolons) "
+"To produce more output channels, more rows "
+"(separated by semicolons)\\footnote{In \\mha{} configuration, a matrix is "
+"  specified as a vector of vectors, where the subsequent row vectors are "
+"  separated by semicolons.  For details, refer to the subsection on "
+"  multidimensional variables in the \\mha{} application manual.} "
 "can be specified for matrix \\texttt{m}:"
 "\n\n"
 "\\verb|m = [[1 0];[0 1]]|"
 "\n\n"
 "This is the identity matrix for two channels. "
 "This matrix does not change the signal. "
-"The following setting would swap the first two channels:"
+"\n\n"
+"The following setting demonstrates how matrixmixer can be used to change "
+"the order of audio channels in a multi-channel signal. "
+"This example swaps the first two channels:"
 "\n\n"
 "\\verb|m = [[0 1];[1 0]]|"
 "\n\n"
-"The next setting would create a 4-channel signal output from a stereo signal, "
+"The next setting creates a 4-channel signal output from a stereo signal, "
 "where the first two channels are the original stereo channels, the third is "
 "the sum of the two stereo channels, and the fourth output channel is the "
-"difference of the two stereo channels:"
+"difference of the two stereo channels"
+"\\footnote{The combination of the sum and the difference of the two channels"
+"  of a stereo signal is known as the mid-side signal and used for stereo"
+"  transmission in FM radio.  We combine it here with the orignial stereo"
+"  signal for the sole purpose of demonstrating the creation of more output"
+"  channels than input channels with the \\texttt{matrixmixer} plugin.}:"
 "\n\n"
 "\\verb|m = [[0 1];[1 0];[1 1];[1 -1]]|"
 "\n\n"
-"The following example would duplicate a single input channel to two output"
+"The following example duplicates a single input channel to two output"
 " channels:"
 "\n\n"
 "\\verb|m = [[1];[1]]|"
 "\n\n"
-"To summarize and generalize, you need to configure the variable \\texttt{m} "
+"To summarize, you need to configure the variable \\texttt{m} "
 "with a matrix with float values. "
 "The matrix needs to have as many columns as the \\texttt{matrixmixer} "
 "receives input channels, and as many rows as you want \\texttt{matrixmixer} "

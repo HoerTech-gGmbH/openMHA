@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -34,8 +34,11 @@ mha/tools/mfiles/octave-workspace
 # platform-specific directories where build artifacts are stored.
 x86_64-linux-gcc-5
 x86_64-linux-gcc-7
+x86_64-linux-clang
 i686-linux-gcc-5
 i686-MinGW-gcc-6
+i686-MinGW-gcc-7
+x86_64-MinGW-gcc-7
 armv7l-linux-gcc-4.9
 x86_64-Darwin-clang
 # coverage analysis artifacts

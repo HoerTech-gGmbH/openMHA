@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010  HörTech gGmbH
-// Copyright © 2011 2012 2013 2014 2016 2017 HörTech gGmbH
+// Copyright © 2011 2012 2013 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,6 +19,7 @@
 
 #include "mha_toolbox.h"
 #include "mha_plugin.hh"
+#include "mha_windowparser.h"
 #include <valarray>
 
 /**
@@ -864,28 +865,127 @@ namespace MHAFilter {
         unsigned int fragsize;
     };
     
-    /** A class that does polyphase resampling. */
+    /** A class that performs polyphase resampling. 
+     *
+     * Background information: When resampling from one sampling rate
+     * to another, it helps when one sampling rate is a multiple of
+     * the other sampling rate: In the case of upsampling, the samples
+     * at the original rate are copied to the upsampled signal spread
+     * out with a constant number of zero samples between the
+     * originally adjacent samples.  The signal is then low-pass
+     * filtered to avoid frequency aliasing and to fill the
+     * zero-samples with interpolated values.  In the case of
+     * down-sampling, the signal is first low-pass filtered for
+     * anti-aliasing, and only every n<SUP>th</SUP> sample of the
+     * filtered output is used for the signal at the new sample rate.
+     * Of course, for finite-impulse-response (FIR) filters this means
+     * that only every n<SUP>th</SUP> sample needs to be computed.
+     *
+     * When resampling from one sampling rate to another where neither
+     * is a multiple of the other, the signal first needs to be
+     * upsampled to a sampling rate that is a multiple of both (source
+     * and target) sampling rates, and then downsampled again to the
+     * target sampling rate.  Instead of applying two separate lowpass
+     * filters directly after each other (one filter for upsampling
+     * and another for downsampling), it is sufficient to apply only
+     * one low-pass filter, when producing the output at the final
+     * target rate, with a cut-off frequency equal to the lower
+     * cut-off-frequency of the replaced two low-pass filters.  Not
+     * filtering to produce a filtered signal already at the common
+     * multiple sampling rate has the side effect that this
+     * intermediate signal at the common multiple sampling rate keeps
+     * its filler zero samples unaltered.  These zero samples can be
+     * taken advantage of when filtering to produce the output at the
+     * target rate: The zeros do not need to be multiplied with their
+     * corresponding filter coefficients, because the result is known
+     * to be zero again, and this zero product has no effect on the
+     * summation operation to compute a target sample at the target
+     * rate. 
+     * To summarize, the following optimization techniques are available:
+     *
+     * * The signal does not need to be stored in memory at the
+     *   interpolation rate. It is sufficient to have the signal
+     *   available at the source rate and to know where the zeros
+     *   would be.
+     * * The signal needs to be low-pass-filtered only once.
+     * * The FIR low-pass filtering can take advantage of
+     *  * computing only filter outputs for the required samples at the target rate,
+     *  * skipping over zero-samples at the interpolation rate.  
+     *
+     * The procedure that takes advantage of these optimization
+     * possibilites is known as polyphase resampling.
+     *
+     * This class implements polyphase resampling in this way for a
+     * source sampling rate and a target sampling rate that have common
+     * multiple, the interpolation sampling rate.
+     * Non-rational and drifting sample rates are outside the scope of
+     * this resampler.
+     */
     class polyphase_resampling_t {
-        /// Interpolation rate / source rate
+
+        /** Integer upsampling factor.  Interpolation rate divided by source rate. */
         unsigned upsampling_factor;
-        /// Interpolation rate / target rate
+
+        /** Integer downsampling factor.  Interpolation rate divided by target rate. */
         unsigned downsampling_factor;
-        /// points to "now" in the interpolated sampling rate
+
+        /** Index of "now" in the interpolated sampling rate.
+         * @todo Index into what? What is the meaning of now? */
         unsigned now_index;
-        /// indicates if an underflow has occurred. Object cannot be used then.
+
+        /** Set to true when an underflow has occurred.  When this is
+         * true, then the object can no longer be used.  Underflows
+         * have to be avoided by clients, e.g. by checking that enough
+         * #readable_frames are present before calling #read */
         bool underflow;
-        /// contains the lowpass impulse response at interpolation rate
+
+        /** Contains the impulse response of the lowpass filter needed
+         * for anti-aliasing.  The impulse response is stored at the
+         * interpolation sampling rate.  We use an instance of
+         * MHAWindow::hanning_t here because we are limiting the sinc
+         * impulse response with a Hanning window (otherwise the
+         * impulse response would extend indefinitely into past and
+         * future).  And the samples inside an MHAWindow::hanning_t
+         * can be altered with *=, which our constructor does. */
         MHAWindow::hanning_t impulse_response;
-        /// storage of input signal
+        
+        /** Storage of input signal.  Part of the polyphase resampling
+         * optimization is that apart from the FIR impulse response,
+         * nothing is stored at the interpolation rate, saving memory
+         * and computation cycles. */
         MHASignal::ringbuffer_t ringbuffer;
     public:
-        /** Initialize a polyphase resampler
-            @param n_up upsampling factor
-            @param n_down downsampling factor
+        /** Construct a polyphase resampler instance.
+
+            Allocates a ringbuffer with the given capacity \a
+            n_ringbuffer.  Client that triggers the constructor must
+            ensure that the capacity \a n_ringbuffer and the delay \a
+            n_prefill are sufficient, i.e. enough old and new samples
+            are always available to compute sufficient samples in
+            using an impulse response of length \a n_irs.  Audio block
+            sizes at both sides of the resampler have to be taken into
+            account.  Class \c
+            MHASignal::blockprocessing_polyphase_resampling_t takes
+            care of this, and it is recommended to use this class for
+            block-based processing.
+
+            Based on \a n_up, \a n_down, \a n_irs and \a
+            nyquist_ratio, a suitable sinc impulse response is
+            computed and windowed with a hanning window to limit its
+            extent.
+
+            The actual source sampling rate, target sampling rate, and
+            interpolation sampling rate are not parameters to this
+            constructors, because only their ratios matter.
+
+            @param n_up upsampling factor, ratio between interpolation
+                   rate and source rate.
+            @param n_down downsampling factor, ratio between interpolation
+                   rate and target rate.
             @param nyquist_ratio low pass filter cutoff frequency relative to
                    the nyquist frequency of the smaller of the two sampling
                    rates.
-                   Example values: 0.8, 0.9
+                   Example values: E.g. 0.8, 0.9
             @param n_irs length of impulse response (in samples at
                                                      interpolation rate)
             @param n_ringbuffer length of ringbuffer,
@@ -899,7 +999,9 @@ namespace MHAFilter {
                                unsigned n_irs,
                                unsigned n_ringbuffer, unsigned n_channels,
                                unsigned n_prefill);
-        /** Write signal to the ringbuffer.
+        /** Write signal to the ringbuffer.  Signal contained in
+         * signal is appended to the audio frames already present in
+         * the ringbuffer.
          * @param signal input signal in original sampling rate
          * @throw MHA_Error Raises exception if there is not enough room or
          *                  if the number of channels does not match. */
@@ -910,18 +1012,22 @@ namespace MHAFilter {
          * @throw MHA_Error Raises exception if there is not enough input signal
          *                  or if the number of channels is too high. */
         void read(mha_wave_t & signal);
-        /** Number of frames at target sampling rate that can be produced.
-         * Warning: This method only checks for enough future samples present,
-         * therefore, this number can be positive and a read operation can still
-         * fail if there are not enough past samples present to perform
-         * the filtering for the first output sample.
-         */
+        /** Number of frames at target sampling rate that can be
+         * produced.  This method only checks for enough future
+         * samples present, therefore, this number can be positive and
+         * a read operation can still fail if there are not enough
+         * past samples present to perform the filtering for the first
+         * output sample.  This could only happen if the constructor
+         * parameters \a n_ringbuffer or \a n_prefill have been chosen
+         * too small, because otherwise the method #read ensures that
+         * enough past samples are present to compute the next target
+         * sample. */
         unsigned readable_frames() const {
             unsigned interpolation_frames =
                 ringbuffer.contained_frames() * upsampling_factor;
             if (interpolation_frames < now_index)
                 return 0U;
-            return (interpolation_frames - now_index) / downsampling_factor + 1;
+            return (interpolation_frames - now_index + downsampling_factor - 1U) / downsampling_factor;
         }
     };
 

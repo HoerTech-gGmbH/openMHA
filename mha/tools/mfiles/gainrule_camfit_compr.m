@@ -12,9 +12,16 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
 % Compute gains for compression according to Moore et al. (1999) "Use of a
 % loudness model for hearing aid fitting: II. Hearing aids with multi-channel
 % compression." Brit. J. Audiol. (33) 157-170
+%
+% Please note that this gain rule by default applies a noise gate below 45 dB
+% band level.  If you want a different noise gate level, please set the global
+% variable CAMFIT_NOISEGATE before this function is called.  Please note that
+% the gain rule now limits the gains so that in each band 100 dB output level
+% is not exceeded. If you need higher output levels, please set the global
+% variable CAMFIT_MAXOUT before this function is called.
 
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2007 2009 2011 2013 2015 2017 HörTech gGmbH
+% Copyright © 2007 2009 2011 2013 2015 2017 2018 HörTech gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -85,7 +92,13 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
   if ~isempty(CAMFIT_NOISEGATE)
       noisegate = CAMFIT_NOISEGATE;
   end
-  
+
+  max_output_level = 100;
+  global CAMFIT_MAXOUT;
+  if ~isempty(CAMFIT_MAXOUT)
+    max_output_level = CAMFIT_MAXOUT;
+  end
+
   for side=sFitmodel.side
     compression_ratio.(side) = minima_distance ./ max(Lmid+Gmid.(side)(end,:) - Lmin-Gmin.(side), 13);
     compression_ratio.(side) = max(compression_ratio.(side), 1);
@@ -95,6 +108,11 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
     % set negative gains to zero
     sGt.(side) = (sGt.(side) + abs(sGt.(side))) / 2;
     
+    % where output level is greater than max_output_level, reduce gain
+    output_levels = sGt.(side) + repmat(sFitmodel.levels(:),1,length(Gmin.(side)));
+    safe_output_levels = min(output_levels, max_output_level);
+    sGt.(side) = sGt.(side) - (output_levels - safe_output_levels);
+
     % set all gains to zero for 0dB HL flat audiogram
     sGt.(side) = sGt.(side) * any(htl.(side));
     

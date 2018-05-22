@@ -1,5 +1,5 @@
 %%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
-%%% Copyright © 2005 2006 2007 2008 2011 2012 2013 2017 HörTech gGmbH
+%%% Copyright © 2005 2006 2007 2008 2011 2012 2013 2017 2018 HörTech gGmbH
 %%%
 %%% openMHA is free software: you can redistribute it and/or modify
 %%% it under the terms of the GNU Affero General Public License as published by
@@ -125,6 +125,28 @@ A configuration file with these settings can be read by sending a {\tt
 ?read:filename.cfg} command to the configuration interface. See also
 \secpageref{sec:script} for details.
 
+Note that the variables \texttt{fragsize}, and \texttt{srate} need to
+be set before loading the sound I/O library by assigning a value to
+\texttt{iolib}, and they cannot be changed after loading the sound I/O
+library. This is because some sound APIs require this knowledge (about
+block size and sampling rate) already when the API is first
+initialized, and in these APIs block size and/or sampling rate cannot
+be changed thereafter.
+%
+For the same reason, it it also not possible to change the sound I/O
+library by assigning a different value to iolib after the initial
+assignment.
+%
+For historic reasons, the variable mhalib can also not be changed
+after initial assignment, but this will most likely be relaxed in a
+future release.
+%
+When the MHA is in prepared state, the number of input channels
+\texttt{nchannels\_in} cannot be changed.
+%
+When an MHA variable cannot be changed, then it is "locked", and
+attempts to write to it will cause an error.
+
 \begin{description}
   \mhavardesc{nchannels\_in}{Number of input audio channels.}
   
@@ -152,7 +174,7 @@ A configuration file with these settings can be read by sending a {\tt
 
 \mhavardesc{sleep}{This special command waits on the normal execution of commands
    while \mha{} continues processing audio. The number of seconds waited is given by the right-hand side
-   e.g. {\tt sleep = 5} waits 5 seconds.}
+   e.g.\ {\tt sleep = 5} waits 5 seconds.}
 
 \end{description}
 
@@ -160,15 +182,31 @@ A configuration file with these settings can be read by sending a {\tt
 \label{sec:fwstates}\index{states}%
 
 The states of the \mhad{} are controlled by setting the {\tt cmd}
-variable. After configuring all modules of the \mha{} (Framework and
-Plugins), the configuration can be prepared to be ready for signal
-processing by setting {\tt cmd=prepare}. This will also validate the
-configuration; on error the prepare command will be rejected. Setting
-{\tt cmd=start} tells the IO plugin to start the signal processing,
-and accordingly setting {\tt cmd=stop} will cause the IO plugin to
-stop processing. Invoking {\tt cmd=release} brings the IO plugin into
-an unlocked state. The session can be closed with {\tt cmd=quit}. See
-\figref{MHA-fw-states} for an overview.
+variable, thereby triggering a state transition (refer to
+\figref{MHA-fw-states}).
+%
+The current state of the \mhad{} can be queried by reading the value of
+the variable \verb!state!, e.g.\ with the command \verb!state?!.
+
+After configuring all modules of the \mha{} (Framework and Plugins),
+the configuration can be prepared to be ready for signal processing by
+setting {\tt cmd=prepare}.  This will also validate the configuration;
+if any of the plugins finds that it cannot process audio given the
+current configuration, then the \verb!cmd=prepare! command will be
+rejected with an error result.
+
+Setting {\tt cmd=start} tells the IO plugin to start the signal
+processing, and accordingly setting {\tt cmd=stop} will cause the IO
+plugin to stop processing. Invoking {\tt cmd=release} brings the IO
+plugin into an unlocked state. The session can be closed with {\tt
+  cmd=quit}. See \figref{MHA-fw-states} for an overview.
+%
+The variable \verb!cmd! for triggering state transitions is
+essentially write-only, because reading from it will always return the
+value \verb!nop!\footnote{%
+  \texttt{nop} is used as a shorthand for "no operation"%
+}, which is the identity state transition (i.e.\ setting
+\verb!cmd=nop! does not cause any state changes).
 
 \MHAfigure[][0.7\linewidth]{States of the \mhad{}}{MHA-fw-states}
 
@@ -208,10 +246,10 @@ Variables of the 'MHAIOJack' module:
     alsa\_pcm:capture\_2]}. The ports are reconnected at any time the
   variable is accessed. Ports can be disconnected by using a colon as
   a port name. To achieve multiple connections to one \mha{} port, please
-  use external connection tools, e.g. 'qjackctl' or 'jack\_connect'.}
+  use external connection tools, e.g.\ 'qjackctl' or 'jack\_connect'.}
 
 \mhavardesc{con\_out}{Connection list for output \mha{} ports with one
-  entry for each port, e.g.\
+  entry for each port, e.g.\ 
   {\tt con\_out = [alsa\_pcm:playback\_1 alsa\_pcm:playback\_2]}.}
 
 \mhavardesc{names\_in}{Labels of \mha{} input ports (empty for auto-generated labels).}
@@ -239,7 +277,7 @@ processed and the processed data will be written to the output
 file. The start command will wait until the processing is finished.
 The files are opened when preparing the \mhad{} and closed when
 releasing the \mhad{}. The file and data format of the output file
-is inherited from the input file, e.g. if the input file is a 32 bit
+is inherited from the input file, e.g.\ if the input file is a 32 bit
 WAVE file, also the output file will be. The plugin supports most
 commonly used file formats.
 

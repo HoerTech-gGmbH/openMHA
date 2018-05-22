@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2006 2014 2016 2017 HörTech gGmbH
+// Copyright © 2004 2006 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -206,6 +206,9 @@ namespace ADM {
      *   class uses linear phase FIR filters only, only the first half
      *   (order/2 + 1)of the coefficients will be read (coefficients
      *   for linear-phase FIR filters are symmetric).
+     * @param tau_beta
+     *   Time constant of the lowpass filter used for averaging the power of
+     *   the output signal
      * @param mu_beta
      *   Adaptation step size for each set of ADMs (e.g. left and right)
      * @param tau_beta

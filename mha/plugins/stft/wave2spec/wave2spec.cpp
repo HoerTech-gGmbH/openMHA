@@ -102,11 +102,23 @@ wave2spec_t::wave2spec_t(unsigned int nfft,
 {
     window *= sqrt((float)nfft/window.sumsqr());
     ft = mha_fft_new( nfft );
+    if (window.num_channels != 1U)
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The wave2spec:%s analysis window storage should have"
+                        " only 1 channel, has %u",
+                        algo.c_str(), window.num_channels);
+    comm_var_t cv = {MHA_AC_MHAREAL, window.num_frames, 1U, window.buf};
+    int err = ac.insert_var(ac.handle,(algo + "_wnd").c_str(), cv);
+    if (err)
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Unable to insert wave2spec window into AC space as '%s':\n%s",
+                        (algo + "_wnd").c_str(), ac.get_error(err));
 }
 
 wave2spec_t::~wave2spec_t()
 {
     mha_fft_free( ft );
+    ac.remove_ref(ac.handle, window.buf);
 }
 
 mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)
@@ -125,11 +137,11 @@ mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)
 
 wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const std::string& ialg)
     : MHAPlugin::plugin_t<wave2spec_t>(
-        "Waveform to spectrum overlap add and FFT method.\n"
-        "Audio data is collected up to wndlen, than windowed with\n"
-        "the given window function, zero padded up to fftlength\n"
+        "Waveform to spectrum overlap add and FFT method.\n\n"
+        "Audio data is collected up to wndlen, then windowed with\n"
+        "the given window function, zero padded up to fftlen\n"
         "(symmetric zero padding or asymmetric zero padding possible),\n"
-        "and Fast-Fourier-transformed.",iac),
+        "and fast-Fourier-transformed (FFT).",iac),
       nfft("FFT lengths","512","[1,]"),
       nwnd("window length/samples","400","[1,]"),
       wndpos("window position\n(0 = beginning, 0.5 = symmetric zero padding, 1 = end)","0.5","[0,1]"),
@@ -212,7 +224,7 @@ MHAPLUGIN_PROC_CALLBACK(wave2spec,wave2spec_if_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (wave2spec, "overlapadd",
  "This plugin performs the domain transformation from time-domain "
- "waveform signal to short-time fourier transform (STFT) signal in "
+ "waveform signal to short-time Fourier transform (STFT) signal in "
  "the spectral domain.  "
  
  "This plugin can be used as the analysis part of a complete "
@@ -245,24 +257,41 @@ MHAPLUGIN_DOCUMENTATION\
  "Please note that "
  "usually the window shift is less than the window length. "
 
- "In this case the short time fourier transform does not exactly "
- "correspond to the current input waveform block, because the analysis "
- "window still contains samples from the previous invocation(s). "
+ "For this reason, the short time fourier transform does not exactly "
+ "correspond to the current input waveform block: the analysis "
+ "window contains samples from the current as well as from previous invocation(s). "
  
  "The absolute window shift is identical to the fragment size, e.g.\\ to "
- "achieve a window shift of 50\\%, configure a fragment size of wndlen/2."
+ "achieve a window shift of 50\\%, configure a fragment size of \\verb!wndlen!/2."
 
  "\n\n"
 
  "A copy of the output spectrum is stored in the AC space in a variable\n"
- "of same name as the configured plugin name. It is recommended to use\n"
- "the function \\verb!MHA_AC::get_var_spectrum()! to receive this\n"
- "spectrum in other plugins. See the MHA developer manual or the\n"
- "header file {\\tt mha\\_algo\\_comm.h} for details; "
+ "of same name as the configured plugin name.  To access the spectrum in "
+ "AC space from the code of self-developed other plugins, \n"
+ "the function \\verb!MHA_AC::get_var_spectrum()! can be used.\n"
+ "See the \\mha developer manual or the\n"
+ "header file {\\tt mha\\_algo\\_comm.h} for details. "
 
- "and see section \\ref{plug:overlapadd} for a description of the "
- "overlap-add method.\n"
- "\n"
+ "\n\n"
+ 
+ "Please refer to section \\ref{plug:overlapadd} for a description of the "
+ "overlap-add method that is also followed by this plugin, "
+ "\\verb!wave2spec!."
+
+ "\n\n"
+
+ "Example configurations for the \\verb!wave2spec! plugin are available in the "
+ "short-time-fourier-transform examples directory, and in the matlab/octave "
+ "tests exercising this plugin in the \\verb!mhatest! directory.  "
+ "These test files are executed together with the other "
+ "system-level tests when invoking \\texttt{make test}.  "
+ "Please note that you need to have the signal processing package "
+ "installed in order to sucessfully execute all tests for this "
+ "plugin.\\footnote{In octave, the package can be installed with "
+ "\\texttt{pkg install -forge control signal} from within octave.}"
+
+ "\n\n"
  )
 
 // Local Variables:
