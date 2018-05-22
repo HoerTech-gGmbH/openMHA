@@ -1293,7 +1293,6 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
     }
 }
 
-
 #ifndef DOXY_PARSE
 // doxygen does not understand this:
 template void MHAParser::StrCnv::str2val<std::string>(const std::string& s,std::vector<std::string>& v);

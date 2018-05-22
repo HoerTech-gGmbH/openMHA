@@ -184,7 +184,7 @@ namespace ADM {
   class ADM {
   public:
     /**
-     * Create adaptive differential microphone
+     * Create Adaptive Differential Microphone
      *
      * @param fs
      *   Sampling rate / Hz
@@ -210,15 +210,12 @@ namespace ADM {
      *   Time constant of the lowpass filter used for averaging the power of
      *   the output signal
      * @param mu_beta
-     *   Adaptation step size for each set of ADMs (e.g. left and right)
-     * @param tau_beta
-     *   Time constant of the lowpass filter used for averaging the power of
-     *   the output signal
+     *   adaption speed
      */
     ADM(F fs, F dist,
         unsigned lp_order, const F* lp_alphas,
         unsigned decomb_order, const F* decomb_alphas,
-        F mu_beta, F tau_beta = F(50e-3));
+        F tau_beta = F(50e-3), F mu_beta = F(1e-4));
 
     /**
      * ADM processes one frame
@@ -253,7 +250,7 @@ namespace ADM {
       if (external_beta >= 0)
         m_beta = external_beta;
       else {
-        // lowpass filter signals used in adaption
+        // low pass filter signals used in adaption
         F lp_back_facing = m_lp_bf.process(back_facing);
         F lp_comb_result = m_lp_result.process(comb_result);
         
@@ -339,7 +336,7 @@ namespace ADM {
   ADM<F>::ADM(F fs, F dist,
               unsigned lp_order, const F* lp_alphas,
               unsigned decomb_order, const F* decomb_alphas,
-              F mu_beta, F tau_beta)
+              F tau_beta, F mu_beta)
     : m_delay_front(dist / C * fs, DELAY_FREQ, fs),
       m_delay_back(dist / C * fs, DELAY_FREQ, fs),
       m_lp_bf(lp_order, lp_alphas),

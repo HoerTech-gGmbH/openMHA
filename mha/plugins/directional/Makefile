@@ -1,8 +1,3 @@
-include ../../../config.mk
-include ../../../magic.mk
-
-SUBDIRS = doasvm_feature_extraction doasvm_classification
-
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2014 2018 HörTech gGmbH
 #
