@@ -24,10 +24,10 @@
                 "3": "advice",
                 "2": "advice"
             },
-            "include":{
-                "Makefile",
-                "(\\.mk)"
-            }
+            "include":[
+                "(Makefile$)",
+                "(\\.mk$)"
+            ]
         },
         "Text linter - other files": {
             "text.max-line-length": 80,
@@ -40,7 +40,7 @@
                 "(\\.c$)",
                 "(\\.h$)",
                 "(\\.mk$)",
-                "Makefile"
+                "(Makefile$)"
             ]
         },
         "Static C++ analyser": {
