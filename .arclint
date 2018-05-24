@@ -16,6 +16,19 @@
                 "(\\.h$)"
             ]
         },
+        "Text linter - Makefiles": {
+            "text.max-line-length": 80,
+            "type": "text",
+            "severity": {
+                "5": "disabled",
+                "3": "advice",
+                "2": "advice"
+            },
+            "include":{
+                "Makefile",
+                "(\\.mk)"
+            }
+        },
         "Text linter - other files": {
             "text.max-line-length": 80,
             "type": "text",
@@ -25,7 +38,9 @@
             },
             "exclude": [
                 "(\\.c$)",
-                "(\\.h$)"
+                "(\\.h$)",
+                "(\\.mk$)",
+                "Makefile"
             ]
         },
         "Static C++ analyser": {
