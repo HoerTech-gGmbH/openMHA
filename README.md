@@ -43,7 +43,7 @@ In Ubuntu 18.04:
 
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 104A07F9
     sudo apt-add-repository 'deb http://apt.openmha.org/ubuntu bionic universe'
-    
+
 In Ubuntu 16.04:
 
     sudo apt-add-repository 'deb http://mha.hoertech.de/hoertech/xenial /'
@@ -85,7 +85,7 @@ sudo apt-get install openmha-examples
 ```
 the examples can be found in `/usr/share/openmha/examples`.
 
-NOTE: If you want to use the example files we recommend to make a copy in your home directory as they are located in a system-wide read-only directory. Some of the examples may require changes to work with the current audio hardware setup and need write access to store output.  
+NOTE: If you want to use the example files we recommend to make a copy in your home directory as they are located in a system-wide read-only directory. Some of the examples may require changes to work with the current audio hardware setup and need write access to store output.
 
 Algorithm developers interested in implementing their own plugins should also install the development package libopenmha-dev.
 
@@ -130,7 +130,7 @@ or a Beaglebone Black with Debian jessie installed.
 - optional:
   - GNU Octave with the signal package and default-jre (e.g. openjdk-8-jre for Debian 9)
 
-Octave and default-jre are not essential for building or running openMHA.  
+Octave and default-jre are not essential for building or running openMHA.
 The build process uses Octave + Java to run some tests after
 building openMHA.  If Octave is not available, this test will fail,
 but the produced openMHA will work.
@@ -166,8 +166,9 @@ compile openMHA with by typing in a terminal (while in the openMHA directory)
 
 A very simple installation routine is provided together with the
 source code. To collect the relevant binaries and libraries execute
-
-    make install
+```
+make install
+```
 
 You can set the make variable PREFIX to point to the desired installation
 location. The default installation location is ".", the current directory.
@@ -176,51 +177,73 @@ You should then add the openMHA installation directory to the system search path
 
 under __Linux__:
 ```
-    export LD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
 ```
 under __macOS__:
 ```
-    export DYLD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
 ```
-
-
 as well as to the search path for executables:
 ```
 export PATH=<YOUR-MHA-DIRECTORY>/bin:$PATH
 ```
-
-
-
-
-
 Alternatively to the two settings above, the thismha.sh script found in
 the openMHA bin directory may be sourced to set these variables correctly for the
 current shell:
-
 ```
 source <YOUR-MHA-DIRECTORY>/bin/thismha.sh
 ```
-
 After this, you can invoke the openMHA command line application.
 Perform a quick test with
-
-    mha ? cmd=quit
-
+```
+mha ? cmd=quit
+```
 Which should print the default configuration of the openMHA without any plugins
 loaded.
 
+#### Windows (advanced)
+​
+​You need to install the 64bit version Java JRE for Windows
+(https://java.oracle.com), ​GNU Octave 4.2.2 64bit
+(https://www.gnu.org/software/octave/) and the  Windows 64 bit installer of the
+Jack Audio Connection Kit (http://jackaudio.org).
+After the installation of JACK you need to copy the contents of the includes
+folder in the JACK directory into the includes ​directory in your Octave
+directory (default is c:\octave\octave-x.y.z) and copy ​libjack64.lib from the
+JACK installation to the lib directory in your Octave ​directory and rename it
+to libjack.a . Then you need to download the openMHA ​source from
+http://www.openmha.org and unpack the archive in your Octave directory.
+Start a shell by doubleclicking on bash.exe in the /bin ​subdirectory of your
+Octave installation. ​Enter the following commands in the command prompt:
+```
+PATH=/bin
+​ln -s /bin/true /bin/git
+ln -s /bin/g++ /bin/g++-7
+​ln -s /bin/gcc /bin/gcc-7
+​ln -s /bin/cpp /bin/cpp-7
+​cd openMHA-master
+​./configure
+​make
+​make install
+```
+​The compilation may take a while.
+​You then need to copy the openMHA libraries into the openMHA bin directory:
 
+```
+​mv lib/* bin/.
+```
 ## Usage instructions:
 
 We provide with this release several examples of configuration files
 and sound examples. These are contained in the directory
-./mha/configurations
+./mha/examples
 
 For example, we can start an example featuring multiple algorithms
 together with the following command:
 
-    mha ?read:mha/configurations/prerelease_combination.cfg cmd=start cmd=quit
-
+```
+mha ?read:mha/examples/04-prerelease-combination/prerelease_combination.cfg cmd=start cmd=quit
+```
 ## Documentation:
 
 User manuals are provided in PDF format.  Recreating them from source is

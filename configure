@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License, version 3 for more details.
 #
-# You should have received a copy of the GNU Affero General Public License, 
+# You should have received a copy of the GNU Affero General Public License,
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 (
@@ -38,9 +38,6 @@ for arg in "$@"; do
 done
 
     ARCH=`uname -m`
-    echo ARCH=$ARCH
-
-
     case `uname -s` in
         *Linux*)
             PLATFORM=linux
@@ -57,6 +54,7 @@ done
             GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
             echo GCC_VER=${GCC_VER}
             echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
+            ARCH="x86_x64"
             ;;
         Darwin)
             PLATFORM=Darwin
@@ -69,18 +67,15 @@ done
             echo LDLIBS+='-L/opt/local/lib'
             MACCXXFLAGS+=-I/opt/local/include
     esac
-    
-    #echo 'PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha'
+
+    echo ARCH=$ARCH
     echo PREFIX=$PREFIX
+
     pkg-config alsa && (echo "WITH_ALSA=yes")
     pkg-config jack && (echo "WITH_JACK=yes")
-    if [ "x$PLATFORM" = "xMinGW" ]
-    then echo WITH_JACK=yes
-         if [ "x$ARCH" = "xx86_64" ]
-         then echo "JACK_LINKER_COMMAND = -ljack64"
-         fi
+    if [ "x$PLATFORM" = "xMinGW" ]; then
+        echo WITH_JACK=yes
     fi
-
     case $ARCH in
         arm*)
             ;;
@@ -91,20 +86,14 @@ done
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
     echo 'CXXFLAGS+=-Wall -Werror -std=c++11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
-    if [ "x$(which octave)" = "x" ]
-    then
-        if [ "x$(which matlab)" = "x" ]
-        then
-            echo "WITH_TESTS=NO"
-        else
-            echo "MHA_TEST_COMMAND=matlab -nodesktop -nosplash -nodisplay -r\
-            \"set_environment;exit(~runtests())\""
-        fi
-    else
-        echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval \
-        \"set_environment;exit(~runtests())\""
+    if [[ $(type -P octave) ]] ; then
+        echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval"\
+             "\"set_environment;exit(~runtests())\"";
+    elif [[ $(type -P matlab) ]]; then
+        echo "MHA_TEST_COMMAND=matlab -nodesktop -nosplash -nodisplay -r"\
+             "\"set_environment;exit(~runtests())\"";
     fi
-) |tee config.mk
+ ) |tee config.mk
 
 # Local Variables:
 # coding: utf-8-unix
