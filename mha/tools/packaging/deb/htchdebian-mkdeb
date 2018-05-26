@@ -91,7 +91,7 @@ chmod -R a+r debian
 distname="${PACKAGE}"
 version="${VERSION}"
 if test -z "${ARCH}"; then
-    ARCH=$(uname -m | sed -e s/i686/i386/ -e s/x86_/amd/)
+    ARCH=$(uname -m | sed -e s/i686/i386/ -e s/x86_64/amd64/ -e s/armv7l/armhf/)
     echo "Architecture ${ARCH} detected."
 fi
 packagename=$(echo "$distname" | sed -e "s/_/-/g")
