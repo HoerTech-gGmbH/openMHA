@@ -61,6 +61,9 @@ mha/examples/09-localizer-steering-beamformer/Output/*
 # from patching
 *.rej
 
+# debian packages are built in repository root
+debian/
+
 # Local Variables:
 # coding: utf-8-unix
 # End:
