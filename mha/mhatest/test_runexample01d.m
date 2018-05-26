@@ -19,6 +19,11 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function mha = test_runexample01d()
+
+ % This test does live sound I/O. Only execute when specifically requested.
+ global execute_live_tests;
+ if execute_live_tests
+  
   dir = '../examples/01-dynamic-compression/';
   cfg = 'dynamiccompression_live.cfg';
 
@@ -41,7 +46,7 @@ function mha = test_runexample01d()
                                        'MHA:out_2  system:playback_2\n']));
 
   % TODO: now check that we can fit the MHA with some fitting rules and audiograms
-  
+ end 
 end
 
 function success = wait_for_jack(timeout)
