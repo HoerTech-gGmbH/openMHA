@@ -25,11 +25,20 @@ function test_runexample02()
   % we only check the expected levels of input and output sound files.
   expected_channelcounts = [4 2];
   expected_levels = [-23.138  -21.963  -23.445  -22.189 -22.202 -21.271];
-  [status, output] = system(['cd ' dir ' && mha "?"read:' cfg ' cmd=start cmd=quit']);
-  unittest_teardown(@delete, [dir outwav]);
-  assert_equal(0, status);
-  indata = audioread([dir inwav]);
-  outdata = audioread([dir outwav]);
+
+  % execute mha with the given config file in the example directory,
+  % start processing, quit
+  old_dir = chdir(dir);
+  unittest_teardown(@chdir, old_dir);
+  mha = mha_start;
+  mha_query(mha,'',['read:' cfg]);
+  mha_set(mha,'cmd','start');
+  mha_set(mha,'cmd','quit');
+
+  unittest_teardown(@delete, [outwav]);
+
+  indata = audioread([inwav]);
+  outdata = audioread([outwav]);
   assert_equal(expected_channelcounts, [size(indata,2), size(outdata,2)]);
   actual_levels = 10*log10(mean([indata outdata].^2));
   assert_difference_below(expected_levels, actual_levels, 1e-2);
