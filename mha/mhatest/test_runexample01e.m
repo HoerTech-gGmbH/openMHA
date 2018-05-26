@@ -1,22 +1,22 @@
-# Execute MHA with example configuration 
-# mha/examples/01-dynamic-compression/example_dc_live_double.cfg and check
-# that the  expected audio connections in Jack are made, and that this
-# MHA can be fitted with the fitting tool.
+% Execute MHA with example configuration 
+% mha/examples/01-dynamic-compression/example_dc_live_double.cfg and check
+% that the  expected audio connections in Jack are made, and that this
+% MHA can be fitted with the fitting tool.
+%
+% This file is part of the HörTech Open Master Hearing Aid (openMHA)
+% Copyright © 2018 HörTech gGmbH
 
-# This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 HörTech gGmbH
-#
-# openMHA is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, version 3 of the License.
-#
-# openMHA is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License, version 3 for more details.
-#
-# You should have received a copy of the GNU Affero General Public License, 
-# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+% openMHA is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Affero General Public License as published by
+% the Free Software Foundation, version 3 of the License.
+%
+% openMHA is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License, version 3 for more details.
+%
+% You should have received a copy of the GNU Affero General Public License, 
+% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function mha = test_runexample01e()
 
@@ -64,3 +64,9 @@ function expect_mha_jack_connections(expected)
     system('jack_lsp -c |sed -e :a -e ''$!N;s/\n //;ta'' -e "P;D" | grep ^MHA');
   assert_equal(expected, actual);
 end
+
+% Local Variables:
+% mode: octave
+% coding: utf-8-unix
+% indent-tabs-mode: nil
+% End:

@@ -1,21 +1,21 @@
-# Execute MHA with example configuration 
-# mha/examples/02-adaptive-differential-microphone/adm.cfg and check that the 
-# expected output sound file is produced.
+% Execute MHA with example configuration 
+% mha/examples/02-adaptive-differential-microphone/adm.cfg and check that the 
+% expected output sound file is produced.
+%
+% This file is part of the HörTech Open Master Hearing Aid (openMHA)
+% Copyright © 2018 HörTech gGmbH
 
-# This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 HörTech gGmbH
-#
-# openMHA is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, version 3 of the License.
-#
-# openMHA is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License, version 3 for more details.
-#
-# You should have received a copy of the GNU Affero General Public License, 
-# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+% openMHA is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Affero General Public License as published by
+% the Free Software Foundation, version 3 of the License.
+%
+% openMHA is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License, version 3 for more details.
+%
+% You should have received a copy of the GNU Affero General Public License, 
+% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function test_runexample02()
   dir = '../examples/02-adaptive-differential-microphone/';
@@ -34,3 +34,9 @@ function test_runexample02()
   actual_levels = 10*log10(mean([indata outdata].^2));
   assert_difference_below(expected_levels, actual_levels, 1e-2);
 end
+
+% Local Variables:
+% mode: octave
+% coding: utf-8-unix
+% indent-tabs-mode: nil
+% End:

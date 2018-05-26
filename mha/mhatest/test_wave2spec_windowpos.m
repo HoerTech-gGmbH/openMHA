@@ -74,3 +74,9 @@ for windowpos = windowpositions
                 sprintf('Failure while testing window position %f', ...
                         windowpos));
 end
+
+% Local Variables:
+% mode: octave
+% coding: utf-8-unix
+% indent-tabs-mode: nil
+% End:
