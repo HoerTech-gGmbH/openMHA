@@ -376,7 +376,7 @@ MHAPLUGIN_CALLBACKS(analysispath,analysispath_if_t,wave,wave)
         "At the same time, a snapshot of the AC space (or a subset of it)\n"
         "can be transferred from the analysis thread to the main\n"
         "processing thread.\n\n"
-        "\\MHAfigure{Schematic signal flow in the analsysis path scenario.}{analysispath_sigflow}\n\n"
+        "\\MHAfigure{Schematic signal flow in the analysis path scenario.}{analysispath_sigflow}\n\n"
         "Please note that the AC variables which should be copied to the\n"
         "processing thread must exist after the prepare() callback and should\n"
         "not change their size during run-time."
