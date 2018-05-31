@@ -15,6 +15,12 @@
 # You should have received a copy of the GNU Affero General Public License,
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+chkhdr(){
+echo "#include <$1> "| g++ -x c++ - -c -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+}
+chklib(){
+echo "int main(){return 0;}"| g++ -x c++ - -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+}
 (
     PREFIX="./"
 for arg in "$@"; do
@@ -67,15 +73,17 @@ done
             echo LDLIBS+='-L/opt/local/lib'
             MACCXXFLAGS+=-I/opt/local/include
     esac
-
     echo ARCH=$ARCH
     echo PREFIX=$PREFIX
 
     pkg-config alsa && (echo "WITH_ALSA=yes")
     pkg-config jack && (echo "WITH_JACK=yes")
+    chkhdr lsl_cpp.h && chklib lsl && (echo "WITH_LSL=yes")
+
     if [ "x$PLATFORM" = "xMinGW" ]; then
         echo WITH_JACK=yes
     fi
+
     case $ARCH in
         arm*)
             ;;
@@ -93,7 +101,7 @@ done
         echo "MHA_TEST_COMMAND=matlab -nodesktop -nosplash -nodisplay -r"\
              "\"set_environment;exit(~runtests())\"";
     fi
- ) |tee config.mk
+) | tee config.mk
 
 # Local Variables:
 # coding: utf-8-unix

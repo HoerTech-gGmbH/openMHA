@@ -79,6 +79,26 @@ dummy_freenect:
 endif
 endif
 
+ifeq "$(NEEDS_LSL)" "yes"
+ifneq "$(WITH_LSL)" "yes"
+# this plugin needs lsl.
+# Do not compile if lsl not available.
+# instead, execute this dummy rule. as default target
+dummy_lsl:
+	@echo "not compiling" $(PLUGINS) "since lsl is not available"
+endif
+endif
+
+ifeq "$(NEEDS_OSC)" "yes"
+ifneq "$(WITH_OSC)" "yes"
+# this plugin needs osc.
+# Do not compile if osc not available.
+# instead, execute this dummy rule. as default target
+dummy_osc:
+	@echo "not compiling" $(PLUGINS) "since osc is not available"
+endif
+endif
+
 ifeq "$(EXCLUDE_FROM_WINDOWS_COMPILATION)" "yes"
 ifeq "$(PLATFORM)" "MinGW"
 # this plugin cannot be compiled on windows.
