@@ -16,32 +16,40 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 chkhdr(){
-echo "#include <$1> "| g++ -x c++ - -c -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+    echo "#include <$1> "| g++ -x c++ - -c -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 chklib(){
-echo "int main(){return 0;}"| g++ -x c++ - -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+    echo "int main(){return 0;}"| g++ -x c++ - -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 (
     PREFIX="./"
-for arg in "$@"; do
-    case "$arg" in
-    --prefix=*)
-        PREFIX=`echo $arg | sed 's/--prefix=//'`
-        ;;
-
-    --debug)
-        DEBUG="-g";;
-
-    --help)
-        echo 'usage: ./configure [options]'
-        echo 'options:'
-        echo '  --prefix=<path>: installation prefix'
-        echo '  --debug : include debug symbols'
-        echo 'all invalid options are silently ignored'
-        exit 0
-        ;;
-    esac
-done
+    for arg in "$@"; do
+        case "$arg" in
+            --prefix=*)
+                PREFIX=`echo $arg | sed 's/--prefix=//'`
+                ;;
+            --debug)
+                DEBUG="-g"
+                ;;
+            --debug=*)
+                DEBUG=`echo $arg | sed 's/--debug=/-g/'`
+                ;;
+            --with-lsl)
+                WITH_LSL=yes
+                ;;
+            --no-lsl)
+                WITH_LSL=no
+                ;;
+            --help)
+                echo 'usage: ./configure [options]'
+                echo 'options:'
+                echo '  --prefix=<path>: installation prefix'
+                echo '  --debug : include debug symbols'
+                echo 'all invalid options are silently ignored'
+                exit 0
+                ;;
+        esac
+    done
 
     ARCH=`uname -m`
     case `uname -s` in
@@ -78,7 +86,13 @@ done
 
     pkg-config alsa && (echo "WITH_ALSA=yes")
     pkg-config jack && (echo "WITH_JACK=yes")
-    chkhdr lsl_cpp.h && chklib lsl && (echo "WITH_LSL=yes")
+    if [ "x$WITH_LSL" = "xyes" ]; then
+        echo "WITH_LSL=yes";
+    elif [ "x$WITH_LSL" = "xno" ]; then
+        echo "WITH_LSL=no";
+    else
+        chkhdr lsl_cpp.h && chklib lsl && (echo "WITH_LSL=yes");
+    fi
 
     if [ "x$PLATFORM" = "xMinGW" ]; then
         echo WITH_JACK=yes
@@ -86,7 +100,7 @@ done
 
     case $ARCH in
         arm*)
-            ;;
+        ;;
         x86_64*|i686*)
             echo "SSE+=-msse -msse2 -mfpmath=sse"
             ;;
