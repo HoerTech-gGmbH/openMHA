@@ -202,35 +202,34 @@ Which should print the default configuration of the openMHA without any plugins
 loaded.
 
 #### Windows (advanced)
-​
-​You need to install the 64bit version Java JRE for Windows
-(https://java.oracle.com), ​GNU Octave 4.2.2 64bit
+
+You need to install the 64bit version Java JRE for Windows
+(https://java.oracle.com), GNU Octave 4.2.2 64bit
 (https://www.gnu.org/software/octave/) and the  Windows 64 bit installer of the
 Jack Audio Connection Kit (http://jackaudio.org).
 After the installation of JACK you need to copy the contents of the includes
-folder in the JACK directory into the includes ​directory in your Octave
-directory (default is c:\octave\octave-x.y.z) and copy ​libjack64.lib from the
-JACK installation to the lib directory in your Octave ​directory and rename it
-to libjack.a . Then you need to download the openMHA ​source from
+folder in the JACK directory into the includes directory in your Octave
+directory (default is c:\octave\octave-x.y.z) and copy libjack64.lib from the
+JACK installation to the lib directory in your Octave directory and rename it
+to libjack.a . Then you need to download the openMHA source from
 http://www.openmha.org and unpack the archive in your Octave directory.
-Start a shell by doubleclicking on bash.exe in the /bin ​subdirectory of your
-Octave installation. ​Enter the following commands in the command prompt:
+Start a shell by doubleclicking on bash.exe in the /bin subdirectory of your
+Octave installation. Enter the following commands in the command prompt:
 ```
 PATH=/bin
-​ln -s /bin/true /bin/git
+ln -s /bin/true /bin/git
 ln -s /bin/g++ /bin/g++-7
-​ln -s /bin/gcc /bin/gcc-7
-​ln -s /bin/cpp /bin/cpp-7
-​cd openMHA-master
-​./configure
-​make
-​make install
+ln -s /bin/gcc /bin/gcc-7
+ln -s /bin/cpp /bin/cpp-7
+cd openMHA-master
+./configure
+make
+make install
 ```
-​The compilation may take a while.
-​You then need to copy the openMHA libraries into the openMHA bin directory:
-
+The compilation may take a while.
+You then need to copy the openMHA libraries into the openMHA bin directory:
 ```
-​mv lib/* bin/.
+mv lib/* bin/.
 ```
 ## Usage instructions:
 
