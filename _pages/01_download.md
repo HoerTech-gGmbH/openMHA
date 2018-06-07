@@ -15,7 +15,7 @@ Visit the openMHA GitHub project page
 git clone https://github.com/HoerTech-gGmbH/openMHA.git
 ```
 
-or download [__openMHA 4.5.5__](https://github.com/HoerTech-gGmbH/openMHA/archive/master.zip).
+or download [__openMHA 4.5.8__](https://github.com/HoerTech-gGmbH/openMHA/archive/master.zip).
 
 
 
