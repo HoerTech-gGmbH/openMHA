@@ -64,6 +64,9 @@ mha/examples/09-localizer-steering-beamformer/Output/*
 # debian packages are built in repository root
 debian/
 
+#local editor configuration
+.clang_complete
+.dir-locals.el
 # Local Variables:
 # coding: utf-8-unix
 # End:
