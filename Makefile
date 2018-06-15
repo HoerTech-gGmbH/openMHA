@@ -39,6 +39,9 @@ DOCMODULES = \
 
 all: $(MODULES)
 
+config.mk:
+	./configure
+
 test: all
 	$(MAKE) -C mha/mhatest
 
