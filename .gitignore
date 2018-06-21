@@ -1,5 +1,5 @@
-# This file is part of the HörTech Open Master Hearing Aid (MHA)
-# Copyright © 2013 2014 2015 2016 HörTech gGmbH
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
+# Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -13,17 +13,53 @@
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+# The readme recommends copying all plugins into one "bin" directory.
+bin
+lib
 
+# Editor backup and lock files
 *~
 .#*
-#*#
+\#*#
 *.bak
 ~$*
 .~lock*
+
+# system-specific configuration
 config.mk
-autom4te.cache
-build
-mha.creator.user
+
+# An artifact left by octave when it crashes
+mha/tools/mfiles/octave-workspace
+
+# platform-specific directories where build artifacts are stored.
+x86_64-linux-gcc-5
+x86_64-linux-gcc-7
+x86_64-linux-clang
+i686-linux-gcc-5
+i686-MinGW-gcc-6
+i686-MinGW-gcc-7
+x86_64-MinGW-gcc-7
+armv7l-linux-gcc-4.9
+x86_64-Darwin-clang
+# coverage analysis artifacts
+coverage.info
+coverage
+*.gcda
+*.gcno
+*.pyc
+
+# Apple-specific
+.DS_Store
+
+# octave specific files
+mha/tools/mfiles/classpath.txt
+
+# python cache
+mha/examples/09-localizer-steering-beamformer/visualisation_web/__pycache__
+mha/examples/09-localizer-steering-beamformer/Output/*
+
+# from patching
+*.rej
 
 # Local Variables:
 # coding: utf-8-unix
