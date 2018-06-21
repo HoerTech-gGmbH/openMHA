@@ -302,14 +302,59 @@ You will then measure the frequency responses of the output hardware
 with the help of the openMHA:
 
 \begin{itemize}
-\item Start the jack sound server with a samplin
-\item Connect the output hardware to the sound card and to the measurement equipment.
-\item Use the octave skript \texttt{measure\_fresponse} to measure the frequency response:
+\item
+  Start the jack sound server with the same sampling rate that you
+  will later use with the \mha{}.
+\item
+  Connect the first instance of the custom hearing aid output hardware
+  class to the desired sound card output channel and to the
+  measurement equipment.
+\item
+  Use the octave function \texttt{measure\_fresponse} provided with
+  \mha{} to measure the frequency response:
+  \begin{itemize}
+  \item Call this function with the following parameters:
+    \begin{enumerate}
+    \item the name of the sound card channel in jack,
+      e.g. \texttt{'system:playback\_1'},
+    \item the sampling rate of the jack server in Hz.
+    \end{enumerate}
+    \item
+      The function will start an MHA and begin to output test tones.
+    \item
+      Your measurement equipment measures the acoustic level produced by each test tone.
+    \item
+      Our goal is to produce acoustic levels of 80 dB with the test tones.
+    \item
+      If the acoustic level is different from 80 dB, then adjust the level
+      with the help of the buttons.
+    \item
+      If you have reached 80 dB, move on to the next test tone.
+  \end{itemize}
+\item
+  Connect the next instance of the same custom hearing aid output
+  hardware class to the sound card and to the measurement equipment and restart
+  the octave function \texttt{measure\_fresponse}
+\item
+  Once all instances have been measured, you can plot the individual frequency
+  responses of the devices that were measured.  This allows you to spot
+  and remove any outliers.
+\item
+  Average over the frequency responses and add the REUG gains.
+\item
+  Decide on the frequency range where you want to the calibration
+  filter to fully conpensate the averaged frequency response.
+\item
+  The resulting, averaged frequency response is now written to a file.
 \end{itemize}
+
+
 
 \subsection{Using the measured frequency response to calibrate a hearing aid output device}
 
-
+openMHA comes with a GUI tool to compute filter coefficients from
+averaged frequency responses to compensate for the frequency response,
+\texttt{mhagui\_calibration}.
 
 \bibliography{MHA}
 
