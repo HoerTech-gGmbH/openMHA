@@ -211,16 +211,44 @@ hearing aid receiver.
 Hearing aids need to produce ear canal sound levels, not free field
 sound levels.
 %
-Please refer to the Real-Ear-Unaided-Gain in Dillon.
+Please refer to the Real-Ear-Unaided-Gain (REUG) in Dillon.
 
 When calibrating hearing aid devices, you need to make a choice
-whether you are ok with calibrating the device for an average ear of
+whether you are ok with calibrating the device for an average ear, or
 for the individual ear of a specific subject.
 %
 We will describe only the average calibration method for now, but this
 may change in future.
 
-\subsection{Measuring the frequency response for a class of hearing aid output software with openMHA}
+\subsection{Measuring the frequency response for a class of custom hearing aid output software with openMHA with an IEC 711 coupler}
+
+We describe here how to use a coupler according to IEC 60 711 to
+measure the frequency response of custom hearing aid output hardware.
+%
+Compared to the 2cc coupler, the IEC 711 coupler has the advantage
+that for an average ear, the Real-Ear-to-Coupler-Difference (RECD) is
+so small that it does not need to be taken into account when doing
+measurements to calibrate for the average ear.
+
+Please assemble and calibrate your measurement equipment to perform
+measurements with the IEC 711 coupler. Please refer to the
+instructions of the equipment manufacturer on how to perform
+this.
+%
+Please note that some calibrators require that you take correction
+factors into account when calibrating your equipment for the IEC 711.
+
+When we talk of a class of custom hearing aid output software, we
+refer to an ensemble of output devices that use the same type of
+receiver, the same type of amplifier, and the same type of soundcard.
+
+Individual receivers, amplifiers, and soundcards will differ from each
+other, even if they are of the same type.
+%
+You will have to decide for yourself what difference you are going to
+accept and still consider the devices to be in the same class.
+
+
 
 \subsection{Using the measured frequency response to calibrate a hearing aid output device}
 
