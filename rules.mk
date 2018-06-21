@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -57,13 +57,27 @@ $(BUILD_DIR)/%: $(BUILD_DIR)/%.o
 	$(CXX) $(STATIC_DLOPEN) -o $@ $^ ${LDFLAGS} ${LDLIBS}
 
 # Pattern for subdirectories for build artifacts
-$(BUILD_DIR)/.directory:
-	mkdir -p $(BUILD_DIR)
+%/.directory:
+	mkdir -p $*
 	touch $@
 
 clean:
 	rm -Rf $(BUILD_DIR)
 	for m in $(SUBDIRS); do $(MAKE) -C $$m clean; done
+
+unit-tests: execute-unit-tests $(patsubst %,%-subdir-unit-tests,$(SUBDIRS))
+
+$(patsubst %,%-subdir-unit-tests,$(SUBDIRS)):
+	$(MAKE) -C $(@:-subdir-unit-tests=) unit-tests
+
+execute-unit-tests: $(BUILD_DIR)/unit-test-runner
+	if [ -x $< ]; then $<; fi
+
+unit_tests_test_files = $(wildcard $(SOURCE_DIR)/*_unit_tests.cpp)
+
+$(BUILD_DIR)/unit-test-runner: $(unit_tests_test_files) $(patsubst %_unit_tests.cpp, %.cpp , $(unit_tests_test_files))
+	@echo dependencies = $^
+	$(CXX) $(CXXFLAGS) --coverage -o $@ $^ $(LDFLAGS) $(patsubst -lopenmha,,$(LDLIBS)) -lgmock_main -lpthread
 
 # Static Pattern Rule defines standard prerequisites for plugins
 $(PLUGINS:%=$(BUILD_DIR)/%$(PLUGIN_EXT)): %$(PLUGIN_EXT): %.o

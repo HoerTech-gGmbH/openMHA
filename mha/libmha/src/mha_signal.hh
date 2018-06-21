@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
-// Copyright © 2013 2014 2016 HörTech gGmbH
+// Copyright © 2013 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -612,7 +612,7 @@ mha_spec_t& operator+=(mha_spec_t&,const mha_spec_t&);
     \brief Addition operator */
 mha_spec_t& operator+=(mha_spec_t&,const mha_real_t&);
 void set_minabs(mha_spec_t&,const mha_real_t&);
-///\internal In-Place division with lower limit on divisor.
+/// In-Place division with lower limit on divisor.
 mha_spec_t & safe_div( mha_spec_t & self, const mha_spec_t & v,
                        mha_real_t eps );
 /** \ingroup mhasignal
@@ -649,7 +649,7 @@ namespace MHASignal {
                       unsigned src_channel, unsigned dest_channel);
 
 
-    /** \internal
+    /** 
         
         \brief Signal counter to produce signal ID strings
     */
@@ -914,19 +914,45 @@ namespace MHASignal {
     };
 
     /** A ringbuffer class for time domain audio signal, which makes no
-        assumptions with respect to fragment size. */
+        assumptions with respect to fragment size.
+        
+        Blocks of audio signal can be placed into the ringbuffer using
+        the #write method.  Individual audio samples can be accessed
+        and altered using the #value method.  Blocks of audio data can
+        be deleted from the ringbuffer using the #discard method.
+    */
     class ringbuffer_t : private waveform_t {
-        /// identifies place with oldest frame in ringbuffer
+
+        /// Index of oldest frame in underlying storage for the ringbuffer.
+        /// This value is added to the frame parameter of the #value method,
+        /// and this value is altered when #discard is called.
         unsigned next_read_frame_index;
-        /// identifies place to store next frame in ringbuffer
+
+        /// Index of first free frame in underlying storage.  Next
+        /// frame to be stored will be placed here.
         unsigned next_write_frame_index;
+
     public:
-        /** Creates new ringbuffer.
-            @param frames Size of ringbuffer. Maximum frames can be stored in
-                          ringbuffer.
+        /** Creates new ringbuffer for time domain signal.
+            Constructor allocates enough storage so that \a frames
+            audio samples can be stored in the ringbuffer.
+
+            @param frames Size of ringbuffer in samples per channel.
+                          Maximum number of frames that can be stored
+                          in the ringbuffer at one time.  This number
+                          cannot be changed after instance creation.
+
             @param channels Number of audio channels.
-            @param prefilled_frames Number of frames to be prefilled with zero
-                          values
+   
+            @param prefilled_frames Number of frames to be prefilled
+                          with zero values.  Many applications of a
+                          ringbuffer require the introduction of a
+                          delay.  In practice, this delay is achieved
+                          by inserting silence audio samples (zeros)
+                          into the ringbuffer before the start of the
+                          actual signal is inserted for the first
+                          time.
+
             @throw MHA_Error if prefilled_frames > frames
         */
         ringbuffer_t(unsigned frames,
@@ -942,6 +968,11 @@ namespace MHASignal {
         }
 
         /** Access to value stored in ringbuffer.
+         *
+         * \a frame index is relative to the oldest frame stored in
+         * the ringbuffer, therefore, the meaning of the \a frame
+         * changes when the #discard method is called.
+         *
          * @param frame frame index, 0 corresponds to oldest frame stored.
          * @param channel audio channel
          * @return reference to contained sample value
@@ -960,7 +991,7 @@ namespace MHASignal {
                                      % num_frames,
                                      channel);
         }
-        /** Discards the oldest frames 
+        /** Discards the oldest frames. 
          * Makes room for new #write, alters base frame index for #value
          * @param frames how many frames to discard.
          * @throw MHA_Error if frames > #contained_frames*/
@@ -974,11 +1005,13 @@ namespace MHASignal {
             next_read_frame_index %= num_frames;
         }
         /** Copies the contents of the signal into the ringbuffer if there is
-            space
+            enough space.
             @param signal New signal to be appended to the signal already
                 present in the ringbuffer
-            @throw MHA_Error if there is not enough space or if the channel
-                count mismatches.
+ 
+            @throw MHA_Error if there is not enough space or if the
+                channel count mismatches.  Nothing is copied if the
+                space is insufficient.
         */
         void write(mha_wave_t & signal) {
             if (signal.num_channels != num_channels) 
@@ -1289,7 +1322,7 @@ operator/(const mha_complex_t & self, mha_real_t other_real)
 }
 
 /**
-   \internal
+   
    \ingroup mhacomplex
    Safe division of two complex numbers, overwriting the first.
    If abs(divisor) < eps, then divisor is replaced by eps. eps2 = eps*eps.
@@ -1475,7 +1508,7 @@ bool operator<(const mha_complex_t & x, const mha_complex_t & y)
 { return abs2(x) < abs2(y); }
 
     
-/**\internal
+/**
  * ostream operator for mha_complex_t
  */
 inline
@@ -1483,7 +1516,7 @@ std::ostream & operator<<(std::ostream & o, const mha_complex_t & c) {
     return o << "(" << c.re << ((c.im >= 0) ? "+" : "") << c.im << "i)";
 }
 
-/**\internal
+/**
  * preliminary istream operator for mha_complex_t without error checking
  */
 inline
@@ -1525,7 +1558,7 @@ void mha_fft_wave2spec(mha_fft_t h,const mha_wave_t* in, mha_spec_t* out);
    Like normal wave2spec, but swaps wave buffer halves before transforming if
    the swaps parameter is true.
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -1540,7 +1573,7 @@ void mha_fft_wave2spec(mha_fft_t h,const mha_wave_t* in, mha_spec_t* out,
    \ingroup mhafft
    \brief Tranform spectrum into waveform segment.
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -1556,7 +1589,7 @@ void mha_fft_spec2wave(mha_fft_t h,const mha_spec_t* in, mha_wave_t* out);
    Only as many frames are written into out as fit, starting with offset
    offset of the complete iFFT.
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -1574,7 +1607,7 @@ void mha_fft_spec2wave(mha_fft_t h,const mha_spec_t* in, mha_wave_t* out,
    sIn and sOut need to have nfft bins (please note that mha_spec_t
    typically has nfft/2+1 bins for half-complex representation).
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -1591,7 +1624,7 @@ void mha_fft_forward(mha_fft_t h, mha_spec_t* sIn, mha_spec_t* sOut);
    sIn and sOut need to have nfft bins (please note that mha_spec_t
    typically has nfft/2+1 bins for half-complex representation).
 
-   Warning: These MHA FFTs adopt a nonstandard scaling scheme in which
+   Warning: These \mha FFTs adopt a nonstandard scaling scheme in which
    the forward transform scales by 1/N and the backward does not scale.
    We would recommend using the '_scale' methods instead.
    \param h FFT handle.
@@ -1707,103 +1740,6 @@ namespace MHASignal {
     private:
         MHASignal::waveform_t phase;
     };
-}
-
-/**
-   \ingroup mhasignal
-   \brief Collection of Window types
-*/
-namespace MHAWindow {
-
-    /**
-       \brief Common base for window types
-    */
-    class base_t : public MHASignal::waveform_t {
-    public:
-        /** 
-            \brief Constructor
-            \param len Window length in samples.
-        */
-        base_t(unsigned int len);
-        /**
-           \brief Copy constructor
-           \param src Source to be copied
-        */
-        base_t(const MHAWindow::base_t& src);
-        void operator()(mha_wave_t&) const;/**< \brief Apply window to waveform segment (reference) */
-        void operator()(mha_wave_t*) const;/**< \brief Apply window to waveform segment (pointer) */
-        void ramp_begin(mha_wave_t&) const;/**< \brief Apply a ramp at the begining */
-        void ramp_end(mha_wave_t&) const;/**< \brief Apply a ramp at the end */
-    };
-
-    float rect(float);///<\brief Rectangular window function
-    float bartlett(float);///<\brief Bartlett window function
-    float hanning(float);///<\brief Hanning window function
-    float hamming(float);///<\brief Hamming window function
-    float blackman(float);///<\brief Blackman window function
-
-    /**
-       \brief Generic window based on a generator function
-
-       The generator function should return a valid window function in
-       the interval [-1,1[.
-    */
-    class fun_t : public MHAWindow::base_t {
-    public:
-        /**
-           \brief Constructor.
-           \param n Window length
-           \param fun Generator function, i.e. MHAWindow::hanning()
-           \param xmin Start value of window, i.e. -1 for full window or 0 for fade-out ramp.
-           \param xmax Last value of window, i.e. 1 for full window
-           \param min_included Flag if minimum value is included
-           \param max_included Flag if maximum value is included
-        */
-        fun_t(unsigned int n,float (*fun)(float),float xmin=-1,float xmax=1,bool min_included=true,bool max_included=false);
-    };
-
-    /** \brief Rectangular window */
-    class rect_t : public MHAWindow::fun_t {
-    public:
-        rect_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::rect){};
-    };
-
-    /** \brief Bartlett window */
-    class bartlett_t : public MHAWindow::fun_t {
-    public:
-        bartlett_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::bartlett){};
-    };
-
-    /** \brief von-Hann window */
-    class hanning_t : public MHAWindow::fun_t {
-    public:
-        hanning_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::hanning){};
-    };
-
-    /** \brief Hamming window */
-    class hamming_t : public MHAWindow::fun_t {
-    public:
-        hamming_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::hamming){};
-    };
-
-    /** \brief Blackman window */
-    class blackman_t : public MHAWindow::fun_t {
-    public:
-        blackman_t(unsigned int n):MHAWindow::fun_t(n,MHAWindow::blackman){};
-    };
-
-    /** \brief User defined window */
-    class user_t : public MHAWindow::base_t {
-    public:
-        /** \brief Constructor
-            \param wnd User defined window
-        */
-        user_t(const std::vector<mha_real_t>& wnd);
-    };
-
-}
-
-namespace MHASignal {
     
     class stat_t {
     public:
@@ -2313,18 +2249,18 @@ namespace MHASignal {
     }
 
     /**
-       \brief Save a MHA spectrum as a variable in a Matlab4 file.
+       \brief Save a \mha spectrum as a variable in a Matlab4 file.
 
-       \param data MHA spectrum to be saved.
+       \param data \mha spectrum to be saved.
        \param varname Matlab variable name (Matlab4 limitations on maximal length are not checked).
        \param fh File handle to Matlab4 file.
      */
     void saveas_mat4(const mha_spec_t& data,const std::string& varname,FILE* fh);
 
     /**
-       \brief Save a MHA waveform as a variable in a Matlab4 file.
+       \brief Save a \mha waveform as a variable in a Matlab4 file.
 
-       \param data MHA waveform to be saved.
+       \param data \mha waveform to be saved.
        \param varname Matlab variable name (Matlab4 limitations on maximal length are not checked).
        \param fh File handle to Matlab4 file.
      */

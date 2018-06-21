@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2013 2014 2016 HörTech gGmbH
+// Copyright © 2017 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -35,7 +36,7 @@ static int dummy_jack_proc_cb(jack_nframes_t,void*)
     return 0;
 }
 
-/** \internal
+/** 
     \brief Return the JACK port latency of ports
   
     \param ports        Ports to be tested
@@ -73,7 +74,7 @@ std::vector<unsigned int> MHAJack::get_port_capture_latency(const std::vector<st
     return retv;
 }
 
-/** \internal
+/** 
     \brief Return the JACK port latency of ports
   
     \param ports        Ports to be tested
@@ -111,7 +112,7 @@ std::vector<unsigned int> MHAJack::get_port_playback_latency(const std::vector<s
     return retv;
 }
 
-/** \internal
+/** 
     \brief Return the JACK port latency of ports
   
     \param ports        Ports to be tested
@@ -275,7 +276,7 @@ std::string MHAJack::client_t::str_error(int err)
 }
 
 
-/** \internal
+/** 
     \brief Remove JACK client and deallocate internal ports and buffers
   
 */
@@ -298,7 +299,7 @@ void MHAJack::client_t::release()
     jc = NULL;
 }
 
-/** \internal
+/** 
     \brief Allocate buffers, activate JACK client and install internal ports
 
     Registers the jack client with the default jack server and activates it.
@@ -314,7 +315,7 @@ void MHAJack::client_t::prepare(const std::string& client_name,
     prepare_impl(default_server, client_name.c_str(), nch_in, nch_out);
 }
 
-/** \internal
+/** 
     \brief Allocate buffers, ports, and activates JACK client
 
     Registers the jack client with specified jack server and activates it.
@@ -331,7 +332,7 @@ void MHAJack::client_t::prepare(const std::string& server_name,
     prepare_impl(server_name.c_str(), client_name.c_str(), nch_in, nch_out);
 }
 
-/** \internal
+/** 
     Allocate buffers, activate JACK client and allocates jack ports
     Registers the jack client with the given server and activates it.
     @param server_name Name of the jack server to register with
@@ -510,7 +511,7 @@ void MHAJack::client_t::stopped(int proc_err,int io_err)
         stop_event(stop_handle,proc_err,io_err);
 }
 
-/** \internal
+/** 
     \brief This is the main processing callback. 
 
     Here happens double buffering and downsampling.
@@ -611,7 +612,7 @@ int MHAJack::client_t::jack_xrun_cb(void* h)
     return ((MHAJack::client_t*)h)->jack_xrun_cb();
 }
 
-/** \internal
+/** 
     \brief Connect the input ports when connection variable is accessed
   
 */
@@ -630,7 +631,7 @@ void MHAJack::client_t::connect_input(const std::vector<std::string>& con)
         }
 }
 
-/** \internal
+/** 
     \brief Connect the output ports when connection variable is accessed
   
 */
@@ -650,7 +651,6 @@ void MHAJack::client_t::connect_output(const std::vector<std::string>& con)
 }
 
 /**
-   \internal
    \brief Get a list of Jack ports
    \param res Result string vector
    \param jack_flags Jack port flags (JackPortInput etc.)
@@ -796,7 +796,7 @@ void MHAJack::io(mha_wave_t* s_out,mha_wave_t* s_in,
 }
 
 
-/** \internal
+/** 
     \brief Constructor for averaging client
   
     \param name_        Name of JACK client
@@ -815,7 +815,7 @@ MHAJack::client_avg_t::client_avg_t(const std::string& name_,
 {
 }
 
-/** \internal
+/** 
     \brief Recording function
   
     long-description

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 2011 HörTech gGmbH
-// Copyright © 2012 2013 2014 2016 HörTech gGmbH
+// Copyright © 2012 2013 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -37,25 +37,25 @@
 #endif
 #endif
 
-/** \defgroup mhascript The MHA configuration language
+/** \defgroup mhascript The \mha configuration language
 
-MHA Plugins that should use the MHA configuration language for their
+\mha Plugins that should use the \mha configuration language for their
 configuration have to be implemented in C++ and need to include
 mha_parser.hh. All required classes and functions for parser access
 are declared in the namespace \ref MHAParser. The plugin class should
 be derived from the class \ref MHAParser::parser_t (or
-MHAPlugin::plugin_t), which symbolises a sub-parser node in the MHA
+MHAPlugin::plugin_t), which symbolises a sub-parser node in the \mha
 script hierarchy. Variables of many types can be registered to the
 sub-parser node by calling the member function \ref
 MHAParser::parser_t::insert_item() "insert_item". 
 
-The MHA Plugin template class \ref MHAPlugin::plugin_t together with
+The \mha Plugin template class \ref MHAPlugin::plugin_t together with
 the Plugin macro \ref MHAPLUGIN_CALLBACKS provide the callback
 mappings and correct inheritance. If your plugin is based on that
 template class, you simply have to use the insert_item command to give
 access to your variables, everything else is managed internally.
 
-A complete list of all MHA script items is given in the description of
+A complete list of all \mha script items is given in the description of
 the \ref MHAParser namespace.
 
 */
@@ -63,10 +63,10 @@ the \ref MHAParser namespace.
 /**
    \ingroup mhatoolbox
    \namespace MHAParser
-   \brief Name space for the MHA-Parser configuration language
+   \brief Name space for the \mha-Parser configuration language
 
    This namespace contains all classes which are needed for the
-   implementation of the MHA configuration language. For details on the script
+   implementation of the \mha configuration language. For details on the script
    language itself please see section \ref mhascript.
    
    \section sec_mhaparser_items List of valid MHAParser items
@@ -166,7 +166,7 @@ std::string MHAParser::commentate( const std::string & s )
     return r;
 }
 
-/** \internal
+/**
 
 \brief string replace function
 
@@ -272,7 +272,7 @@ void MHAParser::base_t::rm_parent_on_remove( parser_t * )
     thefullname = "";
 }
 
-/** Return the full dot-separated path name of this parser node in the MHA
+/** Return the full dot-separated path name of this parser node in the \mha
  * configuration tree. */
 const std::string & MHAParser::base_t::fullname(  ) const 
 {
@@ -418,7 +418,7 @@ void MHAParser::base_t::set_help(const std::string& s)
     help = s;
 }
 
-/** Causes this node to process a command in the MHA configuration language.
+/** Causes this node to process a command in the \mha configuration language.
  * @param cs The command to parse
  * @return The response to the command, if successful
  * @throw MHA_Error If the command cannot be executed successfully.
@@ -1037,7 +1037,7 @@ std::string MHAParser::monitor_t::query_perm( const std::string & s )
 }
 
 /**
-   \internal
+   
    \class expression_t
    \brief Class for separating a string into a left hand value and a right hand value.
 
@@ -1297,7 +1297,6 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
 // doxygen does not understand this:
 template void MHAParser::StrCnv::str2val<std::string>(const std::string& s,std::vector<std::string>& v);
 template void MHAParser::StrCnv::str2val<int>(const std::string& s,std::vector<int>& v);
-template void MHAParser::StrCnv::str2val<float>(const std::string&,std::vector<float>&);
 template void MHAParser::StrCnv::str2val<mha_complex_t>(const std::string&,std::vector<mha_complex_t>&);
 template void MHAParser::StrCnv::str2val<int>(const std::string&,std::vector<std::vector<int> >&);
 template void MHAParser::StrCnv::str2val<float>(const std::string&,std::vector<std::vector<float> >&);
@@ -1325,7 +1324,7 @@ void MHAParser::StrCnv::str2val( const std::string & s, float &v )
     v = val;
 }
 
-/**\internal
+/**
  * This internal function parses a floating point number from the beginning
  * of a string.
  * 
@@ -1343,7 +1342,7 @@ static std::string parse_1_float( const std::string & s, mha_real_t & v )
     return s.substr( converted_characters );
 }
 
-/**\internal
+/**
  * This internal function parses a complex number from the beginning of a
  * string.
  * 
@@ -1406,7 +1405,7 @@ void MHAParser::StrCnv::str2val( const std::string & s, bool & v )
     }
 }
 
-/** \internal
+/** 
     \brief Return number of brackets at beginning and end of string.
   
     \param s    String
@@ -1535,7 +1534,7 @@ MHAParser::keyword_list_t::keyword_list_t(  )
 /*  string_t                                                            **/
 /**************************************************************************/
 
-/** Constructor of a MHA configuration variable for string values.
+/** Constructor of a \mha configuration variable for string values.
  * @param h A help string describing the purpose of this variable.
  * @param v The initial string value */
 MHAParser::string_t::string_t( const std::string & h, const std::string & v )
@@ -1651,7 +1650,7 @@ std::string MHAParser::kw_t::query_range( const std::string & s )
     return StrCnv::val2str( data.get_entries(  ) );
 }
 
-/** Constructor of a keyword list MHA configuration variable.
+/** Constructor of a keyword list \mha configuration variable.
  * @param h A help string describing the purpose of this variable.
  * @param v The initial value, has to be a value from the list of
  *           possible values given in the last parameter.
@@ -1854,8 +1853,8 @@ std::string MHAParser::vint_t::op_setval( expression_t & x )
 
 /** Create a float vector parser variable.
  * * @param h A human-readable text describing the purpose of this configuration variable.
- * @param v The initial value of the variable, as a string, in MHA configuration language:
- *  (e.g. "[0 1 2.1 3]" for a vector), described in the "Multidimensional Variables" s2.1.3 section of the MHA User Manual.
+ * @param v The initial value of the variable, as a string, in \mha configuration language:
+ *  (e.g. "[0 1 2.1 3]" for a vector), described in the "Multidimensional Variables" s2.1.3 section of the \mha User Manual.
  * @param rg The numeric range to enforce on all members of the vector. */
 MHAParser::vfloat_t::vfloat_t( const std::string & h, const std::string & v, const std::string & rg )
     :range_var_t( h, rg )
@@ -1958,8 +1957,8 @@ std::string MHAParser::vcomplex_t::op_setval( expression_t & x )
 
 /** Create a float matrix parser variable.
  * @param h A human-readable text describing the purpose of this configuration variable.
- * @param v The initial value of the variable, as a string, in MHA configuration language:
- *  (e.g. "[[0 1]; [2 3]]" for a matrix), described in the "Multidimensional Variables" s2.1.3 section of the MHA User Manual.
+ * @param v The initial value of the variable, as a string, in \mha configuration language:
+ *  (e.g. "[[0 1]; [2 3]]" for a matrix), described in the "Multidimensional Variables" s2.1.3 section of the \mha User Manual.
  * @param rg The numeric range to enforce on all members of the matrix. */
 MHAParser::mfloat_t::mfloat_t( const std::string & h, const std::string & v, const std::string & rg )
     :range_var_t( h, rg )

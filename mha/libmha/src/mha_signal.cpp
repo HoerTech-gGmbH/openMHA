@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
-// Copyright © 2013 2016 HörTech gGmbH
+// Copyright © 2013 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,16 +23,16 @@
 #include "mha_signal_fft.h"
 
 /**
-   \defgroup mhatoolbox The MHA Toolbox library
+   \defgroup mhatoolbox The \mha Toolbox library
 
-   The MHA toolbox is a static C++ library which makes it more
-   comfortable to develop MHA plugins. It contains the MHA script
+   The \mha toolbox is a static C++ library which makes it more
+   comfortable to develop \mha plugins. It contains the \mha script
    language classes.
 
 */
 
 /**
-   \internal
+   
    \ingroup mhatoolbox
    \file   mha_signal.hh
    \brief  Header file for audio signal handling and processing classes
@@ -55,7 +55,7 @@
 
 /**
    \ingroup mhatoolbox
-   \defgroup mhacomplex Complex aithmetics in the MHA
+   \defgroup mhacomplex Complex arithmetics in the \mha
 
 */
 
@@ -245,7 +245,7 @@ void waveform_t::copy( const mha_wave_t * src )
     }
 }
 
-/** \internal
+/** 
     
 \brief Copy one channel of a given waveform signal to a target channel
   
@@ -714,7 +714,7 @@ void spectrum_t::copy( const mha_spec_t & src )
     }
 }
 
-/** \internal
+/** 
 \brief Copy one channel of a given spectrum signal to a target channel
   
 \param s Input spectrum signal
@@ -1192,7 +1192,7 @@ void MHASignal::fft_t::spec2wave( const mha_spec_t * spec, mha_wave_t * wave )
     }
 }
 
-/** \internal
+/** 
  * wave may have fewer number of frames than needed for a complete iFFT.
  * Only as many frames are written into wave as fit, starting with offset
  * offset of the complete iFFT. */
@@ -1504,123 +1504,6 @@ void MHASignal::minphase_t::operator()(mha_spec_t* h)
         for(k=0;k<h->num_frames;k++)
             expi(value(h,k,ch),-phase.value(k,ch),abs(value(h,k,ch)));
     }   
-}
-
-MHAWindow::base_t::base_t(unsigned int n)
-    : MHASignal::waveform_t(n,1)
-{
-}
-
-MHAWindow::base_t::base_t(const MHAWindow::base_t& src)
-    : MHASignal::waveform_t(src.num_frames,1)
-{
-    if( src.num_channels != 1 )
-        throw MHA_Error(__FILE__,__LINE__,"Invalid window base (%d channels).",src.num_channels);
-    for( unsigned int k=0;k<num_frames;k++)
-        buf[k] = src[k];
-}
-
-void MHAWindow::base_t::operator()(mha_wave_t& s) const
-{
-    if( s.num_frames != num_frames )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Window function (overloaded): invalid number of frames (got %d, expected %d).",
-                        s.num_frames,num_frames);
-    unsigned int k;
-    for(unsigned int ch=0;ch<s.num_channels;ch++)
-        for(k=0;k<num_frames;k++)
-            ::value(s,k,ch) *= value(k,0);
-}
-
-void MHAWindow::base_t::operator()(mha_wave_t* s) const
-{
-    if( s->num_frames != num_frames )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Window function (overloaded): invalid number of frames (got %d, expected %d).",
-                        s->num_frames,num_frames);
-    unsigned int k;
-    for(unsigned int ch=0;ch<s->num_channels;ch++)
-        for(k=0;k<num_frames;k++)
-            ::value(s,k,ch) *= value(k,0);
-}
-
-void MHAWindow::base_t::ramp_begin(mha_wave_t& s) const
-{
-    if( s.num_frames < num_frames )
-        throw MHA_Error(__FILE__,__LINE__,"Cannot apply ramp to a signal which is shorter than the ramp (%d<%d)",s.num_frames, num_frames);
-    unsigned int k;
-    for(unsigned int ch=0;ch<s.num_channels;ch++)
-        for(k=0;k<num_frames;k++)
-            ::value(s,k,ch) *= value(k,ch);
-}
-
-void MHAWindow::base_t::ramp_end(mha_wave_t& s) const
-{
-    if( s.num_frames < num_frames )
-        throw MHA_Error(__FILE__,__LINE__,"Cannot apply ramp to a signal which is shorter than the ramp (%d<%d)",s.num_frames, num_frames);
-    unsigned int k;
-    unsigned int k0 = s.num_frames-num_frames;
-    for(unsigned int ch=0;ch<s.num_channels;ch++)
-        for(k=0;k<num_frames;k++)
-            ::value(s,k+k0,ch) *= value(k,ch);
-}
-
-float MHAWindow::rect(float x)
-{
-    if( (x < -1) || (x >= 1) )
-        return 0;
-    return 1;
-}
-
-float MHAWindow::bartlett(float x)
-{
-    if( (x < -1) || (x >= 1) )
-        return 0;
-    if( x < 0 )
-        return x+1.0f;
-    return 1.0f-x;
-}
-
-float MHAWindow::hanning(float x)
-{
-    if( (x < -1) || (x >= 1) )
-        return 0;
-    return 0.5 + 0.5 * cos( M_PI*x );
-}
-
-float MHAWindow::hamming(float x)
-{
-    if( (x < -1) || (x >= 1) )
-        return 0;
-    return 0.54 + 0.46 * cos( M_PI*x );
-}
-
-float MHAWindow::blackman(float x)
-{
-    if( (x < -1) || (x >= 1) )
-        return 0;
-    return std::max(0.42-0.5*cos(M_PI*(x+1.0))+0.08*cos(2.0*M_PI*(x+1.0)),0.0);
-}
-
-MHAWindow::user_t::user_t(const std::vector<mha_real_t>& wnd)
-    : MHAWindow::base_t(wnd.size())
-{
-    for(unsigned int k=0;k<wnd.size();k++)
-        buf[k] = wnd[k];
-}
-
-MHAWindow::fun_t::fun_t(unsigned int n,float (*fun)(float),float xmin,float xmax,bool min_included,bool max_included)
-    : MHAWindow::base_t(n)
-{
-    float x;
-    float virtn = (float)mha_min_1(n-min_included-max_included+1);
-    float xmin1 = xmin;
-    if( !min_included )
-        xmin1 += (xmax-xmin)/virtn;
-    for(unsigned int k=0;k<n;k++){
-        x = xmin1 + k*(xmax-xmin)/virtn;
-        buf[k] = fun(x);
-    }
 }
 
 MHASignal::stat_t::stat_t(const unsigned int& frames, const unsigned int& channels)
@@ -2554,7 +2437,7 @@ MHASignal::loop_wavefragment_t::loop_wavefragment_t(const mha_wave_t& src, bool 
       pos(std::min(startpos,std::max(num_frames,1u)-1u)),
       intern_level(1,1)
 {
-    double file_level(0);
+    mha_real_t file_level(0);
     switch( level_mode ){
     case relative : 
         break;
@@ -2570,7 +2453,7 @@ MHASignal::loop_wavefragment_t::loop_wavefragment_t(const mha_wave_t& src, bool 
         break;
     case rms_limit40 :
         // use maximum of RMS and peak-40dB
-        file_level = std::max(sqrt(sumsqr()/std::max(1u,size(*this))),0.01*MHASignal::maxabs(*this));
+        file_level = std::max(sqrtf(sumsqr()/std::max(1u,size(*this))),0.01f*MHASignal::maxabs(*this));
         if( file_level > 0 )
             *this *= 1.0f/file_level;
         break;

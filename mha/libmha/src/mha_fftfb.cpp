@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2011 2013 2015 HörTech gGmbH
-// Copyright © 2016 HörTech gGmbH
+// Copyright © 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,11 +24,8 @@
 #include <limits>
 #include "speechnoise.h"
 
-#define DEBUG(x) std::cerr << __FILE__ << ":" << __LINE__ << " " << #x " = " << x << std::endl
 
-
-
-/*\internal
+/*
   \class MHAOvlFilter::fftfb_t
   \brief Base class for FFT based filterbank plugins
 
@@ -98,11 +95,11 @@ namespace MHAOvlFilter {
         };
     }
 
-    /** \internal
+    /**
         \brief Transform functions from linear scale in Hz to new frequency scales.
     */ namespace FreqScaleFun {
 
-        /** \internal
+        /**
             \brief Dummy scale transformation Hz to Hz.
 
             This function implements a dummy scale transformation (linear
@@ -118,7 +115,7 @@ namespace MHAOvlFilter {
         mha_real_t hz2octave(mha_real_t x);
         mha_real_t hz2third_octave(mha_real_t x);
         
-        /** \internal
+        /**
 
         \brief Transformation to bark scale.
 
@@ -136,7 +133,7 @@ namespace MHAOvlFilter {
 
         mha_real_t hz2erb_glasberg1990(mha_real_t);
 
-        /** \internal
+        /**
 
         \brief Third octave frequency scale.
 
@@ -154,12 +151,12 @@ namespace MHAOvlFilter {
 
     }
 
-    /**\internal
+    /**
 
     \brief Shape functions for overlapping filters.
     */ namespace ShapeFun {
 
-        /** \internal
+        /**
             
         \brief Filter shape function for rectangular filters.
           
@@ -173,7 +170,7 @@ namespace MHAOvlFilter {
 
         mha_real_t rect(mha_real_t x);
 
-        /** \internal
+        /**
            
         \brief Filter shape function for sawtooth filters.
 
@@ -190,7 +187,7 @@ namespace MHAOvlFilter {
 
         mha_real_t linear(mha_real_t x);
 
-        /** \internal
+        /**
 
         \brief Filter shape function for hanning shaped filters.
 
@@ -434,7 +431,6 @@ MHAOvlFilter::fftfb_t::fftfb_t(MHAOvlFilter::fftfb_vars_t& par, unsigned int nff
      fftlen(nfft),
      samplingrate(fs)
 {
-    //DEBUG(nfft);
     unsigned int ch, fr;
     mha_real_t f;
     if(num_channels){

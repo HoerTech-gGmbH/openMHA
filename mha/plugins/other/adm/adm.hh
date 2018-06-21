@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2006 2014 2016 2017 HörTech gGmbH
+// Copyright © 2004 2006 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -37,7 +37,7 @@ namespace ADM {
   template <class F>
   class Linearphase_FIR {
   public:
-    /** 
+    /**
      * Create linear-phase FIR filter
      * @param order
      *     filter order of this FIR filter.
@@ -84,7 +84,7 @@ namespace ADM {
       m_now = (m_now + 1) % (m_order + 1);
       return out_sample;
     }
-        
+
   private:
     /**
      * The filter order of this linear-phase FIR filter
@@ -146,8 +146,8 @@ namespace ADM {
         (m_norm) * in_sample;
       m_now_in = (m_now_in + 1) % (m_fullsamples + 1);
       return m_state[m_now_out];
-    }      
-    
+    }
+
   private:
     /**
      * Integer part of delay
@@ -187,27 +187,28 @@ namespace ADM {
      * Create Adaptive Differential Microphone
      *
      * @param fs
-     *   sampling rate / Hz
+     *   Sampling rate / Hz
      * @param dist
-     *   distance between physical microphones / m
+     *   Distance between physical microphones / m
      * @param lp_order
-     *   Filter order of FIR lowpass filter used for adaption
+     *   Filter order of FIR lowpass filter used for adaptation
      * @param lp_alphas
-     *    pointer to Array of alpha coefficients for the lowpass filter used
-     *    for adaption. Since this class uses linear phase FIR filters only,
-     *    only the first half (order / 2 + 1) of the coefficients will be read.
-     *    (Coefficients for linear-phase FIR filters are symmetric.)
+     *   Pointer to array of alpha coefficients for the lowpass filter used
+     *   for adaptation. Since this class uses linear phase FIR filters only,
+     *   only the first half (order/2 + 1) of the coefficients will be read
+     *   (coefficients for linear-phase FIR filters are symmetric).
      * @param decomb_order
      *   Filter order of FIR compensation filter (compensates for comb filter
      *   characteristic)
      * @param decomb_alphas
-     *    pointer to Array of alpha coefficients for the compensation filter
-     *    used to compensate the comb filter characteristic. Since this class
-     *    uses linear phase FIR filters only, only the first half (order/2 + 1)
-     *    of the coefficients will be read.
-     *    (Coefficients for linear-phase FIR filters are symmetric.)
+     *   Pointer to array of alpha coefficients for the compensation filter
+     *   used to compensate for the comb filter characteristic. Since this
+     *   class uses linear phase FIR filters only, only the first half
+     *   (order/2 + 1)of the coefficients will be read (coefficients
+     *   for linear-phase FIR filters are symmetric).
      * @param tau_beta
-     *   time constant of low pass filter for averaging power of output signal
+     *   Time constant of the lowpass filter used for averaging the power of
+     *   the output signal
      * @param mu_beta
      *   adaption speed
      */
@@ -332,7 +333,7 @@ namespace ADM {
   }
 
   template <class F>
-  ADM<F>::ADM(F fs, F dist, 
+  ADM<F>::ADM(F fs, F dist,
               unsigned lp_order, const F* lp_alphas,
               unsigned decomb_order, const F* decomb_alphas,
               F tau_beta, F mu_beta)
@@ -347,7 +348,7 @@ namespace ADM {
       m_powerfilter_norm(F(1) - m_powerfilter_coeff),
       m_powerfilter_state(mu_beta) // avoid division by zero
   {}
-}  
+}
 #endif
 
 // Local Variables:

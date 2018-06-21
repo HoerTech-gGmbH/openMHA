@@ -1,0 +1,2 @@
+function csPlugs = configdb_fitdb_get_all( mha )
+  csPlugs = configdb_get_mhaconfig(mha,'all_compressors',[]);

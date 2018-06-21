@@ -1,0 +1,353 @@
+%%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
+%%% Copyright © 2007 2008 2010 2011 2012 2013 2016 2017 2018 HörTech gGmbH
+%%%
+%%% openMHA is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as published by
+%%% the Free Software Foundation, version 3 of the License.
+%%%
+%%% openMHA is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License, version 3 for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License, 
+%%% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+% Latex header for doxygen 1.8.11
+\documentclass[11pt,a4paper,twoside]{article}
+
+% Packages required by doxygen
+\usepackage{fixltx2e}
+\usepackage{calc}
+\usepackage{../openMHAdoxygen}
+\setlength{\headheight}{13.6pt}
+\usepackage[export]{adjustbox} % also loads graphicx
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{makeidx}
+\usepackage{multicol}
+\usepackage{multirow}
+\PassOptionsToPackage{warn}{textcomp}
+\usepackage{textcomp}
+\usepackage[nointegrals]{wasysym}
+\usepackage[table]{xcolor}
+
+% Font selection
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{amssymb}
+\usepackage{sectsty}
+\renewcommand{\familydefault}{\sfdefault}
+\allsectionsfont{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\renewcommand{\DoxyLabelFont}{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\newcommand{\+}{\discretionary{\mbox{\scriptsize$\hookleftarrow$}}{}{}}
+
+% Page & text layout
+\usepackage{geometry}
+\geometry{%
+  a4paper,%
+  top=2.5cm,%
+  bottom=2.5cm,%
+  left=2.5cm,%
+  right=2.5cm%
+}
+\tolerance=750
+\hfuzz=15pt
+\hbadness=750
+\setlength{\emergencystretch}{15pt}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{3ex plus 2ex minus 2ex}
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@parafont%
+  }%
+}
+\renewcommand{\subparagraph}{%
+  \@startsection{subparagraph}{5}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@subparafont%
+  }%
+}
+\makeatother
+
+% Headers & footers
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\renewcommand{\sectionmark}[1]{%
+  \markright{\thesection\ #1}%
+}
+\fancyhead[LE]{\fancyplain{}{\bfseries\thepage}}
+\fancyhead[CE]{\fancyplain{}{}}
+\fancyhead[RE]{\fancyplain{}{\bfseries\leftmark}}
+\fancyhead[LO]{\fancyplain{}{\bfseries\rightmark}}
+\fancyhead[CO]{\fancyplain{}{}}
+\fancyhead[RO]{\fancyplain{}{\bfseries\thepage}}
+\fancyfoot[LE]{\fancyplain{}{}}
+\fancyfoot[CE]{\fancyplain{}{}}
+\fancyfoot[RE]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2018 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[LO]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2018 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[CO]{\fancyplain{}{}}
+\fancyfoot[RO]{\fancyplain{}{}}
+
+% Indices & bibliography
+\usepackage{natbib}
+\usepackage{tocloft}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{4}
+\addtolength{\cftsubsecnumwidth}{5pt}
+\makeindex
+
+% Custom commands
+\newcommand{\clearemptydoublepage}{%
+  \newpage{\pagestyle{empty}\cleardoublepage}%
+}
+
+\usepackage{caption}
+\captionsetup{labelsep=space,justification=centering,font={bf},singlelinecheck=off,skip=4pt,position=top}
+
+%===== C O N T E N T S =====
+
+\begin{document}
+
+\MHAtitle{The Graphical User Interface Control Manual}
+\newpage
+\MHAcopyright{}
+\newpage
+\tableofcontents
+\newpage
+\renewcommand{\leftmark}{\rightmark}
+\pagenumbering{arabic}
+
+%--- Begin generated contents ---
+
+\section{Introduction}
+
+The H\"{o}rtech Open Master Hearing Aid (\mha{}) is an algorithm 
+development and evaluation platform.
+%
+The real-time system can be configured to behave as a hearing device.
+%
+The program 'mhacontrol' provides a control surface and fitting
+interface.
+%
+This interface is intended to be usable without technical insight into
+the underlying algorithms.
+
+This manual will describe the dialogs of the control surface and
+explains typical work flows.
+
+\section{Starting 'mhacontrol'}
+
+The control surface 'mhacontrol'\index{mhacontrol} is a \Octave{}/\Matlab{}
+application.
+%
+We assume that an instance of \mha{} is already running (see README.md and \EngineerManual{} for 
+details). To start the control surface, please start \Octave{}/\Matlab{}, change into the 
+directory with the application files (assuming your working directory to be the 
+main directory of \mha{}, this should be '\MatlabDir{}'), and type
+%
+\begin{verbatim}
+mhacontrol hostname
+\end{verbatim}
+%
+\verb!hostname! is the hostname\index{hostname} or IP address\index{IP
+  address} of the \mha{}.
+%
+If the \mha{} runs on the same host as \Octave{}/\Matlab{} the hostname or IP address
+can be omitted.
+%
+If the \mha{} and \Octave{}/\Matlab{} do not run on the same host, please make sure
+that the firewall allows access to port\index{port}\index{firewall}
+33337 (or the port used by the actual \mha{} configuration), and that the
+\mha{} on the remote host is started listening on the appropriate network
+device (e.g., \verb!mha -i 0.0.0.0!).
+%
+A TCP network connection between \mha{} and 'mhacontrol' is required.
+
+Please note that the control tool will overwrite many values of the
+\mha{} configuration files with values stored in the configuration of
+mhacontrol (stored in \Octave{}/\Matlab{} files on the control PC).
+%
+This primarily affects the client data, i.e. configuration of dynamic
+compression and fine-tuning, and the calibration parameters.
+%
+If the MHAIOJack audio backend is used, the Jack connections might be
+changed by the control surface.
+
+\section{Dialogs}
+
+\subsection{The main screen 'mhacontrol'}\index{mhacontrol}\index{main screen}
+
+The main screen (\figref{mhacontrol_main.png}) contains buttons for all control applications the GUI currently provides:
+%
+In the upper right area is a panel with starter buttons for typically
+used actions.
+%
+If a dynamic compression is available, a fitting interface (see
+Section \ref{sec:fitting}) can be opened through the 'Fitting' button.
+%
+A level meter can be opened by clicking 'Levels' (see Section
+\ref{sec:levels}).
+
+Below the 'Actions' panel is the 'Administration'
+panel\index{administration} with start buttons for actions which are
+needed only for the maintaining of the \mha{} setup.
+%
+%These are 'Audio connections' (Section \ref{sec:audioconnections}) for
+%a selection of input and output sound card connections.
+%
+The generic \mha{} configuration browser can be reached through 'Advanced
+control' (see Section \ref{sec:advanced}).
+
+\MHAfigure[][0.8\linewidth]{Main screen}{mhacontrol_main.png}
+
+\subsection{Client selection and fitting}\label{sec:fitting}
+
+\subsubsection*{Client database}
+
+The 'mhacontrol' software contains a simple database for client management\index{client database}\index{database}.
+%
+Client entries can be created and modified in the client database
+dialog, see \figref{mhacontrol_client_database.png}.
+%
+A client entry consists of first- and lastname, birthday, a unique
+client ID\index{client ID}, and an arbitrary number of
+audiograms\index{audiogram}.
+%
+In the top left panel a list of existing clients is shown.
+%
+A client can be selected for editing an audiogram entry by a single
+mouse click on the list entry.
+%
+With the buttons 'New client' and 'Edit client', the client data can
+be entered or edited.
+
+\MHAfigure{Client database dialog.}{mhacontrol_client_database.png}
+
+On the right side of the dialog audiogram data can be managed.
+%
+Available audiograms are listed in the top right panel.
+%
+A new audiogram can be created by either manually entering the
+audiogram data (see \figref{mhacontrol_audiogram_entry.png}, button
+'Edit').
+%
+The selected audiogram can be printed using the 'Print' button.
+
+\subsubsection*{Audiogram editor}
+
+An audiogram can be manually edited using the audiogram editor (see
+\figref{mhacontrol_audiogram_entry.png}).\index{audiogram editor}\index{hearing threshold}\index{HTL}\index{UCL}
+%
+In the upper half of the dialog, the hearing threshold and
+uncomfortable level can be entered for the right and left ear.
+%
+To skip a frequency, a value of 'inf' or 'nan' can be entered.
+%
+Below, on the left side, an audiogram ID can be entered.
+%
+The audiogram editor can be closed by hitting the 'Finish' button.
+%
+The current audiogram is displayed in the lower right side of the
+dialog.
+
+\MHAfigure{Audiogram editor.}{mhacontrol_audiogram_entry.png}
+
+\subsubsection*{Fitting dialog}
+
+After hitting 'OK' the fitting dialog opens (see \figref{mhacontrol_fitting_tool.png}). It is divided into three columns. The middle column contains control
+elements to select a gain prescription rule and create a first
+fit. Below is a box for preset management. A preset contains all
+settings which can be made in this dialog, including gain prescription
+rule and fine-tuning, for a specific client and algorithm.  The
+columns on the left and right side of the screen contain the
+ear-specific settings for the right and left ear, respectively. In the
+graph the nominal target level of a (long term average speech spectrum) LTASS at three different levels is
+shown with thick solid lines, calculated in third-octave bands. The
+thin dashed lines mark the corresponding input level. The shaded areas
+mark the ISO-226 normal hearing threshold (gray) and the threshold of
+the selected subject (green). Below the graph controls for fine-tuning
+can be found: An additional gain and a gain limitation can be
+configured in frequency bands, by selecting \verb!gain! or
+\verb!maxgain! in the drop-down menu.
+
+To create a first fit, first select the appropriate gain prescription
+rule from the list. In \mha{} configurations with a unilateral
+compressor, also the ear to be fitted must be selected\footnote{The
+  selection of an ear in the fitting dialog does not affect any signal
+  routing. A correct mapping of \mha{} input and output channels to the
+  correct ear must be assured.}. Pressing the `Create First Fit'
+button will create a first fit, upload it to the \mha{} and store it as a
+preset in the preset list. The fine-tuning parameters are set to
+default values.  A first fit can not be overwritten by a fine-tuned
+preset.  Creating a new first fit (e.g. after selecting another
+audiogram) will overwrite any previous first fit for the selected gain
+rule.
+
+\MHAfigure[][\linewidth]{Fitting dialog.}{mhacontrol_fitting_tool.png}
+
+\subsection{Level meter}\label{sec:levels}\index{level meter}\index{broadband level}\index{gain}\index{input level}\index{output level}
+
+The level meter (\figref{mhacontrol_levels.png}) contains two areas.
+%
+In the upper panel, the broad band level at input and output is shown.
+%
+Below that panel, the time constant for RMS level averaging can be
+adjusted (broad band level meter only).
+
+\MHAfigure{Level and gain meter.}{mhacontrol_levels.png}
+%
+%\subsection{Audio connections}\label{sec:audioconnections}\index{connections}\index{JACK}\index{audio backend}
+%
+%The 'mhacontrol' application can provide a dialog for connecting input
+%and output channels to specific hardware audio channels, see
+%\figref{mhacontrol_audio_connections.png} for a screenshot (this
+%requires the JACK audio backend).
+%
+%Each \mha{} input channel can be connected to a hardware input, and
+%each output channel can be connected to a hardware output.
+%
+%Connections can be saved in presets that are listed in the left panel of the connection dialog.
+%
+%A preset can be selected by clicking on its entry in the list.
+%
+%Please note that in the connection dialog only connections to hardware
+%ports are supported.
+%
+%If you need connections to software ports, please use JACK connection
+%tools on the \mha{} computer.
+%
+%
+%\MHAfigure[][0.8\linewidth]{Audio connection manager.}{mhacontrol_audio_connections.png}
+
+\subsection{Advanced control}\label{sec:advanced}\index{advanced control}\index{mhagui\_generic}
+
+A generic parameter control interface to the \mha{} is available. See
+\figref{mhacontrol_advanced.png} for a typical root level dialog.
+%
+A description of this generic interface can be found in the \mha{}
+manual.
+
+\MHAfigure[1.5\linewidth]{Generic \mha{} parameter interface.}{mhacontrol_advanced.png}
+
+\bibliography{MHA}
+
+\printindex
+
+\end{document}
+
+% LocalWords:  audiogram \mha{} LTASS
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "openMHA_application_manual"
+%%% indent-tabs-mode: nil
+%%% coding: utf-8-unix
+%%% End:

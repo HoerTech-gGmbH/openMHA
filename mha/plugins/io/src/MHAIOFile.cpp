@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2007 2009 2011 2013 2014 2015 2016 HörTech gGmbH
+// Copyright © 2005 2007 2009 2011 2013 2014 2015 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,9 @@
 #include <sndfile.h>
 
 #define DEBUG(x) std::cerr << __FILE__ << ":" << __LINE__ << " " << #x " = " << x << std::endl
-
+/**
+    \brief File IO
+*/
 class io_file_t : public MHAParser::parser_t
 {
 public:
@@ -38,6 +40,7 @@ public:
     void release();
 private:
     void stopped(int,int);
+    void setlock(bool locked);
     int fragsize;
     float samplerate;
     int nchannels_in;
@@ -67,13 +70,26 @@ private:
     sf_count_t total_read;
 };
 
+/** lock or unlock all parser variables. Used in prepare/release.
+ * @param locked When true, locks. When false, unlocks. */
+void io_file_t::setlock(bool locked)
+{
+    filename_input.setlock(locked);
+    filename_output.setlock(locked);
+    output_sample_format.setlock(locked);
+    startsample.setlock(locked);
+    length.setlock(locked);
+    strict_channel_match.setlock(locked);
+    strict_srate_match.setlock(locked);
+}
 
-/** \internal
+/** 
     \brief Remove FILE client and deallocate internal ports and buffers
   
 */
 void io_file_t::release()
 {
+    setlock(false);
     b_prepared = false;
     sf_close( sf_in );
     sf_close( sf_out );
@@ -83,7 +99,7 @@ void io_file_t::release()
     s_file_in = NULL;
 }
 
-/** \internal
+/** 
     \brief Allocate buffers, activate FILE client and install internal ports
   
 */
@@ -131,6 +147,7 @@ void io_file_t::prepare(int nch_in,int nch_out)
         if( startsample.data )
             sf_seek(sf_in,startsample.data,SEEK_SET);
         b_prepared = true;
+        setlock(true);
     }
     catch(...){
         if( sf_in )
