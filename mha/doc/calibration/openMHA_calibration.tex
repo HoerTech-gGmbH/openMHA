@@ -220,6 +220,56 @@ for the individual ear of a specific subject.
 We will describe only the average calibration method for now, but this
 may change in future.
 
+Calibration requires reliable measurement of acoustic levels.
+%
+This can only be achieved in a quiet environment.
+%
+Please perform all acoustic measurements in a suitable, sound-proof
+booth or a similar environment.
+%
+If your calibration equipment supports it, consider to filter out very
+low frequencies (e.g. < 20 Hz),
+%
+If you notice fluctuations in the measured level, e.g. resulting from
+doors on other levels in your building, or from traffic outside,
+consider moving to a better isolated location, or to off-peak hours.
+%
+To ensure that the influence of unavoidable noise is minimal,
+acoustic calibration is performed at relatively levels around 80 dB.
+%
+If you cannot achieve these levels with your custom output hardware,
+you should consider modifying the output hardware rather than
+measuring a lower sound level.
+%
+We will be using the MHA to produce test tones of which we then
+measure the acoustic levels.
+%
+When producing test tones with high frequencies, take into account
+that the sound card will apply a low-pass filter for anti-aliasing
+that affects already frequencies below the Nyquist frequency.
+
+The calibration will run into practical limits, and will require
+compromises.
+%
+E.g., hearing aid receivers typically produce significantly softer
+sound levels for the same electric voltages at low frequencies.
+%
+Exact calibration requires filters that invert the frequency response
+of the hearing aid output hardware, which would mean in this case,
+amplify with a high gain at low frequencies.
+%
+A high enough gain at low frequencies will cause the output signal
+amplitude to exceed the dynamic range of the sound card.
+%
+Since it is not possible to produce such a signal with a sound card,
+the signal needs to be limited after the calibration filter is applied,
+which will cause audible artifacts.
+%
+To avoid these situations, it is usually a better choice to avoid too
+high amplification at the boundaries of the transmitted spectrum
+and accept that the output levels are softer than intended by the
+hearing aid signal processing algorithms in these areas.
+
 \subsection{Measuring the frequency response for a class of custom hearing aid output software with openMHA with an IEC 711 coupler}
 
 We describe here how to use a coupler according to IEC 60 711 to
@@ -241,16 +291,25 @@ factors into account when calibrating your equipment for the IEC 711.
 When we talk of a class of custom hearing aid output software, we
 refer to an ensemble of output devices that use the same type of
 receiver, the same type of amplifier, and the same type of soundcard.
-
+%
 Individual receivers, amplifiers, and soundcards will differ from each
 other, even if they are of the same type.
 %
 You will have to decide for yourself what difference you are going to
 accept and still consider the devices to be in the same class.
 
+You will then measure the frequency responses of the output hardware
+with the help of the openMHA:
 
+\begin{itemize}
+\item Start the jack sound server with a samplin
+\item Connect the output hardware to the sound card and to the measurement equipment.
+\item Use the octave skript \texttt{calibr
+\end{itemize}
 
 \subsection{Using the measured frequency response to calibrate a hearing aid output device}
+
+
 
 \bibliography{MHA}
 
