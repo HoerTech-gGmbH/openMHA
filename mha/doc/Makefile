@@ -51,24 +51,24 @@ test:
 
 mhakernel.pdf: kernel
 	make -C mhakernel/latex refman.pdf
-	cp mhakernel/latex/refman.pdf $@
+	@cp mhakernel/latex/refman.pdf $@
 
 mhastructure.pdf: mhastructure
 	TEXINPUTS="./:../../:../../flowcharts/fmt_png/:" make -C MHA-Structure/latex refman.pdf
-	cp MHA-Structure/latex/refman.pdf $@
+	@cp MHA-Structure/latex/refman.pdf $@
 
 $(MHANAME)_developer_manual.pdf: images mhadoc
-	cp optparams.sty mhadoc/latex
-	cp flowcharts/fmt_png/*.png mhadoc/latex
-	cp flowcharts/fmt_pdf/*.pdf mhadoc/latex
+	@cp optparams.sty mhadoc/latex
+	@cp flowcharts/fmt_png/*.png mhadoc/latex
+	@cp flowcharts/fmt_pdf/*.pdf mhadoc/latex
 	make -C mhadoc/latex refman.pdf
-	cp mhadoc/latex/refman.pdf $@
+	@cp mhadoc/latex/refman.pdf $@
 
 $(MHANAME)_application_manual.pdf: user_manual/$(MHANAME)_application_manual.pdf
-	cp $< $@
+	@cp $< $@
 
 $(MHANAME)_gui_manual.pdf: user_manual/$(MHANAME)_gui_manual.pdf
-	cp $< $@
+	@cp $< $@
 
 .PHONY : images user_manual/$(MHANAME)_application_manual.pdf user_manual/$(MHANAME)_gui_manual.pdf
 

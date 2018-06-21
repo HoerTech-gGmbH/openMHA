@@ -20,35 +20,21 @@
 \index{configuration file}%
 
 In this section, an example is shown on how to configure and start the
-\mha{}. A simple algorithm is designed, which implements a 
-multi-band dynamic range compressor. Then examples are given on
-how to start this algorithm in different situations (\mhad{}, \Matlab{} processing).
+\mha{}. A simple algorithm is designed that applies a gain to the audio input.
+Then examples are given on how to start this algorithm in different situations (\mhad{}, \Matlab{} processing).
 
-\subsection{Dynamic compressor algorithm}%
+\subsection{Gain application}%
 \label{sec:dyncmp}%
 
-The example in this section describes a two-band dynamic compression
+The example in this section describes a simple gain application
 that is meant to serve as an illustrative case.\footnote{
   The corresponding configuration file for this setup can be found at
-  \emph{mha/examples/01-dynamic-compression/example\_dc.cfg}.
-  A more realistic configuration file for multi-band dynamic compression
-  with detailed explanations is given in the file
-  \emph{mha/examples/01-dynamic-compression/dynamiccompression.cfg}.
+  \emph{mha/examples/00-gain/gain.cfg}.
 }
 %
 In this example the host plugin (the plugin that loads all other
-plugins) will be \verb!transducers!.
+plugins) will be \verb!mhachain!.
 %
-This plugin is used for calibrating the input and output signals.
-%
-The input signal is then split into two frequency bands, using the
-\mha{} plugin \verb!fftfilterbank!.
-%
-Spectral processing is used in this example to perform the dynamic
-compression in two frequency bands and the \mha{} plugin
-\verb!overlapadd! performs the transformation from waveform signal to
-spectral STFT (short time fourier transform) signal and back.
-
 We first configure general parameters, such as the number of input 
 channels, fragment size and the sampling rate:
 \begin{verbatim}
@@ -60,121 +46,20 @@ srate = 44100
 We then load the host plugin and specify the audio input-output backend:
 in this case we will be using audio files:
 \begin{verbatim}
-mhalib = transducers
+mhalib = mhalib
 iolib = MHAIOFile
 \end{verbatim}
 %
-Next, the host plugin \verb!transducers! loads the \verb!overlapadd! plugin 
-to perform the conversion between time and spectral domains:
+Next, the host plugin \verb!mhalib! loads the \verb!gain! plugin
+to perform the signal processing:
 \begin{verbatim}
-mha.plugin_name = overlapadd
+mha.algos=[gain]
 \end{verbatim}
 %
-Also, we specify the audio channel-specific ``peak levels'' for input and output sound 
-signals in dB:
-\begin{verbatim}
-mha.calib_in.peaklevel = [90 90]
-mha.calib_out.peaklevel = [90 90]
-\end{verbatim}
-In the next few lines, we configure the parameters of the overlap-add
-method.
+In the next few lines, we configure the parameters of the gain
+plugin.
 %
 Recall that a fragment size of 64 samples is used in this MHA configuration.
-%
-In the overlapadd plugin, this fragment size is used as the hop size.
-%
-The analysis window is set to 128 \label{overlapexplanation} samples,
-which means we have 50\% signal overlap in our overlapadd procedure.
-%
-An FFT length of 256 samples is used here, which is longer than the
-length of the analysis window, causing the symmetric padding of zeros
-at both ends of the FFT buffer (before and after the analysis window),
-which helps to avoid circular aliasing.
-\begin{verbatim}
-mha.overlapadd.fftlen = 256
-mha.overlapadd.wnd.len = 128
-\end{verbatim}
-%
-We process the STFT signal produced by the overlapadd plugin with a
-chain of multiple plugins, with the help of the \verb!mhachain!
-plugin:
-\begin{verbatim}
-mha.overlapadd.plugin_name = mhachain
-\end{verbatim}
-%
-The chain of plugins to process the STFT signal consists of a
-filterbank to split the signal into frequency bands, a dynamic
-compressor, and a filterbank re-synthesis at the output:
-\begin{verbatim}
-# list of plugins
-mha.overlapadd.mhachain.algos = [ ... 
-fftfilterbank ... 
-dc ... 
-combinechannels ...
-]
-\end{verbatim}
-In the next step, the filter bank will be configured\footnote{
-  For a more detailed explanation of the filterbank
-  configuration please refer to the \texttt{fftfilterbank}
-  documentation in the \mha{} plugins manual.
-}
-with two only frequency bands:
-\begin{verbatim}
-mha.overlapadd.mhachain.fftfilterbank.f = [200 2000]
-\end{verbatim}
-%
-The dynamic compression algorithm measures the input sound level in 
-each frequency band and determines the gain to be applied by looking 
-it up in a gain table. The gain table has one row of gains for each 
-frequency band of the left audio channel, followed by the same for 
-the right audio channel. In our case, the number of rows of the 
-matrix will be 4.
-%
-The first element in each row (i.e., taken together, the first
-column) specifies the gain in dB to be applied if the input level in
-the respective frequency band is equal to the value of the \verb!gtmin!
-element given for that respective band.
-%
-The following elements in each row specify the gains in dB to be
-applied for other input values, where the input level difference
-between the individual elements in each row of the matrix is
-determined by the value of \verb!gtstep! for the respective 
-band. The dynamic compressor also employs a common attack/decay low-pass filter
-to determine the input level (for in-depth explanation of the parameters 
-listed below, see file
-\emph{mha/examples/01-dynamic-compression/dynamiccompression.cfg}):
-\begin{verbatim}
-# gaintable data in dB gains
-mha.overlapadd.mhachain.dc.gtdata = [[10 -10 -30];...
-                                     [20 -25 -50];...
-                                     [10 -10 -30];...
-                                     [20 -25 -50]]
-# input level for first gain entry in dB SPL
-mha.overlapadd.mhachain.dc.gtmin = [0]
-# level step size in dB
-mha.overlapadd.mhachain.dc.gtstep = [40]
-# attack time constant in s
-mha.overlapadd.mhachain.dc.tau_attack = [0.02]
-# decay time constant in s
-mha.overlapadd.mhachain.dc.tau_decay = [0.1]
-\end{verbatim}
-%
-The dynamic compressor plugin also needs the name of the filter bank plugin
-instance used, to extract the frequency information.
-\begin{verbatim}
-# Name of fftfilterbank plugin.  Used to extract frequency information.
-mha.overlapadd.mhachain.dc.fb = fftfilterbank
-mha.overlapadd.mhachain.dc.chname = fftfilterbank_nchannels
-\end{verbatim}
-%
-After the dynamic compression, the combinechannels plugin adds the frequency
-bands back into wide-band audio channels.
-%
-To perform this task, it needs to know the desired number of output
-channels.
-\begin{verbatim}
-mha.overlapadd.mhachain.combinechannels.outchannels = 2
-\end{verbatim}
 %
 Finally, we specify the input and output audio file names to be processed as 
 follows:
@@ -183,24 +68,23 @@ io.in = 1speaker_diffNoise_2ch.wav
 io.out = 1speaker_diffNoise_2ch_OUT.wav
 \end{verbatim}
 The configuration we described so far is provided with this release 
-in the file \emph{mha/examples/01-dynamic-compression/example\_dc.cfg}.
-Now that we created a complete \mha{} hearing aid
-algorithm configuration file, in the next step, we want to start an \mha{}
-framework with this configuration.
+in the file \emph{mha/examples/00-gain/gain.cfg}.
+Now that we created a complete \mha{} algorithm configuration file,
+in the next step, we want to start an \mha{} framework with this configuration.
 %
 In the terminal, change the working directory to the
-\verb!mha/examples/01-dynamic-compression! 
+\verb!mha/examples/00-gain!
 directory of the \mha{}.
 All binaries and libraries of the \verb!openMHA! should be in their respective
 search paths, see \emph{README.md}).
 Then \mha{} processing can be started with
 \begin{verbatim}
-mha ?read:example_dc.cfg cmd=start cmd=quit
+mha ?read:gain.cfg cmd=start cmd=quit
 \end{verbatim}
 %
 This will process the file \emph{1speaker\_diffNoise\_2ch.wav} and output 
 \emph{1speaker\_diffNoise\_2ch\_OUT.wav}.
-%\subsection{Using the \mhad{} and \Matlab{}}
+\subsection{Using the \mhad{} and \Matlab{}}
 
 %The \mhad{} configuration interface can be easily accessed from the
 %\Matlab{} prompt through a generic graphical user interface,
@@ -228,9 +112,9 @@ This will process the file \emph{1speaker\_diffNoise\_2ch.wav} and output
 In this section we will use the configuration settings described in
 the previous section while using the JACK server as the audio
 backend.\footnote{To run the JACK server reliably with small buffer
-  sizes, please optimize your operating system for low-delay audio. In
-  the case of Ubuntu, please install and boot a lowlatency linux
-  kernel, answer "yes" to the question "Enable realtime process
+  sizes, you may need to optimize your operating system for low-delay
+  audio. In the case of Ubuntu, you can install and boot a lowlatency
+  linux kernel and answer "yes" to the question "Enable realtime process
   priority?" when installing jackd2, and add your user to the group
   "audio".
 }
@@ -242,15 +126,15 @@ when using JACK the fragment size
 and sampling rate have to match the values used by the JACK server.
 %
 Here we assume that the JACK server runs at sampling rate 44100 with a
-fragment size of 64 samples, so that the overlap in the overlap-add
-method uses the same 50\% signal overlap as before (see page
-\pageref{overlapexplanation}).
+fragment size of 64 samples.
 %
 Later we will show how to use a double buffer for those
 situations, where it is not possible to start JACK with the desired
 fragment size. 
 
-The complete configuration for this example can be found in \emph{mha/examples/01-dynamic-compression/example\_dc\_live.cfg}.  In the previous section we have specified which libraries to use 
+The complete configuration for this example can be found in
+\emph{mha/examples/00-gain/gain\_live.cfg}.
+In the previous section we have specified which libraries to use
 (plugins and the IO backend, which was \verb!MHAIOFile!). In this section 
 we want to change IO backend to JACK. 
 %
@@ -263,20 +147,14 @@ iolib = MHAIOJack
 As in the previous section, it is assumed, that the environment
 variables for finding executables and shared libraries are configured
 properly (see \verb!README.md!).
-%
-%No extension is required in the configuration of plugin names.
-%\begin{verbatim}
-%iolib = MHAIOJack
-%mhalib = overlapadd
-%\end{verbatim}
 The JACK server needs to be told which hardware input and output ports should be
 connected to the mha:
 \begin{verbatim}
 io.con_in = [system:capture_1 system:capture_2]
 io.con_out = [system:playback_1 system:playback_2]
 \end{verbatim}
-Please replace the port names by the ports you want to connect
-to.
+You may need to replace the ports with the port names used
+by your system.
 %
 \subsection{Adjusting the fragment size}%
 \index{fragment size}%
@@ -287,9 +165,9 @@ double buffering can be used in the MHA frameworks. We assume now,
 that the JACK server was started with a fragment size of 256 samples at
 a sampling rate of 44.1 kHz. A fragment size of 64 samples in the algorithm 
 can be reached by inserting a double buffer plugin between the framework and the algorithm. This is
-done by replacing the MHA library \verb!overlapadd! by the double
-buffer plugin \verb!db!, which will load \verb!overlapadd! as a
-client. In the framework configuration the line \verb!mhalib = overlapadd! needs
+done by replacing the MHA library \verb!mhachain! by the double
+buffer plugin \verb!db!, which will load \verb!mhachain! as a
+client. In the framework configuration the line \verb!mhalib = mhachain! needs
 be replaced by
 \begin{verbatim}
 mhalib = db
@@ -299,15 +177,16 @@ mha.fragsize = 64
 The fragment size of the framework will be set to that of the JACK
 server, so \verb!fragsize = 64! on the top level needs to be replaced by
 \verb!fragsize = 256!. The hierarchy of layers now changes (see 
-file \emph{example\_dc\_live\_double.cfg}, where between the framework 
-and \verb!overlapadd! lies the \verb!db! plugin.
+file \emph{gain\_live\_double.cfg}, where between the framework
+and \verb!mhachain! lies the \verb!db! plugin.
 
 
 \subsection{The MHA network interface}%
 \label{sec:example_network}%
 \index{framework configuration}%
 \index{configuration!framework}%
-The \mha{} accepts configuration and control over a network connection. 
+Sometimes it is practical to change the MHA configuration during runtime. To
+this end, \mha{} accepts configuration and control over a network connection.
 %
 When no command line parameters are given, the default port number
 33337 and the loopback network interface 127.0.0.1 is used, i.e., only
@@ -321,7 +200,7 @@ open a MHA console:
 
 To read the framework configuration file, type
 \begin{verbatim}
-?read:mha/configurations/example_dc_live.cfg
+?read:mha/configurations/gain_live.cfg
 \end{verbatim}
 followed by the return key. If everything went well, the MHA will print
 \verb!(MHA:success)!. In case of an error message \verb!(MHA:failure)!, MHA 
@@ -331,11 +210,7 @@ message, \verb!(mha_parser) The variable is locked!, you need to close the
 \mhad{} and relaunch it. If the JACK server was not started yet, this is the
 right moment to start your JACK server with the correct settings. One can use 
 for example the \verb!QjackCtl! client to set the correct settings.
-%e.g.:
-%\begin{verbatim}
-%jackd -d alsa -r 44100 -p 64
-%\end{verbatim}
-Please make sure that the fragment size and sample rate of the JACK
+Make sure that the fragment size and sample rate of the JACK
 sound server matches the MHA fragment size (see below if it
 doesn't). After having successfully started the JACK server, the MHA
 can be started by typing
@@ -353,8 +228,8 @@ produces so much output, that the console has to be scrolled to see
 the complete information. If only a subset or a single variable is of
 interest, the prefix of that subset or variable can be put before the
 \verb!?!, e.g.\ all variables of the processing chain can be reached
-by typing \newline\verb!mha.overlapadd.mhachain?!, the gaintable data in dB gains
-by typing \newline\verb!mha.overlapadd.mhachain.dc.gtdata?!. All monitor variable contents can
+by typing \newline\verb!mha?!, the gain data in dB gains
+by typing \newline\verb!mha.gain.gains?!. All monitor variable contents can
 be stored into the file "example.mon" by typing
 \verb!?savemons:example.mon!. The \mhad{} will be closed
 by typing \verb!cmd = quit!.
@@ -367,7 +242,7 @@ Another alternative to start and control the \mhad{} is from \Matlab{}. On Linux
 \end{verbatim}
 (assuming, that the directory containing the MHA binaries is included
 in the system path and in the MHA\_LIBRARY\_PATH environment
-variable. Please note that in Octave the environment variables 
+variable. Note that in Octave the environment variables
 may have to be set again.).
 
 The variable \verb!pid! then contains the process id of the \mhad{} process as text.
@@ -377,7 +252,7 @@ configuration}\index{configuration!framework} of the \mhad{} can be
 read at startup time by adding an \mha{} configuration language command:
 %
 \begin{verbatim}
-./bin/mha ?read:mha/configurations/example_dc.cfg cmd=start
+./bin/mha ?read:mha/configurations/gain.cfg cmd=start
 \end{verbatim}
 %
 We assume, that your \Matlab{} process is running on the same host and
