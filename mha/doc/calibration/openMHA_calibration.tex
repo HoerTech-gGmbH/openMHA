@@ -1,0 +1,240 @@
+%%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
+%%% Copyright © 2018 HörTech gGmbH
+%%%
+%%% openMHA is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as published by
+%%% the Free Software Foundation, version 3 of the License.
+%%%
+%%% openMHA is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License, version 3 for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License, 
+%%% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+% Latex header for doxygen 1.8.11
+\documentclass[11pt,a4paper,twoside]{article}
+
+% Packages required by doxygen
+\usepackage{fixltx2e}
+\usepackage{calc}
+\usepackage{../openMHAdoxygen}
+\setlength{\headheight}{13.6pt}
+\usepackage[export]{adjustbox} % also loads graphicx
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{makeidx}
+\usepackage{multicol}
+\usepackage{multirow}
+\PassOptionsToPackage{warn}{textcomp}
+\usepackage{textcomp}
+\usepackage[nointegrals]{wasysym}
+\usepackage[table]{xcolor}
+
+% Font selection
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{amssymb}
+\usepackage{sectsty}
+\renewcommand{\familydefault}{\sfdefault}
+\allsectionsfont{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\renewcommand{\DoxyLabelFont}{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\newcommand{\+}{\discretionary{\mbox{\scriptsize$\hookleftarrow$}}{}{}}
+
+% Page & text layout
+\usepackage{geometry}
+\geometry{%
+  a4paper,%
+  top=2.5cm,%
+  bottom=2.5cm,%
+  left=2.5cm,%
+  right=2.5cm%
+}
+\tolerance=750
+\hfuzz=15pt
+\hbadness=750
+\setlength{\emergencystretch}{15pt}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{3ex plus 2ex minus 2ex}
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@parafont%
+  }%
+}
+\renewcommand{\subparagraph}{%
+  \@startsection{subparagraph}{5}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@subparafont%
+  }%
+}
+\makeatother
+
+% Headers & footers
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\renewcommand{\sectionmark}[1]{%
+  \markright{\thesection\ #1}%
+}
+\fancyhead[LE]{\fancyplain{}{\bfseries\thepage}}
+\fancyhead[CE]{\fancyplain{}{}}
+\fancyhead[RE]{\fancyplain{}{\bfseries\leftmark}}
+\fancyhead[LO]{\fancyplain{}{\bfseries\rightmark}}
+\fancyhead[CO]{\fancyplain{}{}}
+\fancyhead[RO]{\fancyplain{}{\bfseries\thepage}}
+\fancyfoot[LE]{\fancyplain{}{}}
+\fancyfoot[CE]{\fancyplain{}{}}
+\fancyfoot[RE]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2018 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[LO]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2018 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[CO]{\fancyplain{}{}}
+\fancyfoot[RO]{\fancyplain{}{}}
+
+% Indices & bibliography
+\usepackage{natbib}
+\usepackage{tocloft}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{4}
+\addtolength{\cftsubsecnumwidth}{5pt}
+\makeindex
+
+% Custom commands
+\newcommand{\clearemptydoublepage}{%
+  \newpage{\pagestyle{empty}\cleardoublepage}%
+}
+
+\usepackage{caption}
+\captionsetup{labelsep=space,justification=centering,font={bf},singlelinecheck=off,skip=4pt,position=top}
+
+%===== C O N T E N T S =====
+
+\begin{document}
+
+\MHAtitle{The Calibration Manual}
+\newpage
+\MHAcopyright{}
+\newpage
+\tableofcontents
+\newpage
+\renewcommand{\leftmark}{\rightmark}
+\pagenumbering{arabic}
+
+\section{Introduction}
+
+The H\"{o}rtech Open Master Hearing Aid (\mha{}) is a software platform
+for algorithm development and evaluation.
+%
+For certain aspects of algorithm evaluation, correct calibration of the
+test setup may be a requirement.
+%
+Since \mha{}, being a software platform, does not include hardware
+(like hearing aid housings, microphones, and receivers),
+users of the \mha{} are expected to supplement suitable hardware
+to pick up and produce sound at the users' ears.
+%
+Users then face the challenge of how to correctly configure the software
+to calibrate the system.
+%
+This guide is a collection of best practices that the authors and users
+of \mha{} employ to ensure their setups are calibrated correctly.
+%
+We will extend this guide with new procedures as we add them to the
+openMHA, and as we receive user contributions in the field of
+calibration.
+%
+\mha{} users should be aware that calibration is an involved topic.
+%
+Users need professional, specialized acoustic measurment equipment in
+order to be able to perform accurate measurements, and understand
+how to use their equipment.
+%
+Understanding how to calibrate commercial hearing aids is a requirement
+for using this guide.
+%
+The book "Hearing Aids" by Harvey Dillon contains a suitable treatment
+of the topic in chapter 4 of its second edition (2012).
+%
+We cannot guarantee that the procedures presented here are free of
+errors.
+%
+If you discover something that is wrong, please get in contact with
+the \mha{} project, e.g. by filing an issue on the github project.
+%
+We will do our best to improve the documentation and the tools that we
+provide as we go along.
+
+\section{Calibrating hearing aid outputs}
+
+This section describes how to measure the frequency response of a
+class of custom hearing aid output hardware, and how to use frequency
+responses to calibrate individual devices of this class.
+
+%
+
+\subsection{Considerations regarding calibration of custom hardware used as hearing aid outputs}
+
+Hearing aid receivers typically have a low impedance and a non-flat frequency response.
+%
+When attaching hearing aid receivers to the output of a computer's
+sound card, care has to be taken to ensure that the sound card can
+actually drive the receiver, i.e.\ provide the necessary current
+without voltage drops.
+%
+Otherwise serious non-linearities will result.
+%
+Consider the application of a suitable amplifier to drive your output hardware.
+
+A suitable acoustic coupler has to be used to connect the measurement
+microphone to the hearing aid receiver.
+%
+The coupler will simulate the mechanical properties similar to
+a real ear canal.
+%
+The coupler will also influence how the measurment microphone of your
+measurement equipment has to be calibrated.
+%
+Please refer to Dillon and for the manuals of your measurement
+equipment for details.
+
+When you calibrate custom hearing aid hardware, you always calibrate
+the complete output chain in combination, consisting of
+%
+the individual sound card, any amplifier that you employ, and the
+hearing aid receiver.
+
+Hearing aids need to produce ear canal sound levels, not free field
+sound levels.
+%
+Please refer to the Real-Ear-Unaided-Gain in Dillon.
+
+When calibrating hearing aid devices, you need to make a choice
+whether you are ok with calibrating the device for an average ear of
+for the individual ear of a specific subject.
+%
+We will describe only the average calibration method for now, but this
+may change in future.
+
+\subsection{Measuring the frequency response for a class of hearing aid output software with openMHA}
+
+\subsection{Using the measured frequency response to calibrate a hearing aid output device}
+
+\bibliography{MHA}
+
+\printindex
+
+\end{document}
+
+% LocalWords:  audiogram \mha{} LTASS
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "openMHA_application_manual"
+%%% indent-tabs-mode: nil
+%%% coding: utf-8-unix
+%%% End:
