@@ -180,11 +180,11 @@ MHAPLUGIN_DOCUMENTATION(ac2osc,"AC-variables","Send AC variables as OSC"
                         " \"vars\" can be used to select variables from the AC"
                         " space for sending. "
                         " The sending of variables can be verified using the"
-                        " open source tool \"dump_osc\". When selecting an AC"
+                        " open source tool \"dump\\_osc\". When selecting an AC"
                         " variable, a target path can be specified using the"
                         " colon delimiter, e.g.:"
-                        "\begin{verbatim}vars = [level:/mhalevels]"
-                        " \end{verbatim}")
+                        "\\begin{verbatim}vars = [level:/mhalevels]"
+                        " \\end{verbatim}")
 
 /*
  * Local variables:
