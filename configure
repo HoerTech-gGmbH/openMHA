@@ -37,8 +37,8 @@ chklib(){
             --with-lsl)
                 WITH_LSL=yes
                 ;;
-            --no-lsl)
-                WITH_LSL=no
+            --with-osc)
+                WITH_OSC=yes
                 ;;
             --help)
                 echo 'usage: ./configure [options]'
@@ -88,10 +88,14 @@ chklib(){
     pkg-config jack && (echo "WITH_JACK=yes")
     if [ "x$WITH_LSL" = "xyes" ]; then
         echo "WITH_LSL=yes";
-    elif [ "x$WITH_LSL" = "xno" ]; then
-        echo "WITH_LSL=no";
     else
         chkhdr lsl_cpp.h && chklib lsl && (echo "WITH_LSL=yes");
+    fi
+
+    if [ "x$WITH_OSC" = "xyes" ]; then
+        echo "WITH_OSC=yes";
+    else
+        chkhdr lo/lo.h && chklib lo && (echo "WITH_OSC=yes");
     fi
 
     if [ "x$PLATFORM" = "xMinGW" ]; then

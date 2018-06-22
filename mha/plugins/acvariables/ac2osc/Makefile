@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2017 2018 HörTech gGmbH
+# Copyright © 2014 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -13,14 +13,14 @@
 # You should have received a copy of the GNU Affero General Public License,
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-include ../../../config.mk
-include ../../../magic.mk
 
-SUBDIRS = acmon acsave acSteer ac2wave save_wave save_spec acPooling_wave acTransform_wave acConcat_wave ac2lsl ac2osc
+NEEDS_OSC = yes
 
-include ../../../rules.mk
+include ../../plugin.mk
+
+LDFLAGS += -L../../../../external_libs/$(PLATFORM_CC)/lib
+LDLIBS += -llo
 
 # Local Variables:
 # compile-command: "make"
-# coding: utf-8-unix
 # End:
