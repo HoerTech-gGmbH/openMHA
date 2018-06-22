@@ -319,17 +319,26 @@ with the help of the openMHA:
       e.g. \texttt{'system:playback\_1'},
     \item the sampling rate of the jack server in Hz.
     \end{enumerate}
-    \item
-      The function will start an MHA and begin to output test tones.
-    \item
-      Your measurement equipment measures the acoustic level produced by each test tone.
-    \item
-      Our goal is to produce acoustic levels of 80 dB with the test tones.
-    \item
-      If the acoustic level is different from 80 dB, then adjust the level
-      with the help of the buttons.
-    \item
-      If you have reached 80 dB, move on to the next test tone.
+  \item The function returns two output parameters:
+    \begin{enumerate}
+    \item A vector of frequencies in Hz of the test tones,
+    \item a vector of corresponding levels in dB re full scale (dB FS) of the sound card where the acoustic level was 80 dB.
+    \end{enumerate}
+  \item
+    example: \texttt{[frequencies,dBFS] = measure\_fresponse('system:playback\_1',48000);}
+  \item
+    The function will start an MHA and begin to output test tones.
+  \item
+    Your measurement equipment measures the acoustic level produced by each test tone.
+  \item
+    Our goal is to produce acoustic levels of 80 dB with the test tones.
+  \item
+    If the acoustic level is different from 80 dB, then adjust the level
+    by entering the required difference to reach 80 dB.
+  \item
+    Repeat the corrections until your setup produces 80 dB acoustic output level.
+  \item
+    When you have reached 80 dB, enter a correction value of 0 to move on to the next test tone.
   \end{itemize}
 \item
   Connect the next instance of the same custom hearing aid output
