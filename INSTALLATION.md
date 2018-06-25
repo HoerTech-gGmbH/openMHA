@@ -56,15 +56,15 @@ For updating openMHA when a new release is available run
 sudo apt-get install --only-upgrade openmha
 ```
 
-## Compiling from source (Linux, macOS)
+## Compiling from source (Linux)
 
 The openMHA source code has to be compiled before openMHA can be used. While openMHA in
 general can be compiled for many operating systems and hardware platforms, in
 this release we concentrate on compilation on Ubuntu 18.04 for 64-bit PC
 processors (x86_64) and on Debian 8 (jessie) for the Beaglebone Black
 single-board ARM computer.
+
 ### Prerequisites
-#### Linux
 64-bit version of Ubuntu 18.04 or later,
 or a Beaglebone Black with Debian jessie installed.
 
@@ -83,7 +83,51 @@ The build process uses Octave + Java to run some tests after
 building openMHA.  If Octave is not available, this test will fail,
 but the produced openMHA will work.
 
-#### macOS
+### Compilation
+
+After downloading and unpacking the openMHA tarball, or cloning from github,
+compile openMHA with by typing in a terminal (while in the openMHA directory)
+```
+./configure && make
+```
+
+### Installation of self-compiled openMHA:
+
+A very simple installation routine is provided together with the
+source code. To collect the relevant binaries and libraries execute
+```
+make install
+```
+
+You can set the make variable PREFIX to point to the desired installation
+location. The default installation location is ".", the current directory.
+
+You should then add the openMHA installation directory to the system search path for libraries
+
+```
+export LD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
+```
+as well as to the search path for executables:
+```
+export PATH=<YOUR-MHA-DIRECTORY>/bin:$PATH
+```
+Alternatively to the two settings above, the thismha.sh script found in
+the openMHA bin directory may be sourced to set these variables correctly for the
+current shell:
+```
+source <YOUR-MHA-DIRECTORY>/bin/thismha.sh
+```
+After this, you can invoke the openMHA command line application.
+Perform a quick test with
+```
+mha ? cmd=quit
+```
+Which should print the default configuration of the openMHA without any plugins
+loaded.
+
+## Compiling from source (macOS)
+
+### Prerequisites
 - macOS 10.10 or later.
 - XCode 7.2 or later (available from App Store)
 - Jack2 for OSX http://jackaudio.org (also available from MacPorts)
@@ -120,12 +164,6 @@ You can set the make variable PREFIX to point to the desired installation
 location. The default installation location is ".", the current directory.
 
 You should then add the openMHA installation directory to the system search path for libraries
-
-under __Linux__:
-```
-export LD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
-```
-under __macOS__:
 ```
 export DYLD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
 ```
