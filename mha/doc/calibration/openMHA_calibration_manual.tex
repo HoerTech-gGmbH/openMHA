@@ -116,7 +116,7 @@
 
 \begin{document}
 
-\MHAtitle{The Calibration Manual}
+\MHAtitle{The \mha{} Calibration Manual}
 \newpage
 \MHAcopyright{}
 \newpage
@@ -140,7 +140,7 @@ to pick up and produce sound at the users' ears.
 %
 Users then face the challenge of how to correctly configure the software
 to calibrate the system.
-%
+
 This guide is a collection of best practices that the authors and users
 of \mha{} employ to ensure their setups are calibrated correctly.
 %
@@ -280,7 +280,7 @@ high amplification at the boundaries of the transmitted spectrum and
 to accept that the output levels are softer than intended by the
 hearing aid signal processing algorithms in these frequency areas.
 
-\subsection{Measuring the frequency response for a class of custom hearing aid output software with openMHA with an IEC 711 coupler}
+\subsection{Measuring the frequency response for a custom hearing aid output hardware with openMHA with an IEC 711 coupler}
 
 We describe here how to use a coupler according to IEC 60 711 to
 measure the frequency response of custom hearing aid output hardware.
@@ -316,13 +316,25 @@ response of the output hardware with the help of the openMHA:
 
 \begin{itemize}
 \item
+  Install \mha{} on the computer where the calibration is performed (see README.md).
+\item
+  If installed from source, run the \texttt{source bin/thismha.sh}
+  command to add \mha{} to your path.
+\item
+  We will use \Matlab{} tools to control the measurement. To prepare,
+  \begin{itemize}
+  \item Start \Matlab{} from the shell where you have set the \mha{} environment variables.
+  \item Change to the directory mha/tools/mfiles.
+  \item Execute \texttt{javaaddpath mhactl\_java.jar} inside \Matlab.
+  \end{itemize}
+\item
   Start the jack sound server with the same sampling rate that you
   will later use with the \mha{}.
 \item
-  Connect the custom hearing aid output hardware class to the desired
+  Connect the custom hearing aid output hardware to the desired
   sound card output channel and to the measurement equipment.
 \item
-  Use the octave function \texttt{measure\_fresponse} provided with
+  Use the \Matlab{} function \texttt{measure\_fresponse} provided with
   \mha{} to measure the frequency response:
   \begin{itemize}
   \item Call this function with the following parameters:
@@ -360,13 +372,13 @@ response of the output hardware with the help of the openMHA:
   \end{itemize}
 \end{itemize}
   
-You have now the frequency response of your setup in a struct in octave.
+You have now the frequency response of your setup in a struct in \Matlab{}.
 %
-You can use all the tools available in octave to inspect and alter the
+You can use all the tools available in \Matlab{} to inspect and alter the
 measured frequency response in this struct before using it to
 calibrate the MHA.
 %
-We provide the octave function \texttt{plot\_fresponse} that you can use
+We provide the \Matlab{} function \texttt{plot\_fresponse} that you can use
 to plot the frequency response.
 %
 The plot will display the frequency response of the required filter to
@@ -379,7 +391,7 @@ You now have to decide if the overall dynamic exhibited by this filter
 is small enough that you want to apply the calibration filter as it
 is, fully compensating the averaged frequency response, of if you want
 to introduce correction gains to avoid too high gains at high or low frequencies,
-by changing the correctionsdB vector in the frequency response struct in octave.
+by changing the correctionsdB vector in the frequency response struct in \Matlab{}.
 
 \subsection{Using the measured frequency response to calibrate a hearing aid output device}
 
@@ -396,17 +408,19 @@ When you are content with the calibration filter's frequency response,
 you can convert the frequency response struct to a set of filter
 coefficients and peak level that can be used in \mha{} configuration.
 %
-The octave function \texttt{fresponse\_to\_cfg} can be used to convert the
+The \Matlab{} function \texttt{fresponse\_to\_cfg} can be used to convert the
 frequency response struct to a text string that can be used in the \mha{}
 configuration.
 
 The function \texttt{fresponse\_to\_cfg} prints out values for the
-\texttt{peak} and for the \texttt{fir} configuration variables of the
-\mha{} plugin \texttt{transducers}.
+\texttt{peaklevel} and for the \texttt{fir} configuration variables of
+the \mha{} plugin \texttt{transducers}.
 
-You can take these values and insert them into your configuration file
-into the \texttt{transducers} configuration, remove the elipses
-(\texttt{...}) printed, and remove superfluous semicolons.
+You can take these values and insert them into your configuration file,
+into the \texttt{transducers} configuration.
+%
+Remove the elipses (\texttt{...}) printed, and remove superfluous
+semicolons.
 %
 These are printed by the \texttt{fresponse\_to\_cfg} for cases where
 you have multiple output channels. You have to assign the peaklevels
@@ -425,9 +439,6 @@ measurement equipment. It is now expected that the output levels for 80 dB sinus
 Differences of up to a few dB are expected. You should check that over
 the total spectrum, the differences are equally distributed to higher
 and lower output levels than expected.
-
-When measuring the output levels for broadband noises, the measured
-level cannot be predicted.
 
 \bibliography{MHA}
 

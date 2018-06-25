@@ -26,7 +26,7 @@ MHANAME = openMHA
 
 all:
 	$(MAKE) -C flowcharts
-	$(MAKE)  $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf
+	$(MAKE)  $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf $(MHANAME)_calibration_manual.pdf
 	$(MAKE)  plugins
 
 
@@ -67,6 +67,9 @@ $(MHANAME)_developer_manual.pdf: images mhadoc
 $(MHANAME)_application_manual.pdf: user_manual/$(MHANAME)_application_manual.pdf
 	@cp $< $@
 
+$(MHANAME)_calibration_manual.pdf: calibration/$(MHANAME)_calibration_manual.pdf
+	@cp $< $@
+
 $(MHANAME)_gui_manual.pdf: user_manual/$(MHANAME)_gui_manual.pdf
 	@cp $< $@
 
@@ -77,6 +80,9 @@ user_manual/$(MHANAME)_application_manual.pdf:
 
 user_manual/$(MHANAME)_gui_manual.pdf:
 	make -C user_manual $(MHANAME)_gui_manual.pdf
+
+calibration/$(MHANAME)_calibration_manual.pdf:
+	make -C calibration $(MHANAME)_calibration_manual.pdf
 
 images:
 	make -C flowcharts

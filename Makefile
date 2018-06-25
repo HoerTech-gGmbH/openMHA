@@ -34,7 +34,7 @@ MODULES = \
 
 DOCMODULES = \
 	mha/doc/flowcharts \
-  mha/doc/images \
+	mha/doc/images \
 	mha/doc \
 
 all: $(MODULES)
