@@ -383,14 +383,51 @@ by changing the correctionsdB vector in the frequency response struct in octave.
 
 \subsection{Using the measured frequency response to calibrate a hearing aid output device}
 
+The \mha{} plugin \texttt{transducers} is used to calibrate inputs and outputs.
+%
+\texttt{transducers} can be configured with FIR filter parameters and a peak level
+to compensate for the frequency responses of hearing aid microphones and receivers.
+%
+To make use of this capability, choose a \mha{} configuration that already includes
+the \texttt{transducers} plugin, or create a new configuration that contains
+\texttt{transducers}.
+
 When you are content with the calibration filter's frequency response,
-you can convert the frequency response struct to a set of filter coefficients
-and peak level that can be used in \mha{} configuration.
+you can convert the frequency response struct to a set of filter
+coefficients and peak level that can be used in \mha{} configuration.
 %
 The octave function \texttt{fresponse\_to\_cfg} can be used to convert the
 frequency response struct to a text string that can be used in the \mha{}
 configuration.
 
+The function \texttt{fresponse\_to\_cfg} prints out values for the
+\texttt{peak} and for the \texttt{fir} configuration variables of the
+\mha{} plugin \texttt{transducers}.
+
+You can take these values and insert them into your configuration file
+into the \texttt{transducers} configuration, remove the elipses
+(\texttt{...}) printed, and remove superfluous semicolons.
+%
+These are printed by the \texttt{fresponse\_to\_cfg} for cases where
+you have multiple output channels. You have to assign the peaklevels
+and FIR filter coefficients to the correct output channels that
+correspond to the measured hardware.
+
+\subsection{Test your calibration}
+
+It is crucial to test your calibration. Please configure a simple \mha{} with the
+calibration values that you have measured, insert the sine plugin into this \mha{},
+and play back sinusoids with different frequencies and different levels.
+
+When playing back sinusoids at the measurement frequencies, check the output levels with your
+measurement equipment. It is now expected that the output levels for 80 dB sinusoids is measured as 80 dB + REUG(f) + correction(f).
+
+Differences of up to a few dB are expected. You should check that over
+the total spectrum, the differences are equally distributed to higher
+and lower output levels than expected.
+
+When measuring the output levels for broadband noises, the measured
+level cannot be predicted.
 
 \bibliography{MHA}
 
