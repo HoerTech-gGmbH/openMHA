@@ -1,75 +1,56 @@
-function [calib, needed_gains, peak, fir] = calibration(side, sampling_rate, resampling_rate, calib, moon_peak, fir_length)
-% function calibration(side, sampling_rate, resampling_rate)
-% side : 0=left 1=right
-% sampling_rate of sound card in Hz
-% resampling_rate: internal sampling_rate of signal processing in Hz
-% calib: moon levels that correspond to 80 dB SPL Kemar
-% moon_peak: peaklevel used for assessment of calib, default 120
-% fir_length: length of computed output fir filter
+function [fresponse] = measure_fresponse(jack_port, sampling_rate)
+% function measure_fresponse(jack_port, sampling_rate)
+% jack_port:     Name of the sound card's output port where the sound output hardware is connected
+% sampling_rate: sampling rate of sound card in Hz
 
-if (nargin < 1 || isempty(side))
-  side = 0;
-end
-if (nargin < 2 || isempty(sampling_rate))
-  sampling_rate = 48000;
-end
-if (nargin < 3 || isempty(resampling_rate))
-  resampling_rate = 32000;
-end
-if (nargin < 4)
-    calib = [];
-end
-if (nargin < 5 || isempty(moon_peak))
-    moon_peak = 120;
-end
-if (nargin < 6 || isempty(fir_length))
-    fir_length = 65;
-end
+  % frequencies in Hz that we will produce test tones at. Adjust as required.
+  fresponse.Frequencies = [125 250 500 1000 1500 2000 3000 4000 6000 8000];
 
-reug.f = [[125 250 500 1000 1500 2000 3000 4000 6000 8000]];
-reug.g = [0,1,2,3,5,12,16,14,4,2];
+  % Real-Ear-Unaided-Gains in dB for the above frequencies, taken from Dillon 2012.
+  fresponse.REUGdB = [0,1,2,3,5,12,16,14,4,2];
 
-% measure levels
+  % Correction vector, initially all conrrections are 0, no correction
+  fresponse.correctionsdB = zeros(size(fresponse.Frequencies));
 
-if isempty(calib)
-    mha = mha_start;
-    s.nchannels_in = 2;
-    s.fragsize=64;
-    s.srate = sampling_rate;
-    s.mhalib = 'splcalib';
-    s.mha.calib_out.peaklevel = [120 120];
-    s.mha.plugin_name = 'resampling';
-    s.mha.resampling.srate = resampling_rate;
-    s.mha.resampling.plugin_name = 'sine';
-    s.mha.resampling.sine.channels = side;
-    s.iolib='MHAIOJackdb';
-    s.io.con_out={'system:playback_1', 'system:playback_2'};
-    mha_set(mha,'',s);
-    mha_set(mha,'cmd','start');
+  % result vector, initially very low values for safety
+  fresponse.dBFSfor80dB = ones(size(fresponse.Frequencies)) * -200;
+  
+  % Start a suitable MHA for producing test tones
 
-    for fi = 1:length(reug.f)
-      f = reug.f(fi);
-      mha_set(mha, 'mha.resampling.sine.f', f);
-      mha_set(mha, 'mha.resampling.sine.lev', 0);
-      level = 69;
-      change = 1;
-      while change
-        level = level + change;
-        mha_set(mha, 'mha.resampling.sine.lev', level);
-        change = input(sprintf('\n\ncurrent moon level is %d\nspl level should be 80\nwhat change is required? ', level));
+  mha = mha_start;
+  s.nchannels_in = 1;
+  s.fragsize=64;
+  s.srate = sampling_rate;
+  s.mhalib = 'splcalib';
+  s.mha.calib_out.peaklevel = [0];
+  s.mha.plugin_name = 'sine';
+  s.mha.sine.channels = [0];
+  s.iolib='MHAIOJackdb';
+  s.io.con_out={jack_port};
+  mha_set(mha,'',s);
+  mha_set(mha,'cmd','start');
+
+  % measure levels
+  for fi = 1:length(fresponse.Frequencies)
+    f = fresponse.Frequencies(fi);
+    printf("Starting measurements at %d Hz\n", f);
+    mha_set(mha, 'mha.sine.lev', -100);
+    mha_set(mha, 'mha.sine.f', f);
+    level = -51;
+    change = 1;
+    while change
+      level = level + change;
+      if (level > -3)
+        display("Warning: Cannot produce sinusoids > -3dB re FS RMS, limiting to -3dB")
+        level = -3;
       end
-      calib(fi) = level;
+      mha_set(mha, 'mha.sine.lev', level);
+      change = input(sprintf('\n\nProducing sinusoid with %dHz at %f dB re FS\nWe try to achieve 80 dB coupler level.\nwhat change in dB is required? ', f, level));
     end
+    fresponse.dBFSfor80dB(fi) = level;
+    printf("Noting that we need %f dBFS at %d Hz to produce 80 dB coupler level.\n", level, f);
+  end
 
-    mha_set(mha,'cmd','quit');
+  mha_set(mha,'cmd','quit');
 end
-
-% compute FIR filter
-
-needed_gains = reug.g + (calib - 80);
-peak_correction = max(needed_gains);
-needed_gains = needed_gains - peak_correction;
-peak = moon_peak  - peak_correction;
-fir = fir2(fir_length, [0 (reug.f / sampling_rate * 2) 1], 10.^([needed_gains(1), needed_gains, -inf] / 20));
-
 
