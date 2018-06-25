@@ -23,6 +23,7 @@ function [fresponse] = measure_fresponse(jack_port, sampling_rate)
   s.srate = sampling_rate;
   s.mhalib = 'transducers';
   s.mha.calib_out.peaklevel = [0];
+  s.mha.calib_in.peaklevel = [-200];
   s.mha.plugin_name = 'sine';
   s.mha.sine.channels = [0];
   s.iolib='MHAIOJackdb';
