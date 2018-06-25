@@ -14,6 +14,9 @@ function [fresponse] = measure_fresponse(jack_port, sampling_rate)
 
   % result vector, initially very low values for safety
   fresponse.dBFSfor80dB = ones(size(fresponse.Frequencies)) * -200;
+
+  % sampling rate is required for filter creation
+  fresponse.sampling_rate = sampling_rate;
   
   % Start a suitable MHA for producing test tones
 
