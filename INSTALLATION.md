@@ -1,5 +1,8 @@
 # Installation instructions
-## Installation from binary packages on Ubuntu.
+
+This installation guide describes the installation process of openMHA on Linux (__I.__, __II.__), macOS (__III.__) and Windows (__IV.__) operating systems as well as how to (re-)build the documentation files delivered with openMHA. 
+
+## I. Installation from binary packages on Ubuntu.
 
 First, add the package source with the openMHA installation packages to your system:
 
@@ -56,7 +59,7 @@ For updating openMHA when a new release is available run
 sudo apt-get install --only-upgrade openmha
 ```
 
-## Compiling from source (Linux)
+## II. Compiling from source (Linux)
 
 The openMHA source code has to be compiled before openMHA can be used. While openMHA in
 general can be compiled for many operating systems and hardware platforms, in
@@ -77,6 +80,8 @@ or a Beaglebone Black with Debian jessie installed.
 - portaudio19-dev
 - optional:
   - GNU Octave with the signal package and default-jre (e.g. openjdk-8-jre for Debian 9)
+  - liblo
+  - liblsl 
 
 Octave and default-jre are not essential for building or running openMHA.
 The build process uses Octave + Java to run some tests after
@@ -125,7 +130,7 @@ mha ? cmd=quit
 Which should print the default configuration of the openMHA without any plugins
 loaded.
 
-## Compiling from source (macOS)
+## III. Compiling from source (macOS)
 
 ### Prerequisites
 - macOS 10.10 or later.
@@ -140,6 +145,8 @@ The following packages should be installed via macports:
 - optional:
   - octave +java
   - octave-signal
+  - liblo
+  - liblsl
 
 The optional GUI (cf. openMHA_gui_manual.pdf) requires Java-enabled
 Octave in version >= 4.2.1.
@@ -185,7 +192,7 @@ mha ? cmd=quit
 Which should print the default configuration of the openMHA without any plugins
 loaded.
 
-## Compilation under Windows (advanced)
+## IV. Compilation under Windows (advanced)
 
 ### Prerequisites
 
@@ -220,7 +227,7 @@ You then need to copy the openMHA libraries into the openMHA bin directory:
 ```
 mv lib/* bin/.
 ```
-## Regeneration of the documentation:
+## V. Regeneration of the documentation:
 
 User manuals are provided in PDF format.  Recreating them from source is
 normally not necessary.

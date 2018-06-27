@@ -4,7 +4,7 @@
 #include <memory>
 /**
  * This is a minimal example that demonstrates how a multi-channel
- * stream (here 16ch) can be resolved into an inlet, and how the
+ * stream can be resolved into an inlet, and how the
  * raw sample data & time stamps are pulled from the inlet.
  */
 
@@ -12,6 +12,8 @@ int main(int argc, char* argv[]) {
   using namespace lsl;
 
   std::string stream_name;
+
+  //first argument is stream name
   if(argc==2){
     stream_name=argv[1];
   }
@@ -29,6 +31,7 @@ int main(int argc, char* argv[]) {
     usleep(1e7);
     results = resolve_streams();
   }
+  //look for requestet stream, choose first stream if none given
   int stream_nb=0;
   std::cout<<"Found "<<results.size()<<" stream(s): ";
   for(unsigned ii=0;ii<results.size();ii++){

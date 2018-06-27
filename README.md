@@ -2,7 +2,7 @@
 
 HörTech Open Master Hearing Aid (openMHA)
 
-## Content of the openMHA release 4.5.8 (2018-05-19)
+## Content of the openMHA release 4.6.0 (2018-06-26)
 
 The software contains the source code of the openMHA Toolbox library, of the
 openMHA framework and command line application, and of a selection of algorithm
@@ -45,11 +45,18 @@ We provide with this release several examples of configuration files
 and sound examples. These are contained in the directory
 ./mha/examples
 
-For example, we can start an example featuring multiple algorithms
-together with the following command:
+For instance, we can start an example featuring multiple algorithms together by 
+changing the working directory to the directory that contains the example
 
 ```
-mha ?read:mha/examples/04-prerelease-combination/prerelease_combination.cfg cmd=start cmd=quit
+cd ./mha/examples/04-prerelease-combination
+```
+
+read the configuration file, run processing of the audio file specified in 
+the configuration in openMHA and quit openMHA afterwards with the following command:
+
+```
+mha ?read:prerelease_combination.cfg cmd=start cmd=quit
 ```
 ## Known issues
 * There are some known issues with Octave under macOS. The openMHA gui may not work correctly with octave. As an alternative Matlab can be used.
