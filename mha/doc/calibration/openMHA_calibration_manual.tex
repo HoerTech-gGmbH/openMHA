@@ -1,0 +1,474 @@
+%%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
+%%% Copyright © 2018 HörTech gGmbH
+%%%
+%%% openMHA is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as published by
+%%% the Free Software Foundation, version 3 of the License.
+%%%
+%%% openMHA is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License, version 3 for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License, 
+%%% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+% Latex header for doxygen 1.8.11
+\documentclass[11pt,a4paper,twoside]{article}
+
+% Packages required by doxygen
+\usepackage{fixltx2e}
+\usepackage{calc}
+\usepackage{../openMHAdoxygen}
+\setlength{\headheight}{13.6pt}
+\usepackage[export]{adjustbox} % also loads graphicx
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{makeidx}
+\usepackage{multicol}
+\usepackage{multirow}
+\PassOptionsToPackage{warn}{textcomp}
+\usepackage{textcomp}
+\usepackage[nointegrals]{wasysym}
+\usepackage[table]{xcolor}
+
+% Font selection
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{amssymb}
+\usepackage{sectsty}
+\renewcommand{\familydefault}{\sfdefault}
+\allsectionsfont{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\renewcommand{\DoxyLabelFont}{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\newcommand{\+}{\discretionary{\mbox{\scriptsize$\hookleftarrow$}}{}{}}
+
+% Page & text layout
+\usepackage{geometry}
+\geometry{%
+  a4paper,%
+  top=2.5cm,%
+  bottom=2.5cm,%
+  left=2.5cm,%
+  right=2.5cm%
+}
+\tolerance=750
+\hfuzz=15pt
+\hbadness=750
+\setlength{\emergencystretch}{15pt}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{3ex plus 2ex minus 2ex}
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@parafont%
+  }%
+}
+\renewcommand{\subparagraph}{%
+  \@startsection{subparagraph}{5}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@subparafont%
+  }%
+}
+\makeatother
+
+% Headers & footers
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\renewcommand{\sectionmark}[1]{%
+  \markright{\thesection\ #1}%
+}
+\fancyhead[LE]{\fancyplain{}{\bfseries\thepage}}
+\fancyhead[CE]{\fancyplain{}{}}
+\fancyhead[RE]{\fancyplain{}{\bfseries\leftmark}}
+\fancyhead[LO]{\fancyplain{}{\bfseries\rightmark}}
+\fancyhead[CO]{\fancyplain{}{}}
+\fancyhead[RO]{\fancyplain{}{\bfseries\thepage}}
+\fancyfoot[LE]{\fancyplain{}{}}
+\fancyfoot[CE]{\fancyplain{}{}}
+\fancyfoot[RE]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2018 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[LO]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2018 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[CO]{\fancyplain{}{}}
+\fancyfoot[RO]{\fancyplain{}{}}
+
+% Indices & bibliography
+\usepackage{natbib}
+\usepackage{tocloft}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{4}
+\addtolength{\cftsubsecnumwidth}{5pt}
+\makeindex
+
+% Custom commands
+\newcommand{\clearemptydoublepage}{%
+  \newpage{\pagestyle{empty}\cleardoublepage}%
+}
+
+\usepackage{caption}
+\captionsetup{labelsep=space,justification=centering,font={bf},singlelinecheck=off,skip=4pt,position=top}
+
+%===== C O N T E N T S =====
+
+\begin{document}
+
+\MHAtitle{The \mha{} Calibration Manual}
+\newpage
+\MHAcopyright{}
+\newpage
+\tableofcontents
+\newpage
+\renewcommand{\leftmark}{\rightmark}
+\pagenumbering{arabic}
+
+\section{Introduction}
+
+The H\"{o}rtech Open Master Hearing Aid (\mha{}) is a software platform
+for algorithm development and evaluation.
+%
+For certain aspects of algorithm evaluation, correct calibration of the
+test setup may be a requirement.
+%
+Since \mha{}, being a software platform, does not include hardware
+(like hearing aid housings, microphones, and receivers),
+users of the \mha{} are expected to supplement suitable hardware
+to pick up and produce sound at the users' ears.
+%
+Users then face the challenge of how to correctly configure the software
+to calibrate the system.
+
+This guide is a collection of best practices that the authors and users
+of \mha{} employ to ensure their setups are calibrated correctly.
+%
+We will extend this guide with new procedures as we add them to the
+openMHA, and as we receive user contributions in the field of
+calibration.
+%
+\mha{} users should be aware that calibration is an involved topic.
+%
+Users need professional, specialized acoustic measurment equipment in
+order to be able to perform accurate measurements, and understand
+how to use their equipment.
+%
+Understanding how to calibrate commercial hearing aids is a requirement
+for using this guide.
+%
+The book "Hearing Aids" by Harvey Dillon contains a suitable treatment
+of the topic in chapter 4 of its second edition (2012).
+%
+We cannot guarantee that the procedures presented here are free of
+errors.
+%
+If you discover something that is wrong, please get in contact with
+the \mha{} project, e.g. by filing an issue with our github project.
+%
+We will do our best to improve the documentation and the tools that we
+provide as we go along.
+
+\section{Calibrating hearing aid outputs}
+
+This section describes how to measure the frequency response of a
+custom hearing aid output hardware, and how to use this frequency
+responses to calibrate the output of the device.
+
+%
+
+\subsection{Considerations regarding calibration of custom hardware used as hearing aid outputs}
+
+Hearing aid receivers typically have a low impedance and a non-flat frequency response.
+%
+When attaching hearing aid receivers to the output of a computer's
+sound card, care has to be taken to ensure that the sound card can
+actually drive the receiver, i.e.\ provide the necessary current
+without voltage drops.
+%
+Otherwise serious non-linearities will result.
+%
+Consider the application of a suitable amplifier to drive your output hardware.
+
+A suitable acoustic coupler has to be used to connect the measurement
+microphone to the hearing aid receiver.
+%
+The coupler will simulate the mechanical properties similar to
+a real ear canal.
+%
+The coupler will also influence how the measurment microphone of your
+measurement equipment has to be calibrated.
+%
+Please refer to Dillon and to the manuals of your measurement
+equipment for details.
+
+When you calibrate custom hearing aid hardware, you always calibrate
+the complete output chain in combination, consisting of
+%
+the individual sound card, any amplifier that you employ, and the
+hearing aid receiver.
+
+Hearing aids need to produce ear canal sound levels, not free field
+sound levels.
+%
+For this reason, we suggest to also apply the Real-Ear-Unaided-Gain
+(REUG) in the \mha{} output calibration.
+%
+Please refer to Dillon for an explanation of REUG.
+
+When calibrating hearing aid devices, you need to make a choice
+whether you are ok with calibrating the device for an average ear, or
+for the individual ear of a specific subject.
+%
+In the following text, we will describe only the average calibration
+method. This may change in future.
+
+Calibration requires reliable measurement of acoustic levels.
+%
+This can only be achieved in a quiet environment.
+%
+Please perform all acoustic measurements in a suitable, sound-proof
+booth or a similar environment.
+%
+If your calibration equipment supports it, consider to filter out very
+low frequencies (e.g. < 20 Hz).
+%
+If you notice fluctuations in the measured level, e.g. resulting from
+doors on other levels in your building, or from traffic outside,
+consider moving to a better isolated location, or to off-peak hours.
+%
+To ensure that the influence of unavoidable noise is minimal, acoustic
+calibration is performed at relatively high sound levels around 80 dB.
+%
+If you cannot achieve these levels with your custom output hardware,
+you should consider modifying the output hardware rather than
+measuring a lower sound level.
+
+We will be using the MHA to produce test tones of which we then
+measure the acoustic levels.
+%
+When producing test tones with high frequencies, take into account
+that the sound card will apply a low-pass filter for anti-aliasing
+that affects already frequencies below the Nyquist frequency.
+%
+This can be an issue if you want to calibrate your system for
+relatively low acoustic sampling rates: If e.g. you use 16 kHz
+sampling rate in your sound card, measuring the sound level at 8 kHz
+should be avoided, and you should not reuse the measurement taken at 6
+kHz for higher sound card sampling rates.
+
+The calibration process will probably run into practical limits, and
+will require compromises.
+%
+E.g., hearing aid receivers typically produce significantly softer
+sound levels for the same electric voltages at low frequencies.
+%
+Exact calibration requires filters that invert the frequency response
+of the hearing aid output hardware, which would mean in this case,
+amplify with a high gain at low frequencies.
+%
+However, a high enough gain at low frequencies will cause the output
+signal amplitude to exceed the dynamic range of the sound card.
+%
+Since it is not possible to produce signal with a higher amplitude
+than the maximum amplitude of the sound card, the signal would need to
+be limited after the calibration filter is applied. This limiting will
+cause audible artifacts.
+%
+To avoid these situations, it is usually a better choice to avoid too
+high amplification at the boundaries of the transmitted spectrum and
+to accept that the output levels are softer than intended by the
+hearing aid signal processing algorithms in these frequency areas.
+
+\subsection{Measuring the frequency response for a custom hearing aid output hardware with openMHA with an IEC 711 coupler}
+
+We describe here how to use a coupler according to IEC 60 711 to
+measure the frequency response of custom hearing aid output hardware.
+%
+Compared to the 2cc coupler, the IEC 711 coupler has the advantage
+that for an average ear, the Real-Ear-to-Coupler-Difference (RECD) is
+small enough that it does not need to be taken into account when doing
+measurements to calibrate for the average ear.
+
+Please assemble and calibrate your measurement equipment to perform
+measurements with the IEC 711 coupler.
+%
+Please refer to the manual of the equipment manufacturer for
+instructions.
+%
+Note that some calibrator devices require that you take correction
+factors into account when calibrating your equipment for the IEC 711.
+
+% We will talk of classes of custom hearing aid outputs in the next iteration.
+%
+% When we talk of a class of custom hearing aid output software, we
+% refer to an ensemble of output devices that use the same type of
+% receiver, the same type of amplifier, and the same type of soundcard.
+% %
+% Individual receivers, amplifiers, and soundcards will differ from each
+% other, even if they are of the same type.
+% %
+% You will have to decide for yourself what difference you are going to
+% accept and still consider the devices to be in the same class.
+
+When your equipment is calibrated, then you can measure the frequency
+response of the output hardware with the help of the openMHA:
+
+\begin{itemize}
+\item
+  Install \mha{} on the computer where the calibration is performed (see README.md).
+\item
+  If installed from source, run the \texttt{source bin/thismha.sh}
+  command to add \mha{} to your path.
+\item
+  We will use \Octave{}/\Matlab{} tools to control the measurement. To
+  prepare,
+  \begin{itemize}
+  \item Start \Octave{}/\Matlab{} from the shell where you have set
+    the \mha{} environment variables.
+  \item Change to the directory mha/tools/mfiles.
+  \item Execute \texttt{javaaddpath mhactl\_java.jar} inside
+    \Octave{}/\Matlab{}.
+  \end{itemize}
+\item
+  Start the jack sound server with the same sampling rate that you
+  will later use with the \mha{}.
+\item
+  Connect the custom hearing aid output hardware to the desired
+  sound card output channel and to the measurement equipment.
+\item
+  Use the \Octave{}/\Matlab{} function \texttt{measure\_fresponse}
+  provided with \mha{} to measure the frequency response:
+  \begin{itemize}
+  \item Call this function with the following parameters:
+    \begin{enumerate}
+    \item the name of the sound card channel in jack,
+      e.g. \texttt{'system:playback\_1'},
+    \item the sampling rate of the jack server in Hz.
+    \end{enumerate}
+  \item The function returns a struct containing the fields:
+    \begin{description}
+    \item [Frequencies] A vector of frequencies in Hz of the test tones,
+    \item [dBFSfor80dB] A vector of corresponding levels in dB re full scale (dB FS) of the sound card where the acoustic level was 80 dB.
+    \item [REUGdB] A vector of corresponding suggested correction gains in dB to compensate for REUG.
+    \item [correctionsdB] A vector of corresponding correction gains, initially all 0.
+    \end{description}
+  \item
+    example: \texttt{response = measure\_fresponse('system:playback\_1',48000);}
+  \item
+    The function will start an MHA and begin to output test tones.
+  \item
+    Your measurement equipment which is connected to the output will
+    measure the acoustic level produced by each test tone.
+  \item
+    Your goal is to alter the output levels so that acoustic levels of
+    80 dB are produced by the test tones:
+  \item
+    If the acoustic level is different from 80 dB, then adjust the level
+    by entering the required difference to reach 80 dB.
+  \item
+    Repeat the corrections until your setup produces 80 dB acoustic
+    output level.
+  \item
+    When you have reached 80 dB, enter a correction value of 0 to move
+    on to the next test tone.
+  \end{itemize}
+\end{itemize}
+  
+You have now the frequency response of your setup in a struct in
+\Octave{}/\Matlab{}.
+%
+You can use all the tools available in \Octave{}/\Matlab{} to inspect
+and alter the measured frequency response in this struct before using
+it to calibrate the MHA.
+%
+We provide the \Octave{}/\Matlab{} function \texttt{plot\_fresponse}
+that you can use to plot the frequency response.
+%
+The plot will display the frequency response of the required filter to
+calibrate the MHA for your output hardware.
+%
+This filter inverts the frequency response of your output hardware, and
+adds the gains to apply the REUG.
+
+You now have to decide if the overall dynamic exhibited by this filter
+is small enough that you want to apply the calibration filter as it
+is, fully compensating the averaged frequency response, of if you want
+to introduce correction gains to avoid too high gains at high or low
+frequencies, by changing the correctionsdB vector in the frequency
+response struct in \Octave{}/\Matlab{}.
+
+\subsection{Using the measured frequency response to calibrate a hearing aid output device}
+
+The \mha{} plugin \texttt{transducers} is used to calibrate inputs and outputs.
+%
+\texttt{transducers} can be configured with FIR filter parameters and a peak level
+to compensate for the frequency responses of hearing aid microphones and receivers.
+%
+To make use of this capability, choose a \mha{} configuration that already includes
+the \texttt{transducers} plugin, or create a new configuration that contains
+\texttt{transducers}.
+
+When you are content with the calibration filter's frequency response,
+you can convert the frequency response struct to a set of filter
+coefficients and peak level that can be used in \mha{} configuration.
+%
+The \Octave{}/\Matlab{} function \texttt{fresponse\_to\_cfg} can be
+used to convert the frequency response struct to a text string that
+can be used in the \mha{} configuration.
+
+The function \texttt{fresponse\_to\_cfg} prints out values for the
+\texttt{peaklevel} and for the \texttt{fir} configuration variables of
+the \mha{} plugin \texttt{transducers}.
+
+You can take these values and insert them into your configuration file,
+into the \texttt{transducers} configuration.
+%
+Remove the elipses (\texttt{...}) printed, and remove superfluous
+semicolons.
+%
+These are printed by the \texttt{fresponse\_to\_cfg} for cases where
+you have multiple output channels. You have to assign the peaklevels
+and FIR filter coefficients to the correct output channels that
+correspond to the measured hardware.
+
+\subsection{Test your calibration}
+
+It is crucial to test your calibration. Please configure a simple \mha{} with the
+calibration values that you have measured, insert the sine plugin into this \mha{},
+and play back sinusoids with different frequencies and different levels.
+%
+A suitable configuration file is present in the \texttt{examples} directory of \mha{}.
+%
+Please use the configuration file in the \texttt{test-calibration} subdirectory
+and alter it to contain your specific calibration values.
+%
+The configuration can then be started with
+\texttt{mha ?read:test-calibration.cfg cmd=start}.
+%
+You can either modify the sinusoid frequencies in this configuration
+file and start \mha{} repeatedly with different values of
+\texttt{mha.sine.f}, or use the network or \Octave{}/\Matlab{} based
+tools to modify this value in the running \mha{}.
+
+When playing back sinusoids at the measurement frequencies, check the output levels with your
+measurement equipment. It is now expected that the output levels for 80 dB sinusoids is measured as 80 dB + REUG(f) + correction(f).
+
+Differences of up to a few dB are expected. You should check that over
+the total spectrum, the differences are equally distributed to higher
+and lower output levels than expected.
+
+\bibliography{MHA}
+
+\printindex
+
+\end{document}
+
+% LocalWords:  audiogram \mha{} LTASS
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "openMHA_application_manual"
+%%% indent-tabs-mode: nil
+%%% coding: utf-8-unix
+%%% End:

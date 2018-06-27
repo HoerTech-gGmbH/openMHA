@@ -34,10 +34,13 @@ MODULES = \
 
 DOCMODULES = \
 	mha/doc/flowcharts \
-  mha/doc/images \
+	mha/doc/images \
 	mha/doc \
 
 all: $(MODULES)
+
+config.mk:
+	./configure
 
 test: all
 	$(MAKE) -C mha/mhatest

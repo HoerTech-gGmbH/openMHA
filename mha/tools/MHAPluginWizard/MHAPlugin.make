@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 HörTech gGmbH
+# Copyright © 2014 2017 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -13,25 +13,9 @@
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-# This file contains the standard settings setting for HörTech's 64
-# bit Linux build host when using the gcc compiler in version 5
-
-ARCH=x86_64
-PLATFORM=linux
-GCC_VER=-5
-DYNAMIC_LIB_EXT=.so
-BUILD_DIR=x86_64-linux-gcc-5
-CXXFLAGS+=-std=c++11
-CFLAGS+=-fPIC -O3  -msse -msse2 -mfpmath=sse -ffast-math -fomit-frame-pointer -fno-finite-math-only
-CXXFLAGS+=-fPIC -O3  -msse -msse2 -mfpmath=sse -ffast-math -fomit-frame-pointer -fno-finite-math-only
-WITH_ALSA=yes
-WITH_JACK=yes
-HAS_WARNING_UNUSED_LOCAL_TYPEDEFS=yes
-CXXFLAGS+=-Wall -Werror
-CFLAGS+=-Wall -Werror
-PREFIX:=$(dir $(lastword $(MAKEFILE_LIST)))/mha
+include ../../plugin.mk
 
 # Local Variables:
-# mode: Makefile
+# compile-command: "make"
 # coding: utf-8-unix
 # End:

@@ -79,7 +79,8 @@ function test_wave2spec_user_window_direct_2()
   mha_set(mha,'mha.wave2spec.wndlen',8);
   mha_set(mha,'iolib','MHAIOParser');
   mha_set(mha,'mha.wave2spec.userwnd',[0.1 0.2 0.8 1 1 0.8 0.2 0.1]);
-                                % does not work yet:
+
+  % Regression test: This used to expose a bug in user window handling. 
   mha_set(mha,'mha.wave2spec.wndtype','user');
   mha_set(mha,'cmd','prepare');
   assert_equal('stopped', mha_get(mha,'state'));

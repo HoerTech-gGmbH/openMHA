@@ -58,3 +58,9 @@ function test_wave2spec_spec2wave_delay
 			  output_signal(:,delay+1:end), ...
 			  1e-8);
 end
+
+% Local Variables:
+% mode: octave
+% coding: utf-8-unix
+% indent-tabs-mode: nil
+% End:

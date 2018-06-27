@@ -90,3 +90,9 @@ a = (xc(index+1)+xc(index-1)) / 2 - c;
 b = (xc(index+1)-xc(index-1)) / 2;
 index = -b/2/a + (index - length(sig1));
 end % endfunction
+
+% Local Variables:
+% mode: octave
+% coding: utf-8-unix
+% indent-tabs-mode: nil
+% End:

@@ -16,7 +16,7 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = adm transducers delaysum cpuload wavrec
+SUBDIRS = adm transducers delaysum cpuload wavrec addsndfile
 
 include ../../../rules.mk
 

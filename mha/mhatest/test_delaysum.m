@@ -54,3 +54,9 @@ function [retval] = test_delaysum
     output_signal = mha_get(mha, 'io.output');
     assert_almost(output_signal,out_sig,1e-6);
 end
+
+% Local Variables:
+% mode: octave
+% coding: utf-8-unix
+% indent-tabs-mode: nil
+% End:

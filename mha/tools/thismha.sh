@@ -58,6 +58,8 @@ if [ -n "${old_mhasys}" ] ; then
    fi
 fi
 
+export MHA_LIBRARY_PATH="$MHASYS/lib;$MHASYS/bin;$MHA_LIBRARY_PATH"
+
 if [ -z "${PATH}" ]; then
     PATH=${MHASYS}/bin; export PATH
 else

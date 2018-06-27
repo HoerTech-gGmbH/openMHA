@@ -1,6 +1,9 @@
+%% This function tests plugin fshift_hilbert by checking the frequency shift
+%% applied by this plugin.
+%%
 %% This file is part of the HörTech Open Master Hearing Aid (openMHA)
 %% Copyright © 2017 HörTech gGmbH
-%%
+
 %% openMHA is free software: you can redistribute it and/or modify
 %% it under the terms of the GNU Affero General Public License as published by
 %% the Free Software Foundation, version 3 of the License.
@@ -15,9 +18,6 @@
 %%
 %% Author: Tobias Herzke
 %% Created: 2017-05-29
-%%
-%% This function tests plugin fshift_hilbert by checking the frequency shift
-%% applied by this plugin.
 
 function test_fshift_hilbert
 
@@ -97,3 +97,9 @@ function test_fshift_hilbert
     assert_difference_below(0,sqrt(e),10^(-40/20));
 
 end
+
+% Local Variables:
+% mode: octave
+% coding: utf-8-unix
+% indent-tabs-mode: nil
+% End:

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/****************************************************************************
+**
+** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/legal
+**
+** This file is part of Qt Creator.
+**
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and Digia.  For licensing terms and
+** conditions see http://qt.digia.com/licensing.  For further information
+** use the contact form at http://qt.digia.com/contact-us.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Digia gives you certain additional
+** rights.  These rights are described in the Digia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+****************************************************************************/
+
+Custom project wizard configuration example file. Note that by convention,
+the project file goes last.
+The "class" and "firstpage" attributes specify that it is a Qt 4 wizard and
+leave room for the Qt 4 target page.
+-->
+<wizard version="1" kind="project" class="qmakeproject"
+        firstpage="10" id="A.MHAPluginWizard" category="B.MHAProjects">
+  <icon>mhalogo128.png</icon>
+  <description>Creates an MHA plugin skeleton with separated interface and data/processing classes.</description>
+  <displayname>MHAPlugin (two classes)</displayname>
+  <displaycategory>MHA Projects</displaycategory>
+  <files>
+    <file source="MHAPlugin.cpp" openeditor="true" target="%ProjectName%.cpp"/>
+	  <file source="MHAPlugin.h" target="%ProjectName%.h"/>
+	  <file source="MHAPlugin.cfg" target="%ProjectName%.cfg"/>
+	  <file source="MHAPlugin.m" target="%ProjectName%.m"/>
+    <file source="MHAPlugin.make" target="Makefile.in"/>
+    <file source="MHAPlugin.pro" target="%ProjectName%.pro" openproject="true"/>
+  </files>
+  <!-- Create a 2nd wizard page with parameters -->
+  <fieldpagetitle>MHAPlugin parameters</fieldpagetitle>
+  <fieldpagetitle xml:lang="de">MHAPlugin Parameter</fieldpagetitle>
+  <fields>
+    <field name="PluginNameDesc">
+      <fieldcontrol class="QLineEdit" defaulttext="Foo Transform Plugin for Superfluous Spectra" />
+      <fielddescription>Descriptive Plugin Name:</fielddescription>
+    </field>
+    <field name="InputType">
+	    <fieldcontrol class="QComboBox" combochoices="wave,spec" defaultindex="1" />
+      <fielddescription>Input Type</fielddescription>
+    </field>
+    <field name="OutputType">
+	    <fieldcontrol class="QComboBox" combochoices="wave,spec" defaultindex="1" />
+      <fielddescription>Output Type</fielddescription>
+    </field>
+    <field name="PluginCategory">
+	    <fieldcontrol class="QComboBox" combochoices="filter,generator,noise,noise-reduction,resample,test,vocoder,analysis,adaptive,binaural,feedback" defaultindex="0" />
+      <fielddescription>Plugin category</fielddescription>
+    </field>
+    <field name="PluginDocument">
+      <fieldcontrol class="QTextEdit" defaulttext="Documentation for user of this plugin" />
+    </field>
+    <field name="PluginDocumentSource">
+	    <fieldcontrol class="QTextEdit" defaulttext="Documentation for the developer of this plugin (that's you!)" />
+    </field>
+    <field mandatory="true" name="LibMHAPath">
+      <fieldcontrol class="Utils::PathChooser" defaulttext="" expectedkind="existingdirectory" />
+      <fielddescription>Path to libopenmha</fielddescription>
+    </field>
+    <field mandatory="true" name="IncludePath">
+      <fieldcontrol class="Utils::PathChooser" defaulttext="" expectedkind="existingdirectory" />
+      <fielddescription>Path to MHA includes</fielddescription>
+    </field>
+    <field mandatory="false" name="ExtraIncludePath">
+      <fieldcontrol class="Utils::PathChooser" defaulttext="" expectedkind="existingdirectory"/>
+      <fielddescription>Path to Extra includes (optional)</fielddescription>
+    </field>
+    <field mandatory="false" name="InstallPath">
+      <fieldcontrol class="Utils::PathChooser" defaulttext="" expectedkind="existingdirectory"/>
+      <fielddescription>Install path for plugin (optional)</fielddescription>
+    </field>
+    <field name="TypeStr">
+	    <fieldcontrol class="QCheckBox" truevalue="_t" falsevalue="" defaultvalue="false"/>
+      <fielddescription>Append "_t" to classnames</fielddescription>
+    </field>
+  </fields>
+</wizard>

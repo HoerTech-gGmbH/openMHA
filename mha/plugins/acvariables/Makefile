@@ -10,13 +10,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License, version 3 for more details.
 #
-# You should have received a copy of the GNU Affero General Public License, 
+# You should have received a copy of the GNU Affero General Public License,
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 include ../../../config.mk
 include ../../../magic.mk
 
-SUBDIRS = acmon acsave acSteer ac2wave save_wave save_spec acPooling_wave acTransform_wave acConcat_wave
+SUBDIRS = acmon acsave acSteer ac2wave save_wave save_spec acPooling_wave acTransform_wave acConcat_wave ac2lsl ac2osc
 
 include ../../../rules.mk
 

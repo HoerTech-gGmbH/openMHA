@@ -26,7 +26,7 @@ MHANAME = openMHA
 
 all:
 	$(MAKE) -C flowcharts
-	$(MAKE)  $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf
+	$(MAKE)  $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf $(MHANAME)_calibration_manual.pdf
 	$(MAKE)  plugins
 
 
@@ -51,24 +51,27 @@ test:
 
 mhakernel.pdf: kernel
 	make -C mhakernel/latex refman.pdf
-	cp mhakernel/latex/refman.pdf $@
+	@cp mhakernel/latex/refman.pdf $@
 
 mhastructure.pdf: mhastructure
 	TEXINPUTS="./:../../:../../flowcharts/fmt_png/:" make -C MHA-Structure/latex refman.pdf
-	cp MHA-Structure/latex/refman.pdf $@
+	@cp MHA-Structure/latex/refman.pdf $@
 
 $(MHANAME)_developer_manual.pdf: images mhadoc
-	cp optparams.sty mhadoc/latex
-	cp flowcharts/fmt_png/*.png mhadoc/latex
-	cp flowcharts/fmt_pdf/*.pdf mhadoc/latex
+	@cp optparams.sty mhadoc/latex
+	@cp flowcharts/fmt_png/*.png mhadoc/latex
+	@cp flowcharts/fmt_pdf/*.pdf mhadoc/latex
 	make -C mhadoc/latex refman.pdf
-	cp mhadoc/latex/refman.pdf $@
+	@cp mhadoc/latex/refman.pdf $@
 
 $(MHANAME)_application_manual.pdf: user_manual/$(MHANAME)_application_manual.pdf
-	cp $< $@
+	@cp $< $@
+
+$(MHANAME)_calibration_manual.pdf: calibration/$(MHANAME)_calibration_manual.pdf
+	@cp $< $@
 
 $(MHANAME)_gui_manual.pdf: user_manual/$(MHANAME)_gui_manual.pdf
-	cp $< $@
+	@cp $< $@
 
 .PHONY : images user_manual/$(MHANAME)_application_manual.pdf user_manual/$(MHANAME)_gui_manual.pdf
 
@@ -77,6 +80,9 @@ user_manual/$(MHANAME)_application_manual.pdf:
 
 user_manual/$(MHANAME)_gui_manual.pdf:
 	make -C user_manual $(MHANAME)_gui_manual.pdf
+
+calibration/$(MHANAME)_calibration_manual.pdf:
+	make -C calibration $(MHANAME)_calibration_manual.pdf
 
 images:
 	make -C flowcharts
