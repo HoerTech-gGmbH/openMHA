@@ -8,7 +8,7 @@ First, add the package source with the openMHA installation packages to your sys
 
 In Ubuntu 18.04:
 
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 104A07F9
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7D6CDF547DA4ABD
     sudo apt-add-repository 'deb http://apt.openmha.org/ubuntu bionic universe'
 
 In Ubuntu 16.04:
