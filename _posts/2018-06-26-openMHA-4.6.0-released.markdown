@@ -1,0 +1,45 @@
+---
+layout: post
+title:  "2018 Release of openMHA available"
+date:   2018-06-26 08:00:00
+category: software
+tags: [release, 4.6.0]
+---
+
+__openMHA 4.6.0__ is the 2018 major release of the software platform.
+
+Several features were added in this release:
+ 
+### System support
+In version 4.6.0 openMHA supports Windows operating systems. [Installation Instructions](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#iv-compilation-under-windows-advanced) for compiling the software under Windows are provided.
+
+[Debian packages for Ubuntu 18.04](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#i-installation-from-binary-packages-on-ubuntu) are provided.
+
+### Tools and documentation
+
+[A manual for calibration of hearing aid output](https://github.com/HoerTech-gGmbH/openMHA/blob/master/openMHA_calibration_manual.pdf) was added. Octave/Matlab tools to generate an openMHA configuration according to the outcome of the calibration procedure as well as an configuration example for testing the calibration are provided.
+
+The openMHA documentation has been updated following user feedback. In particular the hands-on example in section 4 of the [application engineer manual](https://github.com/HoerTech-gGmbH/openMHA/blob/master/openMHA_application_manual.pdf) has been simplified.
+
+### New plugins
+
+Extended data exchange capabilities: Two plugins - _ac2osc_ and _ac2lsl_ - have been added that enable data transfer using [Open Sound Control (OSC)](http://opensoundcontrol.org/) and [Lab Streaming Layer (LSL)](https://github.com/sccn/labstreaminglayer) protocols.
+
+ 
+The _MHAIOJackdb_ plugin enables openMHA to work with blocksizes that differ from the setting in the JACK server for live-processing.  
+
+The _addsndfile_ allows to mix sound from a file to a live audio signal.
+
+### Previous additions
+
+In the previous release (4.5.8) the following features were added (since 4.5.5) 
+- _multibandcompressor_ plugin for more efficient realization of dynamic compression
+- The adaptive differential microphone (_adm_) plugin has been extended to support customization of adaptation speed
+- A QtCreator wizard has been added for easier plugin implementation 
+- The set of examples has been extended.
+- The handling of user-defined analysis and synthesis windows in STFT plugins was improved.
+- The Cambridge fitting rule (camfit) was made more configurable.
+- The database of hearing threshold levels was updated to standard ISO 226:2003(E).
+- Bugfixes were made related to calibration and JACk connections on mhacontrol startup ([Github issue #11](https://github.com/HoerTech-gGmbH/openMHA/issues/11)).
+
+
