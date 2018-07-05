@@ -165,10 +165,10 @@ MHAPLUGIN_PROC_CALLBACK(combinechannels,combc_if_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION(combinechannels,
     "filter",
     "Several filter channels can be combined into one or more output"
-    "channels by summing the input channels. This plugin is intended as a"
-    "filter resynthesis of linear-phase filter banks.\n\nThe input signal"
-    "is expected to have a non-interleaved channel order, i.e., first all"
-    "bands of first output channel, then all bands of second channel, etc.\n\n"
+    " channels by summing the input channels. This plugin is intended as a"
+    " filter resynthesis of linear-phase filter banks.\n\nThe input signal"
+    " is expected to have a non-interleaved channel order, i.e., first all"
+    " bands of first output channel, then all bands of second channel, etc.\n\n"
     )
 
 // Local Variables:
