@@ -201,12 +201,10 @@ loaded.
 - Jack Audio Connection Kit 64bit Installer (http://jackaudio.org)
 
 ### Preparation
-After the installation of JACK you need to copy the contents of the includes
-folder in the JACK directory into the includes directory in your Octave
-directory (default is c:\octave\octave-x.y.z) and copy libjack64.lib from the
-JACK installation to the lib directory in your Octave directory and rename it
-to libjack.a . Then you need to download the openMHA source from
-http://www.openmha.org and unpack the archive in your Octave directory.
+
+- Copy the contents of the includes folder in the JACK directory into the includes directory in your Octave directory (default is c:\octave\octave-x.y.z)
+- Copy libjack64.lib from the JACK installation to the lib directory in your Octave directory and rename it to libjack.a .
+- Download the openMHA source from http://www.openmha.org and unpack the archive in your Octave directory.
 
 ### Compilation
 Start a shell by doubleclicking on bash.exe in the /bin subdirectory of your
@@ -217,7 +215,7 @@ ln -s /bin/true /bin/git
 ln -s /bin/g++ /bin/g++-7
 ln -s /bin/gcc /bin/gcc-7
 ln -s /bin/cpp /bin/cpp-7
-cd openMHA-master
+cd /openMHA-master
 ./configure
 make
 make install
@@ -227,6 +225,9 @@ You then need to copy the openMHA libraries into the openMHA bin directory:
 ```
 mv lib/* bin/.
 ```
+
+To start openMHA, you need to start a bash and navigate to the openMHA-master/bin directory, then type ./mha.exe.
+
 ## V. Regeneration of the documentation:
 
 User manuals are provided in PDF format.  Recreating them from source is
