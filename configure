@@ -34,11 +34,14 @@ chklib(){
             --debug=*)
                 DEBUG=`echo $arg | sed 's/--debug=/-g/'`
                 ;;
-            --with-lsl)
-                WITH_LSL=yes
+            --with-lsl=*)
+                WITH_LSL=`echo $arg | sed 's/--with-lsl=//'`
                 ;;
-            --with-osc)
-                WITH_OSC=yes
+            --with-osc=*)
+                WITH_OSC=`echo $arg | sed 's/--with-osc=//'`
+                ;;
+            --arch=*)
+                ARCH=`echo $arg | sed 's/--arch=//'`
                 ;;
             --help)
                 echo 'usage: ./configure [options]'
@@ -51,7 +54,10 @@ chklib(){
         esac
     done
 
-    ARCH=`uname -m`
+    if [ "x$ARCH" = "x" ]; then
+        ARCH=`uname -m`
+    fi
+
     case `uname -s` in
         *Linux*)
             PLATFORM=linux
@@ -85,14 +91,19 @@ chklib(){
 
     pkg-config alsa && (echo "WITH_ALSA=yes")
     pkg-config jack && (echo "WITH_JACK=yes")
+
     if [ "x$WITH_LSL" = "xyes" ]; then
         echo "WITH_LSL=yes";
+    elif [ "x$WITH_LSL" = "xno" ]; then
+        echo "WITH_LSL=no";
     else
         chkhdr lsl_cpp.h && chklib lsl && (echo "WITH_LSL=yes");
     fi
 
     if [ "x$WITH_OSC" = "xyes" ]; then
         echo "WITH_OSC=yes";
+    elif [ "x$WITH_OSC" = "xno" ]; then
+        echo "WITH_OSC=no";
     else
         chkhdr lo/lo.h && chklib lo && (echo "WITH_OSC=yes");
     fi
@@ -102,8 +113,11 @@ chklib(){
     fi
 
     case $ARCH in
+        armhf)
+            echo "COMPILERPREFIX=arm-linux-gnueabihf-"
+            ;;
         arm*)
-        ;;
+            ;;
         x86_64*|i686*)
             echo "SSE+=-msse -msse2 -mfpmath=sse"
             ;;
