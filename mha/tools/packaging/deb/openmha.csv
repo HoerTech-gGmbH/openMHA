@@ -10,4 +10,4 @@ mha/tools/mfiles/*.mat,usr/share/openmha/
 mha/tools/mfiles/mhactl_java.jar,usr/lib/openmha/mfiles/
 mha/tools/mfiles/*.cfg,usr/share/openmha/
 *.pdf,usr/share/doc/openmha/
-mha/plugins/**/*.so,/usr/lib
+mha/plugins/*/*/*.so,/usr/lib
