@@ -65,6 +65,10 @@ mha/examples/09-localizer-steering-beamformer/Output/*
 # debian packages are built in repository root
 debian/
 
+# debian packages
+
+mha/tools/packaging/deb
+
 #local editor configuration
 .clang_complete
 .dir-locals.el
