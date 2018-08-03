@@ -94,6 +94,8 @@ deb: unit-tests
 	$(MAKE) -C mha/tools/packaging/deb pack
 endif
 
+release: test unit-tests
+	@./mha/tools/release.sh
 
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
