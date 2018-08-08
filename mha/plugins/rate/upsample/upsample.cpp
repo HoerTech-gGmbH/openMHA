@@ -72,7 +72,10 @@ mha_wave_t* us_t::process(mha_wave_t* s)
 }
 
 MHAPLUGIN_CALLBACKS(upsample,us_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(upsample,"resample signalflow","")
+MHAPLUGIN_DOCUMENTATION(upsample,"resample signalflow","This plugin performs upsampling by an integer factor n. \n "
+                        " In this process the sampling rate and the fragment size is multiplied by n so that the total"
+                        " number of process calls stays constant. \n The upsampling is performed by writing only "
+                        " to every n-th frame of the output signal. \n An IIR filter can be employed to reduce aliasing.")
 
 // Local Variables:
 // compile-command: "make"

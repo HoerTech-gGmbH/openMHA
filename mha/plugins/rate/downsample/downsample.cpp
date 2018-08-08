@@ -42,7 +42,7 @@ void ds_t::prepare(mhaconfig_t& cf)
     unsigned int new_fragsize = cf.fragsize / ratio.data;
     if( new_fragsize * ratio.data != cf.fragsize )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The fragment size (%d) is not dividable by %d.",
+                        "The fragment size (%d) is not divisible by %d.",
                         cf.fragsize,ratio.data);
     push_config(new MHASignal::waveform_t(new_fragsize,cf.channels));
     cf.fragsize = new_fragsize;
@@ -75,7 +75,10 @@ mha_wave_t* ds_t::process(mha_wave_t* s)
 }
 
 MHAPLUGIN_CALLBACKS(downsample,ds_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(downsample,"resample signalflow","")
+MHAPLUGIN_DOCUMENTATION(downsample,"resample signalflow","This plugin performs downsampling by an integer factor n. \n "
+                        " In this process the sampling rate and the fragment size is divided by n so that the total"
+                        " number of process calls stays constant. \n The downsampling is performed by taking every n-th"
+                        " frame of the input signal. \n An IIR filter can be employed to reduce aliasing.")
 
 // Local Variables:
 // compile-command: "make"
