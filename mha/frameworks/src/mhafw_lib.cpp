@@ -228,7 +228,10 @@ void fw_t::started()
 int fw_t::process(mha_wave_t* s_in,mha_wave_t** s_out)
 {
     try{
-        if( state != fw_running )
+        // The iolib may continue to send data after we got a stop request
+        // but before it processed it. As the state fw_stopping is active only
+        // during this time, we may suppress the error in that specific circumstance.
+        if( state != fw_running and state != fw_stopping )
             throw MHA_ErrorMsg("The framework is not in a running state.");
         if( !s_out )
             throw MHA_Error(__FILE__,__LINE__,"Output signal pointer is undefined.");
