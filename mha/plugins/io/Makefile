@@ -35,9 +35,7 @@ LDLIBS += -l$(MHATOOLBOX_NAME)
 
 $(BUILD_DIR)/MHAIOJack$(PLUGIN_EXT): $(BUILD_DIR)/mhajack.o
 $(BUILD_DIR)/MHAIOJack$(PLUGIN_EXT): LDLIBS += $(JACK_LINKER_COMMAND)
-ifneq "$(TOOLSET)" "clang"
-$(BUILD_DIR)/mhajack.o $(BUILD_DIR)/MHAIOJack.o $(BUILD_DIR)/MHAIOJackdb.o $(BUILD_DIR)/test_jack_server.o: CXXFLAGS += -std=gnu++11
-endif
+#$(BUILD_DIR)/mhajack.o $(BUILD_DIR)/MHAIOJack.o $(BUILD_DIR)/MHAIOJackdb.o $(BUILD_DIR)/test_jack_server.o: CXXFLAGS+= -std=c++98
 
 $(BUILD_DIR)/MHAIOJackdb$(PLUGIN_EXT): $(BUILD_DIR)/mhajack.o
 $(BUILD_DIR)/MHAIOJackdb$(PLUGIN_EXT): LDLIBS += $(JACK_LINKER_COMMAND)
