@@ -68,7 +68,8 @@ debian/
 # debian packages
 
 mha/tools/packaging/deb
-
+.arclint
+.arcconfig
 #local editor configuration
 .clang_complete
 .dir-locals.el
