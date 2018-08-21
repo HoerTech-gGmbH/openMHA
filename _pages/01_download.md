@@ -15,9 +15,9 @@ Visit the openMHA GitHub project page
 git clone https://github.com/HoerTech-gGmbH/openMHA.git
 ```
 
-or download [__openMHA 4.6.0__](https://github.com/HoerTech-gGmbH/openMHA/archive/master.zip).
+or download [__openMHA__](https://github.com/HoerTech-gGmbH/openMHA/archive/master.zip) (current version).
 
 
 
 
-This package compiles under Linux and Mac operating systems. See installation instructions in the [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) file for more details.
+This package compiles under Linux, Mac and Windows operating systems - see [installation instructions](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md) and have a look at the [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) file for more details.
