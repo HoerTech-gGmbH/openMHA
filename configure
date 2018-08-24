@@ -34,6 +34,12 @@ chklib(){
             --debug=*)
                 DEBUG=`echo $arg | sed 's/--debug=/-g/'`
                 ;;
+            --with-alsa=*)
+                WITH_ALSA=`echo $arg | sed 's/--with-alsa=//'`
+                ;;
+            --with-jack=*)
+                WITH_JACK=`echo $arg | sed 's/--with-jack=//'`
+                ;;
             --with-lsl=*)
                 WITH_LSL=`echo $arg | sed 's/--with-lsl=//'`
                 ;;
@@ -89,8 +95,25 @@ chklib(){
     echo ARCH=$ARCH
     echo PREFIX=$PREFIX
 
-    pkg-config alsa && (echo "WITH_ALSA=yes")
-    pkg-config jack && (echo "WITH_JACK=yes")
+    if [ "x$WITH_ALSA" = "xyes" ]; then
+        echo "WITH_ALSA=yes";
+    elif [ "x$WITH_ALSA" = "xno" ]; then
+        echo "WITH_ALSA=no";
+    else
+        pkg-config ALSA && (echo "WITH_ALSA=yes")
+    fi
+
+    if [ "x$PLATFORM" = "xMinGW" ]; then
+        WITH_JACK=yes
+    fi
+
+    if [ "x$WITH_JACK" = "xyes" ]; then
+        echo "WITH_JACK=yes";
+    elif [ "x$WITH_JACK" = "xno" ]; then
+        echo "WITH_JACK=no";
+    else
+        pkg-config jack && (echo "WITH_JACK=yes")
+    fi
 
     if [ "x$WITH_LSL" = "xyes" ]; then
         echo "WITH_LSL=yes";
@@ -106,10 +129,6 @@ chklib(){
         echo "WITH_OSC=no";
     else
         chkhdr lo/lo.h && chklib lo && (echo "WITH_OSC=yes");
-    fi
-
-    if [ "x$PLATFORM" = "xMinGW" ]; then
-        echo WITH_JACK=yes
     fi
 
     case $ARCH in
