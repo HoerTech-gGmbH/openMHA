@@ -35,6 +35,7 @@ function test_fftfb_level_summation_effects_rect
   dsc.mha.fftfilterbank.plateau = 0;  
   
   mha = mha_start();
+  unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   mha_set(mha,'',dsc);
   mha_set(mha,'mha.prepare',true);
     
