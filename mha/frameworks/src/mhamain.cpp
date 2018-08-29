@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string>
+#include <memory>
 #include "mha_tcp.hh"
 
 #define MAX_LINE_LENGTH 0x100000
@@ -120,26 +121,70 @@ int mhaserver_t::run(unsigned short port, const std::string & _interface)
     tcpserver = new MHA_TCP::Server(port, _interface);
     logstring("Listening on " + _interface + ":" + val2str(int(port)) + "\n");
     acceptor_started(0);
-    while (!exit_request()) {
-        MHA_TCP::Connection * connection = tcpserver->accept();
-        logstring("new connection from " + connection->get_peer_address() +
-                  ":" +  val2str(int(connection->get_peer_port())) + "\n");
-        try {
-            while ((!exit_request()) && (!connection->eof())) {
-                connection->write(received_group(connection->read_line()));
-            }
-        } catch (MHA_Error & e) {
-            // If the connection is force-closed by the client, an Exception may occur here.
-            logstring(Getmsg(e)+std::string("\n"));
-        }
-        try {
-        delete connection;
-        } catch(...) {logstring("Delete threw!\n");}
-        logstring("Closing Connection\n");
 
+    // The event watcher wraps select or WaitForMultipleObjects.  It will detect
+    // new connections as well as incoming data and EOF on existing connections.
+    MHA_TCP::Event_Watcher event_watcher;
+    event_watcher.observe(tcpserver->get_accept_event());
+
+    // keep track of open client connections
+    std::set<std::unique_ptr<MHA_TCP::Connection>> connections;
+    
+    while (!exit_request()) {
+        // Wait would return a set of events that have signalled.  But since we
+        // have to loop over all connections anyway to find which event belongs
+        // to which connection, we do not need to keep the result.
+        event_watcher.wait();
+
+        // If EOF is detected, then delete connection. Default: keep.
+        bool keep_connection = true;
+
+        for (auto connection_iterator = connections.begin();
+             connection_iterator != connections.end();
+             ) { // iterator update performed at end of loop
+            // Loop over connections to find connections where data has arrived
+            std::unique_ptr<MHA_TCP::Connection> const & connection =
+                *connection_iterator;
+
+            // If the connection is force-closed by the client,
+            // then an Exception may occur in the following block.
+            try {
+                while ((!exit_request()) && connection->can_read_line()) {
+                    connection->write(received_group(connection->read_line()));
+                }
+                if (connection->eof())
+                    keep_connection = false;
+            } catch (MHA_Error & e) {
+                // Unclean connection termination
+                keep_connection = false;
+                logstring(Getmsg(e)+std::string("\n"));
+            }
+
+            // Update iterator
+            if (keep_connection)
+                ++connection_iterator;
+            else {
+                logstring("Closing Connection\n");
+                connection_iterator =
+                    connections.erase(connection_iterator);
+            }
+        }
+
+        // Accept new connection if there is any
+        MHA_TCP::Connection * new_connection = tcpserver->try_accept();
+
+        if (new_connection) {
+            logstring("new connection from "
+                      + new_connection->get_peer_address() + ":"
+                      + val2str(int(new_connection->get_peer_port())) + "\n");
+            connections.insert(std::unique_ptr<MHA_TCP::Connection>(new_connection));
+            event_watcher.observe(new_connection->get_read_event());
+        }
     }
+
     logstring("exit request, closing server.\n");
-    delete tcpserver;
+    connections.clear(); // closes all connections
+    delete tcpserver;    // closes the server
     tcpserver = 0;
     logstring("exit request, server closed.\n");
     // TODO: Replace with Error/Success exit code
