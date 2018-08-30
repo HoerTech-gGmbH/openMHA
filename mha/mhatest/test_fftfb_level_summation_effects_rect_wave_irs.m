@@ -43,12 +43,12 @@ function response = test_fftfb_level_summation_effects_rect_wave_irs
   response = mha_process_by_parser(mha, impulse);
   response = response';
 				% plot impulse responses
-				% plot(response);
-
+				% plot(response');
+ 
 				% plot shapes of frequency bands
-				% plot(abs(fft(response)));
+				% plot(abs(fft(response')));
 
 			       % plot summation of all frequency bands
-			       % plot(abs(sum(fft(a),2)));
+			       % plot(abs(sum(fft(response),2)));
 
   assert_almost(ones(128,1), abs(sum(fft(response),2)), 1e-3);

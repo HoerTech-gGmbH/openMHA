@@ -68,7 +68,7 @@ function test_fftfb_level_summation_effects_rect
      10*log10(input_signal_intensity_sum / output_signal_intensity_sum);
   
   %% Remove plots once this test works
-  figure, plot(abs(output_signal)), title('weighting factors in different bands');
+  % figure, plot(abs(output_signal)), title('weighting factors in different bands');
   % figure, plot(sum(output_signal, 2)), title('sum of all bands');
   
   assert_difference_below(0, db_difference_broadband, 0.5);
