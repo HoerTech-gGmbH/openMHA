@@ -29,6 +29,10 @@ h2 {
 	font-size: 2em;
 	color: $heading-font-color;
 }
+h4 {
+	font-size: 1.4em;
+	line-height: 0;
+}
 h5,
 h6 {
 	margin: 0;
@@ -91,6 +95,7 @@ table {
 	padding: 15px;
 	border-radius: $borderradius;
 }
+
 img.logo{
 	vertical-align: middle;
 	min-height: 40px;
@@ -189,8 +194,8 @@ aside {
 					text-decoration: none;
 					display: inline-block;
 					vertical-align: middle;
-					padding-left: 15px;
-					padding-right: 15px;
+					padding-left: 10px;
+					padding-right: 10px;
 					font-family: 'Muli', sans-serif;
 					line-height: 50px;
 					margin-bottom: 0px;

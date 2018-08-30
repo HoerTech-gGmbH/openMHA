@@ -5,6 +5,10 @@ permalink: /about/
 menu: main
 ---
 
+#### Contact
+
+<info@openMHA.org>
+
 #### Address
 HörTech gGmbH  
 Marie-Curie-Straße 2  
