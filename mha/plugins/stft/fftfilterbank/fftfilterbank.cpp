@@ -228,7 +228,7 @@ MHAPLUGIN_PROC_CALLBACK(fftfilterbank,fftfilterbank::fftfb_interface_t,wave,wave
 "\n"
 "The filters are calculated by applying filter weights to each FFT\n"
 "bin. These weights (filter shapes) depend on the settings of the\n"
-"{\\tt use\\_edges} variable. If {\\tt center} is selected, the frequency\n"
+"{\\tt ftype} variable. If {\\tt center} is selected, the frequency\n"
 "interval between the lower neighbour center frequency and the desired\n"
 "center frequency is mapped to the interval [-1,0] and between the\n"
 "desired center frequency and the upper neightbour to the interval\n"
