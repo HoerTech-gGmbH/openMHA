@@ -48,7 +48,7 @@ public:
   {
 #ifndef _WIN32
     // On Unix, we need to ignore sigpipe
-    struct sigaction ignore{SIG_IGN};
+      struct sigaction ignore{{SIG_IGN}};
     sigaction(SIGPIPE, &ignore, NULL);
 #else
     // On windows, we need to initialize and deinitialize the socket library
