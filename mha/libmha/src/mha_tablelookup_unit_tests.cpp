@@ -132,6 +132,99 @@ TEST_F(MHATableLookup_linear_table, table_extrapolates) {
   EXPECT_FLOAT_EQ(  50.0f,  t.lookup(128));
 }
 
+// =================================================
+
+// Older tests translated from cppunit to googletest
+using MHATableLookup::xy_table_t;
+
+TEST(xy_table_t, lookup_InRange)
+{
+    xy_table_t xy;
+    xy.add_entry(1.0f,2.0f);
+    xy.add_entry(2.0f,4.0f);
+    xy.add_entry(3.0f,6.0f);
+    EXPECT_EQ(2.0f,xy.lookup(1.0f));
+    EXPECT_EQ(4.0f,xy.lookup(2.0f));
+    EXPECT_EQ(4.0f,xy.lookup(2.4f));
+    EXPECT_EQ(4.0f,xy.lookup(1.6f));
+    EXPECT_EQ(6.0f,xy.lookup(2.6f));
+    EXPECT_EQ(6.0f,xy.lookup(3.0f));
+}
+
+TEST(xy_table_t, test_interp_InRange)
+{
+    xy_table_t xy;
+    xy.add_entry(1.0f,2.0f);
+    xy.add_entry(2.0f,4.0f);
+    xy.add_entry(3.0f,6.0f);
+    EXPECT_EQ(2.0f,xy.interp(1.0f));
+    EXPECT_EQ(4.0f,xy.interp(2.0f));
+    EXPECT_EQ(4.8f,xy.interp(2.4f));
+    EXPECT_EQ(3.2f,xy.interp(1.6f));
+    EXPECT_EQ(5.2f,xy.interp(2.6f));
+    EXPECT_EQ(6.0f,xy.interp(3.0f));
+}
+
+TEST(xy_table_t, test_lookup_OutOfRange)
+{
+    xy_table_t xy;
+    xy.add_entry(1.0f,2.0f);
+    xy.add_entry(2.0f,4.0f);
+    xy.add_entry(3.0f,6.0f);
+    EXPECT_EQ(2.0f,xy.lookup(-2.2f));
+    EXPECT_EQ(2.0f,xy.lookup(-1.0f));
+    EXPECT_EQ(6.0f,xy.lookup(3.2f));
+    EXPECT_EQ(6.0f,xy.lookup(13.2f));
+}
+
+TEST(xy_table_t, test_interp_OutOfRange)
+{
+    xy_table_t xy;
+    xy.add_entry(1.0f,2.0f);
+    xy.add_entry(2.0f,4.0f);
+    xy.add_entry(3.0f,6.0f);
+    EXPECT_EQ(-4.4f,xy.interp(-2.2f));
+    EXPECT_EQ(-2.0f,xy.interp(-1.0f));
+    EXPECT_EQ(6.4f,xy.interp(3.2f));
+    EXPECT_EQ(26.4f,xy.interp(13.2f));
+}
+
+TEST(xy_table_t, test_interp_SingleEntry)
+{
+    xy_table_t xy;
+    xy.add_entry(1.0f,2.0f);
+    EXPECT_EQ(2.0f,xy.interp(-2.2f));
+    EXPECT_EQ(2.0f,xy.interp(1.0f));
+    EXPECT_EQ(2.0f,xy.interp(2.3f));
+}
+
+TEST(xy_table_t, test_interp_NonMonotonicInsertion)
+{
+    xy_table_t xy;
+    xy.add_entry(1.0f,2.0f);
+    xy.add_entry(2.0f,4.0f);
+    xy.add_entry(3.0f,6.0f);
+    EXPECT_EQ(4.4f,xy.interp(2.2f));
+    xy.add_entry(2.4f,-1.0f);
+    EXPECT_EQ(1.5f,xy.interp(2.2f));
+    EXPECT_EQ(-1.0f,xy.interp(2.4f));
+}
+
+TEST(xy_table_t, test_interp_XFun)
+{
+    xy_table_t xy;
+    xy.set_xfun(logf);
+    xy.add_entry(1.0f,2.0f);
+    xy.add_entry(2.0f,4.0f);
+    xy.add_entry(8.0f,6.0f);
+    EXPECT_EQ(2.0f,xy.interp(1.0f));
+    EXPECT_EQ(4.0f,xy.interp(2.0f));
+    EXPECT_EQ(6.0f,xy.interp(8.0f));
+    EXPECT_EQ(5.0f,xy.interp(4.0f));
+    EXPECT_EQ(3.0f,xy.interp(1.414213562373095145f));
+}
+
+
 // Local Variables:
 // compile-command: "make -C .. unit-tests"
 // coding: utf-8-unix
