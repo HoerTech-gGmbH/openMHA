@@ -73,7 +73,7 @@ uninstall:
 	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
 
 
-googletest: test
+googletest:
 	$(MAKE) -C external_libs googlemock
 
 unit-tests: $(patsubst %,%-subdir-unit-tests,$(MODULES))
