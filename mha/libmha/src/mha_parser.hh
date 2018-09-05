@@ -72,6 +72,7 @@ namespace MHAParser {
         std::string val2str(const std::vector<float>&);///< \brief Convert to string
         std::string val2str(const std::vector<mha_complex_t>&);///< \brief Convert to string
         std::string val2str(const std::vector<int>&);///< \brief Convert to string
+        std::string val2str(const std::vector<std::vector<int> >&);///< \brief Convert to string
         std::string val2str(const std::vector<std::string>&);///< \brief Convert to string
         std::string val2str(const std::vector<std::vector<float> >&);///< \brief Convert to string
         std::string val2str(const std::vector<std::vector<mha_complex_t> >&);///< \brief Convert to string
@@ -633,6 +634,19 @@ namespace MHAParser {
          * @param hlp A help text describing this monitor variable. */
         vint_mon_t(const std::string & hlp);
         std::vector<int> data;//!< Data field
+    protected:
+        std::string query_val(const std::string&);
+        std::string query_type(const std::string&);
+    };
+
+    /**\brief Matrix of ints monitor*/
+    class mint_mon_t : public monitor_t
+    {
+    public:
+        /** Create a matrix of integer monitor values.
+         * @param hlp A help text describing this monitor variable. */
+        mint_mon_t(const std::string & hlp);
+        std::vector< std::vector<int> > data;//!< Data field
     protected:
         std::string query_val(const std::string&);
         std::string query_type(const std::string&);

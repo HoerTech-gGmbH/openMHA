@@ -1183,6 +1183,15 @@ std::string MHAParser::StrCnv::val2str( const std::vector < std::vector < float 
     return std::string( "[" ) + tmp.str(  ) + std::string( "]" );
 }
 
+std::string MHAParser::StrCnv::val2str( const std::vector < std::vector < int > >&v )
+{
+    std::ostringstream tmp( "" );
+    for( unsigned int k = 0; k < v.size(  ); k++ ) {
+        tmp << MHAParser::StrCnv::val2str( v[k] ) << ( k < v.size(  ) - 1 ? ";" : "" );
+    }
+    return std::string( "[" ) + tmp.str(  ) + std::string( "]" );
+}
+
 std::string MHAParser::StrCnv::val2str( const std::vector<std::vector<mha_complex_t> >&v )
 {
     std::ostringstream tmp( "" );
@@ -2470,6 +2479,11 @@ MHAParser::vint_mon_t::vint_mon_t( const std::string & hlp ):monitor_t( hlp )
     data_is_initialized = true;
 }
 
+MHAParser::mint_mon_t::mint_mon_t( const std::string & hlp ):monitor_t( hlp )
+{
+    data_is_initialized = true;
+}
+
 MHAParser::vfloat_mon_t::vfloat_mon_t( const std::string & hlp ):monitor_t( hlp )
 {
     data_is_initialized = true;
@@ -2527,6 +2541,19 @@ std::string MHAParser::vint_mon_t::query_val( const std::string & s )
 std::string MHAParser::vint_mon_t::query_type( const std::string & s )
 {
     return "vector<int>";
+}
+
+std::string MHAParser::mint_mon_t::query_val( const std::string & s )
+{
+    prereadaccess(  );prereadaccess( s );
+    std::string tmp = StrCnv::val2str( data );
+    readaccess(  );readaccess( s );
+    return tmp;
+}
+
+std::string MHAParser::mint_mon_t::query_type( const std::string & s )
+{
+    return "matrix<int>";
 }
 
 std::string MHAParser::float_mon_t::query_val( const std::string & s )
