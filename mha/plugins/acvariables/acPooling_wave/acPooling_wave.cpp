@@ -65,7 +65,6 @@ mha_wave_t *acPooling_wave_config::process(mha_wave_t *wave)
     //do actual processing here using configuration state
     const mha_wave_t raw_p = MHA_AC::get_var_waveform(ac, raw_p_name.c_str());
 
-    // map to probability using a sigmoid transformation
     // find the max probability
     mha_real_t max = 0, sample_max, mean_p = 0;
     int  max_ind = -1;
