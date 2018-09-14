@@ -30,6 +30,7 @@ acPooling_wave_config::acPooling_wave_config(algo_comm_t &ac, const mhaconfig_t 
     ac(ac),
     raw_p_name(_pooling->p_name.data),
     p(ac, _pooling->pool_name.data.c_str(), _pooling->numsamples.data, 1, false),
+    p_biased(ac, _pooling->pool_name.data.c_str(), _pooling->numsamples.data, 1, false),
     p_max(ac, _pooling->max_pool_ind_name.data.c_str(), 1, 1, false),
     like_ratio(ac, _pooling->like_ratio_name.data.c_str(), 1, 1, false),
     pooling_ind(0),
@@ -39,10 +40,12 @@ acPooling_wave_config::acPooling_wave_config(algo_comm_t &ac, const mhaconfig_t 
     low_thresh(_pooling->lower_threshold.data),
     neigh(_pooling->neighbourhood.data),
     alpha(_pooling->alpha.data),
-    pool(_pooling->numsamples.data, _pooling->pooling_wndlen.data * in_cfg.srate / (in_cfg.fragsize * 1000))
+    pool(_pooling->numsamples.data, _pooling->pooling_wndlen.data * in_cfg.srate / (in_cfg.fragsize * 1000)),
+    prob_bias_func(_pooling->numsamples.data, 1)
 {
     //initialize plugin state for a new configuration
     pool.assign(0);
+    prob_bias_func.copy(_pooling->prob_bias.data);
 
     // initialize the estimated DOA to be in the middle, preferable steering forward
     p_max.assign((_pooling->numsamples.data - 1) / 2);
@@ -54,6 +57,7 @@ acPooling_wave_config::~acPooling_wave_config() {}
 void acPooling_wave_config::insert()
 {
     p.insert();
+    p_biased.insert();
     p_max.insert();
     like_ratio.insert();
 }
@@ -138,9 +142,12 @@ mha_wave_t *acPooling_wave_config::process(mha_wave_t *wave)
 
         mean_p += p.value(i, 0);
 
+        // apply the multiplicative bias function.
+        p_biased(i, 0) = p.value(i, 0)*prob_bias_func(i, 0);
+
         // Find the direction with the maximum probability
-        if (max < p.value(i, 0)) {
-            max = p.value(i, 0);
+        if (max < p_biased(i, 0)) {
+            max = p_biased(i, 0);
             max_ind = i;
 
         }
@@ -154,7 +161,7 @@ mha_wave_t *acPooling_wave_config::process(mha_wave_t *wave)
     pooling_ind = (pooling_ind + 1)  % pooling_size;
 
     // Compute the normalized probability of the maximum
-    like_ratio(0, 0) = p(max_ind, 0) / mean_p;
+    like_ratio(0, 0) = p_biased(max_ind, 0) / mean_p;
 
     if ( like_ratio(0, 0) >= up_thresh )
         p_max(0, 0) = max_ind;
@@ -186,9 +193,11 @@ acPooling_wave::acPooling_wave(algo_comm_t & ac,
     , neighbourhood("This parameter defines the neighbourhood of the allowed change of the estimated direction between iterations. -1 means no neighbourhood.", "2", "[-1, 360]")
     , alpha("This parameter simulates the forgetting effect by weighting the frames within the pooling window,  e.g. p(n + 1) = (1 - alpha) * p(n) + alpha * p_new. 0 means no weighting.", "0.1", "[0, 1]")
     , p_name("The name of the AC variable of the frame, which is going to be pooled.", "p")
+    , p_biased_name("The name of the AC variable of the biased frame, after pooling.", "prob_biased")
     , pool_name("The name of the AC variable of the averaged (pooled) frame.", "pool")
     , max_pool_ind_name("The name of the AC variable for the index of the maximum of the averaged frames", "pool_max")
     , like_ratio_name("The name of the AC variable for the likelihood ratios of the averaged frames", "like_ratio")
+    , prob_bias("A multiplicative probability bias", "[]")
 {
     //add parser variables and connect them to methods here
     //INSERT_PATCH(foo_parser);
@@ -204,9 +213,11 @@ acPooling_wave::acPooling_wave(algo_comm_t & ac,
     INSERT_PATCH(neighbourhood);
     INSERT_PATCH(alpha);
     INSERT_PATCH(p_name);
+    INSERT_PATCH(p_biased_name);
     INSERT_PATCH(pool_name);
     INSERT_PATCH(max_pool_ind_name);
     INSERT_PATCH(like_ratio_name);
+    INSERT_PATCH(prob_bias);
 }
 
 acPooling_wave::~acPooling_wave() {}
@@ -224,6 +235,10 @@ void acPooling_wave::prepare(mhaconfig_t & signal_info)
     if( signal_info.domain != MHA_WAVEFORM )
         throw MHA_Error(__FILE__, __LINE__,
                         "This plug-in requires time-domain signals.");
+
+    if (prob_bias.data.size() != static_cast<unsigned int>(numsamples.data))
+        throw MHA_Error(__FILE__, __LINE__,
+                        "prob_bias must have numsamples elements");
 
     /* make sure that a valid runtime configuration exists: */
     update_cfg();

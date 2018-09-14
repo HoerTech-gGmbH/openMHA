@@ -34,6 +34,7 @@ public:
     algo_comm_t &ac;
     std::string raw_p_name;
     MHA_AC::waveform_t p;
+    MHA_AC::waveform_t p_biased;
     MHA_AC::waveform_t p_max;
     MHA_AC::waveform_t like_ratio;
     mha_wave_t c;
@@ -45,6 +46,7 @@ public:
     int neigh;
     float alpha;
     MHASignal::waveform_t pool;
+    MHASignal::waveform_t prob_bias_func;
 
 };
 
@@ -67,9 +69,11 @@ public:
     MHAParser::int_t neighbourhood;
     MHAParser::float_t alpha;
     MHAParser::string_t p_name;
+    MHAParser::string_t p_biased_name;
     MHAParser::string_t pool_name;
     MHAParser::string_t max_pool_ind_name;
     MHAParser::string_t like_ratio_name;
+    MHAParser::vfloat_t prob_bias;
 
 private:
     void update_cfg();
