@@ -238,7 +238,8 @@ void acPooling_wave::prepare(mhaconfig_t & signal_info)
 
     if (prob_bias.data.size() != static_cast<unsigned int>(numsamples.data))
         throw MHA_Error(__FILE__, __LINE__,
-                        "prob_bias must have numsamples elements");
+                        "prob_bias must have \"numsamples\" (%i) elements",
+                        numsamples.data);
 
     /* make sure that a valid runtime configuration exists: */
     update_cfg();
