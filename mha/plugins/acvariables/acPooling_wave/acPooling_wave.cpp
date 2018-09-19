@@ -197,7 +197,7 @@ acPooling_wave::acPooling_wave(algo_comm_t & ac,
     , pool_name("The name of the AC variable of the averaged (pooled) frame.", "pool")
     , max_pool_ind_name("The name of the AC variable for the index of the maximum of the averaged frames", "pool_max")
     , like_ratio_name("The name of the AC variable for the likelihood ratios of the averaged frames", "like_ratio")
-    , prob_bias("A multiplicative probability bias", "[]")
+    , prob_bias("A multiplicative probability bias", "[1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]")
 {
     //add parser variables and connect them to methods here
     //INSERT_PATCH(foo_parser);
