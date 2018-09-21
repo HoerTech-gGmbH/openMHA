@@ -30,7 +30,7 @@ acPooling_wave_config::acPooling_wave_config(algo_comm_t &ac, const mhaconfig_t 
     ac(ac),
     raw_p_name(_pooling->p_name.data),
     p(ac, _pooling->pool_name.data.c_str(), _pooling->numsamples.data, 1, false),
-    p_biased(ac, _pooling->pool_name.data.c_str(), _pooling->numsamples.data, 1, false),
+    p_biased(ac, _pooling->p_biased_name.data.c_str(), _pooling->numsamples.data, 1, false),
     p_max(ac, _pooling->max_pool_ind_name.data.c_str(), 1, 1, false),
     like_ratio(ac, _pooling->like_ratio_name.data.c_str(), 1, 1, false),
     pooling_ind(0),
