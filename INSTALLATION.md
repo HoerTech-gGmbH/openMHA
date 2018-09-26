@@ -192,23 +192,23 @@ mha ? cmd=quit
 Which should print the default configuration of the openMHA without any plugins
 loaded.
 
-## IV. Compilation under Windows (advanced)
+## IV. Compilation on 64-bit Windows (advanced)
 
 ### Prerequisites
 
-- Java JRE 64bit (Choose Downloads -> Java SE 10.0.2 -> JRE)  (https://java.oracle.com)
-- GNU Octave 64bit (The latest 64bit version does suffice) (https://www.gnu.org/software/octave/)
-- Jack Audio Connection Kit (Use the 64bit installer for windows) (http://jackaudio.org)
+- Java JRE 64-bit (Choose 64-bit windows version)  (https://java.com)
+- GNU Octave 64-bit (Choose latest 64-bit windows version) (https://www.gnu.org/software/octave/)
+- Jack Audio Connection Kit (Use the 64-bit installer for windows) (http://jackaudio.org)
 
 ### Preparation
 
 - Copy the contents of the includes folder in the JACK directory into the include directory in your Octave directory (default is c:\octave\octave-x.y.z) there should now be a directory c:\octave\octave-x.y.z\include\jack containing some files
-- Copy libjack64.lib from the JACK installation to the lib directory in your Octave directory and rename it to libjack.a . Windows may warn you that the file may become unusable. This warning may be safely ignored.
-- Download the openMHA source from http://www.openmha.org and extract the zip archive in your Octave directory. There should now be a directory named openMHA-master in your Octave directory.
+- Copy libjack64.lib from the JACK installation to the lib directory in your Octave directory and rename it to libjack.a . Windows may warn you that the file may become unusable -- ignore this warning.
+- Download the openMHA source from http://www.openmha.org/download/ and extract the zip archive in your Octave directory. There should now be a directory named openMHA-master in your Octave directory.
 
 ### Compilation
 Start a bash shell by double clicking on bash.exe in the bin subdirectory of your
-Octave installation. Enter the following commands in the command prompt:
+Octave installation. Enter the following commands in the bash shell prompt:
 ```
 cd /openMHA-master
 PATH=/bin
@@ -226,7 +226,7 @@ You then need to copy the openMHA libraries into the openMHA bin directory:
 mv lib/* bin/.
 ```
 
-To start openMHA, you need to start a bash and navigate to the openMHA-master/bin directory, then type ./mha.exe.
+To start openMHA, you need to start a bash shell and navigate to the openMHA-master/bin directory, then type ./mha.exe.
 
 ## V. Regeneration of the documentation:
 
