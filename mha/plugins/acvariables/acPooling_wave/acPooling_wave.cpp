@@ -41,11 +41,10 @@ acPooling_wave_config::acPooling_wave_config(algo_comm_t &ac, const mhaconfig_t 
     neigh(_pooling->neighbourhood.data),
     alpha(_pooling->alpha.data),
     pool(_pooling->numsamples.data, _pooling->pooling_wndlen.data * in_cfg.srate / (in_cfg.fragsize * 1000)),
-    prob_bias_func(_pooling->numsamples.data, 1)
+    prob_bias_func(_pooling->prob_bias.data)
 {
     //initialize plugin state for a new configuration
     pool.assign(0);
-    prob_bias_func.copy(_pooling->prob_bias.data);
 
     // initialize the estimated DOA to be in the middle, preferable steering forward
     p_max.assign((_pooling->numsamples.data - 1) / 2);
