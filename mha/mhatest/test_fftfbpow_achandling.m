@@ -32,7 +32,7 @@ function test_fftfbpow_achandling
   mha_set(mha, 'io.input', sin220Hz);
 
   % Now level in lower band should be smaller than in higher band:
-  levels = mha_get(mha, 'mha.mhachain.acmon.fftfbpow')
+  levels = mha_get(mha, 'mha.mhachain.acmon.fftfbpow');
   assert_all(levels(1) < levels(2));
 
   
