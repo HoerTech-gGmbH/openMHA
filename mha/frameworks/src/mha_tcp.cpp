@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2008 2009 2011 2012 2013 2015 2016 2017 HörTech gGmbH
+// Copyright © 2004 2008 2009 2011 2012 2013 2015 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,8 +25,7 @@
 # include <sys/select.h>
 # include <sys/socket.h>
 # include <unistd.h>
-# include <sys/time.h>
-# include <netdb.h>
+# include <signal.h>
 # include <fcntl.h>
 # define INVALID_SOCKET (-1)
 # define SOCKET_ERROR (-1)
@@ -42,14 +41,17 @@
 
 namespace MHA_TCP {
 
-// need to initialize socket library on windows:
-#ifdef _WIN32
-class winsock_init_t {
+// need to initialize socket library:
+class sock_init_t {
 public:
-  int error_code;
-  WSADATA winsock_data;
-  winsock_init_t()
+  sock_init_t()
   {
+#ifndef _WIN32
+    // On Unix, we need to ignore sigpipe
+    struct sigaction ignore{SIG_IGN};
+    sigaction(SIGPIPE, &ignore, NULL);
+#else
+    // On windows, we need to initialize and deinitialize the socket library
     WORD winsock_version = MAKEWORD(2,2);
     error_code = WSAStartup(winsock_version, &winsock_data);
     if (error_code != 0) {
@@ -61,16 +63,19 @@ public:
         throw error_code;
     }
   }
-  ~winsock_init_t()
+  int error_code;
+  WSADATA winsock_data;
+  ~sock_init_t()
   {
     if (WSACleanup() != 0)
         MessageBox(NULL,
                    STRERROR(N_ERRNO()).c_str(),
                    "Unloading winsock dll failed",
                    MB_ICONERROR);
-  }
-} static winsock_initializer;
 #endif
+  }
+} static sock_initializer;
+
 
 std::string STRERROR(int err)
 {
@@ -891,20 +896,19 @@ bool Connection::eof()
         inbuf += s;
         return inbuf.size() == 0;
     }
-    return false;
+    return closed;
 }
 
 bool Connection::can_read_line(char delim)
 {
     for(;;) {
-        if (inbuf.find(delim) < buffered_incoming_bytes()
-            || eof() // if this is false, it may have filled the input buffer:
-            || inbuf.find(delim) < buffered_incoming_bytes()) {
+        if (inbuf.find(delim) < buffered_incoming_bytes()) {
             return true;
         }
         if (can_sysread() == false) return false;
         std::string s = sysread(16384);
-        if (s.size() == 0) return false;
+        if (s.size() == 0)
+            return false;
         inbuf += s;
     }
 }
