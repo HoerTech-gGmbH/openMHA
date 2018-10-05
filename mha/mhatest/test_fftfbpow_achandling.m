@@ -24,7 +24,7 @@ function test_fftfbpow_achandling
   mha_set(mha, 'io.input', sin220Hz);
 
   % Now level in lower band should be bigger than in higher band:
-  levels = mha_get(mha, 'mha.mhachain.acmon.fftfbpow')
+  levels = mha_get(mha, 'mha.mhachain.acmon.fftfbpow');
   assert_all(levels(1) > levels(2));
 
   % change frequencies of filterbank and process again
