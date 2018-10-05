@@ -37,6 +37,12 @@ chklib(){
             --with-alsa=*)
                 WITH_ALSA=`echo $arg | sed 's/--with-alsa=//'`
                 ;;
+            --arch=*)
+                ARCH=`echo $arg | sed 's/--arch=//'`
+                ;;
+            --with-lsl)
+                WITH_LSL=yes
+                ;;
             --with-jack=*)
                 WITH_JACK=`echo $arg | sed 's/--with-jack=//'`
                 ;;
@@ -46,14 +52,14 @@ chklib(){
             --with-osc=*)
                 WITH_OSC=`echo $arg | sed 's/--with-osc=//'`
                 ;;
-            --arch=*)
-                ARCH=`echo $arg | sed 's/--arch=//'`
-                ;;
             --help)
                 echo 'usage: ./configure [options]'
                 echo 'options:'
                 echo '  --prefix=<path>: installation prefix'
                 echo '  --debug : include debug symbols'
+                echo '  --arch=<arch>: the target arch'
+                echo '  --with-lsl=[yes|no]: override auto detection of LSL'
+                echo '  --with-osc=[yes|no]: override auto detection of OSC'
                 echo 'all invalid options are silently ignored'
                 exit 0
                 ;;
@@ -63,6 +69,14 @@ chklib(){
     if [ "x$ARCH" = "x" ]; then
         ARCH=`uname -m`
     fi
+
+    case $ARCH in
+        armhf)
+            echo "COMPILERPREFIX=arm-linux-gnueabihf-"
+            ;;
+        arm*)
+            ;;
+    esac
 
     case `uname -s` in
         *Linux*)
