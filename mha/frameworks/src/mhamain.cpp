@@ -138,10 +138,9 @@ int mhaserver_t::run(unsigned short port, const std::string & _interface)
 
         // If EOF is detected, then delete connection. Default: keep.
         bool keep_connection = true;
-
         for (auto connection_iterator = connections.begin();
-             connection_iterator != connections.end();
-             ) { // iterator update performed at end of loop
+             connection_iterator != connections.end();)
+            { // iterator update performed at end of loop
             // Loop over connections to find connections where data has arrived
             std::unique_ptr<MHA_TCP::Connection> const & connection =
                 *connection_iterator;
@@ -152,8 +151,9 @@ int mhaserver_t::run(unsigned short port, const std::string & _interface)
                 while ((!exit_request()) && connection->can_read_line()) {
                     connection->write(received_group(connection->read_line()));
                 }
-                if (connection->eof())
+                if (connection->eof()) {
                     keep_connection = false;
+                }
             } catch (MHA_Error & e) {
                 // Unclean connection termination
                 keep_connection = false;
@@ -164,9 +164,10 @@ int mhaserver_t::run(unsigned short port, const std::string & _interface)
             if (keep_connection)
                 ++connection_iterator;
             else {
-                logstring("Closing Connection\n");
+                logstring("Closing Connection to "+(*connection_iterator)->get_peer_address()+":"+ val2str(int((*connection_iterator)->get_peer_port()))+"\n");
                 connection_iterator =
                     connections.erase(connection_iterator);
+                keep_connection=true;
             }
         }
 
