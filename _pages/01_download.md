@@ -5,12 +5,12 @@ permalink: /download/
 menu: main
 ---
 
-Instructions for download and installation of openMHA under different operating systems are found below. See [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) on the [openMHA GitHub project page](https://github.com/HoerTech-gGmbH/openMHA) file for more information. 
+Instructions for download and installation of openMHA under different operating systems are below. See [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) on the [openMHA GitHub project page](https://github.com/HoerTech-gGmbH/openMHA) for more information. 
 
 
-#### Installation instructions
+#### Installation Instructions
 
-### Binaries
+### Installation from binaries
 
 [Debian packages](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#i-installation-from-binary-packages-on-ubuntu) for Ubuntu
 
