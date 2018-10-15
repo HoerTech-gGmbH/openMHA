@@ -5,19 +5,29 @@ permalink: /download/
 menu: main
 ---
 
-Visit the openMHA GitHub project page
+Instructions for download and installation of openMHA under different operating systems are found below. See [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) on the [openMHA GitHub project page](https://github.com/HoerTech-gGmbH/openMHA) file for more information. 
 
-[https://github.com/HoerTech-gGmbH/openMHA](https://github.com/HoerTech-gGmbH/openMHA)
 
-... clone the git repository:
+#### Installation instructions
+
+### Binaries
+
+[Debian packages](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#i-installation-from-binary-packages-on-ubuntu) for Ubuntu
+
+### Compling from source
+
+You can get openMHA source code by 
+
+... cloning the git repository:
 
 ``` 
 git clone https://github.com/HoerTech-gGmbH/openMHA.git
 ```
 
-or download [__openMHA__](https://github.com/HoerTech-gGmbH/openMHA/archive/master.zip) (current version).
+... or via downloading a [.zip-file](https://github.com/HoerTech-gGmbH/openMHA/archive/master.zip) (latest state of repository).
 
+Compilation instructions are available for:
 
-
-
-This package compiles under Linux, Mac and Windows operating systems - see [installation instructions](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md) and have a look at the [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) file for more details.
+[Linux](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#ii-compiling-from-source-linux)  
+[macOS](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#iii-compiling-from-source-macos)   
+[Windows](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#iv-compilation-on-64-bit-windows-advanced)
