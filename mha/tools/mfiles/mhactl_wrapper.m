@@ -1,10 +1,5 @@
 function r = mhactl_wrapper( mha_handle, query )
 
-  % if iscell(query)
-  %   logmsg(sprintf('mhactl_wrapper: query = %s\n', query{:}))
-  % else
-  %   logmsg(sprintf('mhactl_wrapper: query = %s', query))
-  % end
   if isstruct(mha_handle)
     if isfield( mha_handle, 'tcp' )
       handle = mha_handle.tcp.cmd;
@@ -36,12 +31,6 @@ function r = mhactl_wrapper( mha_handle, query )
     interface = @mha_plug_wrapper;
   end
   r = interface( handle, query );
-  % if iscell(r)
-  %   logmsg(sprintf('mhactl_wrapper: result = %s\n', r{:}));
-  % else
-  %   logmsg(sprintf('mhactl_wrapper: result = %s', r));
-  % end
-
 
 function r = mhactl_wrapper_2( h, query )
   was_cell = 1;
