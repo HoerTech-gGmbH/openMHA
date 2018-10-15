@@ -16,6 +16,7 @@
 #include <lsl_cpp.h>
 #include <complex>
 #include <memory>
+#include <mutex>
 #include <pthread.h>
 #include <sched.h>
 #include "mha_algo_comm.h"
@@ -27,7 +28,6 @@
 
 /** All types for the ac2lsl plugins live in this namespace. */
 namespace ac2lsl{
-
     /** Interface for ac to lsl bridge variable*/
     class save_var_base_t{
     public:
@@ -153,16 +153,17 @@ namespace ac2lsl{
         MHAParser::int_t skip;
         MHAEvents::patchbay_t<ac2lsl_t> patchbay;
         std::vector<std::unique_ptr<save_var_base_t>> varlist;
+        std::once_flag rt_strict_flag;
     };
 }
 
 ac2lsl::ac2lsl_t::ac2lsl_t(algo_comm_t iac,const char* chain, const char* algo)
     : MHAPlugin::plugin_t<ac2lsl::cfg_t>("Send AC variables as"
                                          " LSL messages.",iac),
-        vars("List of AC variables to be saved, empty for all.","[]"),
-        rt_strict("abort if used in real-time thread?","yes"),
-        activate("send frames to network?","yes"),
-        skip("Number of frames to skip after sending","0","[0,]")
+    vars("List of AC variables to be saved, empty for all.","[]"),
+    rt_strict("abort if used in real-time thread?","yes"),
+    activate("send frames to network?","yes"),
+    skip("Number of frames to skip after sending","0","[0,]")
     {
         insert_member(vars);
         insert_member(rt_strict);
@@ -258,33 +259,24 @@ void ac2lsl::ac2lsl_t::release()
         varlist.clear();
     }
 
-/* Helper struct to run rt check only once, takes a functor as constructor
- * argument and calls it in constructor, forwarding all arguments. */
-struct RunOnce {
-    template <typename T, typename... Args>
-    RunOnce(T &&f, Args... args) { f(args...);}
-};
-
 void ac2lsl::ac2lsl_t::process()
-    {
-        //static means this struct gets constructed only once
-        static RunOnce throw_if_rt_strict( [](bool check){if(check){
-                    pthread_t this_thread=pthread_self();
-                    int policy=0;
-                    struct sched_param params;
-                    auto ret=pthread_getschedparam(this_thread,&policy,&params);
-                    if(ret != 0)
-                        throw MHA_Error(__FILE__,__LINE__,"could not retrieve"
-                                        " thread scheduling parameters!");
-                    if(policy == SCHED_FIFO or policy==SCHED_RR)
-                        throw MHA_Error(__FILE__,__LINE__,"ac2lsl used in"
-                                        " real-time thread with"
-                                        " rt-strict=true!");
-                }
-            } , rt_strict.data);
-        poll_config();
-        cfg->process();
-    }
+{
+    std::call_once(rt_strict_flag,[&](){if(rt_strict.data){
+                pthread_t this_thread=pthread_self();
+                int policy=0;
+                struct sched_param params;
+                auto ret=pthread_getschedparam(this_thread,&policy,&params);
+                if(ret != 0)
+                    throw MHA_Error(__FILE__,__LINE__,"could not retrieve"
+                                    " thread scheduling parameters!");
+                if(policy == SCHED_FIFO or policy==SCHED_RR)
+                    throw MHA_Error(__FILE__,__LINE__,"ac2lsl used in"
+                                    " real-time thread with"
+                                    " rt-strict=true!");
+            }});
+    poll_config();
+    cfg->process();
+}
 
 void ac2lsl::ac2lsl_t::update(){
     if(is_prepared()){

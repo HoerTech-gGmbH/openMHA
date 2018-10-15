@@ -16,7 +16,7 @@
 #include <lo/lo.h>
 #include <pthread.h>
 #include <sched.h>
-
+#include <mutex>
 #include "mha_algo_comm.h"
 #include "mha_fifo.h"
 #include "mha_plugin.hh"
@@ -65,6 +65,7 @@ private:
     float framerate;
     int skipcnt;
     lo_address lo_addr;
+    std::once_flag rt_strict_flag;
 };
 
 ac2osc_t::ac2osc_t(algo_comm_t iac,const char* chain, const char* algo)
@@ -108,19 +109,9 @@ void ac2osc_t::release()
     delete acspace;
 }
 
-
-/* Helper struct to run rt check once and only once, takes a functor as
-   constructor argument and calls it in constructor, forwarding all arguments.
-*/
-struct RunOnce {
-    template <typename T, typename... Args>
-    RunOnce(T &&f, Args... args) { f(args...);}
-    };
-
 void ac2osc_t::process()
 {
-    //static means this struct gets constructed only once
-    static RunOnce throw_if_rt_strict( [](bool check){if(check){
+    std::call_once(rt_strict_flag,[&](){if(rt_strict.data){
                 pthread_t this_thread=pthread_self();
                 int policy=0;
                 struct sched_param params;
@@ -132,9 +123,7 @@ void ac2osc_t::process()
                     throw MHA_Error(__FILE__,__LINE__,"ac2osc used in"
                                     " real-time thread with"
                                     " rt-strict=true!");
-                }
-            } , rt_strict.data);
-
+            }});
     acspace->update();
     if( b_record ){
         if( !skipcnt ){
