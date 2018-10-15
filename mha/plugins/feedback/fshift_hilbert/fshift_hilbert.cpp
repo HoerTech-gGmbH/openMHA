@@ -235,7 +235,40 @@ void frequency_translator_t::update()
 }
 
 MHAPLUGIN_CALLBACKS(fshift_hilbert,frequency_translator_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(fshift_hilbert,"feedback","")
+MHAPLUGIN_DOCUMENTATION(fshift_hilbert,"feedback",
+                        " Performs a frequency shift on the selected frequency"
+                        " interval. "
+                        " The frequency band between (originally)"
+                        " \\texttt{fmin} and \\texttt{fmax} (frequencies in Hz)"
+                        " is shifted by \\texttt{df} (desired frequency change"
+                        " in Hz). "
+                        " Positive \\texttt{df} shifts the selected band to"
+                        " higher frequencies, negative \\texttt{df} shifts to"
+                        " lower frequencies."
+                        " \n\n"
+                        " The frequency shift on the sub-band is performed by"
+                        " splitting the input signal's spectrum into 2 parts:"
+                        " the band to be shifted, and the rest. "
+                        " The band to be shifted is multiplied in the time "
+                        " domain with a complex sinusoid of frequency "
+                        " \\texttt{df} Hz (see Wardle(1998)\\footnote{"
+                        "  Scott Wardle. A hilbert-transformer frequency shifter"
+                        "  Proc. DAFX98 Workshop on Digital Audio Effects, pages"
+                        "  25–29, Barcelona, 1998."
+                        " }) before it is recombined in the spectral domain with"
+                        " the unshifted signal part."
+                        " \n\n"
+                        " By default the shifted and the unshifted parts of the"
+                        " input signal are split at STFT bin boundaries.  The"
+                        " resulting rectangular transitions between shifted and"
+                        " unshifted parts can be smoothed if desired by setting"
+                        " \\texttt{phasemode} to \\texttt{linear} or"
+                        " \\texttt{minimal}, and choosing a longer impulse"
+                        " response length than the default of 1 sample. "
+                        " Our experience with hearing aid applications so far"
+                        " suggests that  smoothing these boundaries is not"
+                        " necessary."
+                        )
 
 // Local Variables:
 // compile-command: "make"
