@@ -24,6 +24,9 @@
 #include "mha.h"
 #include "mha_events.h"
 
+// A buffer of this size is allocated for every hierarchy level of
+// every parser request.  As hierarchy levels are traveled through,
+// string contents is copied from one buffer to the next.
 #define DEFAULT_RETSIZE 0x100000 // 1 MegaByte
 
 namespace MHAParser {
