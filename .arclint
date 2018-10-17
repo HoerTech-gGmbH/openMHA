@@ -9,7 +9,8 @@
             "text.max-line-length": 125,
             "type": "text",
             "severity": {
-                "5": "disabled"
+            "6": "disabled",
+            "5": "disabled"
             },
             "include":[
                 "(\\.c$)",
@@ -21,6 +22,7 @@
             "type": "text",
             "severity": {
                 "5": "disabled",
+                "6": "disabled",
                 "3": "advice",
                 "2": "advice"
             },
@@ -33,6 +35,7 @@
             "text.max-line-length": 125,
             "type": "text",
             "severity": {
+                "6": "disabled",
                 "5": "disabled",
                 "3": "advice"
             },
