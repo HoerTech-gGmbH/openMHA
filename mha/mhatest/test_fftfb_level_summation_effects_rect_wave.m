@@ -51,6 +51,8 @@ function test_fftfb_level_summation_effects_rect_wave
   
   mha = mha_start();
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
+  unittest_teardown(@delete, [dsc.mha.c.acsave.name]);
+  unittest_teardown(@delete, [dsc.io.out]);
   mha_set(mha,'',dsc);
   mha_set(mha,'cmd','start');
   mha_set(mha,'mha.c.acsave.flush',true);
