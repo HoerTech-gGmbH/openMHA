@@ -874,6 +874,7 @@ std::string Connection::syswrite(const std::string & data)
                         "%d"
 #endif
                         " raised an error: %s",
+                        bytes,
                         fd,
                         STRERROR(N_ERRNO()).c_str());
     return data.substr(bytes_written);
