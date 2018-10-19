@@ -129,27 +129,50 @@ int mhaserver_t::run(unsigned short port, const std::string & _interface)
 
     // keep track of open client connections
     std::set<std::unique_ptr<MHA_TCP::Connection>> connections;
+
+    // This flag indicates when true that another MHA command has already
+    // arrived, and we do not need to poll for more data.
+    bool more_commands_are_pending = false;
     
     while (!exit_request()) {
-        // Wait would return a set of events that have signalled.  But since we
-        // have to loop over all connections anyway to find which event belongs
-        // to which connection, we do not need to keep the result.
-        event_watcher.wait();
+        if (more_commands_are_pending) {
+            // We do not need to check the sockets.  We already know
+            // there is enough data in at least one of the
+            // connections. Clear the flag now because we will process
+            // the data in this loop.
+            more_commands_are_pending = false;
+        } else {
+            // Wait in system call for more data to arrive (or new
+            // connections).  Wait would return a set of events that
+            // have signalled.  But since we have to loop over all
+            // connections anyway to find which event belongs to which
+            // connection, we do not need to keep the result.
+            event_watcher.wait();
+        }
 
-        // If EOF is detected, then delete connection. Default: keep.
-        bool keep_connection = true;
+        // Loop over connections to find connections where data has arrived
         for (auto connection_iterator = connections.begin();
-             connection_iterator != connections.end();)
-            { // iterator update performed at end of loop
-            // Loop over connections to find connections where data has arrived
+             connection_iterator != connections.end();
+             /* iterator update performed at end of loop */) {
+
             std::unique_ptr<MHA_TCP::Connection> const & connection =
                 *connection_iterator;
+
+            // If EOF is detected, then delete this connection at end of loop.
+            // Default is no EOF, keep connection.
+            bool keep_connection = true;
 
             // If the connection is force-closed by the client,
             // then an Exception may occur in the following block.
             try {
-                while ((!exit_request()) && connection->can_read_line()) {
+                if ((!exit_request()) && connection->can_read_line()) {
                     connection->write(received_group(connection->read_line()));
+                    if ((!exit_request()) && connection->can_read_line()) {
+                        // Do not read another line from the same
+                        // connection right now, even if we can, to avoid
+                        // starving the other connections.
+                        more_commands_are_pending = true;
+                    }
                 }
                 if (connection->eof()) {
                     keep_connection = false;
@@ -167,7 +190,6 @@ int mhaserver_t::run(unsigned short port, const std::string & _interface)
                 logstring("Closing Connection to "+(*connection_iterator)->get_peer_address()+":"+ val2str(int((*connection_iterator)->get_peer_port()))+"\n");
                 connection_iterator =
                     connections.erase(connection_iterator);
-                keep_connection=true;
             }
         }
 
