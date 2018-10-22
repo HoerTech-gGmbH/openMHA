@@ -77,7 +77,14 @@ $(MHA_RFFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(RFFTW_LIB)
 ifeq "$(PLATFORM)" "linux"
 FIND_LIBOPENMHA_RPATH = -Wl,-rpath=./$(BUILD_DIR)
 endif
-$(BUILD_DIR)/unit-test-runner: LDFLAGS += -L$(BUILD_DIR) $(FIND_LIBOPENMHA_RPATH) -lopenmha
+# Different rule than normal to build unit-test-runner in this
+# directory: we do link against libopenmha, and we do not list the
+# files under test on the compiler command line, because they are
+# already in the lib and would duplicate all the classes. Make the lib
+# an explicit dependency.
+$(BUILD_DIR)/unit-test-runner: $(unit_tests_test_files) $(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT)
+	@echo dependencies = $^
+	$(CXX) $(CXXFLAGS) --coverage -o $@ $(unit_tests_test_files) $(LDFLAGS) $(LDLIBS) $(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT) -lgmock_main -lpthread
 
 # Local Variables:
 # coding: utf-8-unix
