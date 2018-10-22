@@ -42,6 +42,14 @@ ifdef LDLIBS
 export LDLIBS
 endif
 
+# Pass compilers to third-party library build process
+ifdef CC
+export CC
+endif
+ifdef CXX
+export CXX
+endif
+
 ifeq "$(ARCH)" "armhf"
 CROSS_COMPILE=--build=`./config.guess` --host=arm-linux-gnueabi CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++
 endif
