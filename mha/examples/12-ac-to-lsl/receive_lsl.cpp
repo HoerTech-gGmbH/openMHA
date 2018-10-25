@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     usleep(1e7);
     results = resolve_streams();
   }
-  //look for requestet stream, choose first stream if none given
+  //look for requested stream, choose first stream if none given
   int stream_nb=0;
   std::cout<<"Found "<<results.size()<<" stream(s): ";
   for(unsigned ii=0;ii<results.size();ii++){
