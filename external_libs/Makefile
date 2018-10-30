@@ -51,7 +51,7 @@ export CXX
 endif
 
 ifeq "$(ARCH)" "armhf"
-CROSS_COMPILE=--build=`./config.guess` --host=arm-linux-gnueabi CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++
+CROSS_COMPILE=--build=`./config.guess` --host=arm-linux-gnueabi 
 endif
 
 # Build fftw-2
