@@ -405,7 +405,7 @@ MHAPLUGIN_CALLBACKS(ac2lsl,ac2lsl::ac2lsl_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(ac2lsl,ac2lsl::ac2lsl_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION(ac2lsl,"AC-variables","This plugin provides a mechanism"
                         " to send ac variables over the network using the lab"
-                        " streaming layer (lsl). If no source_id is set,\n"
+                        " streaming layer (lsl). If no source id is set,\n"
                         " recovery of the stream after changing channel count,\n"
                         " data type, or any configuration variable is not possible.\n"
                         " Sending data over the network is not real-time safe and\n"
