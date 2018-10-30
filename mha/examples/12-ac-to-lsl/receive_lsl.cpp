@@ -8,8 +8,35 @@
  * raw sample data & time stamps are pulled from the inlet.
  */
 
+
+void print_help(const char* name){
+  std::cerr<<"Usage: "<<name<<" [OPTION]... [NAME]\n";
+  std::cerr<<"Open an lsl stream with the name [NAME].\n"
+           <<"If no NAME is given, the first found stream is opened.\n\n";
+  std::cerr<<"\t-h     display this help and exit\n";
+}
+
 int main(int argc, char* argv[]) {
   using namespace lsl;
+  {
+    int opt;
+    while ((opt = getopt(argc, argv, "h")) != -1) {
+      switch(opt) {
+      case 'h':
+        print_help(argv[0]);
+        exit(EXIT_FAILURE);
+        break;
+      default: /* '?' */
+        print_help(argv[0]);
+        exit(EXIT_FAILURE);
+        break;
+      }
+    }
+  }
+  if(argc>2){
+    print_help(argv[0]);
+    exit(EXIT_FAILURE);
+  }
 
   std::string stream_name;
 
