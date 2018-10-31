@@ -18,11 +18,8 @@ NEEDS_CXX14 = yes
 
 include ../../plugin.mk
 
-LDFLAGS += -L../../../../external_libs/$(PLATFORM_CC)/lib
-LDLIBS += -llsl
-
-$(BUILD_DIR)/unit-test-runner:
-	echo "no unit-test-runner for ac2lsl"
+$(PLUGIN_ARTIFACTS): LDFLAGS += -L../../../../external_libs/$(PLATFORM_CC)/lib
+$(PLUGIN_ARTIFACTS): LDLIBS += -llsl
 
 # Local Variables:
 # compile-command: "make"

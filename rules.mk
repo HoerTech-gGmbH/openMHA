@@ -26,9 +26,11 @@ else
 PLUGIN_EXT = $(DYNAMIC_LIB_EXT)
 endif
 
+PLUGIN_ARTIFACTS = $(patsubst %,$(BUILD_DIR)/%$(PLUGIN_EXT),$(PLUGINS))
+
 # This is usually the first Makefile rule encountered in any
 # subdirectory by inclusion of this Makefile.
-all: $(BUILD_DIR)/.directory $(patsubst %,$(BUILD_DIR)/%,$(TARGETS)) $(patsubst %,$(BUILD_DIR)/%$(PLUGIN_EXT),$(PLUGINS))  $(SUBDIRS)
+all: $(BUILD_DIR)/.directory $(patsubst %,$(BUILD_DIR)/%,$(TARGETS)) $(PLUGIN_ARTIFACTS) $(SUBDIRS)
 
 # BUILD_DIR is a compiler- and platform dependent subdirectory name
 # for placing build output files
