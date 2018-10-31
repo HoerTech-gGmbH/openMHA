@@ -14,12 +14,12 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 NEEDS_LSL = yes
+NEEDS_CXX14 = yes
 
 include ../../plugin.mk
 
 LDFLAGS += -L../../../../external_libs/$(PLATFORM_CC)/lib
 LDLIBS += -llsl
-CXXFLAGS+= -std=c++14
 # Local Variables:
 # compile-command: "make"
 # End:

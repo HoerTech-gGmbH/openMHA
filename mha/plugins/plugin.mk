@@ -99,6 +99,16 @@ dummy_osc:
 endif
 endif
 
+ifeq "$(NEEDS_CXX14)" "yes"
+ifeq "$(CXXSTANDARD)" "c++11"
+# this plugin needs at least c++14.
+# Do not compile if c++14 not available.
+# instead, execute this dummy rule. as default target
+dummy_cxx14:
+	@echo "not compiling" $(PLUGINS) "since c++14 standard not available"
+endif
+endif
+
 ifeq "$(EXCLUDE_FROM_WINDOWS_COMPILATION)" "yes"
 ifeq "$(PLATFORM)" "MinGW"
 # this plugin cannot be compiled on windows.
