@@ -20,6 +20,10 @@ include ../../plugin.mk
 
 LDFLAGS += -L../../../../external_libs/$(PLATFORM_CC)/lib
 LDLIBS += -llsl
+
+$(BUILD_DIR)/unit-test-runner:
+	echo "no unit-test-runner for ac2lsl"
+
 # Local Variables:
 # compile-command: "make"
 # End:
