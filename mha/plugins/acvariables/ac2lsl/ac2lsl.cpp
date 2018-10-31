@@ -78,7 +78,7 @@ namespace ac2lsl{
         }
         virtual ~save_var_t()=default;
         /** Send a frame to lsl. */
-        virtual void send_frame(){stream.push_sample(buf);};
+        virtual void send_frame() override {stream.push_sample(buf);};
     private:
         /** LSL stream outlet. Interface to lsl */
         lsl::stream_outlet stream;
@@ -123,7 +123,7 @@ namespace ac2lsl{
         virtual ~save_var_t()=default;
         /** Send a frame of complex types.
          * Reorders real and imaginary parts into one vector. */
-        virtual void send_frame(){
+        virtual void send_frame() override {
             stream.push_sample(&buf[0].re);
         };
     private:
