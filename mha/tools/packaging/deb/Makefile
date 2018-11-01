@@ -20,5 +20,5 @@ build:
 pack:
 	rm -Rf hoertech
 	mkdir -p hoertech/$(CODENAME)
-	for c in $(ALL_CSV); do (cd $(REPO) && BUILD_DIR=$(BUILD_DIR) mhamakedeb $(CURRENTPATH)/$$c $(FULLVERSION) ); done
+	for c in $(ALL_CSV); do (cd $(REPO) && BUILD_DIR=$(BUILD_DIR) mhamakedeb $(CURRENTPATH)/$$c $(FULLVERSION) ) || exit 1; done
 	mv $(REPO)/*.deb hoertech/$(CODENAME)
