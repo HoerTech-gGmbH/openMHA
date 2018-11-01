@@ -118,7 +118,7 @@ chklib(){
     elif [ "x$WITH_ALSA" = "xno" ]; then
         echo "WITH_ALSA=no";
     else
-        pkg-config ALSA && (echo "WITH_ALSA=yes")
+        pkg-config alsa && (echo "WITH_ALSA=yes")
     fi
 
     if [ "x$PLATFORM" = "xMinGW" ]; then
