@@ -49,7 +49,7 @@ softclip_t::softclip_t(const algo_comm_t& iac,
                        const std::string& name)
     : MHAPlugin::plugin_t<cfg_t>(
         "The softclipper implements a broad band dynamic\n"
-        "compression above a given level.",iac),
+        "compression above a given level (Compression limiting).",iac),
       attack("time constant of attack filter","0.002","[0,["),
       decay("time constant of decay filter","0.05","[0,["),
       start_limit("entry point of time domain soft clipping (dB)","110.0"),
