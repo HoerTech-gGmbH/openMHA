@@ -1,7 +1,7 @@
 function test_wave2spec_spec2wave
 
 % Check for different combinations of fft length, window length, hop
-% size, window position, that MHA overlat-add STFT as carried out by a
+% size, window position, that MHA overlap-add STFT as carried out by a
 % combination of wave2spec and spec2wave produces the correct signal
 % delay and signal reconstruction.
 
@@ -13,6 +13,12 @@ dsc.mha.algos = {'wave2spec','spec2wave'};
 input_signal = reshape(sin([1:4000]/117),2,2000)/2 ...
     + repeatable_rand(2,2000,6) / 20;
 input_signal(1,:) *= -1;
+input_filename = 'test_wave2spec_spec2wave_input_signal.wav';
+output_filename = 'test_wave2spec_spec2wave_output_signal.wav';
+wavwrite(input_signal', 44100, 32, input_filename);
+unittest_teardown(@delete, input_filename);
+wavwrite(input_signal', 44100, 32, output_filename);
+unittest_teardown(@delete, output_filename);
 
 fftlen = [512 512 512 500 162 128 364 364 364];
 wndlen = [400 400 411 300 128  64 128 128 128];
@@ -32,7 +38,10 @@ for scenario = 1:length(fftlen)
   dsc.mha.wave2spec.wndtype = 'hanning';
   dsc.mha.spec2wave.wndexp = 1-wndexp(scenario);
   dsc.mha.spec2wave.wndtype = 'hanning';
-
+  dsc.iolib = 'MHAIOFile';
+  dsc.io.in = input_filename;
+  dsc.io.out = output_filename;
+  
   % apply postwindowing only if analysis window sits in center analysis
   % buffer
   dsc.mha.spec2wave.ramplen = double(wndpos(scenario) == 0.5);
@@ -41,17 +50,15 @@ for scenario = 1:length(fftlen)
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   
   mha_set(mha, '', dsc);
-  mha_set(mha, 'iolib', 'MHAIOParser');
-  
-  mha_set(mha, 'cmd', 'start');
-                      
   
   ola_delay = compute_ola_delay(wndlen(scenario), ...
                                 wndshift(scenario), ...
                                 fftlen(scenario), ...
                                 wndpos(scenario));
 
-  output_signal = mha_process_by_parser(mha,input_signal);
+  mha_set(mha, 'cmd', 'start');
+  mha_set(mha, 'cmd', 'release');
+  output_signal = wavread(output_filename)';
   
   real_delay(1) = maxxcorr(output_signal(1,:), input_signal(1,:));
   real_delay(2) = maxxcorr(output_signal(2,:), input_signal(2,:));
