@@ -150,10 +150,19 @@ chklib(){
     fi
 
     if [ "x$CXXSTANDARD" = "x" ]; then
-        echo "CXXSTANDARD=c++14";
-    else
-        echo "CXXSTANDARD=$CXXSTANDARD";
+        case "$GCC_VER"x in
+            -4*)
+                CXXSTANDARD=c++11
+                ;;
+            -7*|-8*|-9*)
+                CXXSTANDARD=c++17
+                ;;
+            *)
+                CXXSTANDARD=c++14
+                ;;
+        esac
     fi
+    echo "CXXSTANDARD=$CXXSTANDARD";
 
     case $ARCH in
         armhf)

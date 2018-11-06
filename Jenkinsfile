@@ -56,7 +56,7 @@ pipeline {
                     steps {
                         checkout scm
 			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure --cxxstandard=c++11"
+                        sh "./configure"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
                         stash name: 'x86_64_trusty', includes: 'mha/tools/packaging/deb/hoertech/'
@@ -68,7 +68,7 @@ pipeline {
                     steps {
                         checkout scm
 			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure --cxxstandard=c++11"
+                        sh "./configure"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
                         stash name: 'i686_trusty', includes: 'mha/tools/packaging/deb/hoertech/'
