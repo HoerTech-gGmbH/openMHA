@@ -6,7 +6,8 @@ pipeline {
                 stage("bionic && x86_64") {
                     agent {label "bionic && x86_64"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'ssh://git@mha.physik.uni-oldenburg.de/openMHA']]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
@@ -17,7 +18,8 @@ pipeline {
                 stage("bionic && i686") {
                     agent {label "bionic && i686"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: GIT_URL]]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
@@ -28,7 +30,8 @@ pipeline {
                 stage("xenial && x86_64") {
                     agent {label "xenial && x86_64"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: "$GIT_URL"]]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
@@ -39,7 +42,8 @@ pipeline {
                 stage("xenial && i686") {
                     agent {label "xenial && i686"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'ssh://git@mha.physik.uni-oldenburg.de/openMHA']]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
@@ -50,7 +54,8 @@ pipeline {
                 stage("trusty && x86_64") {
                     agent {label "trusty && x86_64"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'ssh://git@mha.physik.uni-oldenburg.de/openMHA']]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure --cxxstandard=c++11"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
@@ -61,7 +66,8 @@ pipeline {
                 stage("trusty && i686") {
                     agent {label "trusty && i686"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'ssh://git@mha.physik.uni-oldenburg.de/openMHA']]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure --cxxstandard=c++11"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
@@ -72,7 +78,8 @@ pipeline {
                 stage("bionic && armv7") {
                     agent {label "bionic && armv7"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'ssh://git@mha.physik.uni-oldenburg.de/openMHA']]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
@@ -83,7 +90,8 @@ pipeline {
                 stage("xenial && armv7") {
                     agent {label "xenial && armv7"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'ssh://git@mha.physik.uni-oldenburg.de/openMHA']]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure"
                         sh "make install unit-tests deb"
                         retry(3){sh "make -C mha/mhatest"}
@@ -94,7 +102,8 @@ pipeline {
                 stage("windows && x86_64") {
                     agent {label "windows && x86_64"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'ssh://git@mha.physik.uni-oldenburg.de/openMHA']]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure"
                         sh "make install unit-tests"
                         retry(3){sh "make -C mha/mhatest"}
@@ -103,7 +112,8 @@ pipeline {
                 stage("mac && x86_64") {
                     agent {label "Darwin"}
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: 'development']], browser: [$class: 'Phabricator', repo: 'OMD', repoUrl: 'https://dev.openmha.org/'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'ssh://git@mha.physik.uni-oldenburg.de/openMHA']]])
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
                         sh "./configure"
                         sh "make install unit-tests"
                         retry(3){sh "make -C mha/mhatest"}
