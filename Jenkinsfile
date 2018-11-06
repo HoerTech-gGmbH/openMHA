@@ -129,7 +129,7 @@ pipeline {
                 unstash "armv7_xenial"
                 
                 // copy fresh packages to our stash of packages 
-                sh "cp -av mha/tools/packaging/deb/hoertech/* /packages/"
+                sh "cp -anv mha/tools/packaging/deb/hoertech/* /packages/"
                 
                 // prepare the repository databases
                 sh "./aptly-initialize-databases.sh"
