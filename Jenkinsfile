@@ -1,3 +1,11 @@
+def do_the_build_steps() {
+                        checkout scm
+			sh "git reset --hard && git clean -ffdx"
+                        sh "./configure"
+                        sh "make install unit-tests deb"
+                        retry(3){sh "make -C mha/mhatest"}
+}
+
 pipeline {
     agent {label "jenkinsmaster"}
     stages {
@@ -6,11 +14,7 @@ pipeline {
                 stage("bionic && x86_64") {
                     agent {label "bionic && x86_64"}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests deb"
-                        retry(3){sh "make -C mha/mhatest"}
+                        do_the_build_steps()
                         stash name: 'x86_64_bionic', includes: 'mha/tools/packaging/deb/hoertech/'
                         sh 'ls -lR mha/tools/packaging/deb/hoertech/'
                     }
@@ -18,11 +22,7 @@ pipeline {
                 stage("bionic && i686") {
                     agent {label "bionic && i686"}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests deb"
-                        retry(3){sh "make -C mha/mhatest"}
+                        do_the_build_steps()
                         stash name: 'i686_bionic', includes: 'mha/tools/packaging/deb/hoertech/'
                         sh 'ls -lR mha/tools/packaging/deb/hoertech/'
                     }
@@ -124,7 +124,7 @@ pipeline {
         stage("publish") {
             agent {label "aptly"}
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: "$GIT_URL-aptly"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "$BRANCH_NAME"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: "$GIT_URL-aptly"]]])
 
                 sh "git remote -v"
                 
