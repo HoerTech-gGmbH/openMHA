@@ -125,7 +125,7 @@ pipeline {
 	        }
 
                 // Publish the snapshots to local directory
-                sh "./aptly-publish-locally-these.sh " + debian_systems.join(" "))
+                sh ("./aptly-publish-locally-these.sh " + debian_systems.join(" "))
                 }
                 // Mirror local directory to hoertech server
                 sh "./aptly-mirror-repository-to-server.sh"
