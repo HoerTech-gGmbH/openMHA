@@ -111,23 +111,20 @@ pipeline {
                 sh "cp -anv mha/tools/packaging/deb/hoertech/* /packages/"
                 
                 // prepare the repository databases
-                sh "./aptly-initialize-databases.sh"
+                sh("./aptly-initialize-these-databases.sh " + debian_systems.join(" "))
                 
                 // Delete old packages.
                 // Not yet implemented.
                 
-                // Fill aptly databases with packages
-                sh "aptly repo add openMHA-bionic-development /packages/bionic/*"
-                sh "aptly repo add openMHA-xenial-development /packages/xenial/*"
-                sh "aptly repo add openMHA-trusty-development /packages/trusty/*"
-
-                // Create snapshots
-                sh "aptly snapshot create snap-bionic from repo openMHA-bionic-development"
-                sh "aptly snapshot create snap-xenial from repo openMHA-xenial-development"
-                sh "aptly snapshot create snap-trusty from repo openMHA-trusty-development"
+		debian_systems.each { sys ->
+                  // Fill aptly databases with packages
+                  sh "aptly repo add openMHA-$sys-$BRANCH_NAME /packages/$sys/*"
+                  // Create snapshots
+              	  sh "aptly snapshot create snap-$sys from repo openMHA-$sys-$BRANCH_NAME"
+	        }
 
                 // Publish the snapshots to local directory
-                sh "./aptly-publish-locally.sh"
+                sh "./aptly-publish-locally-these.sh " + debian_systems.join(" "))
 
                 // Mirror local directory to hoertech server
                 sh "./aptly-mirror-repository-to-server.sh"
