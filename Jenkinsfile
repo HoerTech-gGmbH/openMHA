@@ -43,45 +43,45 @@ pipeline {
     stages {
         stage("build") {
             parallel {
-                stage(                         "bionic && x86_64") {
-                    agent {label               "bionic && x86_64"}
-                    steps {openmha_build_steps("bionic && x86_64")}
+                stage(           "bionic && x86_64") {
+                    agent {label "bionic && x86_64"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
-                stage(                         "bionic && i686") {
-                    agent {label               "bionic && i686"}
-                    steps {openmha_build_steps("bionic && i686")}
+                stage(           "bionic && i686") {
+                    agent {label "bionic && i686"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
-                stage(                         "xenial && x86_64") {
-                    agent {label               "xenial && x86_64"}
-                    steps {openmha_build_steps("xenial && x86_64")}
+                stage(           "xenial && x86_64") {
+                    agent {label "xenial && x86_64"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
-                stage(                         "xenial && i686") {
-                    agent {label               "xenial && i686"}
-                    steps {openmha_build_steps("xenial && i686")}
+                stage(           "xenial && i686") {
+                    agent {label "xenial && i686"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
-                stage(                         "trusty && x86_64") {
-                    agent {label               "trusty && x86_64"}
-                    steps {openmha_build_steps("trusty && x86_64")}
+                stage(           "trusty && x86_64") {
+                    agent {label "trusty && x86_64"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
-                stage(                         "trusty && i686") {
-                    agent {label               "trusty && i686"}
-                    steps {openmha_build_steps("trusty && i686")}
+                stage(           "trusty && i686") {
+                    agent {label "trusty && i686"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
-                stage(                         "bionic && armv7") {
-                    agent {label               "bionic && armv7"}
-                    steps {openmha_build_steps("bionic && armv7")}
+                stage(           "bionic && armv7") {
+                    agent {label "bionic && armv7"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
-                stage(                         "xenial && armv7") {
-                    agent {label               "xenial && armv7"}
-                    steps {openmha_build_steps("xenial && armv7")}
+                stage(           "xenial && armv7") {
+                    agent {label "xenial && armv7"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
-                stage(                         "windows && x86_64") {
-                    agent {label               "windows && x86_64"}
-                    steps {openmha_build_steps("windows && x86_64")}
+                stage(           "windows && x86_64") {
+                    agent {label "windows && x86_64"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
-                stage(                         "mac && x86_64") {
-                    agent {label               "mac && x86_64"}
-                    steps {openmha_build_steps("mac && x86_64")}
+                stage(           "mac && x86_64") {
+                    agent {label "mac && x86_64"}
+                    steps {openmha_build_steps(env.STAGE_NAME)}
                 }
             }
         }
