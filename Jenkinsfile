@@ -25,7 +25,7 @@ def do_the_build_steps(stage_name) {
 
   if (linux) {
     // Store debian packets for later retrieval by the repository manager
-    stash name: (arch+"_"+system"), includes: 'mha/tools/packaging/deb/hoertech/'
+    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
   }
 }
 
