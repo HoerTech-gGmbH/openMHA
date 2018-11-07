@@ -1,3 +1,7 @@
+// keep track of platforms for which debian packages are built
+debian_stashes = []
+debian_systems = []
+
 // Encapsulation of the build steps to perform when compiling openMHA
 def openmha_build_steps() {
   // The stage names we use for compiling openMHA have the structure
@@ -36,7 +40,11 @@ def openmha_build_steps() {
 
   if (linux) {
     // Store debian packets for later retrieval by the repository manager
-    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
+    def stash_name = arch + "_" + system
+    stash name: stash_name, includes: 'mha/tools/packaging/deb/hoertech/'
+    debian_stashes.add(stash_name)
+    debian_systems.add(sys)
+    debian_systems.unique()
   }
 }
 
@@ -95,15 +103,10 @@ pipeline {
                 sh "git remote -v"
                 
                 // receive all deb packages from openmha build
-                unstash "x86_64_bionic"
-                unstash "i686_bionic"
-                unstash "x86_64_xenial"
-                unstash "i686_xenial"
-                unstash "x86_64_trusty"
-                unstash "i686_trusty"
-                unstash "armv7_bionic"
-                unstash "armv7_xenial"
-                
+		debian_stashes.each{stash -> unstash stash}
+
+		sh "ls -lR"
+		
                 // copy fresh packages to our stash of packages 
                 sh "cp -anv mha/tools/packaging/deb/hoertech/* /packages/"
                 
