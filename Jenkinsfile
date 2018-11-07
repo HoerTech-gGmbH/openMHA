@@ -1,6 +1,15 @@
-def do_the_build_steps(stage_name) {
-  // the stage name is "system && arch" where system is bionic, xenial, trusty,
-  // windows, or mac, and arch is x86_64, i686, or armv7. Extract components:
+// Encapsulation of the build steps to perform when compiling openMHA
+// @param stage_name the stage name is "system && arch" where system is bionic,
+//                   xenial, trusty, windows, or mac, and arch is x86_64, i686,
+//                   or armv7. Both are separated by an && operator and spaces.
+//                   This string is also used as a valid label expression for
+//                   jenkins. The appropriate nodes have the respective labels.
+//                   We might need to extend this in future to include the
+//                   "mhadev" label, to differentiate build environments
+//                   for the same system and architecture but with different
+//                   library / tool dependencies.
+def openmha_build_steps(stage_name) {
+  // Extract components from stage_name:
   def system, arch
   (system,arch) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
@@ -36,63 +45,43 @@ pipeline {
             parallel {
                 stage("bionic && x86_64") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
                 stage("bionic && i686") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
                 stage("xenial && x86_64") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
                 stage("xenial && i686") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
                 stage("trusty && x86_64") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
                 stage("trusty && i686") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
                 stage("bionic && armv7") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
                 stage("xenial && armv7") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
                 stage("windows && x86_64") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
                 stage("mac && x86_64") {
                     agent {label env.STAGE_NAME}
-                    steps {
-                        do_the_build_steps(env.STAGE_NAME)
-                    }
+                    steps { openmha_build_steps(env.STAGE_NAME) }
                 }
             }
         }
