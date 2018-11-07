@@ -1,9 +1,32 @@
-def do_the_build_steps() {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests deb"
-                        retry(3){sh "make -C mha/mhatest"}
+def do_the_build_steps(stage_name) {
+  // the stage name is "system && arch" where system is bionic, xenial, trusty,
+  // windows, or mac, and arch is x86_64, i686, or armv7. Extract components:
+  def system, arch
+  (system,arch) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
+
+  // checkout openMHA from version control system, the exact same revision that
+  // triggered this job on each build slave
+  checkout scm
+
+  // Avoid that artifacts from previous builds influence this build
+  sh "git reset --hard && git clean -ffdx"
+
+  // Autodetect libs/compiler
+  sh "./configure"
+
+  // On linux, we also create debian packages
+  def linux = (system != "windows" && system != "mac")
+  def debs = linux ? " debs" : ""
+  sh ("make install unit-tests" + debs)
+
+  // The system tests perform timing measurements which may fail when
+  // system load is high. Retry in that case, up to 2 times.
+  retry(3){sh "make -C mha/mhatest"}
+
+  if (linux) {
+    // Store debian packets for later retrieval by the repository manager
+    stash name: (arch+"_"+system"), includes: 'mha/tools/packaging/deb/hoertech/'
+  }
 }
 
 pipeline {
@@ -12,111 +35,63 @@ pipeline {
         stage("build") {
             parallel {
                 stage("bionic && x86_64") {
-                    agent {label "bionic && x86_64"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        do_the_build_steps()
-                        stash name: 'x86_64_bionic', includes: 'mha/tools/packaging/deb/hoertech/'
-                        sh 'ls -lR mha/tools/packaging/deb/hoertech/'
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
                 stage("bionic && i686") {
-                    agent {label "bionic && i686"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        do_the_build_steps()
-                        stash name: 'i686_bionic', includes: 'mha/tools/packaging/deb/hoertech/'
-                        sh 'ls -lR mha/tools/packaging/deb/hoertech/'
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
                 stage("xenial && x86_64") {
-                    agent {label "xenial && x86_64"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests deb"
-                        retry(3){sh "make -C mha/mhatest"}
-                        stash name: 'x86_64_xenial', includes: 'mha/tools/packaging/deb/hoertech/'
-                        sh 'ls -lR mha/tools/packaging/deb/hoertech/'
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
                 stage("xenial && i686") {
-                    agent {label "xenial && i686"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests deb"
-                        retry(3){sh "make -C mha/mhatest"}
-                        stash name: 'i686_xenial', includes: 'mha/tools/packaging/deb/hoertech/'
-                        sh 'ls -lR mha/tools/packaging/deb/hoertech/'
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
                 stage("trusty && x86_64") {
-                    agent {label "trusty && x86_64"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests deb"
-                        retry(3){sh "make -C mha/mhatest"}
-                        stash name: 'x86_64_trusty', includes: 'mha/tools/packaging/deb/hoertech/'
-                        sh 'ls -lR mha/tools/packaging/deb/hoertech/'
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
                 stage("trusty && i686") {
-                    agent {label "trusty && i686"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests deb"
-                        retry(3){sh "make -C mha/mhatest"}
-                        stash name: 'i686_trusty', includes: 'mha/tools/packaging/deb/hoertech/'
-                        sh 'ls -lR mha/tools/packaging/deb/hoertech/'
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
                 stage("bionic && armv7") {
-                    agent {label "bionic && armv7"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests deb"
-                        retry(3){sh "make -C mha/mhatest"}
-                        stash name: 'armv7_bionic', includes: 'mha/tools/packaging/deb/hoertech/'
-                        sh 'ls -lR mha/tools/packaging/deb/hoertech/'
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
                 stage("xenial && armv7") {
-                    agent {label "xenial && armv7"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests deb"
-                        retry(3){sh "make -C mha/mhatest"}
-                        stash name: 'armv7_xenial', includes: 'mha/tools/packaging/deb/hoertech/'
-                        sh 'ls -lR mha/tools/packaging/deb/hoertech/'
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
                 stage("windows && x86_64") {
-                    agent {label "windows && x86_64"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests"
-                        retry(3){sh "make -C mha/mhatest"}
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
                 stage("mac && x86_64") {
-                    agent {label "Darwin"}
+                    agent {label env.STAGE_NAME}
                     steps {
-                        checkout scm
-			sh "git reset --hard && git clean -ffdx"
-                        sh "./configure"
-                        sh "make install unit-tests"
-                        retry(3){sh "make -C mha/mhatest"}
+                        do_the_build_steps(env.STAGE_NAME)
                     }
                 }
             }
