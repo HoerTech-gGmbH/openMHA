@@ -1,17 +1,19 @@
 // Encapsulation of the build steps to perform when compiling openMHA
-// @param stage_name the stage name is "system && arch" where system is bionic,
-//                   xenial, trusty, windows, or mac, and arch is x86_64, i686,
-//                   or armv7. Both are separated by an && operator and spaces.
-//                   This string is also used as a valid label expression for
-//                   jenkins. The appropriate nodes have the respective labels.
-//                   We might need to extend this in future to include the
-//                   "mhadev" label, to differentiate build environments
-//                   for the same system and architecture but with different
-//                   library / tool dependencies.
-def openmha_build_steps(stage_name) {
-  // Extract components from stage_name:
-  def system, arch
-  (system,arch) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
+def openmha_build_steps() {
+  // The stage names we use for compiling openMHA have the structure
+  // "system && arch", where system is bionic,
+  // xenial, trusty, windows, or mac, and arch is x86_64, i686,
+  // or armv7.  Both are separated by an && operator and spaces.
+  // This string is also used as a valid label expression for
+  // jenkins.  The appropriate nodes have the respective labels.
+  // We might need to extend this in future to include the
+  // "mhadev" label, to differentiate build environments
+  // for the same system and architecture but with different
+  // library / tool dependencies.
+
+  // Extract components from stage name:
+  def sys, arch
+  (sys,arch) = env.STAGE_NAME.split(/ *&& */) // regexp for missing/extra spaces
 
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
@@ -24,7 +26,7 @@ def openmha_build_steps(stage_name) {
   sh "./configure"
 
   // On linux, we also create debian packages
-  def linux = (system != "windows" && system != "mac")
+  def linux = (sys != "windows" && sys != "mac")
   def debs = linux ? " deb" : ""
   sh ("make install unit-tests" + debs)
 
@@ -45,43 +47,43 @@ pipeline {
             parallel {
                 stage(           "bionic && x86_64") {
                     agent {label "bionic && x86_64"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
                 stage(           "bionic && i686") {
                     agent {label "bionic && i686"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
                 stage(           "xenial && x86_64") {
                     agent {label "xenial && x86_64"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
                 stage(           "xenial && i686") {
                     agent {label "xenial && i686"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
                 stage(           "trusty && x86_64") {
                     agent {label "trusty && x86_64"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
                 stage(           "trusty && i686") {
                     agent {label "trusty && i686"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
                 stage(           "bionic && armv7") {
                     agent {label "bionic && armv7"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
                 stage(           "xenial && armv7") {
                     agent {label "xenial && armv7"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
                 stage(           "windows && x86_64") {
                     agent {label "windows && x86_64"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
                 stage(           "mac && x86_64") {
                     agent {label "mac && x86_64"}
-                    steps {openmha_build_steps(env.STAGE_NAME)}
+                    steps {openmha_build_steps()}
                 }
             }
         }
