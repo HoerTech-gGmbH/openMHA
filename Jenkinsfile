@@ -25,7 +25,7 @@ def openmha_build_steps(stage_name) {
 
   // On linux, we also create debian packages
   def linux = (system != "windows" && system != "mac")
-  def debs = linux ? " debs" : ""
+  def debs = linux ? " deb" : ""
   sh ("make install unit-tests" + debs)
 
   // The system tests perform timing measurements which may fail when
