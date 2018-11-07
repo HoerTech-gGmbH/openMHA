@@ -103,7 +103,7 @@ pipeline {
                 sh "git remote -v"
                 
                 // receive all deb packages from openmha build
-		debian_stashes.each{stash -> unstash stash}
+		script {debian_stashes.each{stash -> unstash stash}}
 
 		sh "ls -lR"
 		
@@ -111,11 +111,12 @@ pipeline {
                 sh "cp -anv mha/tools/packaging/deb/hoertech/* /packages/"
                 
                 // prepare the repository databases
-                sh("./aptly-initialize-these-databases.sh " + debian_systems.join(" "))
+                script {sh("./aptly-initialize-these-databases.sh " + debian_systems.join(" "))}
                 
                 // Delete old packages.
                 // Not yet implemented.
-                
+
+		script {
 		debian_systems.each { sys ->
                   // Fill aptly databases with packages
                   sh "aptly repo add openMHA-$sys-$BRANCH_NAME /packages/$sys/*"
@@ -125,7 +126,7 @@ pipeline {
 
                 // Publish the snapshots to local directory
                 sh "./aptly-publish-locally-these.sh " + debian_systems.join(" "))
-
+                }
                 // Mirror local directory to hoertech server
                 sh "./aptly-mirror-repository-to-server.sh"
             }
