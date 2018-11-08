@@ -24,11 +24,11 @@
 
 function test_mhaioalsa
 
-  return; % Disabling the test until T336 is fixed.
-  
 %This test can not run on Windows or macOS
-assert_equal(ispc(),false);
-assert_equal(ismac(),false);
+if ispc() || ismac()
+  warning('ALSA IO tests can only be run on Linux');
+  return
+end
 %Clean up after we are finished
 inwav = 'IN.wav';
 outwav = 'OUT.wav';
@@ -39,7 +39,10 @@ fclose(fopen(outwav, 'w'));
 %Check if snd_aloop module is loaded
 [~,result]=system('grep -e "^snd_aloop " /proc/modules');
 [status,~]=system(['test -n "' result '"']);
-assert_equal(0,status);
+if status
+  warning('ALSA Loopback device is not available, can not test ALSA IO')
+  return
+end
 %Create random noise, write to temp file
 snd_in=repeatable_rand(16000,1,0);
 audiowrite(inwav,snd_in,16000);
