@@ -13,7 +13,7 @@ def openmha_build_steps(stage_name) {
   def system, arch
   (system,arch) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
-  // Compilation on ARM is the slowest, assign 2 CPU cores to ARM build job
+  // Compilation on ARM is the slowest, assign 2 CPU cores to each ARM build job
   def cpus = (arch == "armv7") ? 2 : 1
 
   // checkout openMHA from version control system, the exact same revision that
