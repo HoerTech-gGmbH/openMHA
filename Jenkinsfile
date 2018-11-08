@@ -1,3 +1,6 @@
+// Compilation on ARM is the slowest, assign 2 CPU cores to each ARM build job
+def cpus = [i686: 1, x86_64: 1, armv7: 2]
+
 // Encapsulation of the build steps to perform when compiling openMHA
 // @param stage_name the stage name is "system && arch" where system is bionic,
 //                   xenial, trusty, windows, or mac, and arch is x86_64, i686,
@@ -26,7 +29,7 @@ def openmha_build_steps(stage_name) {
   // On linux, we also create debian packages
   def linux = (system != "windows" && system != "mac")
   def debs = linux ? " deb" : ""
-  sh ("make install unit-tests" + debs)
+  sh ("make -j " + cpus.get(arch) + " install unit-tests" + debs)
 
   // The system tests perform timing measurements which may fail when
   // system load is high. Retry in that case, up to 2 times.
