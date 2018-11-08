@@ -24,6 +24,8 @@
 
 function test_mhaioalsa
 
+  return; % Disabling the test until T336 is fixed.
+  
 %This test can not run on Windows or macOS
 assert_equal(ispc(),false);
 assert_equal(ismac(),false);
