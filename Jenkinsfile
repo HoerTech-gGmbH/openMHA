@@ -90,8 +90,6 @@ pipeline {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: "$BRANCH_NAME"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: "$GIT_URL-aptly"]]])
 
-                sh "git remote -v"
-                
                 // receive all deb packages from openmha build
                 unstash "x86_64_bionic"
                 unstash "i686_bionic"
@@ -102,30 +100,7 @@ pipeline {
                 unstash "armv7_bionic"
                 unstash "armv7_xenial"
                 
-                // copy fresh packages to our stash of packages 
-                sh "cp -anv mha/tools/packaging/deb/hoertech/* /packages/"
-                
-                // prepare the repository databases
-                sh "./aptly-initialize-databases.sh"
-                
-                // Delete old packages.
-                // Not yet implemented.
-                
-                // Fill aptly databases with packages
-                sh "aptly repo add openMHA-bionic-development /packages/bionic/*"
-                sh "aptly repo add openMHA-xenial-development /packages/xenial/*"
-                sh "aptly repo add openMHA-trusty-development /packages/trusty/*"
-
-                // Create snapshots
-                sh "aptly snapshot create snap-bionic from repo openMHA-bionic-development"
-                sh "aptly snapshot create snap-xenial from repo openMHA-xenial-development"
-                sh "aptly snapshot create snap-trusty from repo openMHA-trusty-development"
-
-                // Publish the snapshots to local directory
-                sh "./aptly-publish-locally.sh"
-
-                // Mirror local directory to hoertech server
-                sh "./aptly-mirror-repository-to-server.sh"
+		sh "make"
             }
         }
     }
