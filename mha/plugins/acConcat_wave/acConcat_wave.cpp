@@ -150,7 +150,7 @@ MHAPLUGIN_CALLBACKS(acConcat_wave,acConcat_wave,wave,wave)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION(acConcat_wave,
-        "AC-variables",
+        "AC-variables acvariables",
         "This plugin concatenates two or more waveforms in the given order into a new waveform all living in the AC space."
         )
 

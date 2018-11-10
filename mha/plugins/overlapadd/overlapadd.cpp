@@ -291,7 +291,7 @@ mha_wave_t* overlapadd_if_t::process(mha_wave_t* wave_in)
 }
 
 MHAPLUGIN_CALLBACKS(overlapadd,overlapadd::overlapadd_if_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(overlapadd,"overlapadd",
+MHAPLUGIN_DOCUMENTATION(overlapadd,"overlapadd stft",
             "\n"
             "This plugin transforms fragmented waveform data into short time\n"
             "Fourier transformed audio (STFT), and after processing by spectral\n"

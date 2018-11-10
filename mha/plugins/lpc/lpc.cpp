@@ -266,7 +266,7 @@ MHAPLUGIN_CALLBACKS(lpc,lpc,wave,wave)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION(lpc,
-        "adaptive",
+        "adaptive feedback",
         "This plugin estimates the autocorrelation of each block. "
         "It then produces the inverse filter using the Levinson-Durbin recursion."
         )

@@ -384,7 +384,7 @@ mha_wave_t* adm_if_t::process(mha_wave_t * in)
 // define MHA callbacks
 MHAPLUGIN_CALLBACKS(adm,adm_if_t,wave,wave)
 
-MHAPLUGIN_DOCUMENTATION(adm,"beamforming multichannel",
+MHAPLUGIN_DOCUMENTATION(adm,"beamforming other multichannel",
 "This plugin implements one or more adaptive first-order differential\n"
 "microphones, each based on the output of two omnidirectional microphones,\n"
 "e.g. two hearing-aid microphones (cf. Elko \\& Nguyen Pong, 1995). This is\n"

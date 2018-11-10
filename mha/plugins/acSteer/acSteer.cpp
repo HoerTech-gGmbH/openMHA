@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2016 2017 HörTech gGmbH
+// Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -164,7 +164,7 @@ MHAPLUGIN_CALLBACKS(acSteer,acSteer,spec,spec)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION(acSteer,
-        "AC-variables",
+        "AC-variables acvariables",
         "The {\\tt acSteer} plugin loads a file contaning pre-computed steering filters (e.g. MVDR filters) to be used within a beamformer. The steering filters can be monaural ({\\bf nrefmic = 1}) or binaural ({\\bf nrefmic = 2}). The whole file consists of a column vector of concatenated steering vectors, which are formatted in the order of {\\bf angle} and {\\bf channel}. This means that the first channel vector of the first angle is followed by the second channel vector of the first angle until the last channel. The channel vectors of the first angle are followed by the channel vectors of the second angle and so an and so forth.\n"
         "\n"
         "If the steering filters have been computed for two reference microphones, the steering filters of the second reference microphone just follow the ones for the first microphone and have the same format.\n"

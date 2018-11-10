@@ -222,7 +222,7 @@ MHAPLUGIN_CALLBACKS(wave2spec,wave2spec_if_t,wave,spec)
 MHAPLUGIN_PROC_CALLBACK(wave2spec,wave2spec_if_t,wave,wave)
 
 MHAPLUGIN_DOCUMENTATION\
-(wave2spec, "overlapadd",
+(wave2spec, "overlapadd stft",
  "This plugin performs the domain transformation from time-domain "
  "waveform signal to short-time Fourier transform (STFT) signal in "
  "the spectral domain.  "

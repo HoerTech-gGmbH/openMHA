@@ -114,7 +114,7 @@ void shadowfilter_begin_t::prepare(mhaconfig_t& tf)
 
 MHAPLUGIN_CALLBACKS(shadowfilter_begin,shadowfilter_begin::shadowfilter_begin_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION(shadowfilter_begin,
-        "overlapadd",
+        "overlapadd signalhandling",
         "The plugins 'shadowfilter\\_begin' and 'shadowfilter\\_end' (section\n"
         "\\ref{plug:shadowfilter_end}) are designed to measure the gains\n"
         "produced by any spectral plugins and apply those gains to audio\n"

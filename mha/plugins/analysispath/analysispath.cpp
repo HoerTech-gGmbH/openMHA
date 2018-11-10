@@ -365,7 +365,7 @@ plug_t::plug_t(const std::string& libname,const std::string& chain,const std::st
 
 MHAPLUGIN_CALLBACKS(analysispath,analysispath_if_t,wave,wave)
     MHAPLUGIN_DOCUMENTATION(analysispath,
-        "signalflow",
+        "signalflow signalhandling analysis acvariables",
         "In many signal processing scenarios, the signal analysis\n"
         "requires larger block sizes and more processing time than\n"
         "the filtering itself. If the filters do not change rapidly,\n"

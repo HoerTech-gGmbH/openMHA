@@ -161,7 +161,7 @@ MHAPLUGIN_CALLBACKS(acTransform_wave,acTransform_wave,wave,wave)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION(acTransform_wave,
-        "analysis",
+        "analysis acvariables",
         "This plugin transforms a waveform in the AC space from one coordinate system into another.  For this it receives an angle also saved in the AC space. Then, the plugin rotates the axes into the direction of the given angle."
         )
 // Local Variables:

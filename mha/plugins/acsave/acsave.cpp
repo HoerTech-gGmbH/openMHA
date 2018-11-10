@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2009 2010 2012 2014 2015 HörTech gGmbH
-// Copyright © 2017 HörTech gGmbH
+// Copyright © 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -520,7 +520,7 @@ void save_var_t::save_mat4(FILE* fh,unsigned int writeframes)
 MHAPLUGIN_CALLBACKS(acsave,acsave::acsave_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(acsave,acsave::acsave_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION(acsave,
-        "AC-variables",
+        "AC-variables acvariables",
         "The 'acsave' plugin can save numeric algorithm communication variables\n"
         "(AC variables) into files. The files can have plain text, MATLAB 4.x\n"
         "or MATLAB script format. Each signal frame represents a row. The\n"

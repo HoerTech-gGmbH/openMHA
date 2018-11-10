@@ -193,7 +193,7 @@ namespace MHAPlugin_Resampling {
     }
 }
 MHAPLUGIN_CALLBACKS(resampling,MHAPlugin_Resampling::resampling_if_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(resampling,"signalflow",
+    MHAPLUGIN_DOCUMENTATION(resampling,"signalflow rate resampling",
 "A bridge type resampling plugin.  The signal is converted to target\n"
 "sampling rate and fragment size. The converted signal is processed by the\n"
 "child plugin. The processed signal is then converted back to the original\n"

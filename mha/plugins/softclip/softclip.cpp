@@ -103,7 +103,7 @@ void softclip_t::update()
 }
  
 MHAPLUGIN_CALLBACKS(softclip,softclip_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(softclip,"level","")
+    MHAPLUGIN_DOCUMENTATION(softclip,"level compression","")
 
 // Local Variables:
 // compile-command: "make"

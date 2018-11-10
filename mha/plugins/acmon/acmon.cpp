@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2008 2009 2010 2014 2015 HörTech gGmbH
-// Copyright © 2017 HörTech gGmbH
+// Copyright © 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -141,7 +141,7 @@ void acmon_t::save_vars()
 
 MHAPLUGIN_CALLBACKS(acmon,acmon::acmon_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(acmon,acmon::acmon_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(acmon,"AC-variables","")
+MHAPLUGIN_DOCUMENTATION(acmon,"AC-variables acvariables","")
 
 // Local Variables:
 // compile-command: "make"

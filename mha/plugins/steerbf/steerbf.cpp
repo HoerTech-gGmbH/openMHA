@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2016 2017 HörTech gGmbH
+// Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -155,7 +155,7 @@ MHAPLUGIN_CALLBACKS(steerbf,steerbf,spec,spec)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION(steerbf,
-        "beamforming",
+        "beamforming binaural",
         "Implements frequency-domain beamformer processing (filter and sum) using externally provided filters. "
         "A plugin called {\\tt acSteer} can be used to provide the filter coefficients. "
         "The filter coefficients to be read are saved as a waveform object in the AC space. "

@@ -434,7 +434,7 @@ namespace addsndfile {
 }
 
 MHAPLUGIN_CALLBACKS(addsndfile,addsndfile::addsndfile_if_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(addsndfile,"signalflow",
+MHAPLUGIN_DOCUMENTATION(addsndfile,"signalflow other",
                         "Add data from a sound file to some channels of input signal.\n\n"
                         "The sound file is read into memory and scaled to a given peak\n"
                         "level, i.e. the RMS level of an abstract signal with 0 dB full\n"

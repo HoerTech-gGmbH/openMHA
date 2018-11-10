@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2008 2009 2010 2014 2015 2017 HörTech gGmbH
+// Copyright © 2008 2009 2010 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -170,7 +170,7 @@ mha_spec_t* overlapadd_if_t::process(mha_spec_t* spec)
 }
 
 MHAPLUGIN_CALLBACKS(smoothgains_bridge,smoothgains_bridge::overlapadd_if_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(smoothgains_bridge,"overlapadd filter",
+MHAPLUGIN_DOCUMENTATION(smoothgains_bridge,"overlapadd stft filter",
                         "The overlap-add framework allows filter lengths of the zero padding length.\n"
                         "Longer filters will result in artifacts caused by circular aliasing.\n"
                         "Artifacts can be reduced by either applying Hanning ramps to the zero-padded blocks after filtering,\n"

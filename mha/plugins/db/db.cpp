@@ -121,7 +121,7 @@ mha_wave_t* db_if_t::process(mha_wave_t* s)
 }
 
 MHAPLUGIN_CALLBACKS(db,db_if_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(db,"signalflow",
+    MHAPLUGIN_DOCUMENTATION(db,"signalflow rate",
 "The double buffer plugin allows changes of fragment size. It has an\n"
 "outer layer (e.g.\\ framework) and an inner layer (e.g.\\ MHA kernel,\n"
 "plugin). A configurable fragment size is used on the inner side, which\n"

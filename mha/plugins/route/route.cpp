@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2010 2012 2014 2015 2017 HörTech gGmbH
+// Copyright © 2006 2010 2012 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -169,7 +169,7 @@ mha_spec_t* route::process_t::process(mha_spec_t* s)
 
 MHAPLUGIN_CALLBACKS(route,route::interface_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(route,route::interface_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(route,"signalflow","")
+MHAPLUGIN_DOCUMENTATION(route,"signalflow core","")
 
 // Local Variables:
 // compile-command: "make"

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2013 2014 2015 2016 2018 HörTech gGmbH
+// Copyright © 2008 2009 2010 2011 2014 2015 2016 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -221,7 +221,7 @@ mha_spec_t* interface_t::process(mha_spec_t* s)
 }
 
 MHAPLUGIN_CALLBACKS(multibandcompressor,multibandcompressor::interface_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(multibandcompressor,"level compressor",
+MHAPLUGIN_DOCUMENTATION(multibandcompressor,"level compression compressor",
                         "multibandcompressor provides a complete framework\n"
                         "for dynamic range compression in multiple frequency\n"
                         "bands.\n"

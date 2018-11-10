@@ -175,7 +175,7 @@ MHAPLUGIN_CALLBACKS(lpc_burg-lattice, lpc_burglattice, wave, wave)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION(lpc_burg-lattice,
-        "adaptive",
+        "adaptive feedback",
         "This plugin estimates the parameters for the forward and backward linear prediction using the Burg - Lattice algorithm. The previous estimate of the $\\kappa$ parameter is saved in the AC space for future use in the {\\tt lpc\\_bl\\_predictor} plugin to estimate several time-series sharing the same $\\kappa$ values.\n\n"
         "For the estimation of $\\kappa$ the following series of equations are used: "
         "For each $\\kappa$ in $[2 \\cdots P]$, $P$ being the lpc order"

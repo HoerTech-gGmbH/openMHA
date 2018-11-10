@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2011 2014 2015 2016 2017 HörTech gGmbH
+// Copyright © 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -205,7 +206,7 @@ mha_wave_t* fftfb_plug_t::process(mha_wave_t* s)
 
 MHAPLUGIN_CALLBACKS(fftfilterbank,fftfilterbank::fftfb_interface_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(fftfilterbank,fftfilterbank::fftfb_interface_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(fftfilterbank,"filter",
+    MHAPLUGIN_DOCUMENTATION(fftfilterbank,"filter stft",
 "This plugin implements a linear phase filterbank based on FFT spectrum. Each filter\n"
 "bank channel is stored into an own audio channel. The number of output\n"
 "channels of this plugin is the number of frequency bands times the\n"

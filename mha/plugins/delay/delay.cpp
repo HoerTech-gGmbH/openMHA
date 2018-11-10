@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2005 2007 2008 2009 2010 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -60,7 +60,7 @@ mha_wave_t* interface_t::process(mha_wave_t* s)
 }
 
 MHAPLUGIN_CALLBACKS(delay,delay::interface_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(delay,"signalflow","")
+MHAPLUGIN_DOCUMENTATION(delay,"signalflow lti","")
 
 // Local Variables:
 // compile-command: "make"

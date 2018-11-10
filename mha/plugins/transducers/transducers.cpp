@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2007 2009 2010 2011 2014 2015 2016 2017 HörTech gGmbH
+// Copyright © 2006 2007 2009 2010 2011 2014 2015 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -481,7 +481,7 @@ void bbcalib_interface_t::release()
 
 MHAPLUGIN_CALLBACKS(transducers,bbcalib_interface_t,wave,wave)
     MHAPLUGIN_DOCUMENTATION(transducers,
-        "level",
+        "level other",
         "Some plugins in the MHA expect the input signal to be calibrated to\n"
         "sound pressure level in Pascal. This plugin converts AD and DA converter\n"
         "levels to SPL in Pa and also allows for a FIR filters for mircophone and\n"

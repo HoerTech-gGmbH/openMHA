@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2014 2015 2016 HörTech gGmbH
+// Copyright © 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -163,7 +164,7 @@ mha_spec_t* combc_if_t::process(mha_spec_t* s)
 MHAPLUGIN_CALLBACKS(combinechannels,combc_if_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(combinechannels,combc_if_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION(combinechannels,
-    "filter",
+    "filter signalhandling",
     "Several filter channels can be combined into one or more output"
     " channels by summing the input channels. This plugin is intended as a"
     " filter resynthesis of linear-phase filter banks.\n\nThe input signal"

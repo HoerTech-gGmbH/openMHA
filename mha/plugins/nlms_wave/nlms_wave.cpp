@@ -394,7 +394,7 @@ rt_nlms_t::rt_nlms_t(algo_comm_t iac,
 }
 
 MHAPLUGIN_CALLBACKS(nlms_wave,nlms_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(nlms_wave,"filter",
+MHAPLUGIN_DOCUMENTATION(nlms_wave,"filter feedback",
                         "This plugin implements the NLMS algorithm for re-estimating the coefficients of an adaptive filter in each iteration. "
                         "The estimated filter coefficients are saved in an AC variable having the same name as the plugin in the current configuration. The name of this AC variable can also be set differently by setting the configuration variable \\textbf{name\\_f}. "
                         "The input signal is filtered by the filter estimated in the current iteration and returned as the current output of the plugin from within the processing callback. "

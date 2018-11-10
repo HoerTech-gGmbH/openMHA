@@ -181,7 +181,7 @@ void matmix_t::update_m(void)
 
 MHAPLUGIN_CALLBACKS(matrixmixer,matrixmixer::matmix_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(matrixmixer,matrixmixer::matmix_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow mixing panning",
+MHAPLUGIN_DOCUMENTATION(matrixmixer,"signalflow lti mixing panning",
 "The \\texttt{matrixmixer} plugin can combine the signal from multiple input "
 "channels into any number of output channels, with defined mixing weights."
 "\n\n"

@@ -177,7 +177,7 @@ MHAPLUGIN_CALLBACKS(lpc_bl_predictor,lpc_bl_predictor, wave,wave)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION(lpc_bl_predictor,
-        "adaptive",
+        "adaptive feedback",
         "This plugin computes the forward and backward LPC estimates using the Burg-Lattice algorithm given the $\\kappa$ (sometimes also called $\\mu$) "
         "parameter precomputed using the {\\tt lpc\\_burg-lattice} plugin. The estimation of the forward and backward linear prediction parameters is performed using the following equations:\n"
         "For each forward and backward linear prediction parameter $f(m)$ and $b(m)$, where $m \\textrm{ in } [2 \\cdots P]$, $P$ being the lpc order"

@@ -342,7 +342,7 @@ namespace testplugin {
 
 MHAPLUGIN_CALLBACKS(testplugin,testplugin::if_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(testplugin,testplugin::if_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(testplugin,"test","")
+MHAPLUGIN_DOCUMENTATION(testplugin,"test other","")
     
 // Local Variables:
 // compile-command: "make"

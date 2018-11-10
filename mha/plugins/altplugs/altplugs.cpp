@@ -313,7 +313,7 @@ MHAPLUGIN_PROC_CALLBACK(altplugs,altplugs_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(altplugs,altplugs_t,spec,wave)
 MHAPLUGIN_PROC_CALLBACK(altplugs,altplugs_t,wave,spec)
 MHAPLUGIN_DOCUMENTATION(altplugs,
-                        "signalflow",
+                        "signalflow core",
                         "The plugin {\\tt altplugs} allows configuration of alternative plugins.\n"
                         "The plugin used for processing can be selected via the {\\tt select} variable at any time.\n"
                         "Any plugins can be used as alternative plugins, with the only limitations that input and output domain and signal dimension is equal for all alternative plugins.\n"

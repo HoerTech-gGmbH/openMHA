@@ -46,7 +46,7 @@ mha_wave_t* iirfilter_t::process(mha_wave_t* s)
 
 MHAPLUGIN_CALLBACKS(iirfilter,iirfilter_t,wave,wave)
     MHAPLUGIN_DOCUMENTATION(iirfilter,
-        "filter",
+        "filter lti",
 "The 'iirfilter' plugin implements a generic IIR filter (direct form\n"
 "II). The coefficients have the same names as in \\Matlab{}. Due to\n"
 "different internal implementations and numeric resolutions, filters\n"

@@ -57,7 +57,7 @@ MHAPLUGIN_PROC_CALLBACK(identity,identity_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION(identity,
     "core",
     "The simplest \\mha{} plugin.\n\n"
-    "This plugin does nothing."
+    "This plugin does not modify the signal."
 )
 
 

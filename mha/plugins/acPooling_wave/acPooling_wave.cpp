@@ -283,7 +283,7 @@ MHAPLUGIN_CALLBACKS(acPooling_wave,acPooling_wave,wave,wave)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION(acPooling_wave,
-        "AC-variables",
+        "AC-variables acvariables",
         "This plugin computes an average over several consecutive frames using several different approaches (max, sum, mean, ...). Subsequently, the maximum of the average frame is delivered as well. The plugin receives the frames through the ac space and deliveres the averaged frame as well as its maximum to the ac space."
         )
 // Local Variables:

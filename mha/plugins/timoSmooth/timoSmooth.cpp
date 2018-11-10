@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2017 HörTech gGmbH
+// Copyright © 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -157,7 +157,7 @@ MHAPLUGIN_CALLBACKS(timoSmooth,timoSmooth,spec,spec)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION(timoSmooth,
-    "noise reduction",
+    "noise reduction stft",
     "Implements the single-channel noise reduction scheme found in "
         "Breithaupt,  Gerkmann, and Martin, "
         "A Novel A Priori SNR Estimation Approach Based on Selective "

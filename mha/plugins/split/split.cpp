@@ -1190,7 +1190,7 @@ MHAPLUGIN_CALLBACKS(split,MHAPlugin_Split::split_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(split,MHAPlugin_Split::split_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(split,MHAPlugin_Split::split_t,spec,wave)
 MHAPLUGIN_PROC_CALLBACK(split,MHAPlugin_Split::split_t,wave,spec)
-MHAPLUGIN_DOCUMENTATION(split,"signalflow",
+MHAPLUGIN_DOCUMENTATION(split,"signalflow signalhandling",
 "The plugin 'split' takes a multi-channel input signal and splits it up\n"
 "into separate chains of groups of channels. After processing of each\n"
 "chain, the output channels are merged into a multi-channel output\n"

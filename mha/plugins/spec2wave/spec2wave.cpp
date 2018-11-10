@@ -205,7 +205,7 @@ void spec2wave_if_t::update()
 
 MHAPLUGIN_CALLBACKS(spec2wave,spec2wave_if_t,spec,wave)
     MHAPLUGIN_DOCUMENTATION(spec2wave,
-  "overlapadd",
+  "overlapadd stft",
   "This plugin calculates the inverse FFT and overlap add\n"
   "resynthesis. The parameters are taken from the framework overlap add\n"
   "parameters. After the inverse Fourier transform, hanning window ramps\n"

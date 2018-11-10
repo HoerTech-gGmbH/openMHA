@@ -403,7 +403,8 @@ void ac2lsl::cfg_t::make_or_replace_var(const std::string& name, const comm_var_
 
 MHAPLUGIN_CALLBACKS(ac2lsl,ac2lsl::ac2lsl_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(ac2lsl,ac2lsl::ac2lsl_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(ac2lsl,"AC-variables","This plugin provides a mechanism"
+MHAPLUGIN_DOCUMENTATION(ac2lsl,"AC-variables acvariables",
+			"This plugin provides a mechanism"
                         " to send ac variables over the network using the lab"
                         " streaming layer (lsl). If no source id is set,\n"
                         " recovery of the stream after changing channel count,\n"

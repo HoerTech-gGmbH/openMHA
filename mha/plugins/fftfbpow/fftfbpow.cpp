@@ -107,7 +107,7 @@ fftfbpow::fftfbpow_t::fftfbpow_t(MHAOvlFilter::fftfb_vars_t& vars,unsigned int n
 }
 
 MHAPLUGIN_CALLBACKS(fftfbpow,fftfbpow::fftfbpow_interface_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(fftfbpow,"level",
+MHAPLUGIN_DOCUMENTATION(fftfbpow,"level stft",
                         "This plugin implements a filterbank based on FFT spectrum. The power\n"
                         "in each filter bank channel is calculated and stored into an AC\n"
                         "variable. The input signal is passed through unmodified.\n"
