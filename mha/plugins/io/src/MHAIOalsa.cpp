@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2006 2008 2009 2010 2011 2013 2014 2015 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -335,7 +335,7 @@ public:
     /** MHA framework calls this function when signal processing should stop. */
     void stop();
 
-    /** MHAIOAlsa uses a separate thread that calls the alsa functions
+    /** MHAIOAlsa uses a separate thread that calls the alsa
      * read and write functions to read and write audio samples, these
      * functions are blocking until samples can be read or written.
      * This is the start function of that thread. */
@@ -428,11 +428,7 @@ void io_alsa_t::stop()
     pthread_join(proc_thread,NULL);
 }
 
-/** \internal
-    \brief open pcm streams
-*/
-
-
+/** \brief open pcm streams */
 template<typename T>
 void io_alsa_t::prepare(int nch_in,int nch_out)
 {
