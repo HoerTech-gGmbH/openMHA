@@ -15,8 +15,8 @@
 
 # to be included by plugin specific Makefiles.
 
-include ../../../../config.mk
-include ../../../../magic.mk
+include ../../../config.mk
+include ../../../magic.mk
 
 SOURCE_DIR=.
 PLUGINS = $(notdir $(abspath .))
@@ -146,12 +146,12 @@ dummy08:
 endif
 endif
 
-include ../../../../rules.mk
+include ../../../rules.mk
 
-CXXFLAGS += -I../../../../external_libs/$(PLATFORM_CC)/include
-CXXFLAGS += -I../../../libmha/src
-CFLAGS += -I../../../libmha/src
-LDFLAGS += -L../../../libmha/$(BUILD_DIR)
+CXXFLAGS += -I../../../external_libs/$(PLATFORM_CC)/include
+CXXFLAGS += -I../../libmha/src
+CFLAGS += -I../../libmha/src
+LDFLAGS += -L../../libmha/$(BUILD_DIR)
 LDLIBS += -l$(MHATOOLBOX_NAME)
 
 
