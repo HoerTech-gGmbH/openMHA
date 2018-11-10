@@ -77,19 +77,20 @@ mha_wave_t* ds_t::process(mha_wave_t* s)
 MHAPLUGIN_CALLBACKS(downsample,ds_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION(
 downsample,                 // The name of this plugin.
-"resample rate signalflow", // Categories of this plugin. Main category first.
+"resampling rate signalflow", // Categories of this plugin. Main category first.
 "This plugin performs downsampling by an integer factor named \\texttt{ratio}."
 " The input fragment size needs to be divisible by \\texttt{ratio}."
 "\n\n"
 " As result of the downsammpling, the output signal has a lower sampling rate"
 " ($srate$) as well as a smaller fragment size ($fragsize$) with respect to"
-" the input signal of the \\texttt{downsampling} plugin"
+" the input signal of the \\texttt{downsample} plugin"
 " (both are divided by the downsampling factor \\texttt{ratio})."
-" The signal duration ($T_{signal}$) of the audio blocks used in each"
-" invocation of the \\texttt{process} callbacks of \\MHA plugins is"
-" $T_{signal} = \\frac{fragsize}{srate}"
-"             = \\frac{fragsize / ratio}{srate / ratio}$ and not changed"
-" by the \\texttt{downsampling} plugin. The total"
+"\n\n"
+" The signal duration ($T_{signal}$) of the audio blocks processed in each"
+" invocation of the \\texttt{process} callbacks of \\mha plugins is"
+" \\[T_{signal} = \\frac{fragsize}{srate}"
+"               = \\frac{fragsize / ratio}{srate / ratio}\\] and is not changed"
+" by the \\texttt{downsample} plugin. The total"
 " number of invocations of the process method is not modified for"
 " downstream plugins by the downsampling."
 "\n\n"
