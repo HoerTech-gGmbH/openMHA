@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2008 2010 2014 2015 2017 HörTech gGmbH
+// Copyright © 2005 2008 2010 2014 2015 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -75,10 +75,28 @@ mha_wave_t* ds_t::process(mha_wave_t* s)
 }
 
 MHAPLUGIN_CALLBACKS(downsample,ds_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(downsample,"resample signalflow","This plugin performs downsampling by an integer factor n. \n "
-                        " In this process the sampling rate and the fragment size is divided by n so that the total"
-                        " number of process calls stays constant. \n The downsampling is performed by taking every n-th"
-                        " frame of the input signal. \n An IIR filter can be employed to reduce aliasing.")
+MHAPLUGIN_DOCUMENTATION(
+downsample,                 // The name of this plugin.
+"resample rate signalflow", // Categories of this plugin. Main category first.
+"This plugin performs downsampling by an integer factor named \\texttt{ratio}."
+" The input fragment size needs to be divisible by \\texttt{ratio}."
+"\n\n"
+" As result of the downsammpling, the output signal has a lower sampling rate"
+" ($srate$) as well as a smaller fragment size ($fragsize$) with respect to"
+" the input signal of the \\texttt{downsampling} plugin"
+" (both are divided by the downsampling factor \\texttt{ratio})."
+" The signal duration ($T_{signal}$) of the audio blocks used in each"
+" invocation of the \\texttt{process} callbacks of \\MHA plugins is"
+" $T_{signal} = \\frac{fragsize}{srate}"
+"             = \\frac{fragsize / ratio}{srate / ratio}$ and not changed"
+" by the \\texttt{downsampling} plugin. The total"
+" number of invocations of the process method is not modified for"
+" downstream plugins by the downsampling."
+"\n\n"
+" The downsampling is performed by copying only every n-th audio sample of the"
+" low-pass filtered input signal over to the output signal."
+" A low-pass filter is required to reduce aliasing in the output signal and"
+" can be configured through the \\texttt{antialias} configuration setting.")
 
 // Local Variables:
 // compile-command: "make"
