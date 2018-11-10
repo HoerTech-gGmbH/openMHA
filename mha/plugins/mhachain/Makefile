@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-include ../../plugin.mk
+include ../plugin.mk
 
 $(BUILD_DIR)/mhachain$(PLUGIN_EXT): $(BUILD_DIR)/mha_generic_chain.o
 

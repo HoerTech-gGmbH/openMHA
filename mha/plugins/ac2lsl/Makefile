@@ -16,9 +16,9 @@
 NEEDS_LSL = yes
 NEEDS_CXX14 = yes
 
-include ../../plugin.mk
+include ../plugin.mk
 
-$(PLUGIN_ARTIFACTS): LDFLAGS += -L../../../../external_libs/$(PLATFORM_CC)/lib
+$(PLUGIN_ARTIFACTS): LDFLAGS += -L../../../external_libs/$(PLATFORM_CC)/lib
 $(PLUGIN_ARTIFACTS): LDLIBS += -llsl
 
 # Local Variables:

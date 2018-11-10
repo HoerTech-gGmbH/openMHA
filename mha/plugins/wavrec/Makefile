@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-include ../../plugin.mk
+include ../plugin.mk
 
-LDFLAGS += -L../../../../external_libs/$(PLATFORM_CC)/lib
+LDFLAGS += -L../../../external_libs/$(PLATFORM_CC)/lib
 LDLIBS += -lsndfile -lpthread
 
 # Local Variables:

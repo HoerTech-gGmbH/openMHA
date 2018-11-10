@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-include ../../plugin.mk
+include ../plugin.mk
 CFLAGS+="-std=gnu99"
 $(BUILD_DIR)/doasvm_feature_extraction$(PLUGIN_EXT): $(BUILD_DIR)/hann.o $(BUILD_DIR)/ifftshift.o
 
