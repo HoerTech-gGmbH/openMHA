@@ -90,6 +90,8 @@ pipeline {
         }
         stage("publish") {
             agent {label "aptly"}
+            // do not publish packages for any branches except these
+            when { anyOf { branch 'master'; branch 'development' } }
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: "$BRANCH_NAME"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: "$GIT_URL-aptly"]]])
 
@@ -103,7 +105,7 @@ pipeline {
                 unstash "armv7_bionic"
                 unstash "armv7_xenial"
                 
-		sh "make"
+                sh "make"
             }
         }
     }
