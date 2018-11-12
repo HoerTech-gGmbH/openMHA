@@ -65,7 +65,7 @@ private:
     float framerate;
     int skipcnt;
     lo_address lo_addr;
-    std::once_flag rt_strict_flag;
+    bool is_first_run;
 };
 
 ac2osc_t::ac2osc_t(algo_comm_t iac,const char* chain, const char* algo)
@@ -80,7 +80,8 @@ ac2osc_t::ac2osc_t(algo_comm_t iac,const char* chain, const char* algo)
     acspace(nullptr),
     b_record(false),
     rtmem(new uint8_t[0x100000]),
-    skipcnt(0)
+    skipcnt(0),
+    is_first_run(true)
 {
     insert_member(host);
     insert_member(port);
@@ -95,35 +96,65 @@ ac2osc_t::ac2osc_t(algo_comm_t iac,const char* chain, const char* algo)
 
 void ac2osc_t::prepare(mhaconfig_t& cf)
 {
+    try {
     acspace = new MHA_AC::acspace2matrix_t(ac,vars.data);
     framerate = cf.srate / cf.fragsize;
     lo_addr = lo_address_new( host.data.c_str(), port.data.c_str() );
     lo_address_set_ttl(lo_addr, ttl.data );
     lo_send( lo_addr, "/mhastate","s","prepared");
+    host.setlock(true);
+    port.setlock(true);
+    ttl.setlock(true);
+    vars.setlock(true);
+    mode.setlock(true);
+    rt_strict.setlock(true);
+    }
+    catch(MHA_Error& e){
+        host.setlock(false);
+        port.setlock(false);
+        ttl.setlock(false);
+        vars.setlock(false);
+        mode.setlock(false);
+        rt_strict.setlock(false);
+        lo_send( lo_addr, "/mhastate","s","unprepared");
+        lo_address_free( lo_addr );
+        delete acspace;
+        throw e;
+    }
 }
 
 void ac2osc_t::release()
 {
+    is_first_run=true;
     lo_send( lo_addr, "/mhastate","s","released");
     lo_address_free( lo_addr );
     delete acspace;
+    host.setlock(false);
+    port.setlock(false);
+    ttl.setlock(false);
+    vars.setlock(false);
+    mode.setlock(false);
+    rt_strict.setlock(false);
 }
 
 void ac2osc_t::process()
 {
-    std::call_once(rt_strict_flag,[&](){if(rt_strict.data){
-                pthread_t this_thread=pthread_self();
-                int policy=0;
-                struct sched_param params;
-                auto ret=pthread_getschedparam(this_thread,&policy,&params);
-                if(ret != 0)
-                    throw MHA_Error(__FILE__,__LINE__,"could not retrieve"
-                                    " thread scheduling parameters!");
-                if(policy == SCHED_FIFO or policy==SCHED_RR)
-                    throw MHA_Error(__FILE__,__LINE__,"ac2osc used in"
-                                    " real-time thread with"
-                                    " rt-strict=true!");
-            }});
+    if(is_first_run){
+        if(rt_strict.data){
+            is_first_run=false;
+            pthread_t this_thread=pthread_self();
+            int policy=0;
+            struct sched_param params;
+            auto ret=pthread_getschedparam(this_thread,&policy,&params);
+            if(ret != 0)
+                throw MHA_Error(__FILE__,__LINE__,"could not retrieve"
+                                " thread scheduling parameters!");
+            if(policy == SCHED_FIFO or policy==SCHED_RR)
+                throw MHA_Error(__FILE__,__LINE__,"ac2osc used in"
+                                " real-time thread with"
+                                " rt-strict=true!");
+        }
+    }
     acspace->update();
     if( b_record ){
         if( !skipcnt ){
