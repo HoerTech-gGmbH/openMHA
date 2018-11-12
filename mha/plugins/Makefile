@@ -21,22 +21,7 @@
 include ../../config.mk
 include ../../magic.mk
 
-SUBDIRS = \
-	core \
-	io \
-	stft \
-	compression \
-	signalhandling \
-	binaural \
-	other \
-	examples \
-	feedback \
-	acvariables \
-	rate \
-	generator \
-	lti \
-	analysis \
-	directional \
+SUBDIRS = $(patsubst %/Makefile,%,$(wildcard */Makefile))
 
 include ../../rules.mk
 

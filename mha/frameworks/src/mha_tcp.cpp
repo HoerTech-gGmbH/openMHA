@@ -48,7 +48,7 @@ public:
   {
 #ifndef _WIN32
     // On Unix, we need to ignore sigpipe
-    struct sigaction ignore{SIG_IGN};
+    struct sigaction ignore{{SIG_IGN}};
     sigaction(SIGPIPE, &ignore, NULL);
 #else
     // On windows, we need to initialize and deinitialize the socket library
@@ -874,6 +874,7 @@ std::string Connection::syswrite(const std::string & data)
                         "%d"
 #endif
                         " raised an error: %s",
+                        bytes,
                         fd,
                         STRERROR(N_ERRNO()).c_str());
     return data.substr(bytes_written);

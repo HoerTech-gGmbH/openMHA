@@ -34,24 +34,54 @@ chklib(){
             --debug=*)
                 DEBUG=`echo $arg | sed 's/--debug=/-g/'`
                 ;;
+            --with-alsa=*)
+                WITH_ALSA=`echo $arg | sed 's/--with-alsa=//'`
+                ;;
+            --arch=*)
+                ARCH=`echo $arg | sed 's/--arch=//'`
+                ;;
             --with-lsl)
                 WITH_LSL=yes
                 ;;
-            --with-osc)
-                WITH_OSC=yes
+            --with-jack=*)
+                WITH_JACK=`echo $arg | sed 's/--with-jack=//'`
+                ;;
+            --with-lsl=*)
+                WITH_LSL=`echo $arg | sed 's/--with-lsl=//'`
+                ;;
+            --with-osc=*)
+                WITH_OSC=`echo $arg | sed 's/--with-osc=//'`
+                ;;
+            --cxxstandard=*)
+                CXXSTANDARD=`echo $arg | sed 's/--cxxstandard=//'`
                 ;;
             --help)
                 echo 'usage: ./configure [options]'
                 echo 'options:'
                 echo '  --prefix=<path>: installation prefix'
                 echo '  --debug : include debug symbols'
+                echo '  --arch=<arch>: the target arch'
+                echo '  --with-lsl=[yes|no]: override auto detection of LSL'
+                echo '  --with-osc=[yes|no]: override auto detection of OSC'
+                echo '  --cxxstandard=[c++11|c++14|c++17]: override auto detection of c++ standard'
                 echo 'all invalid options are silently ignored'
                 exit 0
                 ;;
         esac
     done
 
-    ARCH=`uname -m`
+    if [ "x$ARCH" = "x" ]; then
+        ARCH=`uname -m`
+    fi
+
+    case $ARCH in
+        armhf)
+            echo "COMPILERPREFIX=arm-linux-gnueabihf-"
+            ;;
+        arm*)
+            ;;
+    esac
+
     case `uname -s` in
         *Linux*)
             PLATFORM=linux
@@ -83,33 +113,69 @@ chklib(){
     echo ARCH=$ARCH
     echo PREFIX=$PREFIX
 
-    pkg-config alsa && (echo "WITH_ALSA=yes")
-    pkg-config jack && (echo "WITH_JACK=yes")
+    if [ "x$WITH_ALSA" = "xyes" ]; then
+        echo "WITH_ALSA=yes";
+    elif [ "x$WITH_ALSA" = "xno" ]; then
+        echo "WITH_ALSA=no";
+    else
+        pkg-config alsa && (echo "WITH_ALSA=yes")
+    fi
+
+    if [ "x$PLATFORM" = "xMinGW" ]; then
+        WITH_JACK=yes
+    fi
+
+    if [ "x$WITH_JACK" = "xyes" ]; then
+        echo "WITH_JACK=yes";
+    elif [ "x$WITH_JACK" = "xno" ]; then
+        echo "WITH_JACK=no";
+    else
+        pkg-config jack && (echo "WITH_JACK=yes")
+    fi
+
     if [ "x$WITH_LSL" = "xyes" ]; then
         echo "WITH_LSL=yes";
+    elif [ "x$WITH_LSL" = "xno" ]; then
+        echo "WITH_LSL=no";
     else
         chkhdr lsl_cpp.h && chklib lsl && (echo "WITH_LSL=yes");
     fi
 
     if [ "x$WITH_OSC" = "xyes" ]; then
         echo "WITH_OSC=yes";
+    elif [ "x$WITH_OSC" = "xno" ]; then
+        echo "WITH_OSC=no";
     else
         chkhdr lo/lo.h && chklib lo && (echo "WITH_OSC=yes");
     fi
 
-    if [ "x$PLATFORM" = "xMinGW" ]; then
-        echo WITH_JACK=yes
+    if [ "x$CXXSTANDARD" = "x" ]; then
+        case "$GCC_VER"x in
+            -4*)
+                CXXSTANDARD=c++11
+                ;;
+            -7*|-8*|-9*)
+                CXXSTANDARD=c++17
+                ;;
+            *)
+                CXXSTANDARD=c++14
+                ;;
+        esac
     fi
+    echo "CXXSTANDARD=$CXXSTANDARD";
 
     case $ARCH in
+        armhf)
+            echo "COMPILERPREFIX=arm-linux-gnueabihf-"
+            ;;
         arm*)
-        ;;
+            ;;
         x86_64*|i686*)
             echo "SSE+=-msse -msse2 -mfpmath=sse"
             ;;
     esac
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
-    echo 'CXXFLAGS+=-Wall -Werror -std=c++11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
+    echo 'CXXFLAGS+=-Wall -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     if [[ $(type -P octave) ]] ; then
         echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval"\

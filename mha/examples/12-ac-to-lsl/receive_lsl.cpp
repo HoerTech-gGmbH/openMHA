@@ -1,3 +1,19 @@
+/* This file is part of the HörTech Open Master Hearing Aid (openMHA)
+ * Copyright © 2018 HörTech gGmbH
+ *
+ * openMHA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * openMHA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License, version 3 for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, 
+ * version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "lsl_cpp.h"
 #include <iostream>
 #include <unistd.h>
@@ -8,8 +24,35 @@
  * raw sample data & time stamps are pulled from the inlet.
  */
 
+
+void print_help(const char* name){
+  std::cerr<<"Usage: "<<name<<" [OPTION]... [NAME]\n";
+  std::cerr<<"Open an lsl stream with the name [NAME].\n"
+           <<"If no NAME is given, the first found stream is opened.\n\n";
+  std::cerr<<"\t-h     display this help and exit\n";
+}
+
 int main(int argc, char* argv[]) {
   using namespace lsl;
+  {
+    int opt;
+    while ((opt = getopt(argc, argv, "h")) != -1) {
+      switch(opt) {
+      case 'h':
+        print_help(argv[0]);
+        exit(EXIT_FAILURE);
+        break;
+      default: /* '?' */
+        print_help(argv[0]);
+        exit(EXIT_FAILURE);
+        break;
+      }
+    }
+  }
+  if(argc>2){
+    print_help(argv[0]);
+    exit(EXIT_FAILURE);
+  }
 
   std::string stream_name;
 
@@ -31,7 +74,7 @@ int main(int argc, char* argv[]) {
     usleep(1e7);
     results = resolve_streams();
   }
-  //look for requestet stream, choose first stream if none given
+  //look for requested stream, choose first stream if none given
   int stream_nb=0;
   std::cout<<"Found "<<results.size()<<" stream(s): ";
   for(unsigned ii=0;ii<results.size();ii++){

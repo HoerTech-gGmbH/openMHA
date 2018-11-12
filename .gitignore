@@ -24,7 +24,7 @@ lib
 *.bak
 ~$*
 .~lock*
-
+*.swp
 # system-specific configuration
 config.mk
 
@@ -32,6 +32,7 @@ config.mk
 mha/tools/mfiles/octave-workspace
 
 # platform-specific directories where build artifacts are stored.
+*-linux-*-*
 x86_64-linux-gcc-5
 x86_64-linux-gcc-7
 x86_64-linux-clang
@@ -64,6 +65,9 @@ mha/examples/09-localizer-steering-beamformer/Output/*
 # debian packages are built in repository root
 debian/
 
+# debian packages
+
+mha/tools/packaging/deb
 #local editor configuration
 .clang_complete
 .dir-locals.el

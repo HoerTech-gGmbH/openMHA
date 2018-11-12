@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 2011 HörTech gGmbH
-// Copyright © 2012 2013 2014 2016 HörTech gGmbH
+// Copyright © 2012 2013 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,9 @@
 #include "mha.h"
 #include "mha_events.h"
 
+// A buffer of this size is allocated for every hierarchy level of
+// every parser request.  As hierarchy levels are traveled through,
+// string contents is copied from one buffer to the next.
 #define DEFAULT_RETSIZE 0x100000 // 1 MegaByte
 
 namespace MHAParser {
@@ -72,6 +75,7 @@ namespace MHAParser {
         std::string val2str(const std::vector<float>&);///< \brief Convert to string
         std::string val2str(const std::vector<mha_complex_t>&);///< \brief Convert to string
         std::string val2str(const std::vector<int>&);///< \brief Convert to string
+        std::string val2str(const std::vector<std::vector<int> >&);///< \brief Convert to string
         std::string val2str(const std::vector<std::string>&);///< \brief Convert to string
         std::string val2str(const std::vector<std::vector<float> >&);///< \brief Convert to string
         std::string val2str(const std::vector<std::vector<mha_complex_t> >&);///< \brief Convert to string
@@ -633,6 +637,19 @@ namespace MHAParser {
          * @param hlp A help text describing this monitor variable. */
         vint_mon_t(const std::string & hlp);
         std::vector<int> data;//!< Data field
+    protected:
+        std::string query_val(const std::string&);
+        std::string query_type(const std::string&);
+    };
+
+    /**\brief Matrix of ints monitor*/
+    class mint_mon_t : public monitor_t
+    {
+    public:
+        /** Create a matrix of integer monitor values.
+         * @param hlp A help text describing this monitor variable. */
+        mint_mon_t(const std::string & hlp);
+        std::vector< std::vector<int> > data;//!< Data field
     protected:
         std::string query_val(const std::string&);
         std::string query_type(const std::string&);

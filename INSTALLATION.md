@@ -13,30 +13,14 @@ In Ubuntu 18.04:
 
 In Ubuntu 16.04:
 
-    sudo apt-add-repository 'deb http://mha.hoertech.de/hoertech/xenial /'
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7D6CDF547DA4ABD
+    sudo apt-add-repository 'deb http://apt.openmha.org/ubuntu xenial universe'
     sudo apt-get update
-
-For Ubuntu 16.04, this will give you a warning:
-```
-W: The repository 'http://mha.hoertech.de/hoertech/xenial Release' does not have a Release file.
-N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
-N: See apt-secure(8) manpage for repository creation and user configuration details.`
-```
 
 Install openMHA:
 ```
 sudo apt-get install openmha
 ```
-
-For Ubuntu 16.04, this will give you again an authentication warning:
-```
-WARNING: The following packages cannot be authenticated! openmha libopenmha
-Install these packages without verification? [y/N]
-```
-
-To install openMHA you have to type "y".
-
-These authentication issues have been solved for Ubuntu 18.04 starting with openMHA release 4.5.7.
 
 After installation, openMHA documentation is found in
 `/usr/share/doc/openmha`

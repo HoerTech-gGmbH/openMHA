@@ -37,11 +37,11 @@ all:
 
 empty :=
 space := $(empty) $(empty)
-PLUGINDIRS=$(wildcard ../plugins/*/*/$(PLATFORM_CC)/)
+PLUGINDIRS=$(wildcard ../plugins/*/$(PLATFORM_CC)/)
 MHA_PLUGINDIRS=$(subst $(space),;,$(PLUGINDIRS))
 
 # Get plugin names
-PLUGIN_NAMES:=$(subst $(space),"\n",$(foreach plg,$(PLUGINDIRS),$(word 4,$(subst /,$(space),$(plg)))))
+PLUGIN_NAMES:=$(subst $(space),"\n",$(foreach plg,$(PLUGINDIRS),$(word 3,$(subst /,$(space),$(plg)))))
 
 MHADISTS = openMHA
 

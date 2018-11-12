@@ -73,7 +73,7 @@ uninstall:
 	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
 
 
-googletest: test
+googletest:
 	$(MAKE) -C external_libs googlemock
 
 unit-tests: $(patsubst %,%-subdir-unit-tests,$(MODULES))
@@ -85,9 +85,17 @@ coverage: unit-tests
 	genhtml coverage.info --prefix $$PWD/mha --output-directory $@
 	x-www-browser ./coverage/index.html
 
+# Unit-test can not be run when cross-compiling
+ifeq "$(ARCH)" "armhf"
+deb: install
+	$(MAKE) -C mha/tools/packaging/deb pack
+else
 deb: unit-tests
 	$(MAKE) -C mha/tools/packaging/deb pack
+endif
 
+release: test unit-tests
+	@./mha/tools/release.sh
 
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs

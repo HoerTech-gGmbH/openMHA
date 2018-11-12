@@ -42,6 +42,18 @@ ifdef LDLIBS
 export LDLIBS
 endif
 
+# Pass compilers to third-party library build process
+ifdef CC
+export CC
+endif
+ifdef CXX
+export CXX
+endif
+
+ifeq "$(ARCH)" "armhf"
+CROSS_COMPILE=--build=`./config.guess` --host=arm-linux-gnueabi 
+endif
+
 # Build fftw-2
 $(BUILD_DIR)/fftw.is_installed: $(BUILD_DIR)/fftw.is_configured
 	cd fftw-2.1.5/. && $(MAKE) -j 1 install
@@ -74,7 +86,7 @@ $(BUILD_DIR)/fftw.is_configured: $(BUILD_DIR)/.directory
 	sleep 0.01 && touch fftw-2.1.5/aclocal.m4
 	sleep 0.01 && touch fftw-2.1.5/configure
 	sleep 0.01 && touch fftw-2.1.5/Makefile.in
-	cd fftw-2.1.5/. && ./configure --enable-static --disable-shared --prefix="$(EXTERNAL_LIBS)/$(BUILD_DIR)" --bindir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/bin --libdir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/lib --includedir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/include  --enable-float --enable-type-prefix --disable-fast-install --disable-fortran
+	cd fftw-2.1.5/. && ./configure --enable-static --disable-shared --prefix="$(EXTERNAL_LIBS)/$(BUILD_DIR)" --bindir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/bin --libdir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/lib --includedir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/include  --enable-float --enable-type-prefix --disable-fast-install --disable-fortran $(CROSS_COMPILE)
 	cd "$(EXTERNAL_LIBS)" && touch $@
 
 
@@ -84,8 +96,8 @@ $(BUILD_DIR)/googlemock.is_installed: googletest/WORKSPACE \
 	$(BUILD_DIR)/lib/.directory $(BUILD_DIR)/include/.directory
 	cd googletest/googlemock/make && $(MAKE)
 	cp googletest/googlemock/make/gmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
-	cp -ax googletest/googletest/include/gtest $(BUILD_DIR)/include/
-	cp -ax googletest/googlemock/include/gmock $(BUILD_DIR)/include/
+	cp -a googletest/googletest/include/gtest $(BUILD_DIR)/include/
+	cp -a googletest/googlemock/include/gmock $(BUILD_DIR)/include/
 	touch $@
 
 googletest/WORKSPACE:
