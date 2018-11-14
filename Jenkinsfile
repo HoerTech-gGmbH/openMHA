@@ -50,26 +50,28 @@ pipeline {
                     agent {label               "bionic && x86_64"}
                     steps {openmha_build_steps("bionic && x86_64")}
                 }
-                stage(                         "bionic && i686") {
-                    agent {label               "bionic && i686"}
-                    steps {openmha_build_steps("bionic && i686")}
-                }
                 stage(                         "xenial && x86_64") {
                     agent {label               "xenial && x86_64"}
                     steps {openmha_build_steps("xenial && x86_64")}
-                }
-                stage(                         "xenial && i686") {
-                    agent {label               "xenial && i686"}
-                    steps {openmha_build_steps("xenial && i686")}
                 }
                 stage(                         "trusty && x86_64") {
                     agent {label               "trusty && x86_64"}
                     steps {openmha_build_steps("trusty && x86_64")}
                 }
-                stage(                         "trusty && i686") {
-                    agent {label               "trusty && i686"}
-                    steps {openmha_build_steps("trusty && i686")}
-                }
+                // We can also build for 32 bits. Deactivated to save
+                // CPU cycles on Jenkins server.
+                // stage(                         "bionic && i686") {
+                //     agent {label               "bionic && i686"}
+                //     steps {openmha_build_steps("bionic && i686")}
+                // }
+                // stage(                         "xenial && i686") {
+                //     agent {label               "xenial && i686"}
+                //     steps {openmha_build_steps("xenial && i686")}
+                // }
+                // stage(                         "trusty && i686") {
+                //     agent {label               "trusty && i686"}
+                //     steps {openmha_build_steps("trusty && i686")}
+                // }
                 stage(                         "bionic && armv7") {
                     agent {label               "bionic && armv7"}
                     steps {openmha_build_steps("bionic && armv7")}
@@ -97,14 +99,18 @@ pipeline {
 
                 // receive all deb packages from openmha build
                 unstash "x86_64_bionic"
-                unstash "i686_bionic"
                 unstash "x86_64_xenial"
-                unstash "i686_xenial"
                 unstash "x86_64_trusty"
-                unstash "i686_trusty"
                 unstash "armv7_bionic"
                 unstash "armv7_xenial"
-                
+                // We can also build for 32 bits. Deactivated to save
+                // CPU cycles on Jenkins server.
+                // unstash "i686_bionic"
+                // unstash "i686_xenial"
+                // unstash "i686_trusty"
+
+		// Copies the new debs to the stash of existing debs,
+		// creates an apt repository, uploads.
                 sh "make"
             }
         }
