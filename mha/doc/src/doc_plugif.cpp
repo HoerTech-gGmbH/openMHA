@@ -31,9 +31,9 @@
 *
 * In the \mha package a set of example plugins is included. These examples 
 * are the base of a step by step tutorial on how to write an \mha plugin. 
-* See section \ref example_tut for detailes.
+* See section \ref example_tut for details.
 *
-* \mha plugins communicate with the \mha using a simple ANSI-C interface.
+* \mha plugins communicate with the \mha using a simple C language interface.
 * This way it is easy to mix plugins compiled with different C++ compilers.
 * For convenience, we provide C++ classes which can be connected
 * to the C++ interface. We strongly recommend the usage of these C++ wrappers.

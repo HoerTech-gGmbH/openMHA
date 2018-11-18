@@ -610,7 +610,7 @@ Starting program: {openMHA_directory}/bin/mha ?read:debugexample6.cfg
 [Thread debugging using libthread_db enabled]
 Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
 The Open Master Hearing Aid (openMHA) server
-Copyright (c) 2005-2017 HoerTech gGmbH, D-26129 Oldenburg, Germany
+Copyright (c) 2005-2018 HoerTech gGmbH, D-26129 Oldenburg, Germany
 
 This program comes with ABSOLUTELY NO WARRANTY; for details see file COPYING.
 This is free software, and you are welcome to redistribute it 
