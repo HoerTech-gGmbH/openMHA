@@ -133,7 +133,7 @@ void shadowfilter_end_t::prepare(mhaconfig_t& tf)
 
 MHAPLUGIN_CALLBACKS(shadowfilter_end,shadowfilter_end::shadowfilter_end_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION(shadowfilter_end,
-        "overlapadd",
+        "overlapadd signalhandling",
         "See section \\ref{plug:shadowfilter_begin} for a description of the\n"
         "shadow filter method. The 'shadowfilter\\_end' plugin creates an AC\n"
         "variable shadowfilter\\_gains, which contains the complex gains created\n"
