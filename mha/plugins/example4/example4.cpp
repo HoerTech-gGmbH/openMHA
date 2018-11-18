@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2009 2010 2013 2014 2015 2017 HörTech gGmbH
 // Copyright © 2018 HörTech gGmbH
+//
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
 // the Free Software Foundation, version 3 of the License.
@@ -173,7 +174,7 @@ void example4_t::on_prereadaccess()
 }
 
 MHAPLUGIN_CALLBACKS(example4,example4_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(example4,"example","")
+MHAPLUGIN_DOCUMENTATION(example4,"example examples","")
 
 // Local Variables:
 // compile-command: "make"
