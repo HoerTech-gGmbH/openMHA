@@ -49,8 +49,9 @@
         "Static C++ analyser": {
             "type": "cppcheck",
             "include": [
-                "(\\.c$)",
-                "(\\.h$)"
+                "(\\.cc$)",
+                "(\\.cpp)",
+                "(\\.hh$)"
             ]
         },
         "Merge-Conflicts": {
