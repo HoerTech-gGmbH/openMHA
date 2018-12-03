@@ -20,6 +20,9 @@ TARGETS = mha analysemhaplugin generatemhaplugindoc
 
 ifeq "linux" "$(PLATFORM)"
 TARGETS += browsemhaplugins
+ifeq "$(WITH_RUBY)" "yes"
+TARGETS += mha_ruby.so
+endif
 ifeq "$(WITH_JAVA)" "yes"
 ifeq "$(WITH_SWIG3)" "yes"
 TARGETS += libMHAjava.so MHAjava.jar
@@ -75,6 +78,8 @@ $(BUILD_DIR)/libMHAfw.so: src/mhafw_lib.cpp
 $(BUILD_DIR)/libMHAjava.so: src/fw_t_wrap.cxx $(BUILD_DIR)/libMHAfw.so
 	$(CXX) $(CXXFLAGS) $< -L$(BUILD_DIR) $(LDFLAGS) -lMHAfw $(LDLIBS) -shared -o $@ -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -fno-strict-aliasing 
 
+$(BUILD_DIR)/mha_ruby.so: src/mha_ruby.cpp $(BUILD_DIR)/libMHAfw.so
+	$(CXX) $(CXXFLAGS) $< -L$(BUILD_DIR) $(LDFLAGS) $$(ruby -rrbconfig -e 'C=RbConfig::CONFIG;printf("-I%s -I%s -L%s %s",C["rubyhdrdir"],C["rubyarchhdrdir"],C["libdir"],C["LIBRUBYARG"])') -lMHAfw $(LDLIBS) -shared -o $@  -fno-strict-aliasing 
 
 # Local Variables:
 # compile-command: "make"

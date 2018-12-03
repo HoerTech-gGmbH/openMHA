@@ -99,6 +99,16 @@ dummy_osc:
 endif
 endif
 
+ifeq "$(NEEDS_LIBSERIAL)" "yes"
+ifneq "$(WITH_LIBSERIAL)" "yes"
+# this plugin needs libserial.
+# Do not compile if libserial not available.
+# instead, execute this dummy rule. as default target
+dummy_libserial:
+	@echo "not compiling" $(PLUGINS) "since libserial is not available"
+endif
+endif
+
 ifeq "$(NEEDS_CXX14)" "yes"
 ifeq "$(CXXSTANDARD)" "c++11"
 # this plugin needs at least c++14.

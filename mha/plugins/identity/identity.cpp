@@ -60,7 +60,6 @@ MHAPLUGIN_DOCUMENTATION(identity,
     "This plugin does not modify the signal."
 )
 
-
 // Local variables:
 // compile-command: "make"
 // c-basic-offset: 4

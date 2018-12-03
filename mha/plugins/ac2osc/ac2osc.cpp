@@ -16,7 +16,7 @@
 #include <lo/lo.h>
 #include <pthread.h>
 #include <sched.h>
-#include <mutex>
+
 #include "mha_algo_comm.h"
 #include "mha_fifo.h"
 #include "mha_plugin.hh"

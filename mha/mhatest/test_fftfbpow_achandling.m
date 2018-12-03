@@ -35,7 +35,6 @@ function test_fftfbpow_achandling
   levels = mha_get(mha, 'mha.mhachain.acmon.fftfbpow');
   assert_all(levels(1) < levels(2));
 
-  
 
   % The last test failed because of the AC handling bug in fftfbpow.
   % The 220 Hz sinusoid should result in a higher level in the band with
