@@ -166,7 +166,9 @@ int mhaserver_t::run(unsigned short port, const std::string & _interface)
             // then an Exception may occur in the following block.
             try {
                 if ((!exit_request()) && connection->can_read_line()) {
-                    connection->write(received_group(connection->read_line()));
+                    const std::string command = connection->read_line();
+                    const std::string response = received_group(command);
+                    connection->write(response);
                     if ((!exit_request()) && connection->can_read_line()) {
                         // Do not read another line from the same
                         // connection right now, even if we can, to avoid
