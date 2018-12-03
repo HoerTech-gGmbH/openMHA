@@ -572,7 +572,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
 */
 #define MHAPLUGIN_CALLBACKS(plugname,classname,indom,outdom)    \
-  MHAPLUGIN_CALLBACKS_PREFIX(MHA_STATIC_ ## plugname ## _,classname,indom,outdom)
+  MHAPLUGIN_CALLBACKS_PREFIX(MHA_STATIC_ ## plugname ## _,classname,indom,outdom)    
 /** \ingroup plugif
 
     \brief Wrapper macro for the plugin documentation interface
@@ -596,18 +596,18 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 #define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)                       \
   MHAPLUGIN_DOCUMENTATION_PREFIX(MHA_STATIC_ ## plugname ## _,cat,doc)
 
-#else // MHA_STATIC_PLUGINS
+#else // MHA_STATIC_PLUGINS  		 		
 
 #define MHAPLUGIN_PROC_CALLBACK(plugname,classname,indom,outdom)        \
   MHAPLUGIN_PROC_CALLBACK_PREFIX(MHA_DYNAMIC_,classname,indom,outdom)
 #define MHAPLUGIN_INIT_CALLBACKS(plugname,classname)            \
   MHAPLUGIN_INIT_CALLBACKS_PREFIX(MHA_DYNAMIC_,classname)
 #define MHAPLUGIN_CALLBACKS(plugname,classname,indom,outdom)    \
-  MHAPLUGIN_CALLBACKS_PREFIX(MHA_DYNAMIC_,classname,indom,outdom)
+  MHAPLUGIN_CALLBACKS_PREFIX(MHA_DYNAMIC_,classname,indom,outdom)    
 #define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)                       \
   MHAPLUGIN_DOCUMENTATION_PREFIX(MHA_DYNAMIC_,cat,doc)
 
-#endif // MHA_STATIC_PLUGINS
+#endif // MHA_STATIC_PLUGINS   		  		
 
 #endif
 
