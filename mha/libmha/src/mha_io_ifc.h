@@ -16,7 +16,7 @@
 #ifndef MHA_IO_IFC_H
 #define MHA_IO_IFC_H
 
-#include "mha.h"
+#include "mha.hh"
 
 /**
 

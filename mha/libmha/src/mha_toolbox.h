@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "mha.h"
+#include "mha.hh"
 #include "mha_error.hh"
 #include "mha_errno.h"
 #include "mha_parser.hh"

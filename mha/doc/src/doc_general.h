@@ -36,7 +36,7 @@
 
 /**
    
-  \file mha.h
+  \file mha.hh
   \brief common types for MHA kernel, MHA framework applications and external plugins
 
 */

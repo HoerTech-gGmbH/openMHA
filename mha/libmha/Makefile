@@ -40,7 +40,6 @@ OBJECTS = \
 	mha_fifo.o \
 	pluginbrowser.o \
 
-
 LDFLAGS += -L../../external_libs/$(PLATFORM_CC)/lib
 
 ifeq "$(PLATFORM)" "linux"

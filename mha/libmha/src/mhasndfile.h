@@ -17,7 +17,7 @@
 #define MHASNDFILE_H
 
 #include <sndfile.h>
-#include "mha.h"
+#include "mha.hh"
 #include "mha_signal.hh"
 
 #ifdef __cplusplus

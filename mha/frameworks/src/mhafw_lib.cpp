@@ -16,7 +16,7 @@
 #include "mhafw_lib.h"
 #include "mha_parser.hh"
 #include "mha_error.hh"
-#include "mha.h"
+#include "mha.hh"
 #include "mha_algo_comm.hh"
 #include "mha_plugin.hh"
 #include "mha_signal.hh"

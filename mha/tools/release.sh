@@ -54,9 +54,9 @@ if ! [[ $VER =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     ask_yes_no
 fi
 
-MAJOR_OLD=`grep "define MHA_VERSION_MAJOR" mha/libmha/src/mha.h | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
-MINOR_OLD=`grep "define MHA_VERSION_MINOR" mha/libmha/src/mha.h | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
-POINT_OLD=`grep "define MHA_VERSION_RELEASE" mha/libmha/src/mha.h | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
+MAJOR_OLD=`grep "define MHA_VERSION_MAJOR" mha/libmha/src/mha.hh | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
+MINOR_OLD=`grep "define MHA_VERSION_MINOR" mha/libmha/src/mha.hh | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
+POINT_OLD=`grep "define MHA_VERSION_RELEASE" mha/libmha/src/mha.hh | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
 
 MAJOR_NEW=`echo $VER | cut -d"." -f1`
 MINOR_NEW=`echo $VER | cut -d"." -f2`
@@ -75,9 +75,9 @@ if [[ $MAJOR_OLD==$MAJOR_NEW ]] && [[ $MINOR_OLD==$MINOR_NEW ]] && [[ $POINT_OLD
 fi
 
 sed -i "s/$MAJOR_OLD\\.$MINOR_OLD\\.$POINT_OLD/$VER/g" README.md
-sed -i "s/^#define MHA_VERSION_MAJOR $MAJOR_OLD$/#define MHA_VERSION_MAJOR $MAJOR_NEW/g" mha/libmha/src/mha.h
-sed -i "s/MHA_VERSION_MINOR $MINOR_OLD/MHA_VERSION_MINOR $MINOR_NEW/g" mha/libmha/src/mha.h
-sed -i "s/MHA_VERSION_RELEASE $POINT_OLD/MHA_VERSION_RELEASE $POINT_NEW/g" mha/libmha/src/mha.h
+sed -i "s/^#define MHA_VERSION_MAJOR $MAJOR_OLD$/#define MHA_VERSION_MAJOR $MAJOR_NEW/g" mha/libmha/src/mha.hh
+sed -i "s/MHA_VERSION_MINOR $MINOR_OLD/MHA_VERSION_MINOR $MINOR_NEW/g" mha/libmha/src/mha.hh
+sed -i "s/MHA_VERSION_RELEASE $POINT_OLD/MHA_VERSION_RELEASE $POINT_NEW/g" mha/libmha/src/mha.hh
 sed -i "s/$MAJOR_OLD\\.$MINOR_OLD\\.$POINT_OLD/$VER/g" mha/doc/openMHAdoxygen.sty
 sed -i -re "s/2[0-9]{3}-[0-9]{2}-[0-9]{2}/$(date +%Y-%m-%d)/g" README.md
 git commit -a -m"Increase version number to $VER"

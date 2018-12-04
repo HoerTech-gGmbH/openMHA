@@ -25,7 +25,7 @@
 #ifndef MHA_ALGO_COMM_H
 #define MHA_ALGO_COMM_H
 
-#include "mha.h"
+#include "mha.hh"
 #include "mha_signal.hh"
 #include <vector>
 #include <string>

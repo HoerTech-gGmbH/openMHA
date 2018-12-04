@@ -16,7 +16,7 @@
 #ifndef __MHA_SIGNAL_FFT_H__
 #define __MHA_SIGNAL_FFT_H__
 
-#include "mha.h"
+#include "mha.hh"
 
 #include "sfftw.h"
 #include "srfftw.h"

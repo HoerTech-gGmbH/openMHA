@@ -16,7 +16,7 @@
 #include "mha_defs.h"
 #include "mha_error.hh"
 #include "mha_parser.hh"
-#include "mha.h"
+#include "mha.hh"
 #include "mha_plugin.hh"
 #include "mha_signal.hh"
 #include "mha_events.h"
