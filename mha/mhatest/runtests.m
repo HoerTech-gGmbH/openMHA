@@ -119,7 +119,7 @@ if teardown_errors
 end
 
 if ~failures && ~errors && ~teardown_errors
-  success = true
+  success = true;
 
   % sort times
   [dummy, permutation] = sort(cell2mat(times(:,1)));
