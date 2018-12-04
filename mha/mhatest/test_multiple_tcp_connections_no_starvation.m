@@ -36,7 +36,7 @@ function test_multiple_tcp_connections_no_starvation
   % change a setting over conn 1.   Measure how long this 
   start_time = tic;
   mha_set(mha, 'nchannels_in', 2);
-  duration = toc(start_time)
+  duration = toc(start_time);
 
   % Instead of 1.5 seconds, this should have only taken about 0.5 seconds,
   % because the MHA serves 1 command from each connection round-robin
