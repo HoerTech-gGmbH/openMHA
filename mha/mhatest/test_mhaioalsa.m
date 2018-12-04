@@ -20,8 +20,10 @@
 %This module is usually called snd_aloop or snd-aloop
 %and is found in the linux-image-extra package
 %After installation it can be activated with
-%>modprobe snd-aloop
-
+%>modprobe snd-aloop.
+%This test alsa needs aplay and arecord, usually found
+%in the alsa-utils package. If the loopback device is only available
+%for root, the user must be added to the audio group
 function test_mhaioalsa
 
 %This test can not run on Windows or macOS
@@ -36,11 +38,33 @@ unittest_teardown(@delete, [inwav]);
 unittest_teardown(@delete, [outwav]);
 fclose(fopen(inwav, 'w'));
 fclose(fopen(outwav, 'w'));
+%Check if aplay and arecord are available
+[status,~]=system('which aplay');
+if status
+  warning('aplay is not available can not test ALSA IO')
+  return
+end
+[status,~]=system('which arecord');
+if status
+  warning('arecord is not available can not ALSA IO')
+  return
+end
 %Check if snd_aloop module is loaded
 [~,result]=system('grep -e "^snd_aloop " /proc/modules');
-[status,~]=system(['test -n "' result '"']);
-if status
+if isempty(result)
   warning('ALSA Loopback device is not available, can not test ALSA IO')
+  return
+end
+%Check if snd_aloop module is actually available for aplay
+[~,result]=system('aplay -l 2>/dev/null | grep Loopback');
+if isempty(result)
+  warning('aplay does not recognize loopback device, can not test ALSA IO')
+  return
+end
+%Check if snd_aloop module is actually available for arecord
+[~,result]=system('arecord -l 2>/dev/null | grep Loopback');
+if isempty(result)
+  warning('arecord does not recognize loopback device, can not test ALSA IO')
   return
 end
 %Create random noise, write to temp file
