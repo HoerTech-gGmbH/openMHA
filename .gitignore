@@ -40,6 +40,7 @@ i686-linux-gcc-5
 i686-MinGW-gcc-6
 i686-MinGW-gcc-7
 x86_64-MinGW-gcc-7
+x86_64-MinGW-gcc-8
 armv7l-linux-gcc-4.9
 x86_64-Darwin-clang
 # coverage analysis artifacts
