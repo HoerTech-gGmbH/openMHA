@@ -40,12 +40,6 @@ ifeq "x$(JACK_LINKER_COMMAND)" "x"
 JACK_LINKER_COMMAND = -ljack
 endif
 
-# Version information is extracted from header file.
-MHA_VERSION = $(MHA_VERSION_MAJOR).$(MHA_VERSION_MINOR).$(MHA_VERSION_RELEASE)
-MHA_VERSION_MAJOR=$(shell grep -e 'define MHA_VERSION_MAJOR' $(PREFIX)/libmha/src/mha.h|sed -e 's/[^0-9]*//g')
-MHA_VERSION_MINOR=$(shell grep -e 'define MHA_VERSION_MINOR' $(PREFIX)/libmha/src/mha.h|sed -e 's/[^0-9]*//g')
-MHA_VERSION_RELEASE=$(shell grep -e 'define MHA_VERSION_RELEASE' $(PREFIX)/libmha/src/mha.h|sed -e 's/[^0-9]*//g')
-
 # Standard source code subdirectory.  May be overwritten by most
 # nested Makefile.  Used in rules.mk.
 SOURCE_DIR = src
