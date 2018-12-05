@@ -26,6 +26,12 @@
 %for root, the user must be added to the audio group
 function test_mhaioalsa
 
+% This test does live sound I/O. Only execute when specifically requested.
+global execute_live_tests;
+if ~execute_live_tests
+  return
+end
+
 %This test can not run on Windows or macOS
 if ispc() || ismac()
   warning('ALSA IO tests can only be run on Linux');
