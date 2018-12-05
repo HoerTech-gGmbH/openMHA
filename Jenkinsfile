@@ -109,10 +109,22 @@ pipeline {
                 // unstash "i686_xenial"
                 // unstash "i686_trusty"
 
-		// Copies the new debs to the stash of existing debs,
-		// creates an apt repository, uploads.
+                // Copies the new debs to the stash of existing debs,
+                // creates an apt repository, uploads.
                 sh "make"
             }
+        }
+    }
+
+    // Email notification on failed build taken from
+    // https://jenkins.io/doc/pipeline/tour/post/
+    // multiple recipients are comma-separated:
+    // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
+    post {
+        failure {
+            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
+                 subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                 body: "Something is wrong with ${env.BUILD_URL}"
         }
     }
 }
