@@ -78,7 +78,7 @@ execute-unit-tests: $(BUILD_DIR)/unit-test-runner
 unit_tests_test_files = $(wildcard $(SOURCE_DIR)/*_unit_tests.cpp)
 
 $(BUILD_DIR)/unit-test-runner: $(BUILD_DIR)/.directory $(unit_tests_test_files) $(patsubst %_unit_tests.cpp, %.cpp , $(unit_tests_test_files))
-	if test -n "$(unit_tests_test_files)"; then $(CXX) $(CXXFLAGS) --coverage -o $@ $(wordlist 2, $(words $^), $^) $(LDFLAGS) $(patsubst -lopenmha,,$(LDLIBS)) -lgmock_main -lpthread; fi
+	if test -n "$(unit_tests_test_files)"; then $(CXX) $(CXXFLAGS) --coverage -o $@ $(wordlist 2, $(words $^), $^) $(LDFLAGS) $(LDLIBS) -lgmock_main -lpthread; fi
 
 # Static Pattern Rule defines standard prerequisites for plugins
 $(PLUGINS:%=$(BUILD_DIR)/%$(PLUGIN_EXT)): %$(PLUGIN_EXT): %.o
