@@ -70,6 +70,12 @@ debian/
 
 mha/tools/packaging/deb
 #local editor configuration
+.clang_complete
+.dir-locals.el
+
+#Windows packaging artifacts
+*.exe
+
 # Local Variables:
 # coding: utf-8-unix
 # End:
