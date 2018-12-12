@@ -118,8 +118,11 @@ void io_jack_t::read_get_xruns()
 
 void io_jack_t::read_get_scheduler()
 {
+#ifdef _WIN32
+    state_scheduler.data = "";
+    state_priority.data = -1;
+#else
     if( jc ){
-#ifndef _WIN32
         int policy;
         struct sched_param priority;
         pthread_getschedparam(jack_client_thread_id(jc), &policy, &priority);
@@ -129,14 +132,11 @@ void io_jack_t::read_get_scheduler()
             state_scheduler.data = "SCHED_FIFO";
         else state_scheduler.data = "SCHED_OTHER";
         state_priority.data = priority.sched_priority;
-#else
-        state_scheduler.data = "";
-        state_priority.data = -1;
-#endif
     }else{
         state_scheduler.data = "";
         state_priority.data = -1;
     }
+#endif //_WIN32
 }
 
 int io_jack_t::IOProcessEvent_inner(void* handle,mha_wave_t* sIn,mha_wave_t** sOut)
