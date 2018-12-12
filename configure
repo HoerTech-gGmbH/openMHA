@@ -106,7 +106,6 @@ chklib(){
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
             echo 'CXXFLAGS+=-Wno-error=unused-command-line-argument'
             echo TOOLSET=clang
-            TOOLSET=clang
             echo WITH_JACK=yes
             echo LDLIBS+='-L/opt/local/lib'
             MACCXXFLAGS+=-I/opt/local/include
@@ -176,7 +175,7 @@ chklib(){
             ;;
     esac
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
-    echo 'CXXFLAGS+=-Wall -Wnon-virtual-dtor -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
+    echo 'CXXFLAGS+=-Wall -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     if [[ $(type -P octave) ]] ; then
         echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval"\
@@ -185,11 +184,6 @@ chklib(){
         echo "MHA_TEST_COMMAND=matlab -nodesktop -nosplash -nodisplay -r"\
              "\"set_environment;exit(~runtests())\"";
     fi
-    if ! [ "x$TOOLSET" = "xclang" ]; then
-        echo "CXXFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches";
-        echo "CFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches";
-    fi
-
 ) | tee config.mk
 
 # Local Variables:
