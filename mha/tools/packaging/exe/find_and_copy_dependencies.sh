@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 # Copy all binaries into the destination folder
 mkdir -p bin
 cp ../../../../lib/* bin/.
@@ -33,5 +33,5 @@ find ./mfiles -name ".*" -exec rm {} \;
 cp -r ../../../examples examples
 find ./examples -name ".*" -exec rm {} \;
 # Documentation
-mkdir doc
+mkdir -p doc
 cp ../../../../*pdf doc/.
