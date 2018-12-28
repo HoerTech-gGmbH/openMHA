@@ -27,6 +27,9 @@ ifeq "$(TOOLSET)" "clang"
 CC := $(COMPILERPREFIX)clang$(CLANG_VER)
 CXX := $(COMPILERPREFIX)clang++$(CLANG_VER)
 PLATFORM_CC = $(ARCH)-$(PLATFORM)-clang$(CLANG_VER)
+ifeq "$(PLATFORM)" "Darwin"
+RPATH_FLAGS += -rpath @executable_path/../lib
+endif
 endif
 
 # iOS does not support dynamic plugins
@@ -61,6 +64,15 @@ EXTERNAL_LIBS_LDFLAGS = -L$(EXTERNAL_LIBS)/$(PLATFORM_CC)/lib
 CFLAGS += $(EXTERNAL_LIBS_INCLUDE)
 CXXFLAGS += $(EXTERNAL_LIBS_INCLUDE)
 LDFLAGS += $(EXTERNAL_LIBS_LDFLAGS)
+
+# How to extend the search path for dynamic libraries on windows and linux
+EXTEND_DLLPATH_linux = LD_LIBRARY_PATH="$(1):$$LD_LIBRARY_PATH"
+EXTEND_DLLPATH_MinGW = PATH="$(1):$$PATH"
+# usage: Prepend shell command with
+#        $(call EXTEND_DLLPATH_$(PLATFORM),/some/directory) shell command ...
+
+# modifications of DYLD_LIBRARY_PATH have no effect on recent mac os versions
+# we use installname for in-sourcetree tests and rpath for installed executables
 
 # Some private magic may override some settings in here. Do not use.
 -include $(dir $(lastword $(MAKEFILE_LIST)))/private_magic.mk

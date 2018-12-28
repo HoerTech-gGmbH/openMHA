@@ -32,11 +32,10 @@ if ispc
   catch
   end
 else
-  ldpath = 'LD_LIBRARY_PATH';
-  if ismac()
-    ldpath = 'DYLD_LIBRARY_PATH';
+  if ~ismac()
+    ldpath = 'LD_LIBRARY_PATH';
+    setenv(ldpath,[getenv(ldpath) ':' git_dir '/mha/libmha/' build_dir]);
   end
-  setenv(ldpath,[getenv(ldpath) ':' git_dir '/mha/libmha/' build_dir]);
   dirs = {};
   for p = plugins
       dirs = [dirs, {fileparts(p{1})}];

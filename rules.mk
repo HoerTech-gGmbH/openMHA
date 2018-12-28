@@ -45,7 +45,9 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c $(BUILD_DIR)/.directory
 
 # Pattern for linking shared libraries and dynamic plugins
 $(BUILD_DIR)/%$(DYNAMIC_LIB_EXT):
-	$(CXX) -shared -o $@ $^ ${LDFLAGS} ${LDLIBS}
+	$(CXX) -shared -o $$PWD/$@ $^ ${LDFLAGS} ${LDLIBS}
+# Prepending outname with PWD sets install_name on Mac to absolute path
+# (points inside sourcetree) for correct runtime linking of tools during tests
 
 # Pattern for building static libraries and static "plugins"
 $(BUILD_DIR)/%.a: $(BUILD_DIR)/%.o
@@ -56,7 +58,7 @@ $(BUILD_DIR)/%.a: $(BUILD_DIR)/%.o
 
 # Pattern for linking executables.  The STATIC_DLOPEN needs to be set for iOS.
 $(BUILD_DIR)/%: $(BUILD_DIR)/%.o
-	$(CXX) $(STATIC_DLOPEN) -o $@ $^ ${LDFLAGS} ${LDLIBS}
+	$(CXX) $(STATIC_DLOPEN) $(RPATH_FLAGS) -o $@ $^ ${LDFLAGS} ${LDLIBS}
 
 # Pattern for subdirectories for build artifacts
 %/.directory:
@@ -73,7 +75,7 @@ $(patsubst %,%-subdir-unit-tests,$(SUBDIRS)):
 	$(MAKE) -C $(@:-subdir-unit-tests=) unit-tests
 
 execute-unit-tests: $(BUILD_DIR)/unit-test-runner
-	if [ -x $< ]; then $<; fi
+	if [ -x $< ]; then $(call EXTEND_DLLPATH_$(PLATFORM),$(GIT_DIR)/mha/libmha/$(BUILD_DIR)) $<; fi
 
 unit_tests_test_files = $(wildcard $(SOURCE_DIR)/*_unit_tests.cpp)
 

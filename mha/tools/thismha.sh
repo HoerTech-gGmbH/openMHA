@@ -52,10 +52,6 @@ if [ -n "${old_mhasys}" ] ; then
       drop_from_path "$LD_LIBRARY_PATH" "${old_mhasys}/lib"
       LD_LIBRARY_PATH=$newpath
    fi
-   if [ -n "${DYLD_LIBRARY_PATH}" ]; then
-      drop_from_path "$DYLD_LIBRARY_PATH" "${old_mhasys}/lib"
-      DYLD_LIBRARY_PATH=$newpath
-   fi
 fi
 
 export MHA_LIBRARY_PATH="$MHASYS/lib;$MHASYS/bin;$MHA_LIBRARY_PATH"
@@ -70,12 +66,6 @@ if [ -z "${LD_LIBRARY_PATH}" ]; then
    LD_LIBRARY_PATH=${MHASYS}/lib; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
 else
    LD_LIBRARY_PATH=${MHASYS}/lib:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
-fi
-
-if [ -z "${DYLD_LIBRARY_PATH}" ]; then
-   DYLD_LIBRARY_PATH=${MHASYS}/lib; export DYLD_LIBRARY_PATH   # Mac OS X
-else
-   DYLD_LIBRARY_PATH=${MHASYS}/lib:$DYLD_LIBRARY_PATH; export DYLD_LIBRARY_PATH
 fi
 
 unset old_mhasys
