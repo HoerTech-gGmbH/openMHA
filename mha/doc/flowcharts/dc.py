@@ -1,14 +1,25 @@
 #!/usr/bin/env python
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
+# Copyright © 2018 HörTech gGmbH
+#
+# openMHA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# openMHA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License, version 3 for more details.
+#
+# You should have received a copy of the GNU Affero General Public License, 
+# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
 from matplotlib import pyplot as plt
 import numpy as np
 
 def main():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    #ax.spines['right'].set_color('none')
-    #ax.spines['top'].set_color('none')
-    #plt.xticks([])
-    #plt.yticks([])
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.ylabel(r'$\mathrm{L_{Out}}\,$/dB',size=14)
@@ -48,7 +59,6 @@ def main():
     plt.show()
 
 
-#with plt.style.context(('seaborn-paper')):
 with plt.style.context(u'seaborn-paper'):
     main()
 
