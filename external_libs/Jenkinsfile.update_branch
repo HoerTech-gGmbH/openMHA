@@ -14,7 +14,7 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 pipeline {
-    agent {label "jenkinsmaster"}
+    agent any
     stages {
         stage("update-external_libs-branch-if-necessary") {
             steps {
