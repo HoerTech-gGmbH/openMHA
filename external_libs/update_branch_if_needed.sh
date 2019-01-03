@@ -7,7 +7,7 @@
 git rev-parse --abbrev-ref HEAD
 
 # We can get the current branch. Get it.
-branch_name=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+branch_name="$BRANCH_NAME"
 
 # Check if branch external_libs/$branch_name exists. exit with false if it not.
 git rev-parse --verify --quiet external_libs/"$branch_name"
