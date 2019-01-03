@@ -9,8 +9,9 @@ git rev-parse --abbrev-ref HEAD
 # We can get the current branch. Get it.
 branch_name="$BRANCH_NAME"
 
-# Check if branch external_libs/$branch_name exists. exit with false if it not.
-git rev-parse --verify --quiet external_libs/"$branch_name"
+# Ensure that branches $branch_name and external_libs/$branch_name exist
+git checkout "$branch_name"
+git checkout external_libs/"$branch_name"
 
 # If we are still here, then we are on branch $branch_name, and both branches,
 # $branch_name and external_libs/$branch_name do exist.
@@ -21,8 +22,7 @@ if ! git diff --exit-code --quiet external_libs/"$branch_name" "$branch_name" \
               -- "$extlibsdir"
 then
     # There are differences, we need to fast-forward the external_libs branch
-    git checkout external_libs/"$branch_name"
-    git merge --ff-only
-    # And publish the new external_libs branch to the repository
+    git merge --ff-only "$branch_name"
+    # And publish the new external_libs/$branch_name branch to the repository
     git push
 fi
