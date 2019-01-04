@@ -41,7 +41,7 @@ def openmha_build_steps(stage_name) {
   // Install pre-compiled external libraries
   copyArtifacts(projectName: "openMHA/external_libs/external_libs_$BRANCH_NAME",
                 selector: lastSuccessful())
-  sh "cat artifact"
+  sh "tar xvzf external_libs.tgz"
 
   // Autodetect libs/compiler
   sh "./configure"
