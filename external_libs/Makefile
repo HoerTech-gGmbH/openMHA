@@ -94,7 +94,10 @@ googlemock: $(BUILD_DIR)/googlemock.is_installed
 
 $(BUILD_DIR)/googlemock.is_installed: googletest/WORKSPACE \
 	$(BUILD_DIR)/lib/.directory $(BUILD_DIR)/include/.directory
-	cd googletest/googlemock/make && $(MAKE)
+	sed -e s/-std=c++11//g <googletest/googlemock/make/Makefile \
+	  >googletest/googlemock/make/Makefile.without-explicit-standard
+	cd googletest/googlemock/make && $(MAKE) \
+	  -f Makefile.without-explicit-standard
 	cp googletest/googlemock/make/libgmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
 	cp -a googletest/googletest/include/gtest $(BUILD_DIR)/include/
 	cp -a googletest/googlemock/include/gmock $(BUILD_DIR)/include/
