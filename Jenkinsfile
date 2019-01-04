@@ -39,9 +39,9 @@ def openmha_build_steps(stage_name) {
   sh "git reset --hard && git clean -ffdx"
 
   // Install pre-compiled external libraries
-  copyArtifacts(projectName: "/openMHA/external_libs",
+  copyArtifacts(projectName: "artifact_producer",
                 selector: lastSuccessful())
-  sh "tar xvzf external_libs.tgz"
+  sh "cat artifact"
 
   // Autodetect libs/compiler
   sh "./configure"
