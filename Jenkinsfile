@@ -137,7 +137,8 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
+//            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
+            mail to: 't.herzke@hoertech.de',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }
