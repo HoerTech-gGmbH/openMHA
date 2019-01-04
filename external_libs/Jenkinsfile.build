@@ -59,7 +59,7 @@ pipeline {
             parallel {
                 stage(                         "bionic && x86_64") {
                     agent {label               "bionic && x86_64"}
-                    steps {openmha_build_steps("bionic && x86_64")}
+                    steps {depndcy_build_steps("bionic && x86_64")}
                 }
                 stage(                         "xenial && x86_64") {
                     agent {label               "xenial && x86_64"}
