@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash -ex
 
 # A shell script that determines if the external_libs branch needs an update
 # and if yes, updates it
@@ -8,10 +8,12 @@ branch_name="$BRANCH_NAME"
 
 # Ensure that branches $branch_name and external_libs/$branch_name exist
 git checkout "$branch_name"
+git pull
 if ! git checkout external_libs/"$branch_name"
 then       # no external_libs version of this branch
     exit 0 # nothing to do
 fi
+git pull
 
 # If we are still here, then we are on branch $branch_name, and both branches,
 # $branch_name and external_libs/$branch_name do exist.
