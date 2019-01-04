@@ -38,6 +38,11 @@ def openmha_build_steps(stage_name) {
   // Avoid that artifacts from previous builds influence this build
   sh "git reset --hard && git clean -ffdx"
 
+  // Install pre-compiled external libraries
+  copyArtifacts(projectName: "/openMHA/external_libs/$BRANCH_NAME",
+                selector: lastSuccessful())
+  sh "tar xvzf external_libs.tgz"
+
   // Autodetect libs/compiler
   sh "./configure"
 
