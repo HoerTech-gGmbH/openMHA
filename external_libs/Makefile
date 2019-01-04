@@ -94,11 +94,16 @@ googlemock: $(BUILD_DIR)/googlemock.is_installed
 
 $(BUILD_DIR)/googlemock.is_installed: googletest/WORKSPACE \
 	$(BUILD_DIR)/lib/.directory $(BUILD_DIR)/include/.directory
-	sed -e s/-std=c++11//g <googletest/googlemock/make/Makefile \
-	  >googletest/googlemock/make/Makefile.without-explicit-standard
+	sed -e s/-std=c++11//g -e \
+	  's/^libgmock_main.a : gmock_main.o$$/libgmock_main.a : gmock-all.o gtest-all.o gmock_main.o/' \
+	  <googletest/googlemock/make/Makefile \
+	  >googletest/googlemock/make/Makefile.full_gmock_main
+	grep -q '^libgmock_main.a : gmock-all.o gtest-all.o gmock_main.o$$' \
+	  googletest/googlemock/make/Makefile.full_gmock_main \
+	  # error: inspect & adapt googlemock Makefile changes!
 	cd googletest/googlemock/make && $(MAKE) \
-	  -f Makefile.without-explicit-standard
-	cp googletest/googlemock/make/libgmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
+	  -f Makefile.full_gmock_main
+	cp googletest/googlemock/make/*gmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
 	cp -a googletest/googletest/include/gtest $(BUILD_DIR)/include/
 	cp -a googletest/googlemock/include/gmock $(BUILD_DIR)/include/
 	touch $@
