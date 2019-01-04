@@ -43,7 +43,7 @@ def depndcy_build_steps(stage_name) {
   sh "./configure"
 
   // Compile and install dependencies
-  sh ("make -j $cpus install external_libs googletest")
+  sh ("make -j $cpus external_libs googletest")
 
   // Place dependencies in tar file to preserve timestamps
   sh ("tar cvzf stash.tgz external_libs/*-*-*/")
