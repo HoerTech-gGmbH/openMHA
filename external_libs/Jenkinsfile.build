@@ -52,7 +52,7 @@ def depndcy_build_steps(stage_name) {
   sh ("tar cvzf installation.tgz external_libs/*-*-*/")
 
   // Store compiled/installed dependencies for this job's build artifact
-  stash name: (arch+"_"+system), includes: 'stash.tgz'
+  stash name: (arch+"_"+system), includes: '*.tgz'
 }
 
 pipeline {
