@@ -118,7 +118,7 @@ pipeline {
                 sh ("tar xzf installation.tgz && rm *.tgz")
 
                 // creates a single artifact containing all variants
-                sh ("tar cvzf external_libs.tgz external_libs/*-*-*/")
+                sh ("tar cvzf external_libs.tgz external_libs")
                 archiveArtifacts 'external_libs.tgz'
             }
         }
