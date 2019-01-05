@@ -43,6 +43,10 @@ def openmha_build_steps(stage_name) {
                 selector: lastSuccessful())
   sh "tar xvzf external_libs.tgz"
 
+  // if we notice any differences between the sources of the precompiled
+  // dependencies and the current sources, we cannot help but need to recompile
+  sh "git diff --exit-code || (git reset --hard && git clean -ffdx)"
+
   // Autodetect libs/compiler
   sh "./configure"
 
