@@ -18,9 +18,9 @@ pipeline {
     stages {
         stage("update-external_libs-branch-if-necessary") {
             steps {
-	        sh("external_libs/update_branch_if_needed.sh")
-	    }
-	}
+                sh("external_libs/update_branch_if_needed.sh")
+            }
+        }
     }
     // Email notification on failed build taken from
     // https://jenkins.io/doc/pipeline/tour/post/

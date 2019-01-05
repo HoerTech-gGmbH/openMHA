@@ -45,8 +45,11 @@ def depndcy_build_steps(stage_name) {
   // Compile and install dependencies
   sh ("make -j $cpus external_libs googletest")
 
-  // Place dependencies in tar file to preserve timestamps
-  sh ("tar cvzf stash.tgz external_libs/*-*-*/")
+  // Place dependency sources in tar file so we can manipulate their timestamp
+  sh ("tar cvzf sources.tgz --exclude=.git external_libs")
+  
+  // Place installed dependencies in tar file to preserve their timestamps
+  sh ("tar cvzf installation.tgz external_libs/*-*-*/")
 
   // Store compiled/installed dependencies for this job's build artifact
   stash name: (arch+"_"+system), includes: 'stash.tgz'
@@ -89,25 +92,34 @@ pipeline {
         }
         stage("publish") {
             steps {
-                // receive all deb packages from openmha build
+                // remove external_libs it it's there for a clean slate
+                sh ("mv external_libs external_libs_ || true")
+                sh ("rm -rf external_libs_")
+
+                // unpack the sources only once
                 unstash "x86_64_bionic"
-                sh ("tar xzf stash.tgz && rm stash.tgz")
+                sh ("tar xzf sources.tgz")
+                // manipulate timestamps of sources so that compilation is newer
+                sh ("find external_libs -type f | xargs touch -t 197001010000")
+
+                // unpack compiled results from all platforms
+                sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_xenial"
-                sh ("tar xzf stash.tgz && rm stash.tgz")
+                sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_trusty"
-                sh ("tar xzf stash.tgz && rm stash.tgz")
+                sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "armv7_bionic"
-                sh ("tar xzf stash.tgz && rm stash.tgz")
+                sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "armv7_xenial"
-                sh ("tar xzf stash.tgz && rm stash.tgz")
+                sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_windows"
-                sh ("tar xzf stash.tgz && rm stash.tgz")
+                sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_mac"
-                sh ("tar xzf stash.tgz && rm stash.tgz")
+                sh ("tar xzf installation.tgz && rm *.tgz")
 
                 // creates a single artifact containing all variants
                 sh ("tar cvzf external_libs.tgz external_libs/*-*-*/")
-		archiveArtifacts 'external_libs.tgz'
+                archiveArtifacts 'external_libs.tgz'
             }
         }
     }
