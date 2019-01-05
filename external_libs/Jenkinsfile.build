@@ -100,7 +100,7 @@ pipeline {
                 unstash "x86_64_bionic"
                 sh ("tar xzf sources.tgz")
                 // manipulate timestamps of sources so that compilation is newer
-                sh ("find external_libs -type f | xargs touch -t 197001010000")
+                sh ("find external_libs -type f | xargs touch -t 200501010000")
 
                 // unpack compiled results from all platforms
                 sh ("tar xzf installation.tgz && rm *.tgz")
