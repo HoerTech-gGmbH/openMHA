@@ -49,7 +49,7 @@ SOURCE_DIR = src
 
 # The git commit SHA is compiled into the binaries for reproducible research.
 # Detect current git commit hash:
-GITCOMMITHASH = $(shell git log -1 --abbrev=12 --pretty="format:%h")$(shell test -z "`git status --porcelain -uno`" || echo "-modified")
+GITCOMMITHASH = $(shell $(GIT_DIR)/mha/tools/get_git_commit_hash.sh)
 CFLAGS += -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
 CXXFLAGS += -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
 
