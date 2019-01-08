@@ -636,7 +636,7 @@ step in the next line):
 \verbatim
 Breakpoint 2, example6_t::process (this=0x7ffff6a06c0d, wave=0x10a8b550)
     at example6.cpp:162
-162 {
+162     {
 (gdb) n
 163        poll_config();
 (gdb)
