@@ -109,7 +109,7 @@ $(BUILD_DIR)/googlemock.is_installed: googletest/WORKSPACE \
 	touch $@
 
 googletest/WORKSPACE:
-	git clone git@mha.physik.uni-oldenburg.de:googletest
+	git clone https://github.com/google/googletest
 
 # Local Variables:
 # compile-command: "make"
