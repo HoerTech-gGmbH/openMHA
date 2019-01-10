@@ -38,6 +38,9 @@
 #if __cplusplus == 201703L
 # define COMPILER_ID_STANDARD "c++17"
 #endif
+#ifndef COMPILER_ID_STANDARD
+# error "unrecognized value of predefined macro __cplusplus"
+#endif
 
 // The compiler id will be sth like "gcc-8.2.0-c++14" or "clang-6.0.0-c++17"
 #define COMPILER_ID \
