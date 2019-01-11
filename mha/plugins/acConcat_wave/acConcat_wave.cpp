@@ -30,7 +30,7 @@ acConcat_wave_config::acConcat_wave_config(algo_comm_t &ac, const mhaconfig_t in
     for(std::vector<int>::iterator it = numSamples_AC.begin(); it != numSamples_AC.end(); ++it)
         numsamples += *it;
 
-    vGCC_con = new MHA_AC::waveform_t(ac, _concat->name_con_AC.data.c_str(), numsamples, 1, true);
+    vGCC_con = new MHA_AC::waveform_t(ac, _concat->name_con_AC.data.c_str(), numsamples, _concat->numchannels.data, true);
 }
 
 acConcat_wave_config::~acConcat_wave_config()
@@ -42,6 +42,7 @@ acConcat_wave_config::~acConcat_wave_config()
 mha_wave_t *acConcat_wave_config::process(mha_wave_t *wave)
 {
     int sample = 0;
+    int chan_sample = 0;
 
     //do actual processing here using configuration state
     for (std::vector<std::string>::iterator it = strNames_AC.begin() ; it != strNames_AC.end(); ++it) {
@@ -50,9 +51,14 @@ mha_wave_t *acConcat_wave_config::process(mha_wave_t *wave)
         if (vGCC.num_channels != vGCC_con->num_channels)
             throw MHA_Error(__FILE__, __LINE__, "Number of channels does not match.");
 
-        for (unsigned int chan = 0; chan < vGCC.num_channels; chan++)
+        for (unsigned int chan = 0; chan < vGCC.num_channels; chan++) {
+            chan_sample = sample;
+
             for (unsigned int s = 0; s < vGCC.num_frames; s++)
-                vGCC_con->assign(sample++, chan, value(vGCC, s, chan));
+                vGCC_con->assign(chan_sample++, chan, value(vGCC, s, chan));
+        }
+
+        sample = chan_sample;
     }
 
     //return current fragment
@@ -68,6 +74,7 @@ acConcat_wave::acConcat_wave(algo_comm_t & ac,
     , prefix_names_AC("Prefix of the names of the waveforms to be concatenated", "vGCC_ac")
     , samples_AC("Lengths of the waveforms to be concatenated", "[]")
     , name_con_AC("Name of the concatenated waveform", "vGCC_con_AC")
+    , numchannels("Number of channels in each waveform to be concatenated", "1", "[1, [")
 {
     //add parser variables and connect them to methods here
     //INSERT_PATCH(foo_parser);
@@ -76,6 +83,7 @@ acConcat_wave::acConcat_wave(algo_comm_t & ac,
     INSERT_PATCH(prefix_names_AC);
     INSERT_PATCH(samples_AC);
     INSERT_PATCH(name_con_AC);
+    INSERT_PATCH(numchannels);
 }
 
 acConcat_wave::~acConcat_wave() {}

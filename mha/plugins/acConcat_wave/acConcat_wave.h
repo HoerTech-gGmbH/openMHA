@@ -49,6 +49,7 @@ public:
     MHAParser::string_t prefix_names_AC;
     MHAParser::vint_t samples_AC;
     MHAParser::string_t name_con_AC;
+    MHAParser::int_t numchannels;
 
 private:
     void update_cfg();
