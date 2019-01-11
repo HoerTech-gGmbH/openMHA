@@ -1,6 +1,17 @@
 // This file is part of the HörTech Master Hearing Aid (MHA)
-// Copyright © 2015 2016 2018 HörTech gGmbH
-// All rights reserved.
+// Copyright © 2015 2018 HörTech gGmbH
+//
+// openMHA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, version 3 of the License.
+//
+// openMHA is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License, version 3 for more details.
+//
+// You should have received a copy of the GNU Affero General Public License, 
+// version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
  * This plugin has been implemented as part of the multi-channel DOA-SVM localization system consisting of the plugins doasvm_feature_extraction, doasvm_classification, acPooling_wave and acTransform_wave, but can be used in arbitrary contexts for concatenating two or more waveforms.
