@@ -291,12 +291,12 @@ MHAPLUGIN_DOCUMENTATION(gtfb_analyzer,"filter gammatone",
                         " stored in different output channels."
                         "\n\n"
                         " Example: If the input has 2 channels (ch0, ch1),"
-                        " and gtfb_analyzer splits into 3 bands (b0, b1, b2),"
+                        " and \\texttt{gtfb\\_analyzer} splits into 3 bands (b0, b1, b2),"
                         " then the order of output channels produced by"
-                        " \\texttt{gtfb_analyzer} is:"
-                        " ch0_b0_real, ch0_b0_imag, ch0_b1_real, ch0_b1_imag,"
-                        " ch0_b2_real, ch0_b2_imag, ch1_b0_real, ch1_b1_imag,"
-                        " ch1_b1_real, ch1_b1_imag, ch1_b2_real, ch1_b2_imag,"
+                        " \\texttt{gtfb\\_analyzer} is:"
+                        " ch0\\_b0\\_real, ch0\\_b0\\_imag, ch0\\_b1\\_real, ch0\\_b1\\_imag,"
+                        " ch0\\_b2\\_real, ch0\\_b2\\_imag, ch1\\_b0\\_real, ch1\\_b1\\_imag,"
+                        " ch1\\_b1\\_real, ch1\\_b1\\_imag, ch1\\_b2\\_real, ch1\\_b2\\_imag,"
                         )
 
 
