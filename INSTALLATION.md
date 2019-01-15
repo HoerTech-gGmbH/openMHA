@@ -197,9 +197,6 @@ Octave installation. Enter the following commands in the bash shell prompt:
 cd /openMHA-master
 PATH=/bin
 ln -s /bin/true /bin/git
-ln -s /bin/g++ /bin/g++-7
-ln -s /bin/gcc /bin/gcc-7
-ln -s /bin/cpp /bin/cpp-7
 ./configure
 make
 make install

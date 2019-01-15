@@ -16,16 +16,15 @@
 # This file sets some Makefile variables based on the settings of the
 # build system specific found in config.mk
 
-# MHA can be compiled with either GCC or Clang.  We recommend that gcc
-# and clang compiler drivers have version suffixes.  The
-# COMPILERPREFIX setting is for cross compilation (we do this for ARM)
-CC := $(COMPILERPREFIX)gcc$(GCC_VER)
-CXX := $(COMPILERPREFIX)g++$(GCC_VER)
+# MHA can be compiled with either GCC or Clang.  The
+# COMPILERPREFIX setting is for cross compilation (we did this for ARM)
+CC := $(COMPILERPREFIX)gcc
+CXX := $(COMPILERPREFIX)g++
 PLATFORM_CC = $(ARCH)-$(PLATFORM)-gcc$(GCC_VER)
 
 ifeq "$(TOOLSET)" "clang"
-CC := $(COMPILERPREFIX)clang$(CLANG_VER)
-CXX := $(COMPILERPREFIX)clang++$(CLANG_VER)
+CC := $(COMPILERPREFIX)clang
+CXX := $(COMPILERPREFIX)clang++
 PLATFORM_CC = $(ARCH)-$(PLATFORM)-clang$(CLANG_VER)
 ifeq "$(PLATFORM)" "Darwin"
 RPATH_FLAGS += -rpath @executable_path/../lib
