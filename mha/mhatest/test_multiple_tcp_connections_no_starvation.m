@@ -43,7 +43,18 @@ function result = test_multiple_tcp_connections_no_starvation_measurement
 
   % Make sure conn 1 is connected
   mha_set(mha, 'instance', 'test_multiple_tcp_connections_no_starvation');
-  
+
+  % By reading the previous setting we make sure netcat works on this host
+  [code,text]=system(sprintf('echo instance?val | nc -w 1 %s %d', ...
+                             mha.host, mha.port));
+  assert_equal(0, code, ... % Expect success exit code
+               'Netcat (nc) invocation failed: unexpected exit code');
+  assert_equal('test_multiple_tcp_connections_no_starvation', ...
+               text(:,1:43), ... % Check output
+               'Netcat (nc) invocation failed: unexpected output');
+  % Make sure conn 1 is still connected
+  mha_set(mha, 'instance', 'test_multiple_tcp_connections_no_starvation');
+
   % flood the MHA with 2 commands that take 1 second each to process over conn 2
   system(sprintf('(echo sleep=1;echo sleep=1) | nc -w 1 %s %d &', ...
                  mha.host, mha.port));
