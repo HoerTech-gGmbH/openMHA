@@ -52,8 +52,10 @@ def openmha_build_steps(stage_name) {
 
   // On linux, we also create debian packages
   def linux = (system != "windows" && system != "mac")
+  def windows = (system == "windows")
   def debs = linux ? " deb" : ""
-  sh ("make -j $cpus install unit-tests" + debs)
+  def exes = windows ? " exe" : ""
+  sh ("make -j $cpus install unit-tests" + debs + exes)
 
   // The system tests perform timing measurements which may fail when
   // system load is high. Retry in that case, up to 2 times.
