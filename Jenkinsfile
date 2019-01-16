@@ -65,6 +65,11 @@ def openmha_build_steps(stage_name) {
     // Store debian packets for later retrieval by the repository manager
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
   }
+
+  if (windows) {
+    // Store windows installer packets for later retrieval by the repository manager
+    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/exe/'
+  }
 }
 
 pipeline {
@@ -138,6 +143,12 @@ pipeline {
                 // Copies the new debs to the stash of existing debs,
                 // creates an apt repository, uploads.
                 sh "make"
+
+                // For now, make the windows installer available in a tar file that we publish
+                // as a Jenkins artifact
+                unstash "x86_64_windows"
+                sh "tar cvzf windows-installer.tar.gz mha/tools/packaging/exe"
+                archiveArtifacts 'windows-installer.tar.gz'
             }
         }
     }
