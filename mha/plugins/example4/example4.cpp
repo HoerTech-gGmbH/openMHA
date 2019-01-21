@@ -19,7 +19,7 @@
  * A simple example \mha plugin written in C++
  *
  * This plugin scales one channel of the input signal, working in the
- * time domain. The scale factor and the scaled channel number is made
+ * stft domain. The scale factor and the scaled channel number is made
  * accessible to the configuration structure.
  */
 
@@ -174,7 +174,10 @@ void example4_t::on_prereadaccess()
 }
 
 MHAPLUGIN_CALLBACKS(example4,example4_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(example4,"example examples","")
+MHAPLUGIN_DOCUMENTATION\
+(example4,
+ "example level-modification audio-channels",
+ "")
 
 // Local Variables:
 // compile-command: "make"

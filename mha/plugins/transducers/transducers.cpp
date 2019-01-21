@@ -480,32 +480,39 @@ void bbcalib_interface_t::release()
 }
 
 MHAPLUGIN_CALLBACKS(transducers,bbcalib_interface_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(transducers,
-        "level other",
-        "Some plugins in the MHA expect the input signal to be calibrated to\n"
-        "sound pressure level in Pascal. This plugin converts AD and DA converter\n"
-        "levels to SPL in Pa and also allows for a FIR filters for mircophone and\n"
-        "receiver equalization.\n"
-        "\n"
-        "\\subsection*{A schematic calibration rule for the MHA}\n"
-        "\\begin{enumerate}\n"
-        "\\item Measure frequency response of hearing aid microphones and receiver.\n"
-        "\\item Create FIR filter coefficients for frequency response equalization\n"
-        "      for microphones and receiver, configure the FIR coefficients of this plugin correspondingly.\n"
-        "\\item Play an acoustic reference signal of a known SPL level to the microphone, adjust the 'calib\\_in.peaklevel' variable until the internal level meter (e.g. rmslevel, p. \\pageref{plug:rmslevel}) shows the same level.\n"
-        "\\item Create a test tone in the MHA (e.g. with 'noise', p. \\pageref{plug:noise}, or 'sine', p. \\pageref{plug:sine}) of a given level, and adjust the variable 'calib\\_out.peaklevel' until the same acoustic level is measured at the receiver."
-        "\\end{enumerate}\n"
-        "\n"
-        "Besides the signal calibration, this plugin also contains a soft-limiter\n"
-        "in the output path, and a quantization module. The soft-limiter acts as a\n"
-        "fast broadband compressor, and can be configured correspondingly.\n"
-        "The quantisation module limits the signal to the interval $[-1,1]$\n"
-        "and optionally reduces the resolution, by this quantization rule:\n"
-        "\\begin{equation}\n"
-        "y = {\\textrm{floor}}(2^{(N-1)} x) 2^{-(N-1)}\n"
-        "\\end{equation}\n"
-        "$N$ is the number of bits, $x$ the input signal and $y$ the output signal.\n"
-        )
+MHAPLUGIN_DOCUMENTATION\
+(transducers,
+ "filter limiter calibration level-meter",
+ "Some plugins in the MHA expect the input signal to be calibrated to\n"
+ "sound pressure level in Pascal. This plugin converts AD and DA converter\n"
+ "levels to SPL in Pa and also allows for a FIR filters for mircophone and\n"
+ "receiver equalization.\n"
+ "\n"
+ "\\subsection*{A schematic calibration rule for the MHA}\n"
+ "\\begin{enumerate}\n"
+ "\\item Measure frequency response of hearing aid microphones and receiver.\n"
+ "\\item Create FIR filter coefficients for frequency response equalization\n"
+ "      for microphones and receiver, configure the FIR coefficients of"
+ "      this plugin correspondingly.\n"
+ "\\item Play an acoustic reference signal of a known SPL level to the"
+ " microphone, adjust the 'calib\\_in.peaklevel' variable until the internal"
+ " level meter (e.g. rmslevel, p. \\pageref{plug:rmslevel}) shows the same level.\n"
+ "\\item Create a test tone in the MHA (e.g. with 'noise',"
+ " p. \\pageref{plug:noise}, or 'sine', p. \\pageref{plug:sine})"
+ " of a given level, and adjust the variable 'calib\\_out.peaklevel' until"
+ " the same acoustic level is measured at the receiver."
+ "\\end{enumerate}\n"
+ "\n"
+ "Besides the signal calibration, this plugin also contains a soft-limiter\n"
+ "in the output path, and a quantization module. The soft-limiter acts as a\n"
+ "fast broadband compressor, and can be configured correspondingly.\n"
+ "The quantisation module limits the signal to the interval $[-1,1]$\n"
+ "and optionally reduces the resolution, by this quantization rule:\n"
+ "\\begin{equation}\n"
+ "y = {\\textrm{floor}}(2^{(N-1)} x) 2^{-(N-1)}\n"
+ "\\end{equation}\n"
+ "$N$ is the number of bits, $x$ the input signal and $y$ the output signal.\n"
+ )
 
 // Local Variables:
 // compile-command: "make"

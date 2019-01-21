@@ -163,19 +163,42 @@ MHAPLUGIN_CALLBACKS(acSteer,acSteer,spec,spec)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(acSteer,
-        "AC-variables acvariables",
-        "The {\\tt acSteer} plugin loads a file contaning pre-computed steering filters (e.g. MVDR filters) to be used within a beamformer. The steering filters can be monaural ({\\bf nrefmic = 1}) or binaural ({\\bf nrefmic = 2}). The whole file consists of a column vector of concatenated steering vectors, which are formatted in the order of {\\bf angle} and {\\bf channel}. This means that the first channel vector of the first angle is followed by the second channel vector of the first angle until the last channel. The channel vectors of the first angle are followed by the channel vectors of the second angle and so an and so forth.\n"
-        "\n"
-        "If the steering filters have been computed for two reference microphones, the steering filters of the second reference microphone just follow the ones for the first microphone and have the same format.\n"
-        "\n"
-        "This plugin is typically located between a localization plugin (e.g. {\\tt doasvm\\_classification}) and a beamforming plugin (e.g. {\\tt steerbf}). The localization plugin estimates the source direction and saves it in an AC variable. This plugin reads the saved direction from the corresponding AC variable and saves the corresponding steering vector to the AC space, which is used by the succeeding beamforming plugin for steering the beam towards that particular direction.\n"
-        "\n"
-        "The configuration variable {\\bf nrefmic} indicates the number of different reference microphone settings, for which the filters were computed. For each reference microphone and each possible DOA angle and each input channel one filter should be provided so that\n"
-        "\\begin{equation}\n"
-        "nsteerchan = nrefmix * nchan * nangle\n"
-        "\\end{equation}\n"
-        )
+MHAPLUGIN_DOCUMENTATION\
+(acSteer,
+ "data-import disk-files beamformer binaural adaptive",
+ "The {\\tt acSteer} plugin loads a file contaning pre-computed steering"
+ " filters (e.g. MVDR filters) to be used within a beamformer."
+ " The steering filters can be monaural ({\\bf nrefmic = 1})"
+ " or binaural ({\\bf nrefmic = 2})."
+ " The whole file consists of a column vector of concatenated steering vectors,"
+ " which are formatted in the order of {\\bf angle} and {\\bf channel}."
+ " This means that the first channel vector of the first angle is followed"
+ " by the second channel vector of the first angle until the last channel."
+ " The channel vectors of the first angle are followed by the channel vectors"
+ " of the second angle and so an and so forth.\n"
+ "\n"
+ "If the steering filters have been computed for two reference microphones,"
+ " the steering filters of the second reference microphone just follow the"
+ " ones for the first microphone and have the same format.\n"
+ "\n"
+ "This plugin is typically located"
+ " between a localization plugin (e.g. {\\tt doasvm\\_classification})"
+ " and a beamforming plugin (e.g. {\\tt steerbf})."
+ " The localization plugin estimates the source direction"
+ " and saves it in an AC variable."
+ " This plugin reads the saved direction from the corresponding AC variable"
+ " and saves the corresponding steering vector to the AC space,"
+ " which is used by the succeeding beamforming plugin"
+ " for steering the beam towards that particular direction.\n"
+ "\n"
+ "The configuration variable {\\bf nrefmic} indicates the number of different"
+ " reference microphone settings, for which the filters were computed."
+ " For each reference microphone and each possible DOA angle and each"
+ " input channel one filter should be provided so that\n"
+ "\\begin{equation}\n"
+ "nsteerchan = nrefmix * nchan * nangle\n"
+ "\\end{equation}\n"
+ )
 
 /*
  * Local Variables:

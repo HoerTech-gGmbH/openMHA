@@ -152,13 +152,16 @@ namespace delaysum{
         /** Do nothing in release. */
     }
 }
-    MHAPLUGIN_CALLBACKS(delaysum,delaysum::delaysum_if_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(delaysum,"beamforming directional multichannel",
-                            "This plugin allows to delay and "
-                            "sum multiple input channels using individual "
-                            "delays and weights. After each channel is delayed "
-                            "it is multiplied with the given weight and then "
-                            "added to the single output channel.")
+MHAPLUGIN_CALLBACKS(delaysum,delaysum::delaysum_if_t,wave,wave)
+MHAPLUGIN_DOCUMENTATION\
+(delaysum,
+ "spatial beamformer",
+ "This plugin allows to delay and "
+ "sum multiple input channels using individual "
+ "delays and weights. After each channel is delayed "
+ "it is multiplied with the given weight and then "
+ "added to the single output channel."
+ )
     // Local Variables:
     // compile-command: "make"
     // c-basic-offset: 4

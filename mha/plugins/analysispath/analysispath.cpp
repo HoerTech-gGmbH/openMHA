@@ -364,23 +364,25 @@ plug_t::plug_t(const std::string& libname,const std::string& chain,const std::st
 }
 
 MHAPLUGIN_CALLBACKS(analysispath,analysispath_if_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(analysispath,
-        "signalflow signalhandling analysis acvariables",
-        "In many signal processing scenarios, the signal analysis\n"
-        "requires larger block sizes and more processing time than\n"
-        "the filtering itself. If the filters do not change rapidly,\n"
-        "the filter coefficients can be processed independently from\n"
-        "the filter process. This is realized in this plugin: A copy\n"
-        "of the input signal is stored in a double buffer, which is\n"
-        "then processed asynchronously in a thread with lower priority.\n"
-        "At the same time, a snapshot of the AC space (or a subset of it)\n"
-        "can be transferred from the analysis thread to the main\n"
-        "processing thread.\n\n"
-        "\\MHAfigure{Schematic signal flow in the analysis path scenario.}{analysispath_sigflow}\n\n"
-        "Please note that the AC variables which should be copied to the\n"
-        "processing thread must exist after the prepare() callback and should\n"
-        "not change their size during run-time."
-        )
+MHAPLUGIN_DOCUMENTATION\
+(analysispath,
+ "plugin-arrangement algorithm-communication data-flow",
+ "In many signal processing scenarios, the signal analysis\n"
+ "requires larger block sizes and more processing time than\n"
+ "the filtering itself. If the filters do not change rapidly,\n"
+ "the filter coefficients can be processed independently from\n"
+ "the filter process. This is realized in this plugin: A copy\n"
+ "of the input signal is stored in a double buffer, which is\n"
+ "then processed asynchronously in a thread with lower priority.\n"
+ "At the same time, a snapshot of the AC space (or a subset of it)\n"
+ "can be transferred from the analysis thread to the main\n"
+ "processing thread.\n\n"
+ "\\MHAfigure{Schematic signal flow in the analysis path scenario.}"
+ "{analysispath_sigflow}\n\n"
+ "Please note that the AC variables which should be copied to the\n"
+ "processing thread must exist after the prepare() callback and should\n"
+ "not change their size during run-time."
+ )
 
 /*
  * Local variables:

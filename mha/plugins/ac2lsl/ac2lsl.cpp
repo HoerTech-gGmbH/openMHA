@@ -441,16 +441,18 @@ void ac2lsl::cfg_t::create_or_replace_var(const std::string& name, const comm_va
 
 MHAPLUGIN_CALLBACKS(ac2lsl,ac2lsl::ac2lsl_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(ac2lsl,ac2lsl::ac2lsl_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(ac2lsl,"AC-variables acvariables",
-                        "This plugin provides a mechanism"
-                        " to send ac variables over the network using the lab"
-                        " streaming layer (lsl). If no source id is set,\n"
-                        " recovery of the stream after changing channel count,\n"
-                        " data type, or any configuration variable is not possible.\n"
-                        " Sending data over the network is not real-time safe and\n"
-                        " processing will be aborted if this plugin is used in a\n"
-                        " real-time thread without user override."
-                        " Currently no user-defined types are supported.")
+MHAPLUGIN_DOCUMENTATION\
+(ac2lsl,
+ "data-export network-communication lab-streaming-layer",
+ "This plugin provides a mechanism"
+ " to send ac variables over the network using the lab"
+ " streaming layer (lsl). If no source id is set,\n"
+ " recovery of the stream after changing channel count,\n"
+ " data type, or any configuration variable is not possible.\n"
+ " Sending data over the network is not real-time safe and\n"
+ " processing will be aborted if this plugin is used in a\n"
+ " real-time thread without user override."
+ " Currently no user-defined types are supported.")
 
 /*
  * Local variables:

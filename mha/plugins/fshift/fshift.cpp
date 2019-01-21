@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -143,23 +143,26 @@ MHAPLUGIN_CALLBACKS(fshift,fshift::fshift_t,
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(fshift::fshift_t,"feedback",
-                        " Performs a quantized frequency shift on the selected frequency"
-                        " interval. "
-                        " The frequency band between (originally)"
-                        " \\texttt{fmin} and \\texttt{fmax} (frequencies in Hz)"
-                        " is shifted by \\texttt{df} (desired frequency change"
-                        " in Hz). "
-                        " Positive \\texttt{df} shifts the selected band to"
-                        " higher frequencies, negative \\texttt{df} shifts to"
-                        " lower frequencies."
-                        " \n\n"
-                        " The shifted and the unshifted parts of the"
-                        " input signal are split at the STFT bin boundaries nearest to the."
-                        " The frequency shift \\texttt{df} is rounded to the nearest bin as well."
-                        " The parts of the spectrum that would be shifted below 0 Hz or above the Nyquist"
-                        " frequency are discarded. "
-                        )
+MHAPLUGIN_DOCUMENTATION
+(fshift::fshift_t,
+ "feedback-suppression frequency-modification",
+ " Performs a quantized frequency shift on the selected frequency"
+ " interval. "
+ " The frequency band between (originally)"
+ " \\texttt{fmin} and \\texttt{fmax} (frequencies in Hz)"
+ " is shifted by \\texttt{df} (desired frequency change"
+ " in Hz). "
+ " Positive \\texttt{df} shifts the selected band to"
+ " higher frequencies, negative \\texttt{df} shifts to"
+ " lower frequencies."
+ " \n\n"
+ " The shifted and the unshifted parts of the"
+ " input signal are split at the STFT bin boundaries nearest to the."
+ " The frequency shift \\texttt{df} is rounded to the nearest bin as well."
+ " The parts of the spectrum that would be shifted below 0 Hz or above the Nyquist"
+ " frequency are discarded. "
+ )
+
 // Local Variables:
 // compile-command: "make"
 // c-basic-offset: 2

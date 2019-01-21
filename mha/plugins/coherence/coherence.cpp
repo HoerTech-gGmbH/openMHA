@@ -293,10 +293,11 @@ void cohflt_if_t::update()
 }
 
 MHAPLUGIN_CALLBACKS(coherence,coherence::cohflt_if_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(coherence,
-    "binaural filter noise-reduction",
-    ""
-    )
+MHAPLUGIN_DOCUMENTATION\
+(coherence,
+ "spatial signal-enhancement dereverberation adaptive",
+ ""
+ )
 
 // Local Variables:
 // compile-command: "make"

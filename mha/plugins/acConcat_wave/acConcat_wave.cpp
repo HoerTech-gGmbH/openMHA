@@ -160,8 +160,9 @@ MHAPLUGIN_CALLBACKS(acConcat_wave,acConcat_wave,wave,wave)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(acConcat_wave,
-        "AC-variables acvariables",
+MHAPLUGIN_DOCUMENTATION\
+(acConcat_wave,
+ "data-flow algorithm-communication",
         "This plugin concatenates two or more waveforms in the given order into a new waveform all living in the AC space. The waveforms to be concatenated as well as the concatenated waveforms must have the same number of channels. However the lengths of the waveforms to be concatenated may differ.\n"
         "\n"
         "The waveforms to be concatenated should have been created in advance by some other plugin. This plugin creates an AC variable for the concatenated waveform and puts it into the AC space.\n"
@@ -180,7 +181,7 @@ MHAPLUGIN_DOCUMENTATION(acConcat_wave,
         "\\end{verbatim}\n"
         "\n"
         "In this case, the six waveforms to be concatenated should be called {\\tt vGCC\\_1, vGCC\\_2, vGCC\\_3, vGCC\\_4, vGCC\\_5} and {\\tt vGCC\\_6}. Note that in the localization context, for a setup of four microphones, there are six different combinations of two microphones."
-        )
+ )
 
 // Local Variables:
 // compile-command: "make"

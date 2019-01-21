@@ -181,11 +181,15 @@ MHAPLUGIN_CALLBACKS(doasvm_classification,doasvm_classification,wave,wave)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(doasvm_classification,
-        "directional",
-        "This plugin loads the parameters of a pre-trained SVM and computes the probabilities for given range of directions of arrival (DOA).\n"
-        "These probabilities take a value within the interval of $[0,1]$.Higher probability for a certain DOA indicates higher possibility of a source coming from that particular DOA."
-        )
+MHAPLUGIN_DOCUMENTATION\
+(doasvm_classification,
+ "spatial classifier binaural",
+ "This plugin loads the parameters of a pre-trained SVM and computes"
+ " the probabilities for given range of directions of arrival (DOA).\n"
+ "These probabilities take a value within the interval of $[0,1]$."
+ " Higher probability for a certain DOA indicates higher possibility"
+ " of a source coming from that particular DOA."
+ )
 
 // Local Variables:
 // compile-command: "make"

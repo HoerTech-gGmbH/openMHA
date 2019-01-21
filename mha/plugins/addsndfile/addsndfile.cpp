@@ -433,21 +433,23 @@ namespace addsndfile {
 }
 
 MHAPLUGIN_CALLBACKS(addsndfile,addsndfile::addsndfile_if_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(addsndfile,"signalflow other",
-                        "Add data from a sound file to some channels of input signal.\n\n"
-                        "The sound file is read into memory and scaled to a given peak\n"
-                        "level, i.e. the RMS level of an abstract signal with 0 dB full\n"
-                        "scale.\n"
-                        "Changing any parameter will start playing the file from the\n"
-                        "beginning. Playback of the file starts only after the complete\n"
-                        "file has been read.  If the sound file has fewer channels then\n"
-                        "the 'channels' vector has elements, then the file channels will\n"
-                        "be repeated.\n"
-                        "The addsndfile plugin does not change the number of MHA audio"
-                        " channels.  If you specify a channel index $\\ge$ the number of"
-                        " MHA audio channels, then the channel from the sound file will"
-                        " not be used."
-                        )
+MHAPLUGIN_DOCUMENTATION\
+(addsndfile,
+ "data-import disk-files signal-generator",
+ "Add data from a sound file to some channels of input signal.\n\n"
+ "The sound file is read into memory and scaled to a given peak\n"
+ "level, i.e. the RMS level of an abstract signal with 0 dB full\n"
+ "scale.\n"
+ "Changing any parameter will start playing the file from the\n"
+ "beginning. Playback of the file starts only after the complete\n"
+ "file has been read.  If the sound file has fewer channels then\n"
+ "the 'channels' vector has elements, then the file channels will\n"
+ "be repeated.\n"
+ "The addsndfile plugin does not change the number of MHA audio"
+ " channels.  If you specify a channel index $\\ge$ the number of"
+ " MHA audio channels, then the channel from the sound file will"
+ " not be used."
+ )
 
 /*
  * Local Variables:

@@ -214,10 +214,14 @@ MHAPLUGIN_CALLBACKS(doasvm_feature_extraction,doasvm_feature_extraction,wave,wav
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(doasvm_feature_extraction,
-        "directional",
-        "This plugin computes the generalized cross correlation with phase transform (GCC-PHAT). The input to this plugin is a stereo time domain signal. The GCC-PHAT matrix is saved into the AC space."
-        )
+MHAPLUGIN_DOCUMENTATION\
+(doasvm_feature_extraction,
+ "spatial feature-extraction binaural",
+ "This plugin computes the generalized cross correlation with phase"
+ " transform (GCC-PHAT)."
+ " The input to this plugin is a stereo time domain signal."
+ " The GCC-PHAT matrix is saved into the AC space."
+ )
 
 // Local Variables:
 // compile-command: "make"

@@ -160,10 +160,14 @@ MHAPLUGIN_CALLBACKS(acTransform_wave,acTransform_wave,wave,wave)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(acTransform_wave,
-        "analysis acvariables",
-        "This plugin transforms a waveform in the AC space from one coordinate system into another.  For this it receives an angle also saved in the AC space. Then, the plugin rotates the axes into the direction of the given angle."
-        )
+MHAPLUGIN_DOCUMENTATION\
+(acTransform_wave,
+ "math linear-algebra",
+ "This plugin transforms a waveform in the AC space"
+ " from one coordinate system into another. "
+ " For this it receives an angle also saved in the AC space."
+ " Then, the plugin rotates the axes into the direction of the given angle."
+ )
 // Local Variables:
 // c-basic-offset: 4
 // indent-tabs-mode: nil

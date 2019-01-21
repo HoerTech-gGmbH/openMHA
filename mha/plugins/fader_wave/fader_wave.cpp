@@ -125,7 +125,10 @@ mha_wave_t* fader_wave_if_t::process(mha_wave_t* s)
 }
 
 MHAPLUGIN_CALLBACKS(fader_wave,fader_wave::fader_wave_if_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(fader_wave,"signalflow lti gain","")
+MHAPLUGIN_DOCUMENTATION\
+(fader_wave,
+ "data-flow audio-channels cross-fade level-modification",
+ "")
 
 /*
  * Local Variables:

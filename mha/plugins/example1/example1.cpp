@@ -100,12 +100,13 @@ MHAPLUGIN_CALLBACKS(example1,example1_t,wave,wave)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(example1,
-    "example",
-    "The {\\bf simplest} example of an \\mha{} plugin.\n\n"
-    "This plugin scales one channel of the input signal, working in the "
-    "time domain."
-    )
+MHAPLUGIN_DOCUMENTATION\
+(example1,
+ "example level-modification audio-channels",
+ "The {\\bf simplest} example of an \\mha{} plugin.\n\n"
+ "This plugin scales one channel of the input signal, working in the "
+ "time domain."
+ )
 
 // Local Variables:
 // compile-command: "make"

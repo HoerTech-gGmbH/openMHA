@@ -141,7 +141,10 @@ void acmon_t::save_vars()
 
 MHAPLUGIN_CALLBACKS(acmon,acmon::acmon_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(acmon,acmon::acmon_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(acmon,"AC-variables acvariables","")
+MHAPLUGIN_DOCUMENTATION\
+(acmon,
+ "data-export network-communication",
+ "")
 
 // Local Variables:
 // compile-command: "make"

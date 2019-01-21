@@ -37,12 +37,18 @@ MHAPLUGIN_CALLBACKS(mhachain,mhachain::mhachain_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(mhachain,mhachain::mhachain_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(mhachain,mhachain::mhachain_t,spec,wave)
 MHAPLUGIN_PROC_CALLBACK(mhachain,mhachain::mhachain_t,wave,spec)
-MHAPLUGIN_DOCUMENTATION(mhachain,
-    "signalflow core",
-    "Load a sequence of plugins. During processing, the signal is passed from plugin to plugin, and may change its domain or dimension.\n\n"
-    "If profiling is switched on, the cumulative time spent in the processing callback of each plugin is stored in a monitor variable.\n\n"
-    "The complete chain can be replaced by other algorithms during run-time if the default configuration is valid for processing and if the output domain or dimension does not change by replacing the chain."
-    )
+MHAPLUGIN_DOCUMENTATION\
+(mhachain,
+ "plugin-arrangement data-flow",
+ "Load a sequence of plugins."
+ " During processing, the signal is passed from plugin to plugin,"
+ " and may change its domain or dimension.\n\n"
+ "If profiling is switched on, the cumulative time spent in the processing"
+ " callback of each plugin is stored in a monitor variable.\n\n"
+ "The complete chain can be replaced by other algorithms during run-time"
+ " if the default configuration is valid for processing and if the output"
+ " domain or dimension does not change by replacing the chain."
+ )
 
 /*
  * Local Variables:

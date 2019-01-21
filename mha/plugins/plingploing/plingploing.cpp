@@ -203,7 +203,10 @@ namespace plingploing {
 
 }
 MHAPLUGIN_CALLBACKS(plingploing,plingploing::if_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(plingploing,"generator","This plugin creates music (jazz-inspired chord sequence).")
+MHAPLUGIN_DOCUMENTATION\
+(plingploing,
+ "signal-generator music",
+ "This plugin creates music (jazz-inspired chord sequence).")
 
 
 // Local Variables:

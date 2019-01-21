@@ -118,6 +118,10 @@ void fader_if_t::update_cfg(void)
 
 
 MHAPLUGIN_CALLBACKS(fader_spec,fader_if_t,spec,spec)
+MHAPLUGIN_DOCUMENTATION\
+(fader_spec,
+ "data-flow audio-channels cross-fade  level-modification",
+ "")
 
 // Local Variables:
 // compile-command: "make"

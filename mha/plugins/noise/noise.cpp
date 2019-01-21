@@ -140,7 +140,10 @@ mha_spec_t* noise_t::process(mha_spec_t* s)
 
 MHAPLUGIN_CALLBACKS(noise,noise_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(noise,noise_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(noise,"generator","")
+MHAPLUGIN_DOCUMENTATION\
+(noise,
+ "signal-generator",
+ "")
 
 // Local Variables:
 // compile-command: "make"

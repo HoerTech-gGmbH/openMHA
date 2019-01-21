@@ -77,7 +77,7 @@ mha_wave_t* ds_t::process(mha_wave_t* s)
 MHAPLUGIN_CALLBACKS(downsample,ds_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION(
 downsample,                 // The name of this plugin.
-"resampling rate signalflow", // Categories of this plugin. Main category first.
+"signal-transformation filter",// Categories of this plugin. Main category first
 "This plugin performs downsampling by an integer factor named \\texttt{ratio}."
 " The input fragment size needs to be divisible by \\texttt{ratio}."
 "\n\n"

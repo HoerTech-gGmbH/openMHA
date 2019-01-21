@@ -195,16 +195,19 @@ void ac2osc_t::update_mode()
 
 MHAPLUGIN_CALLBACKS(ac2osc,ac2osc_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(ac2osc,ac2osc_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(ac2osc,"AC-variables","Send AC variables as OSC"
-                        "variables using the UDP transport layer. The variable"
-                        " \"vars\" can be used to select variables from the AC"
-                        " space for sending. "
-                        " The sending of variables can be verified using the"
-                        " open source tool \"dump\\_osc\". When selecting an AC"
-                        " variable, a target path can be specified using the"
-                        " colon delimiter, e.g.:"
-                        "\\begin{verbatim}vars = [level:/mhalevels]"
-                        " \\end{verbatim}")
+MHAPLUGIN_DOCUMENTATION\
+(ac2osc,
+ "data-export network-communication open-sound-control",
+ "Send AC variables as OSC"
+ "variables using the UDP transport layer. The variable"
+ " \"vars\" can be used to select variables from the AC"
+ " space for sending. "
+ " The sending of variables can be verified using the"
+ " open source tool \"dump\\_osc\". When selecting an AC"
+ " variable, a target path can be specified using the"
+ " colon delimiter, e.g.:"
+ "\\begin{verbatim}vars = [level:/mhalevels]"
+ " \\end{verbatim}")
 
 /*
  * Local variables:

@@ -82,7 +82,7 @@ example3_t::example3_t(algo_comm_t & ac,
                        const std::string & chain_name,
                        const std::string & algo_name)
     : MHAPlugin::plugin_t<int>("This plugin multiplies the sound signal"
-			       " in one audio channel by a factor",ac),
+                               " in one audio channel by a factor",ac),
       scale_ch("Index of audio channel to scale. Indices start from 0."
                " Only channels with even indices may be scaled.",
                "0",
@@ -170,7 +170,10 @@ void example3_t::on_prereadaccess()
 }
 
 MHAPLUGIN_CALLBACKS(example3,example3_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(example3,"example","")
+MHAPLUGIN_DOCUMENTATION\
+(example3,
+ "example level-modification audio-channels",
+ "")
 
 // Local Variables:
 // compile-command: "make"

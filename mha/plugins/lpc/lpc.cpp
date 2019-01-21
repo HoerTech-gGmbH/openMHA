@@ -265,11 +265,12 @@ MHAPLUGIN_CALLBACKS(lpc,lpc,wave,wave)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(lpc,
-        "adaptive feedback",
-        "This plugin estimates the autocorrelation of each block. "
-        "It then produces the inverse filter using the Levinson-Durbin recursion."
-        )
+MHAPLUGIN_DOCUMENTATION\
+(lpc,
+ "feedback-suppression adaptive",
+ "This plugin estimates the autocorrelation of each block. "
+ "It then produces the inverse filter using the Levinson-Durbin recursion."
+ )
 
 // Local Variables:
 // compile-command: "make"

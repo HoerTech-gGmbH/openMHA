@@ -213,7 +213,10 @@ void plugin_interface_t::update_cfg()
  * arguments define the input and output domain of the algorithm.
  */
 MHAPLUGIN_CALLBACKS(example5,plugin_interface_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(example5,"example","")
+MHAPLUGIN_DOCUMENTATION\
+(example5,
+ "example level-modification audio-channels",
+ "")
 
 // Local Variables:
 // compile-command: "make"

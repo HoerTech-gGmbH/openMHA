@@ -111,7 +111,10 @@ mha_wave_t * example2_t::process(mha_wave_t * signal)
 }
 
 MHAPLUGIN_CALLBACKS(example2,example2_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(example2,"example","")
+MHAPLUGIN_DOCUMENTATION\
+(example2,
+ "example level-modification audio-channels",
+ "")
 
 // Local Variables:
 // compile-command: "make"

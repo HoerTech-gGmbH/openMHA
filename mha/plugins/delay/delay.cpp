@@ -60,7 +60,10 @@ mha_wave_t* interface_t::process(mha_wave_t* s)
 }
 
 MHAPLUGIN_CALLBACKS(delay,delay::interface_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(delay,"signalflow lti","")
+MHAPLUGIN_DOCUMENTATION\
+(delay,
+ "data-flow audio-channels signal-transformation",
+ "")
 
 // Local Variables:
 // compile-command: "make"

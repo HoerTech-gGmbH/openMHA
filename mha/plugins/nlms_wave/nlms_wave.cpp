@@ -394,22 +394,38 @@ rt_nlms_t::rt_nlms_t(algo_comm_t iac,
 }
 
 MHAPLUGIN_CALLBACKS(nlms_wave,nlms_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(nlms_wave,"filter feedback",
-                        "This plugin implements the NLMS algorithm for re-estimating the coefficients of an adaptive filter in each iteration. "
-                        "The estimated filter coefficients are saved in an AC variable having the same name as the plugin in the current configuration. The name of this AC variable can also be set differently by setting the configuration variable \\textbf{name\\_f}. "
-                        "The input signal is filtered by the filter estimated in the current iteration and returned as the current output of the plugin from within the processing callback. "
-                        "\n"
-                        "The estimation of the filter coefficients is performed using the update rule given as in the following:\n"
-                        "\\begin{eqnarray}\n"
-                        "  e[k] &=& y[k-1] - f[k-1] u[k-1]\\\\\n"
-                        "  f[k] &=& f[k-1] + rho/(|u|^2+c) u[k-1] e[k],\n"
-                        "\\end{eqnarray}\n"
-                        "where $e$ is the error signal, $y$ is the desired signal and $u$ is the input signal. "
-                        "All three signals are read from the AC space. For this, the configuration variables \\textbf{name\\_e}, \\textbf{name\\_d} and \\textbf{name\\_u} should be set. "
-                        "The error signal can also be computed within the plugin given the other two signals, when the corresponding configuration variable is left empty. "
-                        "The plugin can be configured to use also the current sample $u[k]$ of the input signal in the estimation by asigning the configuration variable \\textbf{estimtype} to the value \\textit{current}. "
-                        "However in the default case (\\textit{previous}), the previous values as long as the filter (\\textbf{ntaps}) but the current one are used."
-                        )
+MHAPLUGIN_DOCUMENTATION\
+(nlms_wave,
+ "feedback-suppression adaptive",
+ "This plugin implements the NLMS algorithm for re-estimating the"
+ " coefficients of an adaptive filter in each iteration. "
+ "The estimated filter coefficients are saved in an AC variable having the"
+ " same name as the plugin in the current configuration."
+ " The name of this AC variable can also be set differently by setting the"
+ " configuration variable \\textbf{name\\_f}. "
+ "The input signal is filtered by the filter estimated in the current"
+ " iteration and returned as the current output of the plugin from within"
+ " the processing callback. "
+ "\n"
+ "The estimation of the filter coefficients is performed using the"
+ " update rule given as in the following:\n"
+ "\\begin{eqnarray}\n"
+ "  e[k] &=& y[k-1] - f[k-1] u[k-1]\\\\\n"
+ "  f[k] &=& f[k-1] + rho/(|u|^2+c) u[k-1] e[k],\n"
+ "\\end{eqnarray}\n"
+ "where $e$ is the error signal, $y$ is the desired signal and"
+ " $u$ is the input signal. "
+ "All three signals are read from the AC space."
+ " For this, the configuration variables \\textbf{name\\_e},"
+ " \\textbf{name\\_d} and \\textbf{name\\_u} should be set. "
+ "The error signal can also be computed within the plugin given the other"
+ " two signals, when the corresponding configuration variable is left empty. "
+ "The plugin can be configured to use also the current sample $u[k]$ of the"
+ " input signal in the estimation by asigning the configuration variable"
+ " \\textbf{estimtype} to the value \\textit{current}. "
+ "However in the default case (\\textit{previous}), the previous values"
+ " as long as the filter (\\textbf{ntaps}) but the current one are used."
+ )
 
 /*
  * Local Variables:

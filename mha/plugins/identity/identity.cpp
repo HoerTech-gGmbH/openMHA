@@ -54,11 +54,12 @@ mha_spec_t* identity_t::process(mha_spec_t* s)
 MHAPLUGIN_CALLBACKS(identity,identity_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(identity,identity_t,spec,spec)
 
-MHAPLUGIN_DOCUMENTATION(identity,
-    "core",
-    "The simplest \\mha{} plugin.\n\n"
-    "This plugin does not modify the signal."
-)
+MHAPLUGIN_DOCUMENTATION\
+(identity,
+ "test-tool",
+ "The simplest \\mha{} plugin.\n\n"
+ "This plugin does not modify the signal."
+ )
 
 // Local variables:
 // compile-command: "make"

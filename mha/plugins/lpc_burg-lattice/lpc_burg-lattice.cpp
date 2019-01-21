@@ -174,18 +174,24 @@ MHAPLUGIN_CALLBACKS(lpc_burg-lattice, lpc_burglattice, wave, wave)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(lpc_burg-lattice,
-        "adaptive feedback",
-        "This plugin estimates the parameters for the forward and backward linear prediction using the Burg - Lattice algorithm. The previous estimate of the $\\kappa$ parameter is saved in the AC space for future use in the {\\tt lpc\\_bl\\_predictor} plugin to estimate several time-series sharing the same $\\kappa$ values.\n\n"
-        "For the estimation of $\\kappa$ the following series of equations are used: "
-        "For each $\\kappa$ in $[2 \\cdots P]$, $P$ being the lpc order"
-        "\\begin{eqnarray}\n"
-        "dm(m-1) &=& \\lambda * dm(m-1) + (1-\\lambda) * (f(m-1)^2 + b(m-1,2)^2)\\\\\n"
-        "nm(m-1) &=& \\lambda * nm(m-1) + (1-\\lambda) * -2*f(m-1)*b(m-1,2)\\\\\n"
-        "km(m,1) &=& \\frac{nm(m-1)}{dm(m-1)}.\n"
-        "\\end{eqnarray}\n"
-        "Note that the previous estimate of $\\kappa$, which is given by $\\kappa(m,2)$ is saved in the AC space."
-        )
+MHAPLUGIN_DOCUMENTATION\
+(lpc_burg-lattice,
+ "feedback-suppression adaptive",
+ "This plugin estimates the parameters for the forward and backward linear"
+ " prediction using the Burg - Lattice algorithm."
+ " The previous estimate of the $\\kappa$ parameter is saved in the AC space"
+ " for future use in the {\\tt lpc\\_bl\\_predictor} plugin to estimate"
+ " several time-series sharing the same $\\kappa$ values.\n\n"
+ "For the estimation of $\\kappa$ the following series of equations are used: "
+ "For each $\\kappa$ in $[2 \\cdots P]$, $P$ being the lpc order"
+ "\\begin{eqnarray}\n"
+ "dm(m-1) &=& \\lambda * dm(m-1) + (1-\\lambda) * (f(m-1)^2 + b(m-1,2)^2)\\\\\n"
+ "nm(m-1) &=& \\lambda * nm(m-1) + (1-\\lambda) * -2*f(m-1)*b(m-1,2)\\\\\n"
+ "km(m,1) &=& \\frac{nm(m-1)}{dm(m-1)}.\n"
+ "\\end{eqnarray}\n"
+ "Note that the previous estimate of $\\kappa$,"
+ " which is given by $\\kappa(m,2)$ is saved in the AC space."
+ )
 
 // Local Variables:
 // compile-command: "make"

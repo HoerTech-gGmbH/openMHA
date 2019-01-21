@@ -193,24 +193,25 @@ namespace MHAPlugin_Resampling {
     }
 }
 MHAPLUGIN_CALLBACKS(resampling,MHAPlugin_Resampling::resampling_if_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(resampling,"signalflow rate resampling",
-"A bridge type resampling plugin.  The signal is converted to target\n"
-"sampling rate and fragment size. The converted signal is processed by the\n"
-"child plugin. The processed signal is then converted back to the original\n"
-"sampling rate and fragment size. The input data is\n"
-"buffered, and the data is processed when enough samples are available.\n"
-"\n"
-"Please note that double buffering adds an extra delay of the audio\n"
-"stream. If both fragment sizes are identical, the double buffering is\n"
-"bypassed.\n"
-"\n"
-"\\paragraph{Warning:}\n"
-"\n"
-"A synchronous resampling ringbuffer such as this causes varying\n"
-"computational loads in the outer processing buffer. It is therefore\n"
-"not real-time safe."
-
-        )
+MHAPLUGIN_DOCUMENTATION\
+(resampling,
+ "plugin-arrangement signal-transformation",
+ "A bridge type resampling plugin.  The signal is converted to target\n"
+ "sampling rate and fragment size. The converted signal is processed by the\n"
+ "child plugin. The processed signal is then converted back to the original\n"
+ "sampling rate and fragment size. The input data is\n"
+ "buffered, and the data is processed when enough samples are available.\n"
+ "\n"
+ "Please note that double buffering adds an extra delay of the audio\n"
+ "stream. If both fragment sizes are identical, the double buffering is\n"
+ "bypassed.\n"
+ "\n"
+ "\\paragraph{Warning:}\n"
+ "\n"
+ "A synchronous resampling ringbuffer such as this causes varying\n"
+ "computational loads in the outer processing buffer. It is therefore\n"
+ "not real-time safe."
+ )
 // Local Variables:
 // c-basic-offset: 4
 // indent-tabs-mode: nil

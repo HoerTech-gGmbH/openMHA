@@ -211,7 +211,10 @@ void interface_t::prepare(mhaconfig_t& cf)
 }
 
 MHAPLUGIN_CALLBACKS(noisePowProposedScale,noisePowProposedScale::interface_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(noisePowProposedScale,"stft","")
+MHAPLUGIN_DOCUMENTATION\
+(noisePowProposedScale,
+ "noise-suppression feature-extraction adaptive",
+ "")
 
 // Local Variables:
 // compile-command: "make"

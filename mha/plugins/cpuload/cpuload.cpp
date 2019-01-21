@@ -82,6 +82,10 @@ void cpuload_t::prepare(mhaconfig_t& cf)
 
 MHAPLUGIN_CALLBACKS(cpuload,cpuload_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(cpuload,cpuload_t,wave,wave)
+MHAPLUGIN_DOCUMENTATION\
+(cpuload,
+ "test-tool",
+ "")
 
 // Local Variables:
 // compile-command: "make"

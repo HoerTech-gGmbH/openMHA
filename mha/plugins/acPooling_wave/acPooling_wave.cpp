@@ -1,5 +1,5 @@
 // This file is part of the HörTech Master Hearing Aid (MHA)
-// Copyright © 2015 2018 HörTech gGmbH
+// Copyright © 2015 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -287,8 +287,9 @@ MHAPLUGIN_CALLBACKS(acPooling_wave,acPooling_wave,wave,wave)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(acPooling_wave,
-        "AC-variables acvariables",
+MHAPLUGIN_DOCUMENTATION\
+(acPooling_wave,
+ "data-flow feature-extraction algorithm-communication",
         "This plugin computes an average over several consecutive frames using several different approaches (max, sum, mean, ...). Subsequently, the maximum of the average frame is delivered as well. The plugin receives the frames through the AC space and deliveres the averaged frame as well as its maximum to the AC space.\n"
         "\n"
         "This plugin is typically used together with the plugins {\\tt doasvm\\_feature\\_extraction} and {\\tt doasvm\\_classification} for estimating the arrival direction of an audio signal. Within this context, this plugin smooths the vector of estimated arrival directions over time using several estimation vectors. However, it can also used within other contexts for smoothing purposes of e.g. waveforms.\n"
@@ -315,7 +316,8 @@ MHAPLUGIN_DOCUMENTATION(acPooling_wave,
         "acPooling_wave.pooling_wndlen = 300\n"
         "acPooling_wave.pooling_type = mean\n"
         "\\end{verbatim}\n"
-        )
+ )
+
 // Local Variables:
 // c-basic-offset: 4
 // indent-tabs-mode: nil
