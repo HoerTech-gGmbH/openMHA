@@ -1,5 +1,5 @@
-// This file is part of the HörTech Master Hearing Aid (MHA)
-// Copyright © 2015 2018 HörTech gGmbH
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// Copyright © 2015 2016 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -85,7 +85,7 @@ acConcat_wave::acConcat_wave(algo_comm_t & ac,
     , prefix_names_AC("Prefix of the names of the waveforms to be concatenated", "vGCC_ac")
     , samples_AC("Lengths of the waveforms to be concatenated", "[]")
     , name_con_AC("Name of the concatenated waveform", "vGCC_con_AC")
-    , numchannels("Number of channels in each waveform to be concatenated", "1", "[1, [")
+    , numchannels("Number of channels in each waveform to be concatenated", "1", "[1,[")
 {
     //add parser variables and connect them to methods here
     //INSERT_PATCH(foo_parser);

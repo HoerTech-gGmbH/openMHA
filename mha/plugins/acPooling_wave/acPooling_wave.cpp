@@ -1,5 +1,5 @@
-// This file is part of the HörTech Master Hearing Aid (MHA)
-// Copyright © 2015 2018 2019 HörTech gGmbH
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// Copyright © 2015 2016 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -185,12 +185,12 @@ acPooling_wave::acPooling_wave(algo_comm_t & ac,
                                const std::string & chain_name,
                                const std::string & algo_name)
     : MHAPlugin::plugin_t<acPooling_wave_config>("Pooling of several consecutive time frames",ac)
-    , numsamples("This parameter determines the length of the wave to be pooled in samples", "37", "]0, ]")
-    , pooling_wndlen("This parameter determines the length of the pooling window in msec.", "300", "]0, ]")
+    , numsamples("This parameter determines the length of the wave to be pooled in samples", "37", "]0,]")
+    , pooling_wndlen("This parameter determines the length of the pooling window in msec.", "300", "]0,]")
     , pooling_type("This parameter determines the pooling method applied to the pooling window.", "mean", "[max sum mean]")
     , upper_threshold("This parameter sets a threshold for finding the maximum probability. If the maximum is above this threshold, it is taken, even if it is not in the neighbourhood of the last estimated direction.", "0.75", "[0, 1]")
     , lower_threshold("This parameter sets a threshold for finding the minimum probability. If the maximum probability is below this threshold, the estimated direction of the last iteration is taken.", "0", "[0, 1]")
-    , neighbourhood("This parameter defines the neighbourhood of the allowed change of the estimated direction between iterations. -1 means no neighbourhood.", "2", "[-1, ]")
+    , neighbourhood("This parameter defines the neighbourhood of the allowed change of the estimated direction between iterations. -1 means no neighbourhood.", "2", "[-1,]")
     , alpha("This parameter simulates the forgetting effect by weighting the frames within the pooling window,  e.g. p(n + 1) = (1 - alpha) * p(n) + alpha * p_new. 0 means no weighting.", "0.1", "[0, 1]")
     , p_name("The name of the AC variable of the frame, which is going to be pooled.", "p")
     , p_biased_name("The name of the AC variable of the biased frame, after pooling.", "prob_biased")
