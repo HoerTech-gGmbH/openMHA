@@ -25,8 +25,8 @@
 //                   library / tool dependencies.
 def openmha_build_steps(stage_name) {
   // Extract components from stage_name:
-  def system, arch
-  (system,arch) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
+  def system, arch, devenv
+  (system,arch,devenv) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
   // Compilation on ARM is the slowest, assign 2 CPU cores to each ARM build job
   def cpus = (arch == "armv7") ? 2 : 1
@@ -77,17 +77,17 @@ pipeline {
     stages {
         stage("build") {
             parallel {
-                stage(                         "bionic && x86_64") {
-                    agent {label               "bionic && x86_64"}
-                    steps {openmha_build_steps("bionic && x86_64")}
+                stage(                         "bionic && x86_64 && mhadev") {
+                    agent {label               "bionic && x86_64 && mhadev"}
+                    steps {openmha_build_steps("bionic && x86_64 && mhadev")}
                 }
-                stage(                         "xenial && x86_64") {
-                    agent {label               "xenial && x86_64"}
-                    steps {openmha_build_steps("xenial && x86_64")}
+                stage(                         "xenial && x86_64 && mhadev") {
+                    agent {label               "xenial && x86_64 && mhadev"}
+                    steps {openmha_build_steps("xenial && x86_64 && mhadev")}
                 }
-                stage(                         "trusty && x86_64") {
-                    agent {label               "trusty && x86_64"}
-                    steps {openmha_build_steps("trusty && x86_64")}
+                stage(                         "trusty && x86_64 && mhadev") {
+                    agent {label               "trusty && x86_64 && mhadev"}
+                    steps {openmha_build_steps("trusty && x86_64 && mhadev")}
                 }
                 // We can also build for 32 bits. Deactivated to save
                 // CPU cycles on Jenkins server.
@@ -103,21 +103,21 @@ pipeline {
                 //     agent {label               "trusty && i686"}
                 //     steps {openmha_build_steps("trusty && i686")}
                 // }
-                stage(                         "bionic && armv7") {
-                    agent {label               "bionic && armv7"}
-                    steps {openmha_build_steps("bionic && armv7")}
+                stage(                         "bionic && armv7 && mhadev") {
+                    agent {label               "bionic && armv7 && mhadev"}
+                    steps {openmha_build_steps("bionic && armv7 && mhadev")}
                 }
-                stage(                         "xenial && armv7") {
-                    agent {label               "xenial && armv7"}
-                    steps {openmha_build_steps("xenial && armv7")}
+                stage(                         "xenial && armv7 && mhadev") {
+                    agent {label               "xenial && armv7 && mhadev"}
+                    steps {openmha_build_steps("xenial && armv7 && mhadev")}
                 }
-                stage(                         "windows && x86_64") {
-                    agent {label               "windows && x86_64"}
-                    steps {openmha_build_steps("windows && x86_64")}
+                stage(                         "windows && x86_64 && mhadev") {
+                    agent {label               "windows && x86_64 && mhadev"}
+                    steps {openmha_build_steps("windows && x86_64 && mhadev")}
                 }
-                stage(                         "mac && x86_64") {
-                    agent {label               "mac && x86_64"}
-                    steps {openmha_build_steps("mac && x86_64")}
+                stage(                         "mac && x86_64 && mhadev") {
+                    agent {label               "mac && x86_64 && mhadev"}
+                    steps {openmha_build_steps("mac && x86_64 && mhadev")}
                 }
             }
         }
