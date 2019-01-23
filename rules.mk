@@ -26,6 +26,11 @@ else
 PLUGIN_EXT = $(DYNAMIC_LIB_EXT)
 endif
 
+ifeq "$(PLATFORM)" "Darwin"
+MACOS_INSTALL_NAME=-install_name @rpath/../lib/$(@F)
+MACOS_RPATH=-rpath @loader_path/../lib
+endif
+
 PLUGIN_ARTIFACTS = $(patsubst %,$(BUILD_DIR)/%$(PLUGIN_EXT),$(PLUGINS))
 
 # This is usually the first Makefile rule encountered in any
@@ -45,7 +50,7 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c $(BUILD_DIR)/.directory
 
 # Pattern for linking shared libraries and dynamic plugins
 $(BUILD_DIR)/%$(DYNAMIC_LIB_EXT):
-	$(CXX) -shared -o $$PWD/$@ $^ ${LDFLAGS} ${LDLIBS}
+	$(CXX) -shared -o $$PWD/$@ $^ ${LDFLAGS} ${LDLIBS} ${MACOS_INSTALL_NAME} ${MACOS_RPATH}
 # Prepending outname with PWD sets install_name on Mac to absolute path
 # (points inside sourcetree) for correct runtime linking of tools during tests
 
@@ -58,7 +63,7 @@ $(BUILD_DIR)/%.a: $(BUILD_DIR)/%.o
 
 # Pattern for linking executables.  The STATIC_DLOPEN needs to be set for iOS.
 $(BUILD_DIR)/%: $(BUILD_DIR)/%.o
-	$(CXX) $(STATIC_DLOPEN) $(RPATH_FLAGS) -o $@ $^ ${LDFLAGS} ${LDLIBS}
+	$(CXX) $(STATIC_DLOPEN) $(RPATH_FLAGS) -o $@ $^ ${LDFLAGS} ${LDLIBS} ${MACOS_RPATH}
 
 # Pattern for subdirectories for build artifacts
 %/.directory:
