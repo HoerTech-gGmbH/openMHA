@@ -17,7 +17,7 @@
 #ifndef __MHA_SIGNAL_H__
 #define __MHA_SIGNAL_H__
 
-#include "mha.h"
+#include "mha.hh"
 #include "mha_error.hh"
 #include <limits>
 #include <string>

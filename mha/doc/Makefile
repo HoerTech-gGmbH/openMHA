@@ -1,6 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2002 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 
-# Copyright © 2016 2017 HörTech gGmbH
+# Copyright © 2016 2017 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -41,7 +41,7 @@ PLUGINDIRS=$(wildcard ../plugins/*/$(PLATFORM_CC)/)
 MHA_PLUGINDIRS=$(subst $(space),;,$(PLUGINDIRS))
 
 # Get plugin names
-PLUGIN_NAMES:=$(subst $(space),"\n",$(foreach plg,$(PLUGINDIRS),$(word 3,$(subst /,$(space),$(plg)))))
+PLUGIN_NAMES:=$(subst $(space),"\n",$(filter-out io,$(foreach plg,$(PLUGINDIRS),$(word 3,$(subst /,$(space),$(plg))))))
 
 MHADISTS = openMHA
 

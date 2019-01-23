@@ -179,10 +179,15 @@ void wavwriter_t::write_thread()
         fifo.read(data,frames*cf_.channels);
         sf_writef_float(sf,data,frames);
     }
+
 }
 
 
 MHAPLUGIN_CALLBACKS(wavrec,wavrec_t,wave,wave)
+MHAPLUGIN_DOCUMENTATION\
+(wavrec,
+ "data-export disk-files",
+ "")
 
 /*
  * Local Variables:

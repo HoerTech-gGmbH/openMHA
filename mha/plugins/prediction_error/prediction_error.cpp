@@ -370,10 +370,14 @@ MHAPLUGIN_CALLBACKS(prediction_error,prediction_error,wave,wave)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(prediction_error,
-        "feedback",
-        "This plugin computes the prediction error model to perform adaptive feedback cancellation. The prediction error method produces and estimate of the feedback path by minimizing the measured and the predicted output signals."
-        )
+MHAPLUGIN_DOCUMENTATION\
+(prediction_error,
+ "feedback-suppression adaptive",
+ "This plugin computes the prediction error model to perform adaptive"
+ " feedback cancellation."
+ " The prediction error method produces and estimate of the"
+ " feedback path by minimizing the measured and the predicted output signals."
+ )
 
 // Local Variables:
 // compile-command: "make"

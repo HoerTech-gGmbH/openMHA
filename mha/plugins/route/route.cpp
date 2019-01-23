@@ -169,7 +169,10 @@ mha_spec_t* route::process_t::process(mha_spec_t* s)
 
 MHAPLUGIN_CALLBACKS(route,route::interface_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(route,route::interface_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(route,"signalflow core","")
+MHAPLUGIN_DOCUMENTATION\
+(route,
+ "data-flow audio-channels algorithm-communication",
+ "")
 
 // Local Variables:
 // compile-command: "make"

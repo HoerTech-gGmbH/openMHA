@@ -1,4 +1,4 @@
-// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// This file is part of the HörTech Master Hearing Aid (MHA)
 // Copyright © 2015 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
@@ -59,7 +59,8 @@ public:
     MHAParser::int_t num_AC;
     MHAParser::string_t prefix_names_AC;
     MHAParser::vint_t samples_AC;
-    MHAParser::string_t name_conAC;
+    MHAParser::string_t name_con_AC;
+    MHAParser::int_t numchannels;
 
 private:
     void update_cfg();

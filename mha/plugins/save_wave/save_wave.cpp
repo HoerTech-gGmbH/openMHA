@@ -40,7 +40,10 @@ private:
 };
 
 MHAPLUGIN_CALLBACKS(save_wave,save_wave_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(save_wave,"AC-variables acvariables","")
+MHAPLUGIN_DOCUMENTATION\
+(save_wave,
+ "data-flow algorithm-communication",
+ "")
 
 // Local Variables:
 // compile-command: "make"

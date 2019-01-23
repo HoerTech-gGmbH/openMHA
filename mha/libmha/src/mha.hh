@@ -19,6 +19,7 @@
 #define MHA_TYPES_H
 
 #include <stdlib.h>
+#include <cstddef>
 
 /** Test macro to compare function type definition and declaration */
 #define MHA_CALLBACK_TEST(x) {\
@@ -42,7 +43,7 @@
 #define MHA_VERSION_MAJOR 4
 
 /** Minor version number of MHA */
-#define MHA_VERSION_MINOR 7
+#define MHA_VERSION_MINOR 8
 
 /** Release number of MHA */
 #define MHA_VERSION_RELEASE 0
@@ -99,6 +100,33 @@ typedef struct {
     mha_real_t im;/**< \brief Imaginary part. */
 } mha_complex_t;
 
+/** Several places in MHA rely on the fact that you can cast an array of
+  mha_complex_t c[] to an array of mha_real_t r[] with
+  r[0] == c[0].re
+  r[1] == c[0].im
+  r[2] == c[1].re
+  ...
+  Check these expectations in static asserts.
+*/
+
+static_assert(offsetof(mha_complex_t, re) == 0,
+               "re is expected to be packed to the start of mha_complex_t");
+static_assert(offsetof(mha_complex_t, im) == sizeof(mha_real_t),
+               "re is expected to be packed to the start of mha_complex_t");
+struct mha_complex_test_array_t { mha_complex_t c[2]; };
+struct mha_real_test_array_t    { mha_real_t    r[4]; };
+static_assert(offsetof(mha_complex_test_array_t, c[0].re)
+               == offsetof( mha_real_test_array_t, r[0]),
+               "expected c[0].re to be at the same offset as r[0]");
+static_assert(offsetof(mha_complex_test_array_t, c[0].im)
+               == offsetof(mha_real_test_array_t, r[1]),
+               "expected c[0].im to be at the same offset as r[1]");
+static_assert(offsetof(mha_complex_test_array_t, c[1].re)
+               == offsetof(mha_real_test_array_t, r[2]),
+               "expected c[1].re to be at the same offset as r[2]");
+static_assert(offsetof(mha_complex_test_array_t, c[1].im)
+               == offsetof(mha_real_test_array_t, r[3]),
+               "expected c[1].im to be at the same offset as r[3]");
 /** 
     Channel source direction structure 
 */
@@ -301,4 +329,5 @@ typedef const char* (*MHAPluginCategory_t)(void);
 // coding: utf-8-unix
 // c-basic-offset: 4
 // indent-tabs-mode: nil
+// compile-command: "make -C .."
 // End:

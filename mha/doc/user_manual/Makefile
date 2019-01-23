@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2005 2006 2007 2008 2012 2013 2016 2017 HörTech gGmbH
+# Copyright © 2005 2006 2007 2008 2012 2013 2016 2017 2018 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,6 @@ MHANAME=openMHA
 
 all: $(MHANAME)_application_manual.pdf MHA_writing_fitting_rules.pdf libaudprof_manual.pdf
 
-#TEXINPUTS = "./:../:./plugins/:../technical_report/:../flowcharts/fmt_eps/:../flowcharts/fmt_png/:../flowcharts/fmt_pdf/:"
 TEXINPUTS = "./:../:./plugins/:../technical_report/:../flowcharts/fmt_eps/:../flowcharts/fmt_pdf/:../flowcharts/:"
 
 %.pdf: %.tex
@@ -40,15 +39,6 @@ $(MHANAME)_application_manual.pdf: $(MHANAME)_application_manual.tex ../openMHAd
 libaudprof_manual.pdf: libaudprof_manual.tex ../openMHAdoxygen.sty
 
 $(MHANAME)_gui_manual.pdf: $(MHANAME)_gui_manual.tex ../openMHAdoxygen.sty
-
-MHACONTROL_PLUGS = audiometerbackend transducers dc_simple finetuning addsndfile fftfilterbank altplugs
-
-$(MHANAME)_gui_manual.tex: $(patsubst %,plug_%.tex,$(MHACONTROL_PLUGS))
-
-.PHONY : plug_*.tex
-
-plug_%.tex:
-	LD_LIBRARY_PATH=../../libmha/$(BUILD_DIR):"$$LD_LIBRARY_PATH" ../../frameworks/$(BUILD_DIR)/generatemhaplugindoc --ofname=$@ --category-macro='invisible' --plugin-macro='subsubsection' $*
 
 # Local Variables:
 # coding: utf-8-unix

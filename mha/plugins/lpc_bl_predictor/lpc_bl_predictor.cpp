@@ -176,17 +176,23 @@ MHAPLUGIN_CALLBACKS(lpc_bl_predictor,lpc_bl_predictor, wave,wave)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(lpc_bl_predictor,
-        "adaptive feedback",
-        "This plugin computes the forward and backward LPC estimates using the Burg-Lattice algorithm given the $\\kappa$ (sometimes also called $\\mu$) "
-        "parameter precomputed using the {\\tt lpc\\_burg-lattice} plugin. The estimation of the forward and backward linear prediction parameters is performed using the following equations:\n"
-        "For each forward and backward linear prediction parameter $f(m)$ and $b(m)$, where $m \\textrm{ in } [2 \\cdots P]$, $P$ being the lpc order"
-        "\\begin{eqnarray}\n"
-        "f(m) &=& f(m-1) + \\kappa(m,2)*b(m-1,2)\\\\\n"
-        "b(m,1) &=& b(m-1,2) + \\kappa(m,2)*f(m-1)\n"
-        "\\end{eqnarray}.\n"
-        "In this implementation $\\kappa$ from the previous is used. Note that the second index of $\\kappa$ is $2$."
-        )
+MHAPLUGIN_DOCUMENTATION\
+(lpc_bl_predictor,
+ "feedback-suppression adaptive",
+ "This plugin computes the forward and backward LPC estimates using the"
+ " Burg-Lattice algorithm given the $\\kappa$ (sometimes also called $\\mu$) "
+ "parameter precomputed using the {\\tt lpc\\_burg-lattice} plugin."
+ " The estimation of the forward and backward linear prediction parameters"
+ " is performed using the following equations:\n"
+ "For each forward and backward linear prediction parameter $f(m)$ and $b(m)$,"
+ " where $m \\textrm{ in } [2 \\cdots P]$, $P$ being the lpc order"
+ "\\begin{eqnarray}\n"
+ "f(m) &=& f(m-1) + \\kappa(m,2)*b(m-1,2)\\\\\n"
+ "b(m,1) &=& b(m-1,2) + \\kappa(m,2)*f(m-1)\n"
+ "\\end{eqnarray}.\n"
+ "In this implementation $\\kappa$ from the previous is used."
+ " Note that the second index of $\\kappa$ is $2$."
+ )
 
 // Local Variables:
 // compile-command: "make"

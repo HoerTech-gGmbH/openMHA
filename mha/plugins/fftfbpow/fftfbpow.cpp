@@ -107,16 +107,19 @@ fftfbpow::fftfbpow_t::fftfbpow_t(MHAOvlFilter::fftfb_vars_t& vars,unsigned int n
 }
 
 MHAPLUGIN_CALLBACKS(fftfbpow,fftfbpow::fftfbpow_interface_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(fftfbpow,"level stft",
-                        "This plugin implements a filterbank based on FFT spectrum. The power\n"
-                        "in each filter bank channel is calculated and stored into an AC\n"
-                        "variable. The input signal is passed through unmodified.\n"
-                        "\n"
-                        "For details on the filter shapes, please see description of plugin {\\tt fftfilterbank} (section\n"
-                        "\\ref{plug:fftfilterbank} on page \\pageref{plug:fftfilterbank}).\n"
-                        "\n"
-                        "\n"
-                        )
+MHAPLUGIN_DOCUMENTATION\
+(fftfbpow,
+ "filterbank feature-extraction level-meter",
+ "This plugin implements a filterbank based on FFT spectrum. The power\n"
+ "in each filter bank channel is calculated and stored into an AC\n"
+ "variable. The input signal is passed through unmodified.\n"
+ "\n"
+ "For details on the filter shapes, please see description of"
+ " plugin {\\tt fftfilterbank} (section\n"
+ "\\ref{plug:fftfilterbank} on page \\pageref{plug:fftfilterbank}).\n"
+ "\n"
+ "\n"
+ )
 
 // Local Variables:
 // compile-command: "make"

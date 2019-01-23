@@ -1,0 +1,7 @@
+/opt/local/lib/libFLAC.dylib
+/opt/local/lib/libogg.dylib
+/opt/local/lib/libportaudio.dylib
+/opt/local/lib/libsndfile.dylib
+/opt/local/lib/libvorbis.dylib
+/opt/local/lib/libvorbisenc.dylib
+/opt/local/lib/libvorbisfile.dylib

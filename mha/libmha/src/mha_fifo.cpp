@@ -15,7 +15,7 @@
 
 #include <cassert>
 #include <algorithm>
-#include "mha.h"
+#include "mha.hh"
 #include "mha_error.hh"
 #include "mha_fifo.h"
 

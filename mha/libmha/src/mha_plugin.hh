@@ -17,7 +17,7 @@
 #ifndef MHA_EXTERN_IFC_HH
 #define MHA_EXTERN_IFC_HH
 
-#include "mha.h"
+#include "mha.hh"
 #include "mha_error.hh"
 #include "mha_errno.h"
 #include "mha_parser.hh"

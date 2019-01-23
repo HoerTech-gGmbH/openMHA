@@ -74,10 +74,10 @@ mha_wave_t* us_t::process(mha_wave_t* s)
 MHAPLUGIN_CALLBACKS(upsample,us_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION(
 upsample,                     // The name of this plugin.
-"resampling rate signalflow", // Categories of this plugin. Main category first.
+"signal-transformation filter", // Categories of this plugin. Main category 1st.
 "This plugin performs upsampling by an integer factor named \\texttt{ratio}."
 "\n\n"
-" As result of the upsammpling, the output signal has a higher sampling rate"
+" As result of the upsampling, the output signal has a higher sampling rate"
 " ($srate$) as well as a larger fragment size ($fragsize$) with respect to"
 " the input signal of the \\texttt{upsample} plugin"
 " (both are multiplied by the upsampling factor \\texttt{ratio})."

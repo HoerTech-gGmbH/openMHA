@@ -1,4 +1,18 @@
 #!/usr/bin/env bash
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
+# Copyright © 2018 HörTech gGmbH
+#
+# openMHA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# openMHA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License, version 3 for more details.
+#
+# You should have received a copy of the GNU Affero General Public License, 
+# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #Prompt the user to answer yes or no, repeat question on any other answer, exit when answer is no.
 function ask_yes_no ()
@@ -20,7 +34,7 @@ function ask_yes_no ()
 #from development or a release branch in preparation for a release. If the branch
 #does not match either, we ask for a user override.
 BRANCH=$(git branch | grep '*' | cut -d" " -f2);
-if  [[ "$BRANCH" =~ "*release*" ]] & [[ "$BRANCH" =~ "development" ]]; then
+if  [[ "$BRANCH" =~ "*release*" ]] && [[ "$BRANCH" =~ "development" ]]; then
     echo "Suspicious branch: $BRANCH is neither a development or release branch. Continue? [yes/no];"
     ask_yes_no;
 fi
@@ -54,9 +68,9 @@ if ! [[ $VER =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     ask_yes_no
 fi
 
-MAJOR_OLD=`grep "define MHA_VERSION_MAJOR" mha/libmha/src/mha.h | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
-MINOR_OLD=`grep "define MHA_VERSION_MINOR" mha/libmha/src/mha.h | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
-POINT_OLD=`grep "define MHA_VERSION_RELEASE" mha/libmha/src/mha.h | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
+MAJOR_OLD=`grep "define MHA_VERSION_MAJOR" mha/libmha/src/mha.hh | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
+MINOR_OLD=`grep "define MHA_VERSION_MINOR" mha/libmha/src/mha.hh | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
+POINT_OLD=`grep "define MHA_VERSION_RELEASE" mha/libmha/src/mha.hh | sed -E 's/.*[^0-9]([0-9]+).*$/\1/g'`
 
 MAJOR_NEW=`echo $VER | cut -d"." -f1`
 MINOR_NEW=`echo $VER | cut -d"." -f2`
@@ -75,9 +89,9 @@ if [[ $MAJOR_OLD==$MAJOR_NEW ]] && [[ $MINOR_OLD==$MINOR_NEW ]] && [[ $POINT_OLD
 fi
 
 sed -i "s/$MAJOR_OLD\\.$MINOR_OLD\\.$POINT_OLD/$VER/g" README.md
-sed -i "s/^#define MHA_VERSION_MAJOR $MAJOR_OLD$/#define MHA_VERSION_MAJOR $MAJOR_NEW/g" mha/libmha/src/mha.h
-sed -i "s/MHA_VERSION_MINOR $MINOR_OLD/MHA_VERSION_MINOR $MINOR_NEW/g" mha/libmha/src/mha.h
-sed -i "s/MHA_VERSION_RELEASE $POINT_OLD/MHA_VERSION_RELEASE $POINT_NEW/g" mha/libmha/src/mha.h
+sed -i "s/^#define MHA_VERSION_MAJOR $MAJOR_OLD$/#define MHA_VERSION_MAJOR $MAJOR_NEW/g" mha/libmha/src/mha.hh
+sed -i "s/MHA_VERSION_MINOR $MINOR_OLD/MHA_VERSION_MINOR $MINOR_NEW/g" mha/libmha/src/mha.hh
+sed -i "s/MHA_VERSION_RELEASE $POINT_OLD/MHA_VERSION_RELEASE $POINT_NEW/g" mha/libmha/src/mha.hh
 sed -i "s/$MAJOR_OLD\\.$MINOR_OLD\\.$POINT_OLD/$VER/g" mha/doc/openMHAdoxygen.sty
 sed -i -re "s/2[0-9]{3}-[0-9]{2}-[0-9]{2}/$(date +%Y-%m-%d)/g" README.md
 git commit -a -m"Increase version number to $VER"

@@ -39,7 +39,10 @@ private:
 };
 
 MHAPLUGIN_CALLBACKS(save_spec,save_spec_t,spec,spec)
-    MHAPLUGIN_DOCUMENTATION(save_spec,"AC-variables acvariables","")
+MHAPLUGIN_DOCUMENTATION\
+(save_spec,
+ "data-flow algorithm-communication",
+ "")
 
 // Local Variables:
 // compile-command: "make"

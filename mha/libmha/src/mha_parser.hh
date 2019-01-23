@@ -21,7 +21,7 @@
 #include <list>
 #include <vector>
 #include <map>
-#include "mha.h"
+#include "mha.hh"
 #include "mha_events.h"
 
 // A buffer of this size is allocated for every hierarchy level of

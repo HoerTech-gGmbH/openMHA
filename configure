@@ -164,6 +164,18 @@ chklib(){
     fi
     echo "CXXSTANDARD=$CXXSTANDARD";
 
+
+    case "$GCC_VER"x in
+        -4*)
+            ;;
+        -7*|-8*|-9*)
+            echo "CXXFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches";
+            echo "CFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches";
+            ;;
+        *)
+            ;;
+    esac
+
     case $ARCH in
         armhf)
             echo "COMPILERPREFIX=arm-linux-gnueabihf-"
@@ -174,8 +186,9 @@ chklib(){
             echo "SSE+=-msse -msse2 -mfpmath=sse"
             ;;
     esac
+
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
-    echo 'CXXFLAGS+=-Wall -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
+    echo 'CXXFLAGS+=-Wall -Wnon-virtual-dtor -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     if [[ $(type -P octave) ]] ; then
         echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval"\

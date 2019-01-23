@@ -127,7 +127,10 @@ mha_wave_t* sine_t::process(mha_wave_t* s)
 }
 
 MHAPLUGIN_CALLBACKS(sine,sine_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(sine,"generator","")
+MHAPLUGIN_DOCUMENTATION\
+(sine,
+ "signal-generator",
+ "")
 
 // Local Variables:
 // compile-command: "make"

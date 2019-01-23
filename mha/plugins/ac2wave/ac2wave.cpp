@@ -165,7 +165,10 @@ void ac2wave_if_t::release()
 
 MHAPLUGIN_CALLBACKS(ac2wave,ac2wave_if_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(ac2wave,ac2wave_if_t,spec,wave)
-    MHAPLUGIN_DOCUMENTATION(ac2wave,"AC-variables acvariables","")
+MHAPLUGIN_DOCUMENTATION\
+(ac2wave,
+ "data-flow algorithm-communication",
+ "")
 
 // Local Variables:
 // compile-command: "make"

@@ -519,23 +519,24 @@ void save_var_t::save_mat4(FILE* fh,unsigned int writeframes)
 
 MHAPLUGIN_CALLBACKS(acsave,acsave::acsave_t,spec,spec)
 MHAPLUGIN_PROC_CALLBACK(acsave,acsave::acsave_t,wave,wave)
-MHAPLUGIN_DOCUMENTATION(acsave,
-        "AC-variables acvariables",
-        "The 'acsave' plugin can save numeric algorithm communication variables\n"
-        "(AC variables) into files. The files can have plain text, MATLAB 4.x\n"
-        "or MATLAB script format. Each signal frame represents a row. The\n"
-        "number of columns is gathered at preparation time. If a variable size\n"
-        "is increased after preparation, only the part available at preparation\n"
-        "time is stored. If the size is decreased, it is zero-padded to the\n"
-        "original size.\n"
-        "\n"
-        "To save the data to disk, first set up file name and type. Then\n"
-        "setting the maximal length will start the recording. At any time, set\n"
-        "'flush' to yes in order to save the recorded frames. This will\n"
-        "overwrite previously written data.\n"
-        "\n"
-        "File name and type can be changed at any time and have to be valid\n"
-        "when sending the flush command.\n")
+MHAPLUGIN_DOCUMENTATION\
+(acsave,
+ "data-export disk-files",
+ "The 'acsave' plugin can save numeric algorithm communication variables\n"
+ "(AC variables) into files. The files can have plain text, MATLAB 4.x\n"
+ "or MATLAB script format. Each signal frame represents a row. The\n"
+ "number of columns is gathered at preparation time. If a variable size\n"
+ "is increased after preparation, only the part available at preparation\n"
+ "time is stored. If the size is decreased, it is zero-padded to the\n"
+ "original size.\n"
+ "\n"
+ "To save the data to disk, first set up file name and type. Then\n"
+ "setting the maximal length will start the recording. At any time, set\n"
+ "'flush' to yes in order to save the recorded frames. This will\n"
+ "overwrite previously written data.\n"
+ "\n"
+ "File name and type can be changed at any time and have to be valid\n"
+ "when sending the flush command.\n")
     
 
 // Local Variables:

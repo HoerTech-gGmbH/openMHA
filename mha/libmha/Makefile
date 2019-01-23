@@ -40,7 +40,6 @@ OBJECTS = \
 	mha_fifo.o \
 	pluginbrowser.o \
 
-
 LDFLAGS += -L../../external_libs/$(PLATFORM_CC)/lib
 
 ifeq "$(PLATFORM)" "linux"
@@ -68,10 +67,10 @@ ifeq "MinGW" "$(PLATFORM)"
 LDLIBS += -Wl,--out-implib,$(basename $@).a
 endif
 
-$(MHA_FFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(FFTW_LIB)
+$(MHA_FFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(FFTW_LIB) $(BUILD_DIR)/.directory
 	ar x $< $(notdir $@) && mv $(notdir $@) $@
 
-$(MHA_RFFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(RFFTW_LIB)
+$(MHA_RFFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(RFFTW_LIB) $(BUILD_DIR)/.directory
 	ar x $< $(notdir $@) && mv $(notdir $@) $@
 
 ifeq "$(PLATFORM)" "linux"

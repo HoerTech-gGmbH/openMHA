@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2011 2012 2013 HörTech gGmbH
-// Copyright © 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2014 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -166,7 +166,11 @@ int mhaserver_t::run(unsigned short port, const std::string & _interface)
             // then an Exception may occur in the following block.
             try {
                 if ((!exit_request()) && connection->can_read_line()) {
-                    connection->write(received_group(connection->read_line()));
+                    std::string command = connection->read_line();
+                    while (command.size() && strchr(" \r\t\n", command.back()))
+                        command.resize(command.size() - 1U);
+                    const std::string response = received_group(command);
+                    connection->write(response);
                     if ((!exit_request()) && connection->can_read_line()) {
                         // Do not read another line from the same
                         // connection right now, even if we can, to avoid
@@ -293,7 +297,7 @@ std::string mhaserver_t::received_group(const std::string& cmd)
 
 #define GREETING_TEXT \
 "The Open Master Hearing Aid (openMHA) server version " MHA_RELEASE_VERSION_STRING "\n"\
-"Copyright (c) 2005-2018 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
+"Copyright (c) 2005-2019 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
 "\n\n"\
 "This program comes with ABSOLUTELY NO WARRANTY; "\
 "for details see file COPYING.\n"\

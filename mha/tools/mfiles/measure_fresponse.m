@@ -2,6 +2,21 @@ function [fresponse] = measure_fresponse(jack_port, sampling_rate)
 % function measure_fresponse(jack_port, sampling_rate)
 % jack_port:     Name of the sound card's output port where the sound output hardware is connected
 % sampling_rate: sampling rate of sound card in Hz
+%
+% This file is part of the HörTech Open Master Hearing Aid (openMHA)
+% Copyright © 2018 HörTech gGmbH
+%
+% openMHA is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Affero General Public License as published by
+% the Free Software Foundation, version 3 of the License.
+%
+% openMHA is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License, version 3 for more details.
+%
+% You should have received a copy of the GNU Affero General Public License, 
+% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
   % frequencies in Hz that we will produce test tones at. Adjust as required.
   fresponse.Frequencies = [125 250 500 1000 1500 2000 3000 4000 6000 8000];

@@ -384,28 +384,30 @@ mha_wave_t* adm_if_t::process(mha_wave_t * in)
 // define MHA callbacks
 MHAPLUGIN_CALLBACKS(adm,adm_if_t,wave,wave)
 
-MHAPLUGIN_DOCUMENTATION(adm,"beamforming other multichannel",
-"This plugin implements one or more adaptive first-order differential\n"
-"microphones, each based on the output of two omnidirectional microphones,\n"
-"e.g. two hearing-aid microphones (cf. Elko \\& Nguyen Pong, 1995). This is\n"
-"achieved by first subtracting the outputs of the two omnidirectional\n"
-"microphones with fixed delays to create a forward-facing and a\n"
-"backward-facing cardioid microphone, respectively; then, in a second step,\n"
-"the signal from the backward-facing cardioid is amplified by a variable gain\n"
-"factor and subtracted from the signal from the forward-facing cardioid.\n"
-"Finally, a lowpass filter and a filter compensating for comb-filter effect\n"
-"is applied to the output signal.\n"
-"\n"
-"The gain factor, {\\tt beta}, is determined adaptively such that the power\n"
-"of the output signal is minimized, under the constraint that the null of the\n"
-"ADM is located in the rear half-plane. The adaptation step size,\n"
-"{\\tt mu\\_beta}, can be chosen in order to find the optimal combination of\n"
-"adaptation speed and accuracy.\n"
-"\n"
-"\\MHAfigure{Output signals illustrating convergence of the ADM algorithm for\n"
-"three different values of {\\tt mu\\_beta} (input signal: white Gaussian\n"
-"noise exactly from behind)}{adm_convergence}\n"
-)
+MHAPLUGIN_DOCUMENTATION\
+(adm,
+ "spatial signal-enhancement beamformer adaptive",
+ "This plugin implements one or more adaptive first-order differential\n"
+ "microphones, each based on the output of two omnidirectional microphones,\n"
+ "e.g. two hearing-aid microphones (cf. Elko \\& Nguyen Pong, 1995). This is\n"
+ "achieved by first subtracting the outputs of the two omnidirectional\n"
+ "microphones with fixed delays to create a forward-facing and a\n"
+ "backward-facing cardioid microphone, respectively; then, in a second step,\n"
+ "the signal from the backward-facing cardioid is amplified by a variable gain\n"
+ "factor and subtracted from the signal from the forward-facing cardioid.\n"
+ "Finally, a lowpass filter and a filter compensating for comb-filter effect\n"
+ "is applied to the output signal.\n"
+ "\n"
+ "The gain factor, {\\tt beta}, is determined adaptively such that the power\n"
+ "of the output signal is minimized, under the constraint that the null of the\n"
+ "ADM is located in the rear half-plane. The adaptation step size,\n"
+ "{\\tt mu\\_beta}, can be chosen in order to find the optimal combination of\n"
+ "adaptation speed and accuracy.\n"
+ "\n"
+ "\\MHAfigure{Output signals illustrating convergence of the ADM algorithm for\n"
+ "three different values of {\\tt mu\\_beta} (input signal: white Gaussian\n"
+ "noise exactly from behind)}{adm_convergence}\n"
+ )
 
 // Local Variables:
 // compile-command: "make"

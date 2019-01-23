@@ -170,19 +170,30 @@ mha_spec_t* overlapadd_if_t::process(mha_spec_t* spec)
 }
 
 MHAPLUGIN_CALLBACKS(smoothgains_bridge,smoothgains_bridge::overlapadd_if_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(smoothgains_bridge,"overlapadd stft filter",
-                        "The overlap-add framework allows filter lengths of the zero padding length.\n"
-                        "Longer filters will result in artifacts caused by circular aliasing.\n"
-                        "Artifacts can be reduced by either applying Hanning ramps to the zero-padded blocks after filtering,\n"
-                        "or by shortening the impulse response of the filter, and thus implicitely reducing the frequency resolution.\n"
-                        "This plugin reduces the filter length to match exactly the zero-padding length.\n"
-                        "It can either keep the phase (mode=linear\\_phase), and reduce causal and a-causal parts of the impulse response,\n"
-                        "or apply a minimum phase filter phase, and cut the causal part of the filter.\n"
-                        "The window position in the overlap-add framework has to be configured appropriately: \n"
-                        "For linear phase mode, a symmetric window position is required, i.e., wnd.pos=0.5.\n"
-                        "To allow minimal phase filters, an asymmetric window position (wnd.pos=0) is needed.\n"
-                        "Using minimal phase filters will destroy the phase, but reduces the algorithmic delay.\n"
-        )
+MHAPLUGIN_DOCUMENTATION\
+(smoothgains_bridge,
+ "level-modification filter data-flow overlap-add",
+ "The overlap-add framework allows filter lengths of the zero padding length.\n"
+ "Longer filters will result in artifacts caused by circular aliasing.\n"
+ "Artifacts can be reduced by either applying Hanning ramps to the zero-padded"
+ " blocks after filtering,\n"
+ "or by shortening the impulse response of the filter,"
+ " and thus implicitely reducing the frequency resolution.\n"
+ "This plugin reduces the filter length to match exactly the"
+ " zero-padding length.\n"
+ "It can either keep the phase (mode=linear\\_phase),"
+ " and reduce causal and a-causal parts of the impulse response,\n"
+ "or apply a minimum phase filter phase,"
+ " and cut the causal part of the filter.\n"
+ "The window position in the overlap-add framework has to be configured"
+ " appropriately: \n"
+ "For linear phase mode, a symmetric window position is required, i.e.,"
+ " wnd.pos=0.5.\n"
+ "To allow minimal phase filters,"
+ " an asymmetric window position (wnd.pos=0) is needed.\n"
+ "Using minimal phase filters will destroy the phase,"
+ " but reduces the algorithmic delay.\n"
+ )
 
 // Local Variables:
 // compile-command: "make"

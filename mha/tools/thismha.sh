@@ -1,4 +1,19 @@
 #!/usr/bin/env bash
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
+# Copyright © 2018 HörTech gGmbH
+#
+# openMHA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# openMHA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License, version 3 for more details.
+#
+# You should have received a copy of the GNU Affero General Public License, 
+# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
 # Source this script to set up the MHA build that this script is part of.
 
 drop_from_path()
@@ -52,10 +67,6 @@ if [ -n "${old_mhasys}" ] ; then
       drop_from_path "$LD_LIBRARY_PATH" "${old_mhasys}/lib"
       LD_LIBRARY_PATH=$newpath
    fi
-   if [ -n "${DYLD_LIBRARY_PATH}" ]; then
-      drop_from_path "$DYLD_LIBRARY_PATH" "${old_mhasys}/lib"
-      DYLD_LIBRARY_PATH=$newpath
-   fi
 fi
 
 export MHA_LIBRARY_PATH="$MHASYS/lib;$MHASYS/bin;$MHA_LIBRARY_PATH"
@@ -70,12 +81,6 @@ if [ -z "${LD_LIBRARY_PATH}" ]; then
    LD_LIBRARY_PATH=${MHASYS}/lib; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
 else
    LD_LIBRARY_PATH=${MHASYS}/lib:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
-fi
-
-if [ -z "${DYLD_LIBRARY_PATH}" ]; then
-   DYLD_LIBRARY_PATH=${MHASYS}/lib; export DYLD_LIBRARY_PATH   # Mac OS X
-else
-   DYLD_LIBRARY_PATH=${MHASYS}/lib:$DYLD_LIBRARY_PATH; export DYLD_LIBRARY_PATH
 fi
 
 unset old_mhasys

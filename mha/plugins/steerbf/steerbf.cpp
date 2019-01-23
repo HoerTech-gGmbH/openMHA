@@ -154,15 +154,25 @@ MHAPLUGIN_CALLBACKS(steerbf,steerbf,spec,spec)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(steerbf,
-        "beamforming binaural",
-        "Implements frequency-domain beamformer processing (filter and sum) using externally provided filters. "
-        "A plugin called {\\tt acSteer} can be used to provide the filter coefficients. "
-        "The filter coefficients to be read are saved as a waveform object in the AC space. "
-        "Each channel of this object corresponds to a different steering angle. The steering angle is typically determined in real-time by a localization plugin (e.g. {\\tt doasvm\\_classification}). "
-        "In this case, the index to the corresponding steering direction is read from the AC space. Note that the number of available filters should be consistent with the number of possible steering directions to be estimated. The configuration variable \\textbf{angle\\_src} keeps the name of the AC variable for the estimated steering direction. "
-        "The steering angle can also be fixed in the configuration time using the configuration variable \\textbf{angle\\_ind}."
-        )
+MHAPLUGIN_DOCUMENTATION\
+(steerbf,
+ "filter spatial audio-channels beamformer binaural",
+ "Implements frequency-domain beamformer processing (filter and sum) using"
+ " externally provided filters. "
+ "A plugin called {\\tt acSteer} can be used to provide the filter coefficients. "
+ "The filter coefficients to be read are saved as a waveform object in the AC space. "
+ "Each channel of this object corresponds to a different steering angle."
+ " The steering angle is typically determined in real-time by a"
+ " localization plugin (e.g. {\\tt doasvm\\_classification}). "
+ "In this case, the index to the corresponding steering direction is read"
+ " from the AC space."
+ " Note that the number of available filters should be consistent with"
+ " the number of possible steering directions to be estimated."
+ " The configuration variable \\textbf{angle\\_src} keeps the name of the"
+ " AC variable for the estimated steering direction. "
+ "The steering angle can also be fixed in the configuration time using the"
+ " configuration variable \\textbf{angle\\_ind}."
+ )
 
 
 /*

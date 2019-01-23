@@ -3,6 +3,20 @@ function test_fftfbpow_achandling
 % vector, but only inserted the first AC vector created during prepare into the
 % AC space. Later vectors created by configuration variable updates were not
 % correctly inserted.
+% This file is part of the HörTech Open Master Hearing Aid (openMHA)
+% Copyright © 2018 HörTech gGmbH
+%
+% openMHA is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Affero General Public License as published by
+% the Free Software Foundation, version 3 of the License.
+%
+% openMHA is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License, version 3 for more details.
+%
+% You should have received a copy of the GNU Affero General Public License, 
+% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
   % quick cfg using defaults: srate=44100,fragsize=200,wnd=400,fft=512
   dsc.instance = 'test_fftfbpow_achandling';
@@ -35,7 +49,6 @@ function test_fftfbpow_achandling
   levels = mha_get(mha, 'mha.mhachain.acmon.fftfbpow');
   assert_all(levels(1) < levels(2));
 
-  
 
   % The last test failed because of the AC handling bug in fftfbpow.
   % The 220 Hz sinusoid should result in a higher level in the band with

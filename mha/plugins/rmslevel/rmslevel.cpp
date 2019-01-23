@@ -153,9 +153,12 @@ void rmslevel_if_t::prepare(mhaconfig_t& tf)
 }
 
 MHAPLUGIN_CALLBACKS(rmslevel,rmslevel_if_t,spec,spec)
-    MHAPLUGIN_PROC_CALLBACK(rmslevel,rmslevel_if_t,wave,wave)
-    MHAPLUGIN_DOCUMENTATION(rmslevel,"level compression","")
-    
+MHAPLUGIN_PROC_CALLBACK(rmslevel,rmslevel_if_t,wave,wave)
+MHAPLUGIN_DOCUMENTATION\
+(rmslevel,
+ "level-meter feature-extraction",
+ "")
+
 // Local Variables:
 // compile-command: "make"
 // c-basic-offset: 4

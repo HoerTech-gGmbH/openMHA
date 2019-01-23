@@ -86,8 +86,59 @@ typedef void* mha_libhandle_t;
 #ifdef __cplusplus
 #include <string>
 
+/** Get value of environment variable
+ * @param envvar Name of environment variable to retrieve
+ * @return content of environment variable if it exists, empty string if the
+ *         environment variable does not exist
+ */
+std::string mha_getenv(const std::string & envvar); 
 
-std::string mha_getenv(std::string envvar); 
+/** Checks if environment variable exists
+ * @param envvar Name of environment variable to check
+ * @return true if the environment has a variable of this name
+ */
+bool mha_hasenv(const std::string & envvar);
+
+/** Set value of environment variable
+ * @param envvar Name of environment variable to set
+ * @param value  New content for environment variable
+ * @return error code: 0 on success, OS dependent error code on failure
+ */
+int mha_setenv(const std::string & envvar, const std::string & value); 
+
+/** Deletes environment variable from process environment if it exists
+ * @param envvar Name of environment variable to delete
+ */
+void mha_delenv(const std::string & envvar);
+
+/** This class changes the value of an environment variable when constructed
+ * and restores the original state of the environment variable when destroyed.
+ * Can be used for testing functionality related to environment variables.
+ * @todo Move to collection of unit-test support classes when we have one.
+ */
+class mha_stash_environment_variable_t {
+  /// Flag indicates if the environment variable existed before constructor
+  const bool existed_before;
+  /// Name of environment variable
+  const std::string variable_name;
+  /// Content of environment variable before constructor executed
+  const std::string original_content;
+public:
+  mha_stash_environment_variable_t(const std::string & variable_name,
+                                   const std::string & new_content)
+    : existed_before(mha_hasenv(variable_name)),
+      variable_name(variable_name),
+      original_content(mha_getenv(variable_name))
+  { mha_setenv(variable_name, new_content); }
+
+  ~mha_stash_environment_variable_t()
+  {
+    if (existed_before)
+      mha_setenv(variable_name, original_content);
+    else
+      mha_delenv(variable_name);
+  }
+};
 
 class dynamiclib_t {
 public:

@@ -209,7 +209,10 @@ void example6_t::update_cfg()
         push_config(new cfg_t(channel_no.data,tftype.channels));
 }
 
-MHAPLUGIN_DOCUMENTATION(example6,"example","")
+MHAPLUGIN_DOCUMENTATION\
+(example6,
+ "example feature-extraction algorithm-communication",
+ "")
 
 // Local Variables:
 // compile-command: "make"

@@ -184,7 +184,10 @@ mha_spec_t * droptect_t::process(mha_spec_t * signal)
 }
 
 MHAPLUGIN_CALLBACKS(droptect,droptect_t,spec,spec)
-MHAPLUGIN_DOCUMENTATION(droptect,"analysis","")
+MHAPLUGIN_DOCUMENTATION\
+(droptect,
+ "test-tool",
+ "")
 
 // Local Variables:
 // compile-command: "make"

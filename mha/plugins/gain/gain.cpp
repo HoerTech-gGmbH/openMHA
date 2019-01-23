@@ -156,6 +156,10 @@ void gain_if_t::update_minmax()
 
 MHAPLUGIN_CALLBACKS(gain,gain::gain_if_t,wave,wave)
 MHAPLUGIN_PROC_CALLBACK(gain,gain::gain_if_t,spec,spec)
+MHAPLUGIN_DOCUMENTATION\
+(gain,
+ "level-modification",
+ "")
 
 
 // Local variables:

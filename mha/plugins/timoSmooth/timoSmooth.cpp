@@ -156,13 +156,14 @@ MHAPLUGIN_CALLBACKS(timoSmooth,timoSmooth,spec,spec)
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(timoSmooth,
-    "noise reduction stft",
-    "Implements the single-channel noise reduction scheme found in "
-        "Breithaupt,  Gerkmann, and Martin, "
-        "A Novel A Priori SNR Estimation Approach Based on Selective "
-        "Cepstro-temporal Smoothing.\n\n"
-    )
+MHAPLUGIN_DOCUMENTATION\
+(timoSmooth,
+ "noise-suppression signal-enhancement adaptive",
+ "Implements the single-channel noise reduction scheme found in "
+ "Breithaupt,  Gerkmann, and Martin, "
+ "A Novel A Priori SNR Estimation Approach Based on Selective "
+ "Cepstro-temporal Smoothing.\n\n"
+ )
 
 // Local Variables:
 // compile-command: "make"

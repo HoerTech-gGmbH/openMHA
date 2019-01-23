@@ -20,7 +20,7 @@
 #include "mha_parser.hh"
 #include "mha_error.hh"
 #include "mha_defs.h"
-#include "mha.h"
+#include "mha.hh"
 #include "mha_os.h"
 #include <fstream>
 #include "mha_signal.hh"
