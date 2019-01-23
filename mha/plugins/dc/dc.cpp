@@ -89,18 +89,13 @@ namespace dc {
 
     class dc_t : private dc_vars_validator_t {
     public:
-
         dc_t(dc_vars_t vars,
              mha_real_t filter_rate,
-             unsigned int nch_,
+             unsigned int nch,
              algo_comm_t ac,
              mha_domain_t domain,
              unsigned int fftlen,
-             const std::string& algo,
-             const std::vector<mha_real_t>& rmslevel_state={},
-             const std::vector<mha_real_t>& attack_state={},
-             const std::vector<mha_real_t>& decay_state={}
-             );
+             std::string algo);
         mha_wave_t* process(mha_wave_t*);
         mha_spec_t* process(mha_spec_t*, wb_inhib_cfg_t* wbinhib);
 
@@ -108,22 +103,10 @@ namespace dc {
 
         /** Number of frequency bands accessor. */
         unsigned get_nbands() const {return nbands;}
-        /** Total number of channels accessor. */
-        unsigned get_nch() const {return nch;}
         const MHASignal::waveform_t & get_level_in_db() const
         {return level_in_db;}
         const MHASignal::waveform_t & get_level_in_db_adjusted() const
         {return level_in_db_adjusted;}
-        std::vector<mha_real_t> get_rmslevel_filter_state() const {
-            return static_cast<std::vector<mha_real_t>>(rmslevel);
-        }
-        std::vector<mha_real_t> get_attack_filter_state() const {
-            return static_cast<std::vector<mha_real_t>>(attack);
-        }
-        std::vector<mha_real_t> get_decay_filter_state() const {
-            return static_cast<std::vector<mha_real_t>>(decay);
-        }
-
     private:
         std::vector<MHATableLookup::linear_table_t> gt;
         MHAFilter::o1flt_lowpass_t rmslevel;
@@ -133,7 +116,6 @@ namespace dc {
         bool bypass;
         unsigned int naudiochannels;
         unsigned int nbands;
-        unsigned int nch;
         MHA_AC::waveform_t level_in_db;
         MHA_AC::waveform_t level_in_db_adjusted;
         MHA_AC::waveform_t inhib_gain;
@@ -182,25 +164,11 @@ namespace dc {
                 filter_rate = tftype.srate;
             else
                 filter_rate = tftype.srate / tftype.fragsize;
-
-            if(cfg && tftype.channels==cfg->get_nch()) {
-                auto rmslevel_state=cfg->get_rmslevel_filter_state();
-                auto attack_state=cfg->get_attack_filter_state();
-                auto decay_state=cfg->get_decay_filter_state();
-                push_config(new dc_t(static_cast<const dc_vars_t&>(*this),
-                                     filter_rate,
-                                     tftype.channels,
-                                     ac,
-                                     tftype.domain,tftype.fftlen,algo,
-                                     rmslevel_state, attack_state, decay_state));
-            }
-            else {
-                push_config(new dc_t(static_cast<const dc_vars_t&>(*this),
-                                     filter_rate,
-                                     tftype.channels,
-                                     ac,
-                                     tftype.domain,tftype.fftlen,algo));
-            }
+            push_config(new dc_t(static_cast<const dc_vars_t&>(*this),
+                                 filter_rate,
+                                 tftype.channels,
+                                 ac,
+                                 tftype.domain,tftype.fftlen,algo));
         }
     }
 
@@ -243,7 +211,7 @@ namespace dc {
         return s_out;
     }
 
-    dc_vars_validator_t::dc_vars_validator_t(dc_vars_t & v,
+    dc_vars_validator_t::dc_vars_validator_t(dc_vars_t& v,
                                              unsigned int s,
                                              mha_domain_t domain)
     {
@@ -299,47 +267,29 @@ namespace dc {
 
     dc_t::dc_t(dc_vars_t vars,
                mha_real_t filter_rate,
-               unsigned int nch_,
+               unsigned int nch,
                algo_comm_t ac,
                mha_domain_t domain,
                unsigned int fftlen,
-               const std::string& algo,
-               const std::vector<mha_real_t>& rmslevel_state,
-               const std::vector<mha_real_t>& attack_state,
-               const std::vector<mha_real_t>& decay_state
-               )
-        :
-        dc_vars_validator_t(vars, nch_, domain),
-        rmslevel([&](){
-                     if(rmslevel_state.size())
-                         return MHAFilter::o1flt_lowpass_t(vars.taurmslevel.data, filter_rate, rmslevel_state);
-                     else
-                         return MHAFilter::o1flt_lowpass_t(vars.taurmslevel.data, filter_rate, pow(10,65*0.01)*4e-10);
-                 }()),
-        attack([&](){if(attack_state.size())
-                    return MHAFilter::o1flt_lowpass_t(vars.tauattack.data, filter_rate, attack_state);
-                else
-                    return MHAFilter::o1flt_lowpass_t(vars.tauattack.data, filter_rate, 65);
-               }()),
-        decay([&](){if(decay_state.size())
-                    return MHAFilter::o1flt_maxtrack_t(vars.taudecay.data, filter_rate, decay_state);
-                else
-                    return MHAFilter::o1flt_maxtrack_t(vars.taudecay.data, filter_rate, 65);
-              }()),
-        powersum(vars.powersum.data),
-        bypass(vars.bypass.data),
-        naudiochannels(get_audiochannels(nch_,vars.chname.data,ac)),
-        nbands(nch_ / naudiochannels),
-        nch(nch_),
-        level_in_db(ac,algo+"_l_in",nbands,naudiochannels,false),
-        level_in_db_adjusted(ac,algo+"_l_in_adj",nbands,naudiochannels,false),
-        inhib_gain(ac,algo+"_inhibg",nbands,naudiochannels,false),
-        max_level_difference(nbands-1,naudiochannels)
+               std::string algo)
+        : dc_vars_validator_t(vars, nch, domain),
+          rmslevel(vars.taurmslevel.data, filter_rate, pow(10,65*0.1) * 4e-10),
+          attack(vars.tauattack.data, filter_rate, 65),
+          decay(vars.taudecay.data, filter_rate, 65),
+          powersum(vars.powersum.data),
+          bypass(vars.bypass.data),
+          naudiochannels(get_audiochannels(nch,vars.chname.data,ac)),
+          nbands(nch / naudiochannels),
+          level_in_db(ac,algo+"_l_in",nbands,naudiochannels,false),
+          level_in_db_adjusted(ac,algo+"_l_in_adj",nbands,naudiochannels,false),
+          inhib_gain(ac,algo+"_inhibg",nbands,naudiochannels,false),
+          max_level_difference(nbands-1,naudiochannels)
     {
         if( nbands * naudiochannels != nch )
             throw MHA_Error(__FILE__,__LINE__,
                             "Mismatching channel configuration (%d bands, %d input channels, %d audio channels)",
                             nbands,nch,naudiochannels);
+
         unsigned int k,klev, kfb;
         // max_level_difference is only used in multi-band compressors:
         if( nbands > 1 ){

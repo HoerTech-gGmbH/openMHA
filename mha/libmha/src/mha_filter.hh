@@ -238,7 +238,6 @@ namespace MHAFilter {
     class o1flt_lowpass_t : public o1_ar_filter_t {
     public:
         o1flt_lowpass_t(const std::vector<mha_real_t>&,mha_real_t,mha_real_t=0);
-        o1flt_lowpass_t(const std::vector<mha_real_t>& tau, mha_real_t fs, const std::vector<mha_real_t>& startval);
         void set_tau(unsigned int ch,mha_real_t tau);//!< change the time constant in one channel
         void set_tau(mha_real_t tau);//!< set time constant in all channels to tau
         mha_real_t get_c1(unsigned int ch) const {return c1_a.buf[ch];};
@@ -249,7 +248,6 @@ namespace MHAFilter {
     class o1flt_maxtrack_t : public o1flt_lowpass_t {
     public:
         o1flt_maxtrack_t(const std::vector<mha_real_t>&,mha_real_t,mha_real_t=0);
-        o1flt_maxtrack_t(const std::vector<mha_real_t>& tau, mha_real_t fs, const std::vector<mha_real_t>& startval);
         void set_tau(unsigned int ch,mha_real_t tau);//!< change the time constant in one channel
         void set_tau(mha_real_t tau);//!< set time constant in all channels to tau
     };
@@ -258,7 +256,6 @@ namespace MHAFilter {
     class o1flt_mintrack_t : public o1flt_lowpass_t {
     public:
         o1flt_mintrack_t(const std::vector<mha_real_t>&,mha_real_t,mha_real_t=0);
-        o1flt_mintrack_t(const std::vector<mha_real_t>&,mha_real_t,const std::vector<mha_real_t>&);
         void set_tau(unsigned int ch,mha_real_t tau);//!< change the time constant in one channel
         void set_tau(mha_real_t tau);//!< set time constant in all channels to tau
     };

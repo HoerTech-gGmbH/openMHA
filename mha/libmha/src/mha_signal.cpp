@@ -204,13 +204,6 @@ waveform_t::~waveform_t( void )
     }
 }
 
-waveform_t::operator std::vector<mha_real_t> () const {
-    if( (std::min(num_channels,num_frames)!=1) ) {
-        throw MHA_Error(__FILE__,__LINE__,"Casting interleaved waveforms to vectors is not allowed."
-                        " (got %d channels, %d frames).", num_channels,num_frames);
-    }
-    return std::vector<mha_real_t>(buf,buf+size(*this));
-}
 void waveform_t::copy(const std::vector<mha_real_t>& v)
 {
     if( (std::min(num_channels,num_frames)==1) && (size(*this) == v.size()) )
@@ -401,6 +394,7 @@ void waveform_t::export_to( mha_wave_t & dest )
                  channel_info, num_channels * sizeof ( mha_channel_info_t ) );
     }
 }
+
 
 /**
    \brief sum of all elements
