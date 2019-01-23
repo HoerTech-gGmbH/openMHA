@@ -1,6 +1,7 @@
 # Installation instructions
 
-This installation guide describes the installation process of openMHA on Linux (__I.__,), Mac OS and Windows (__II.__) operating systems.
+This installation guide describes the installation process of openMHA on
+Linux (__I.__), Windows (__II.__), and macOS (__III.__) operating systems.
 
 ## I. Installation from binary packages on Ubuntu.
 
@@ -24,7 +25,7 @@ sudo apt-get install openmha
 
 After installation, openMHA documentation is found in
 `/usr/share/doc/openmha`
-and tools for GNU Octave/Matlab in `/usr/lib/openmha/mfiles`
+and tools for GNU Octave/Matlab in `/usr/lib/openmha/mfiles`.
 
 We provide some examples together with the openMHA.
 When using Debian packages, you can find the examples in a separate package,
@@ -34,29 +35,43 @@ sudo apt-get install openmha-examples
 ```
 the examples can be found in `/usr/share/openmha/examples`.
 
-NOTE: If you want to use the example files we recommend to make a copy in your home directory as they are located in a system-wide read-only directory. Some of the examples may require changes to work with the current audio hardware setup and need write access to store output.
+NOTE: If you want to use the example files we recommend to make a copy in your
+home directory as they are located in a system-wide read-only directory. Some of
+the examples may require changes to work with the current audio hardware setup
+and need write access to store output.
 
-Algorithm developers interested in implementing their own plugins should also install the development package libopenmha-dev.
+Algorithm developers interested in implementing their own plugins should also
+install the development package __libopenmha-dev__.
 
 For updating openMHA when a new release is available run
 ```
 sudo apt-get install --only-upgrade openmha
 ```
 
-## II. Windows and Mac OS installers
+## II. Windows installer
 
-openMHA installers for 64 bit Windows and Mac OS can be downloaded from our
-github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases .
+An openMHA installer for 64 bit Windows can be downloaded from our
+Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
 
-On windows, you may want to add the bin directory to the system PATH.
-The installers install openMHA example setups.  We recommend to copy the
-examples folder to a writable location inside your user directory:
+On Windows, you may want to add the bin directory to the system PATH.
+
+The installer installs openMHA example setups and some tools. We recommend to
+copy the examples folder to a writable location inside your user directory.
+
+You can find the examples folder in the `examples sub-directory` of
+the installation directory (e.g. `C:\Program Files\openMHA`). The sub-directories
+`mfiles` contains Matlab / Octave files for interacting with openMHA and
+documentation is found in `doc`.
+
+## III. macOS installer
+
+An openMHA installer for macOS can be downloaded from our
+Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
+
+The installer installs openMHA example setups and some tools. We recommend to
+copy the examples folder to a writable location inside your user directory.
 
 On Mac OS, you can find the examples folder in
-/usr/local/share/openmha/examples/. mfiles for interacting with the openMHA from
-Matlab or Octave are installed in /usr/local/lib/openmha/mfiles/, and
-documentation can be found in /usr/local/doc/openmha/.
-
-On Windows, you can find the examples folder in the examples sub-directory of
-the installation directory. The sub-directories mfiles and doc contain
-Matlab / Octave files for interacting with the openMHA and documentation.
+`/usr/local/share/openmha/examples/`. m-files for interacting with the openMHA
+from Matlab or Octave are installed in `/usr/local/lib/openmha/mfiles/`, and
+documentation can be found in `/usr/local/doc/openmha/`.
