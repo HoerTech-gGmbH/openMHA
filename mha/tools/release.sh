@@ -34,7 +34,7 @@ function ask_yes_no ()
 #from development or a release branch in preparation for a release. If the branch
 #does not match either, we ask for a user override.
 BRANCH=$(git branch | grep '*' | cut -d" " -f2);
-if  [[ "$BRANCH" =~ "*release*" ]] & [[ "$BRANCH" =~ "development" ]]; then
+if  [[ "$BRANCH" =~ "*release*" ]] && [[ "$BRANCH" =~ "development" ]]; then
     echo "Suspicious branch: $BRANCH is neither a development or release branch. Continue? [yes/no];"
     ask_yes_no;
 fi
