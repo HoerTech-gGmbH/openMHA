@@ -21,5 +21,7 @@ rm bin/thismha.sh
 fix_install_names libopenmha.dylib
 for file in $(cat expected_dependencies.txt); do
     cp $file lib/.;
+done;
+for file in lib/*dylib; do
     fix_install_names $file;
 done;
