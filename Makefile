@@ -97,6 +97,9 @@ endif
 exe: unit-tests
 	$(MAKE) -C mha/tools/packaging/exe exe
 
+pkg: install
+	$(MAKE) -C mha/tools/packaging/pkg all
+
 release: test unit-tests
 	@./mha/tools/release.sh
 
