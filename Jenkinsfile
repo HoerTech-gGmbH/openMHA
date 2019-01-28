@@ -144,12 +144,11 @@ pipeline {
                 // creates an apt repository, uploads.
                 sh "make"
 
-                // For now, make the windows installer available in a tar file that we publish
-                // as a Jenkins artifact
+                // Publish windows installer on the web and as a Jenkins artifact
                 unstash "x86_64_windows"
-                sh "tar cvzf windows-installer.tar.gz mha/tools/packaging/exe"
-                archiveArtifacts 'windows-installer.tar.gz'
-		sh "echo put mha/tools/packaging/exe/*.exe openMHA/apt-repositories/$BRANCH_NAME/windows/ | sftp p35492077-mha@home89585951.1and1-data.host"
+                archiveArtifacts 'mha/tools/packaging/exe/*.exe'
+                sh "echo 'Options +Indexes' >.htaccess"
+		sh "(echo mkdir openMHA/apt-repositories/$BRANCH_NAME/windows; echo put mha/tools/packaging/exe/*.exe openMHA/apt-repositories/$BRANCH_NAME/windows/; echo put .htaccess openMHA/apt-repositories/$BRANCH_NAME/windows/) | sftp p35492077-mha@home89585951.1and1-data.host"
             }
         }
     }
