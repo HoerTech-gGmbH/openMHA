@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2007 2008 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2006 2007 2008 2013 2014 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -382,10 +382,6 @@ int main(int argc,char** argv)
         }
     }
     std::ofstream ofile(ofname.c_str());
-    for (const std::string category : all_categories) {
-        
-    }
-
     std::map<std::string,std::string>::const_iterator ldoc_i;
     for( ldoc_i=ldoc.begin();ldoc_i != ldoc.end(); ++ldoc_i ){
         ofile << "\\" << category_macro << "{Plugin category '" << conv2latex(ldoc_i->first) << "'}\n" << std::endl;
