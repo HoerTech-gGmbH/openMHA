@@ -14,42 +14,61 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifdef _WIN32
-# include <WINSOCK2.h>
-#endif
+#include "mha_tcp_server.hh"
 #include "mhafw_lib.h"
-#include "mha_parser.hh"
 #include <getopt.h>
-#include <stdarg.h>
 #include <fstream>
 #include <unistd.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string>
-#include <memory>
-#include "mha_tcp.hh"
+#include <asio/connect.hpp>
+#include <asio/write.hpp>
 
-#define MAX_LINE_LENGTH 0x100000
-
-#ifdef _WIN32 
-#define getpid(x) _getpid(x) // FIXME: use ACE_OS::getpid()
+#ifdef _WIN32
+#define getpid(x) _getpid(x)
 #endif
 
 /// MHA Framework listening on TCP port for commands
 class mhaserver_t : public fw_t {
-    MHA_TCP::Server * tcpserver;
+    class tcp_server_t : public mha_tcp::server_t {
+        mhaserver_t * mha;
+    public:
+        tcp_server_t(const std::string & interface, uint16_t port,
+                     mhaserver_t * mha)
+            : mha_tcp::server_t(interface, port),   mha(mha)
+        {}
+
+        /** This method is invoked when a line of text is received on one of
+         * the accepted connections. Override this method to process the
+         * communication with the client.
+         * @param c the connection that has received this line
+         * @param l the line that has been received, without the line ending
+         * @return client should return true when client wants to read another
+         *         line of text, else false.        */
+        virtual bool
+        on_received_line(std::shared_ptr <mha_tcp::buffered_socket_t> c,
+                         const std::string & l) override
+        {
+            bool old_exit_request = mha->exit_request();
+            c->queue_write(mha->on_received_line(l));
+            bool new_exit_request = mha->exit_request();
+            if (new_exit_request && !old_exit_request) {
+                shutdown();
+            }
+            return !new_exit_request;
+        }
+    };
+    std::shared_ptr<tcp_server_t> tcpserver;
 public:
     /** @param ao Acknowledgement string at end of successful command responses
-        @param af Achknoledgement string at end of failed command responses
+        @param af Acknowledgement string at end of failed command responses
         @param lf File system path of file to use as log file. MHA appends.
     */
     mhaserver_t(const std::string &ao, const std::string &af,
                 const std::string &lf);
     ~mhaserver_t();
     /** A line of text was received from network client */
-    virtual std::string received_group(const std::string & line);
+    virtual std::string on_received_line(const std::string & line);
     /** Notification: "TCP port is open" */
-    virtual void acceptor_started(int status);
+    virtual void acceptor_started();
     /** If set to nonzero, the spawning process has asked to be notified
         of the TCP port used by this process. */
     virtual void set_announce_port(unsigned short announce_port);
@@ -57,7 +76,7 @@ public:
     inline void logstring(const std::string&);
     /** Accept network connections and act on commands.
         Calls #acceptor_started() when the TCP port is opened.
-        Calls received_group for every line received.
+        Calls on_received_line for every line received.
         @return exit code that can be used as process exit code */
     int run(unsigned short port, const std::string & _interface);
 private:
@@ -86,133 +105,67 @@ inline void mhaserver_t::logstring(const std::string& s)
     }
 }
 
-void mhaserver_t::acceptor_started(int status)
+void mhaserver_t::acceptor_started()
 {
-    using MHAParser::StrCnv::val2str;
     port.data = tcpserver->get_port();
-    if (status == 0 && announce_port != 0) {
-        // timeout (0.5 seconds) for connection and sending.
-        MHA_TCP::Timeout_Watcher timeout_watcher(0.5);
-        MHA_TCP::Client announcer("127.0.0.1", announce_port, timeout_watcher);
-        logstring("Announcing TCP port to process creator at port " 
-                  + val2str(int(announce_port)) + "\n");
-        timeout_watcher.observe(announcer.get_write_event());
-        announcer.try_write("pid=" + val2str(int(getpid())) + "\n" +
-                            "port=" + val2str(int(port.data)) + "\n");
-        while (announcer.needs_write()) {
-            std::set<MHA_TCP::Wakeup_Event *> wake_set = timeout_watcher.wait();
-            if (wake_set.find(announcer.get_write_event()) == wake_set.end()) {
-                throw MHA_Error(__FILE__, __LINE__,
-                                "Cannot announce MHA port to port %hu: Timeout",
-                                announce_port);
-            }
-            announcer.try_write();
-        }
-        logstring("Announced\n");
+    if (announce_port == 0) {
+        // nothing to announce
+        return;
     }
+    std::shared_ptr<asio::ip::tcp::socket> announcer = std::
+        make_shared<asio::ip::tcp::socket>(tcpserver->get_context());
+    auto announce_endpoints = asio::ip::tcp::resolver(tcpserver->get_context()).
+        resolve("127.0.0.1", std::to_string(announce_port));
+    std::shared_ptr<const std::string> announcement =
+        std::make_shared<const std::string>
+        ("pid=" + std::to_string(getpid()) + "\n"
+         "port=" + std::to_string(tcpserver->get_port()) + "\n");
+    logstring("Announcing TCP port to process creator at port "
+              + std::to_string(announce_port) + "...\n");
+    using asio::async_connect;
+    async_connect(*announcer, announce_endpoints,
+                  [announcer,this,announcement]
+                  (const asio::error_code & ec,
+                   const asio::ip::tcp::endpoint & endpoint) {
+                      if (ec) {
+                          logstring("announcement failed: "+ec.message()+"\n");
+                          announcer->close();
+                          return;
+                      }
+                      logstring("connected to announcement port,"
+                                " sending announcement...\n");
+                      using asio::async_write;
+                      async_write(*announcer, asio::buffer(*announcement),
+                                  [announcer,this,announcement]
+                                  (const asio::error_code & ec, std::size_t) {
+                                      if (ec) {
+                                          logstring("announcement failed: " +
+                                                    ec.message() + "\n");
+                                      } else {
+                                          logstring("announcement sent, closing"
+                                                    " connection.\n");
+                                      }
+                                      announcer->close();
+                                  });
+                  });
 }
 
 int mhaserver_t::run(unsigned short port, const std::string & _interface)
 {
-    using MHAParser::StrCnv::val2str;
     if (tcpserver)
         throw MHA_Error(__FILE__, __LINE__,
                         "BUG: Nested invocation of mhaserver_t::run");
-    tcpserver = new MHA_TCP::Server(port, _interface);
-    logstring("Listening on " + _interface + ":" + val2str(int(port)) + "\n");
-    acceptor_started(0);
+    logstring("Opening TCP server on " +
+              _interface + ":" + std::to_string(port) + "\n");
+    tcpserver = std::make_shared<tcp_server_t>(_interface, port, this);
+    logstring("TCP server listens on " +
+              _interface + ":" + std::to_string(tcpserver->get_port()) + "\n");
+    acceptor_started();
 
-    // The event watcher wraps select or WaitForMultipleObjects.  It will detect
-    // new connections as well as incoming data and EOF on existing connections.
-    MHA_TCP::Event_Watcher event_watcher;
-    event_watcher.observe(tcpserver->get_accept_event());
-
-    // keep track of open client connections
-    std::set<std::unique_ptr<MHA_TCP::Connection>> connections;
-
-    // This flag indicates when true that another MHA command has already
-    // arrived, and we do not need to poll for more data.
-    bool more_commands_are_pending = false;
-    
-    while (!exit_request()) {
-        if (more_commands_are_pending) {
-            // We do not need to check the sockets.  We already know
-            // there is enough data in at least one of the
-            // connections. Clear the flag now because we will process
-            // the data in this loop.
-            more_commands_are_pending = false;
-        } else {
-            // Wait in system call for more data to arrive (or new
-            // connections).  Wait would return a set of events that
-            // have signalled.  But since we have to loop over all
-            // connections anyway to find which event belongs to which
-            // connection, we do not need to keep the result.
-            event_watcher.wait();
-        }
-
-        // Loop over connections to find connections where data has arrived
-        for (auto connection_iterator = connections.begin();
-             connection_iterator != connections.end();
-             /* iterator update performed at end of loop */) {
-
-            std::unique_ptr<MHA_TCP::Connection> const & connection =
-                *connection_iterator;
-
-            // If EOF is detected, then delete this connection at end of loop.
-            // Default is no EOF, keep connection.
-            bool keep_connection = true;
-
-            // If the connection is force-closed by the client,
-            // then an Exception may occur in the following block.
-            try {
-                if ((!exit_request()) && connection->can_read_line()) {
-                    std::string command = connection->read_line();
-                    while (command.size() && strchr(" \r\t\n", command.back()))
-                        command.resize(command.size() - 1U);
-                    const std::string response = received_group(command);
-                    connection->write(response);
-                    if ((!exit_request()) && connection->can_read_line()) {
-                        // Do not read another line from the same
-                        // connection right now, even if we can, to avoid
-                        // starving the other connections.
-                        more_commands_are_pending = true;
-                    }
-                }
-                if (connection->eof()) {
-                    keep_connection = false;
-                }
-            } catch (MHA_Error & e) {
-                // Unclean connection termination
-                keep_connection = false;
-                logstring(Getmsg(e)+std::string("\n"));
-            }
-
-            // Update iterator
-            if (keep_connection)
-                ++connection_iterator;
-            else {
-                logstring("Closing Connection to "+(*connection_iterator)->get_peer_address()+":"+ val2str(int((*connection_iterator)->get_peer_port()))+"\n");
-                connection_iterator =
-                    connections.erase(connection_iterator);
-            }
-        }
-
-        // Accept new connection if there is any
-        MHA_TCP::Connection * new_connection = tcpserver->try_accept();
-
-        if (new_connection) {
-            logstring("new connection from "
-                      + new_connection->get_peer_address() + ":"
-                      + val2str(int(new_connection->get_peer_port())) + "\n");
-            connections.insert(std::unique_ptr<MHA_TCP::Connection>(new_connection));
-            event_watcher.observe(new_connection->get_read_event());
-        }
-    }
+    tcpserver->run();
 
     logstring("exit request, closing server.\n");
-    connections.clear(); // closes all connections
-    delete tcpserver;    // closes the server
-    tcpserver = 0;
+    tcpserver = nullptr; // closes server
     logstring("exit request, server closed.\n");
     // TODO: Replace with Error/Success exit code
     return 0;
@@ -249,7 +202,7 @@ mhaserver_t::~mhaserver_t()
     logstring("MHA server closed successfully.\n");
 }
 
-std::string mhaserver_t::received_group(const std::string& cmd)
+std::string mhaserver_t::on_received_line(const std::string& cmd)
 {
     using MHAParser::StrCnv::val2str;
     std::string retv("");
