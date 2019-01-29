@@ -795,6 +795,8 @@ namespace MHASignal {
         waveform_t(const MHASignal::waveform_t& src);
         waveform_t(const std::vector<mha_real_t>& src);
         virtual ~waveform_t(void);
+        std::vector<mha_real_t> flatten() const;
+        explicit operator std::vector<mha_real_t>() const;
         inline void operator=(const mha_real_t& v){assign(v);};
         inline mha_real_t& operator[](unsigned int k) {return buf[k];};
         inline const mha_real_t& operator[](unsigned int k) const {return buf[k];};
