@@ -1,0 +1,31 @@
+---
+layout: post
+title:  "openMHA 4.8.0 available"
+date:   2019-01-23 18:00:00
+category: software
+tags: [release, 4.8.0]
+---
+
+With __openMHA 4.8.0__ installer packages for Windows and macOS are available for 
+[download](https://github.com/HoerTech-gGmbH/openMHA/releases/latest). Further 
+information about the installers as well as instructions to include binary packages 
+for Ubuntu Linux are found in the [openMHA installation manual](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md).
+
+[Compilation instructions](https://github.com/HoerTech-gGmbH/openMHA/blob/master/COMPILATION.md)
+for all operating systems are provided in a separate document.
+
+
+Furthermore the [documentation of openMHA plugins](https://github.com/HoerTech-gGmbH/openMHA/blob/master/openMHA_plugins.pdf) 
+has been updated. In addition to the main categories, tags were assigned to each
+plugin to facilitate the selection of plugins.
+
+A processing power optimized frequency shifter was added for operation on portable
+hardware like ARM-based single board computers.
+
+Several other fixes and updates for enhanced documentation, robustness and test 
+procedures are included.
+
+
+
+
+
