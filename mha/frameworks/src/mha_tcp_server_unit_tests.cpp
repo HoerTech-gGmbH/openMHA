@@ -20,6 +20,7 @@
 #include <asio/read.hpp>
 #include <asio/write.hpp>
 #include <thread>
+#include <mutex>
 
 using mha_tcp::server_t;
 
@@ -334,6 +335,8 @@ TEST(server_test, server_shutdown_refuses_connections)
 
 TEST(server_test, server_shutdown_closes_connection_for_reading)
 {
+  // This derived class counts the number of received lines, and always
+  // returns true from on_received_line to receive more lines.
   class count_server_t : public server_t {
   public:
     size_t received_msg = 0;
@@ -343,23 +346,29 @@ TEST(server_test, server_shutdown_closes_connection_for_reading)
     {return ++received_msg;}
   };
 
+  // We need two threads in this test, one that executes the server's event
+  // loop, and the main thread which sends data to the server over TCP.
+  // This mutex is used to synchronize the server shutdown between threads
+  std::mutex mutex;
+
   count_server_t server("127.0.0.1",any_port);
   auto endpoints = asio::ip::tcp::resolver(server.get_context()).
     resolve("127.0.0.1", std::to_string(server.get_port()));
   asio::ip::tcp::socket client(server.get_context());
   asio::connect(client, endpoints);
-  std::thread thread([&server](){server.run();});
+  std::thread thread([&server,&mutex](){mutex.lock();server.run();});
   ASSERT_EQ(0U, server.received_msg);
   client.send(asio::const_buffer("\n", 1U));
   mha_msleep(50); // synchronize by sleeping, only ok for a test like this.
   ASSERT_EQ(1U, server.received_msg);
   // execute shutdown in the event loop thread to avoid synchronization issues
-  asio::post(server.get_context(),[&server](){server.shutdown();});
-  mha_msleep(500);
+  asio::post(server.get_context(),[&server,&mutex]()
+             {server.shutdown();mutex.unlock();});
+  mutex.lock(); // Makes us wait until server.shutdown() has executed.
   client.send(asio::const_buffer("\n", 1U));
-  mha_msleep(50);
-  ASSERT_EQ(1U, server.received_msg);
   thread.join();
+  mutex.unlock();
+  ASSERT_EQ(1U, server.received_msg);
 }
 
 // Local Variables:
