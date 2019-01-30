@@ -20,7 +20,6 @@
 #include <asio/read.hpp>
 #include <asio/write.hpp>
 #include <thread>
-#include <mutex>
 
 using mha_tcp::server_t;
 
@@ -331,47 +330,6 @@ TEST(server_test, server_shutdown_refuses_connections)
   t.async_wait([&server](const asio::error_code&)
                {server.get_context().stop();});
   server.run();
-}
-
-TEST(server_test, server_shutdown_closes_connection_for_reading)
-{
-  // This derived class counts the number of received lines, and always
-  // returns true from on_received_line to receive more lines.
-  class count_server_t : public server_t {
-  public:
-    size_t received_msg = 0;
-    using server_t::server_t; // constructor is unmodified
-    bool on_received_line(std::shared_ptr<mha_tcp::buffered_socket_t>,
-                          const std::string & line) override
-    {return ++received_msg;}
-  };
-
-  // We need two threads in this test, one that executes the server's event
-  // loop, and the main thread which sends data to the server over TCP.
-  // This mutex is used to synchronize the server shutdown between threads
-  std::mutex mutex;
-
-  count_server_t server("127.0.0.1",any_port);
-  auto endpoints = asio::ip::tcp::resolver(server.get_context()).
-    resolve("127.0.0.1", std::to_string(server.get_port()));
-  asio::ip::tcp::socket client(server.get_context());
-  asio::connect(client, endpoints);
-  std::thread thread([&server,&mutex](){mutex.lock();server.run();});
-  ASSERT_EQ(0U, server.received_msg);
-  client.send(asio::const_buffer("\n", 1U));
-  mha_msleep(50); // synchronize by sleeping, only ok for a test like this.
-  ASSERT_EQ(1U, server.received_msg);
-  // execute shutdown in the event loop thread to avoid synchronization issues
-  asio::post(server.get_context(),[&server,&mutex]()
-             {server.shutdown();mutex.unlock();});
-  mutex.lock(); // Makes us wait until server.shutdown() has executed.
-  client.send(asio::const_buffer("\n", 1U));
-  thread.join();
-  mutex.unlock();
-#ifndef _WIN32
-  // On windows, shutting down a TCP connection in one direction is unreliable
-  ASSERT_EQ(1U, server.received_msg);
-#endif
 }
 
 // Local Variables:
