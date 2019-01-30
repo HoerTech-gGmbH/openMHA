@@ -355,7 +355,7 @@ TEST(server_test, server_shutdown_closes_connection_for_reading)
   ASSERT_EQ(1U, server.received_msg);
   // execute shutdown in the event loop thread to avoid synchronization issues
   asio::post(server.get_context(),[&server](){server.shutdown();});
-  mha_msleep(50);
+  mha_msleep(500);
   client.send(asio::const_buffer("\n", 1U));
   mha_msleep(50);
   ASSERT_EQ(1U, server.received_msg);
