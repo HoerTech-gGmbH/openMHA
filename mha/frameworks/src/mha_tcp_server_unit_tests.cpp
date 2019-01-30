@@ -368,7 +368,10 @@ TEST(server_test, server_shutdown_closes_connection_for_reading)
   client.send(asio::const_buffer("\n", 1U));
   thread.join();
   mutex.unlock();
+#ifndef _WIN32
+  // On windows, shutting down a TCP connection in one direction is unreliable
   ASSERT_EQ(1U, server.received_msg);
+#endif
 }
 
 // Local Variables:
