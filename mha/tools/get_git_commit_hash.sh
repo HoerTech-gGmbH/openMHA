@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# We cache the git commit hash and if any file in git is modified so that we do
+# not have to ask git for every compiler invocation, which is slow on windows
+
 maximum_cache_age_in_minutes=1
 directory="$(dirname $0)"
 git_commit_hash_cache_file="$directory"/git_commit_hash.txt
@@ -14,7 +17,10 @@ function ask_git() {
     echo $(ask_git_for_hash)$(ask_git_if_modified)
 }
 function write_commit_hash_into_cache_file() {
-    echo $(ask_git) >"$git_commit_hash_cache_file"
+    tempfile="$(mktemp "$git_commit_hash_cache_file.XXXX")"
+    echo $(ask_git) >"$tempfile"
+    # At least on Linux and MacOS >= Lion, mv is atomic.
+    mv "$tempfile" "$git_commit_hash_cache_file"
 }
 function does_cache_file_exist() {
     test -f "$git_commit_hash_cache_file"
@@ -26,7 +32,7 @@ function is_cache_file_too_old() {
     # only useful result if file exists
     # then it returs success if the file is too old, failure if it is recent
     test $(find "$git_commit_hash_cache_file" \
-		-mmin +$maximum_cache_age_in_minutes)
+                -mmin +$maximum_cache_age_in_minutes)
 }
 function do_we_have_to_ask_git() {
     is_cache_file_missing || is_cache_file_too_old
