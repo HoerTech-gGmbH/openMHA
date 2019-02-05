@@ -18,7 +18,7 @@ include ../magic.mk
 
 EXTERNAL_LIBS=$(realpath .)
 
-TARGETS = fftw.is_installed
+TARGETS = fftw.is_installed network-asio.is_installed
 
 include ../rules.mk
 
@@ -110,6 +110,18 @@ $(BUILD_DIR)/googlemock.is_installed: googletest/WORKSPACE \
 
 googletest/WORKSPACE:
 	git clone https://github.com/google/googletest
+
+
+network-asio: $(BUILD_DIR)/network-asio.is_installed
+
+$(BUILD_DIR)/network-asio.is_installed: network-asio/.gitignore \
+	$(BUILD_DIR)/include/.directory
+	cp -a network-asio/asio/include/asio* $(BUILD_DIR)/include/
+	touch $@
+
+network-asio/.gitignore:
+	git clone https://github.com/chriskohlhoff/asio network-asio
+	cd network-asio && git checkout 22afb86 # release 1.12.2
 
 # Local Variables:
 # compile-command: "make"

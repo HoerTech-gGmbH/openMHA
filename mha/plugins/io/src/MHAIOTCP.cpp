@@ -14,11 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifdef MHA_STATIC_PLUGINS
-#include "../../../frameworks/src/mha_tcp.hh"
-#else
-#include "../../../frameworks/src/mha_tcp.cpp"
-#endif
+#include "mha_tcp.hh"
 
 #include <cassert>
 #include <cstdio>

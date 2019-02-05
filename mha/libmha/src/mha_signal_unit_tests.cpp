@@ -371,7 +371,7 @@ struct polyphase_parameters_t params[] = {
   {   1U,     3U,     0.85f,   219U, 1U,      34U,                  94U},
 };
 
-INSTANTIATE_TEST_CASE_P(InstantiationName, test_underflow_t, ::testing::ValuesIn(params));
+INSTANTIATE_TEST_SUITE_P(InstantiationName, test_underflow_t, ::testing::ValuesIn(params));
                         
 
 TEST(polyphase_resampling_t,readable_frames) {

@@ -16,8 +16,6 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-#SUBDIRS = jack_client
-
 PLUGINS = MHAIOFile MHAIOParser MHAIOPortAudio MHAIOTCP 
 
 ifeq "$(WITH_JACK)" "yes"
@@ -39,7 +37,6 @@ LDLIBS += -l$(MHATOOLBOX_NAME)
 
 $(BUILD_DIR)/MHAIOJack$(PLUGIN_EXT): $(BUILD_DIR)/mhajack.o
 $(BUILD_DIR)/MHAIOJack$(PLUGIN_EXT): LDLIBS += $(JACK_LINKER_COMMAND)
-#$(BUILD_DIR)/mhajack.o $(BUILD_DIR)/MHAIOJack.o $(BUILD_DIR)/MHAIOJackdb.o $(BUILD_DIR)/test_jack_server.o: CXXFLAGS+= -std=c++98
 
 $(BUILD_DIR)/MHAIOJackdb$(PLUGIN_EXT): $(BUILD_DIR)/mhajack.o
 $(BUILD_DIR)/MHAIOJackdb$(PLUGIN_EXT): LDLIBS += $(JACK_LINKER_COMMAND)
@@ -51,6 +48,7 @@ $(BUILD_DIR)/MHAIOPortAudio$(PLUGIN_EXT): LDLIBS += -lportaudio
 
 $(BUILD_DIR)/MHAIOalsa$(PLUGIN_EXT): LDLIBS += -lasound
 
+$(BUILD_DIR)/MHAIOTCP$(PLUGIN_EXT): $(BUILD_DIR)/mha_tcp.o
 ifeq ($(PLATFORM),MinGW)
 $(BUILD_DIR)/MHAIOTCP$(PLUGIN_EXT): LDLIBS += -lws2_32
 endif

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -38,10 +38,14 @@ def openmha_build_steps(stage_name) {
   // Avoid that artifacts from previous builds influence this build
   sh "git reset --hard && git clean -ffdx"
 
-  // Install pre-compiled external libraries
-  copyArtifacts(projectName: "openMHA/external_libs/external_libs_$BRANCH_NAME",
-                selector: lastSuccessful())
-  sh "tar xvzf external_libs.tgz"
+  // Install pre-compiled external libraries for the common branches
+  if ("$BRANCH_NAME" == "development" || "$BRANCH_NAME" == "master") {
+    copyArtifacts(projectName:
+                    "openMHA/external_libs/external_libs_$BRANCH_NAME",
+                  selector:
+                    lastSuccessful())
+    sh "tar xvzf external_libs.tgz"
+  }
 
   // if we notice any differences between the sources of the precompiled
   // dependencies and the current sources, we cannot help but need to recompile
@@ -144,12 +148,11 @@ pipeline {
                 // creates an apt repository, uploads.
                 sh "make"
 
-                // For now, make the windows installer available in a tar file that we publish
-                // as a Jenkins artifact
+                // Publish windows installer on the web and as a Jenkins artifact
                 unstash "x86_64_windows"
-                sh "tar cvzf windows-installer.tar.gz mha/tools/packaging/exe"
-                archiveArtifacts 'windows-installer.tar.gz'
-		sh "echo put mha/tools/packaging/exe/*.exe openMHA/apt-repositories/$BRANCH_NAME/windows/ | sftp p35492077-mha@home89585951.1and1-data.host"
+                archiveArtifacts 'mha/tools/packaging/exe/*.exe'
+                sh "echo 'Options +Indexes' >.htaccess"
+		sh "(echo mkdir openMHA/apt-repositories/$BRANCH_NAME/windows; echo put mha/tools/packaging/exe/*.exe openMHA/apt-repositories/$BRANCH_NAME/windows/; echo put .htaccess openMHA/apt-repositories/$BRANCH_NAME/windows/) | sftp p35492077-mha@home89585951.1and1-data.host"
             }
         }
     }
