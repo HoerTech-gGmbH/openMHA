@@ -57,9 +57,11 @@ def openmha_build_steps(stage_name) {
   // On linux, we also create debian packages
   def linux = (system != "windows" && system != "mac")
   def windows = (system == "windows")
+  def mac = (system == "mac")
   def debs = linux ? " deb" : ""
+  def pkgs = mac ? " pkg" : ""
   def exes = windows ? " exe" : ""
-  sh ("make -j $cpus install unit-tests" + debs + exes)
+  sh ("make -j $cpus install unit-tests" + debs + exes + pkgs)
 
   // The system tests perform timing measurements which may fail when
   // system load is high. Retry in that case, up to 2 times.
@@ -73,6 +75,11 @@ def openmha_build_steps(stage_name) {
   if (windows) {
     // Store windows installer packets for later retrieval by the repository manager
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/exe/'
+    }
+
+  if (mac) {
+    // Store mac installer packets for later retrieval by the repository manager
+    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/pkg/'
   }
 }
 
@@ -147,6 +154,11 @@ pipeline {
                 // Copies the new debs to the stash of existing debs,
                 // creates an apt repository, uploads.
                 sh "make"
+
+
+                // Publish mac installer as a Jenkins artifact
+                unstash "x86_64_mac"
+                archiveArtifacts 'mha/tools/packaging/pkg/*pkg'
 
                 // Publish windows installer on the web and as a Jenkins artifact
                 unstash "x86_64_windows"
