@@ -320,7 +320,7 @@ TEST(server_test, server_shutdown_refuses_connections)
 
   // cannot connect anymore
   asio::async_connect(client, endpoints,
-                      [&client](const asio::error_code & ec,
+                      [](const asio::error_code & ec,
                          const asio::ip::tcp::endpoint &) {
                         ASSERT_TRUE(ec); // non-zero error code
                       });
