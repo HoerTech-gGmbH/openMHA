@@ -48,7 +48,7 @@ mha_spec_t *fshift::fshift_config_t::process(mha_spec_t *in)
       }
     }
     else{
-      for(unsigned fr=kmax; fr-->kmin;){
+      for(unsigned fr=kmax; (fr+1)>kmin; --fr){
         int idx=fr+df;
         if(idx<static_cast<int>(in->num_frames) and idx>=0){
           value(in,idx,ch)+=value(in,fr,ch)*delta_phi_total;
