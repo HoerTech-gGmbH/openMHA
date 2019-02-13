@@ -132,13 +132,11 @@ pipeline {
                 }
             }
         }
-        stage("publish") {
+        stage("artifacts") {
             agent {label "aptly"}
             // do not publish packages for any branches except these
             when { anyOf { branch 'master'; branch 'development' } }
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: "$BRANCH_NAME"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: "$GIT_URL-aptly"]]])
-
                 // receive all deb packages from openmha build
                 unstash "x86_64_bionic"
                 unstash "x86_64_xenial"
@@ -153,7 +151,7 @@ pipeline {
 
                 // Copies the new debs to the stash of existing debs,
                 // creates an apt repository, uploads.
-                sh "make"
+                sh "make storage"
 
 
                 // Publish mac installer as a Jenkins artifact
@@ -163,8 +161,8 @@ pipeline {
                 // Publish windows installer on the web and as a Jenkins artifact
                 unstash "x86_64_windows"
                 archiveArtifacts 'mha/tools/packaging/exe/*.exe'
-                sh "echo 'Options +Indexes' >.htaccess"
-		sh "(echo mkdir openMHA/apt-repositories/$BRANCH_NAME/windows; echo put mha/tools/packaging/exe/*.exe openMHA/apt-repositories/$BRANCH_NAME/windows/; echo put .htaccess openMHA/apt-repositories/$BRANCH_NAME/windows/) | sftp p35492077-mha@home89585951.1and1-data.host"
+
+                build job: "/hoertech-aptly/$BRANCH_NAME", quietPeriod: 300, wait: false
             }
         }
     }
@@ -175,8 +173,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-//            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
-            mail to: 't.herzke@hoertech.de',
+            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }
