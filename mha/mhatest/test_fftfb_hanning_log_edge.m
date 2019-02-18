@@ -39,6 +39,8 @@ function test_fftfb_hanning_log_edge
   dsc.mha.fftfilterbank.plateau = 0.9;  
     
   mha = mha_start();
+  unittest_teardown(@mha_set, mha, 'cmd', 'quit');
+
   mha_set(mha,'',dsc);
   mha_set(mha,'mha.prepare',true);
   %mha_query(mha,'','')
@@ -71,5 +73,3 @@ function test_fftfb_hanning_log_edge
   %figure, plot([expected_sum, output_signal_sum])
   
   assert_difference_below(expected_sum, output_signal_sum, 1.4e-5);
-
-  
