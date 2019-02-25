@@ -133,36 +133,50 @@ pipeline {
             }
         }
         stage("artifacts") {
-            agent {label "aptly"}
-            // do not publish packages for any branches except these
-            when { anyOf { branch 'master'; branch 'development' } }
-            steps {
-                // receive all deb packages from openmha build
-                unstash "x86_64_bionic"
-                unstash "x86_64_xenial"
-                unstash "x86_64_trusty"
-                unstash "armv7_bionic"
-                unstash "armv7_xenial"
-                // We can also build for 32 bits. Deactivated to save
-                // CPU cycles on Jenkins server.
-                // unstash "i686_bionic"
-                // unstash "i686_xenial"
-                // unstash "i686_trusty"
+            parallel {
+                stage("debian packages for apt") {
+                    agent {label "aptly"}
+                    // do not publish packages for any branches except these
+                    when { anyOf { branch 'master'; branch 'development' } }
+                    steps {
+                        // receive all deb packages from openmha build
+                        unstash "x86_64_bionic"
+                        unstash "x86_64_xenial"
+                        unstash "x86_64_trusty"
+                        unstash "armv7_bionic"
+                        unstash "armv7_xenial"
+                        // We can also build for 32 bits. Deactivated to save
+                        // CPU cycles on Jenkins server.
+                        // unstash "i686_bionic"
+                        // unstash "i686_xenial"
+                        // unstash "i686_trusty"
 
-                // Copies the new debs to the stash of existing debs,
-                // creates an apt repository, uploads.
-                sh "make storage"
+                        // Copies the new debs to the stash of existing debs,
+                        sh "make storage"
+                        build job:         "/hoertech-aptly/$BRANCH_NAME",
+                              quietPeriod: 300,
+                              wait:        false
+                    }
+                }
+                stage("jenkins artifacts") {
+                    steps {
+                        // Publish mac installer as a Jenkins artifact
+                        unstash "x86_64_mac"
+                        archiveArtifacts 'mha/tools/packaging/pkg/*pkg'
 
+                        // Publish windows installer as a Jenkins artifact
+                        unstash "x86_64_windows"
+                        archiveArtifacts 'mha/tools/packaging/exe/*.exe'
 
-                // Publish mac installer as a Jenkins artifact
-                unstash "x86_64_mac"
-                archiveArtifacts 'mha/tools/packaging/pkg/*pkg'
-
-                // Publish windows installer on the web and as a Jenkins artifact
-                unstash "x86_64_windows"
-                archiveArtifacts 'mha/tools/packaging/exe/*.exe'
-
-                build job: "/hoertech-aptly/$BRANCH_NAME", quietPeriod: 300, wait: false
+                        // Publish debian packages as Jenkins artifacts
+                        unstash "x86_64_bionic"
+                        unstash "x86_64_xenial"
+                        unstash "x86_64_trusty"
+                        unstash "armv7_bionic"
+                        unstash "armv7_xenial"
+                        archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
+                    }
+                }
             }
         }
     }
