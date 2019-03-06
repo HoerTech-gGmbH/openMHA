@@ -34,9 +34,9 @@ pipeline {
                 // Autodetect libs/compiler
                 sh "./configure"
 
-                sh ("make doc")
+                sh ("yes n | make doc")
 
-                archiveArtifacts 'mha/doc'
+                archiveArtifacts 'mha/doc/**/*'
             }
         }
     }
