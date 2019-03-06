@@ -1,0 +1,56 @@
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// Copyright © 2018 2019 HörTech gGmbH
+//
+// openMHA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, version 3 of the License.
+//
+// openMHA is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License, version 3 for more details.
+//
+// You should have received a copy of the GNU Affero General Public License, 
+// version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+pipeline {
+    agent {label "bionic && x86_64 && mhadoc"}
+    stages {
+        stage("build") {
+            steps {
+                // Avoid that artifacts from previous builds influence this build
+                sh "git reset --hard && git clean -ffdx"
+
+                copyArtifacts(projectName:
+                               "openMHA/external_libs/external_libs_development",
+                              selector:
+                               lastSuccessful())
+                sh "tar xvzf external_libs.tgz"
+
+                // if we notice any differences between the sources of the precompiled
+                // dependencies and the current sources, we cannot help but need to recompile
+                sh "git diff --exit-code || (git reset --hard && git clean -ffdx)"
+
+                // Autodetect libs/compiler
+                sh "./configure"
+
+                sh ("make doc")
+
+                archiveArtifacts 'mha/doc'
+            }
+        }
+    }
+
+    // Email notification on failed build taken from
+    // https://jenkins.io/doc/pipeline/tour/post/
+    // multiple recipients are comma-separated:
+    // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
+    post {
+        failure {
+//            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
+            mail to: 't.herzke@hoertech.de',
+            subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+            body: "Something is wrong with ${env.BUILD_URL}"
+        }
+    }
+}
