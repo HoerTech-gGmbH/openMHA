@@ -36,7 +36,7 @@ wavwrite(input_signal', 44100, 32, output_filename);
 unittest_teardown(@delete, output_filename);
 
 fftlen = [512 512 512 500 162 128 364 364 364];
-wndlen = [400 400 411 300 128  64 128 128 128];
+wndlen = [400 400 402 280 128  64 128 128 128];
 wndshift=[200 100 201 140  64  32  64  64  64];
 wndpos = [0.5 0.5 0.5 0.5 0.5 0.5 0.5   0   1];
 wndexp = [  1   1   1   1   1   1   1   1   1];

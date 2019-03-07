@@ -15,6 +15,7 @@
 
 #include <mha_plugin.hh>
 #include <mha_signal.hh>
+#include <mha_utils.hh>
 #include <math.h>
 #include <mha_events.h>
 #include <mhapluginloader.h>
@@ -239,6 +240,9 @@ void overlapadd_if_t::prepare(mhaconfig_t& t)
         throw MHA_ErrorMsg("overlapadd: waveform input is required.");
     t.fftlen = nfft.data;
     t.wndlen = nwnd.data;
+    if(!MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize) or t.wndlen==t.fragsize)
+        throw MHA_Error(__FILE__,__LINE__,"overlapadd: The ratio of the fragsize (%d)"
+                        " and the window length (%d) must be a power of two.", t.fragsize, t.wndlen);
     if( t.fragsize > t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
                         "overlapadd: The fragment size (%d) is greater than the window size (%d).",

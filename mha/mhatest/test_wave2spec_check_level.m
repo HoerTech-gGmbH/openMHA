@@ -19,7 +19,7 @@ function test_wave2spec_check_level
   
   % Two different combination of STFT parameters
   stft_parameters = [struct('fftlen', 800, 'wndlen', 600, 'fragsize', 300)
-                     struct('fftlen', 27, 'wndlen', 27, 'fragsize', 18)];
+                     struct('fftlen', 36, 'wndlen', 36, 'fragsize', 18)];
 
   for stft_index = 1:size(stft_parameters, 1)
     

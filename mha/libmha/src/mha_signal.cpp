@@ -2730,7 +2730,6 @@ void MHASignal::copy_permuted(mha_wave_t* dest,const mha_wave_t* src)
     }
 }
 
-   
 // Local Variables:
 // compile-command: "make -C .."
 // c-basic-offset: 4

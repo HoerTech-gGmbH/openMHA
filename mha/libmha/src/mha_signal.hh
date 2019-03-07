@@ -31,6 +31,7 @@
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <type_traits>
 #include "mha_parser.hh"
 
 // some platforms do not define M_PI in <cmath>
@@ -2287,10 +2288,7 @@ namespace MHASignal {
        num_channels must be exchanged in dest.
      */
     void copy_permuted(mha_wave_t* dest,const mha_wave_t* src);
-
-
 }
-
 #endif
 
 // Local Variables:
