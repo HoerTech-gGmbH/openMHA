@@ -100,8 +100,8 @@ exe: unit-tests
 pkg: install
 	$(MAKE) -C mha/tools/packaging/pkg all
 
-release: test unit-tests
-	@./mha/tools/release.sh
+release: test unit-tests install
+	@./mha/tools/release.sh openMHA # 'openMHA' is passed to prevent user from calling script accidentally
 
 # Inter-module dependencies. Required for parallel building (e.g. make -j 4)
 mha/libmha: external_libs
