@@ -45,7 +45,7 @@ function test_wave2spec_check_level
       level_wave = mha_get(mha, 'mha.level_wave.level_db');
       level_spec = mha_get(mha, 'mha.level_spec.level_db');
       assert_almost(level_wave, level_spec, 1e-7);
-      assert_almost(93.9794, level_wave, 1e-7);
+      assert_almost(93.9794, level_wave, 1e-6);
     end
   end
 end
