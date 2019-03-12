@@ -1,8 +1,5 @@
-% Test dc plugin;
-% Regression test for T435;
-%;
 % This file is part of the HörTech Open Master Hearing Aid (openMHA);
-% Copyright © 2018 HörTech gGmbH;
+% Copyright © 2018 2019 HörTech gGmbH;
 
 % openMHA is free software: you can redistribute it and/or modify;
 % it under the terms of the GNU Affero General Public License as published by;
@@ -16,7 +13,9 @@
 % You should have received a copy of the GNU Affero General Public License, ;
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.;
 
-function test_dc();
+% Test dc plugin: Regression test for T435:
+% dc time constants can be changed during processing
+function test_dc_mutable_timeconstants();
   % basic mha config for 2 channel dc;
   desc.instance = 'test_dc';
   desc.nchannels_in = 1;
@@ -48,13 +47,17 @@ function test_dc();
   % ensure MHA is exited after the test;
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
 
+  % time constants can be changed while in prepared mode:
   mha_set(mha,'cmd','start');
   mha_set(mha,'mha.mhachain.dc.tau_attack',[0.25 0.25]);
   mha_set(mha,'mha.mhachain.dc.tau_decay',[5 5]);
+
+  % time constants can be changed during processing:
   mha_set(mha,'io.input',zeros(1,desc.fragsize));
-  mha_get(mha,'io.output');
-  mha_set(mha,'mha.mhachain.dc.tau_attack',[0.25 0.25]);
-  mha_set(mha,'mha.mhachain.dc.tau_decay',[5 5]);
+  mha_set(mha,'mha.mhachain.dc.tau_attack',[0.005 0.005]);
+  mha_set(mha,'mha.mhachain.dc.tau_decay',[0.1 0.1]);
+
+  % Test is successful when no error was raised when setting time constants
 end;
 
 % Local Variables:;
