@@ -16,11 +16,14 @@
 
 #include "mha_tcp_server.hh"
 #include "mhafw_lib.h"
+#include "mha_utils.hh"
 #include <getopt.h>
 #include <fstream>
 #include <unistd.h>
 #include <asio/connect.hpp>
 #include <asio/write.hpp>
+#include <asio/read_until.hpp>
+#include <thread>
 
 #ifdef _WIN32
 #define getpid(x) _getpid(x)
@@ -69,6 +72,14 @@ public:
     virtual std::string on_received_line(const std::string & line);
     /** Notification: "TCP port is open" */
     virtual void acceptor_started();
+    /** sends an announcement which port this MHA is listening on to the creator of the
+        process. See command line option --announce */
+    virtual void send_port_announcement();
+    /** Starts a separate thread that reads lines from stdin and forwards these lines over
+        TCP to the MHA configuration thread which multiplexes multiple TCP connections.
+        Enables users to type mha configuration language commands directly into the terminal
+        where MHA was started, without the need to use third-party tools like nc or putty. */
+    virtual void start_stdin_thread();
     /** If set to nonzero, the spawning process has asked to be notified
         of the TCP port used by this process. */
     virtual void set_announce_port(unsigned short announce_port);
@@ -108,6 +119,75 @@ inline void mhaserver_t::logstring(const std::string& s)
 void mhaserver_t::acceptor_started()
 {
     port.data = tcpserver->get_port();
+    if (announce_port != 0)
+        send_port_announcement();
+    start_stdin_thread();
+}
+
+
+void mhaserver_t::start_stdin_thread()
+{
+    using MHAUtils::strip;
+    using MHAUtils::remove;
+    std::thread stdin_thread([this](){
+            std::string stdin_line;
+            asio::io_context terminal_context;
+            asio::ip::tcp::socket terminal_connection(terminal_context);
+            try{
+                auto server_endpoints=
+                    asio::ip::tcp::resolver(terminal_context).resolve(tcpserver->get_endpoint());
+                asio::connect(terminal_connection, server_endpoints);
+            }
+            catch(std::exception& e){
+                std::cerr<<"Caught exception during connection to stdin:\n"<<e.what()<<'\n';
+                logstring("Caught exception during connection to stdin:\n"+std::string(e.what())+'\n');
+                exit(1);
+            }
+            catch(...){
+                std::cerr<<"Caught unkown exception during connection to stdin.\n";
+                logstring("Caught unkown exception during connection to stdin.\n");
+                exit(1);
+            }
+            asio::streambuf streambuf;
+            unsigned nlines=1U;
+            auto read_until_prompt = [&](){
+                std::string response_line;
+                while (strip(response_line) != strip(ack_fail) && strip(response_line) != strip(ack_ok)) {
+                    asio::read_until(terminal_connection, streambuf, '\n');
+                    std::istream istream(&streambuf);
+                    std::getline(istream, response_line);
+                    response_line=strip(response_line);
+                    printf("%s\n", response_line.c_str());
+                }
+            };
+
+            std::cout<<"mha ["<<nlines++<<"] ";
+            while (std::getline(std::cin, stdin_line).good()) {
+                if(stdin_line.size() and stdin_line[0]=='#'){
+                    continue;
+                }
+                stdin_line=strip(stdin_line);
+                // special case: If we do not handle this, we'd try to
+                // send an exit request twice, but mha might have already
+                // closed the connection
+                if(remove(stdin_line,' ').find("cmd=quit")!=stdin_line.npos){
+                    break;
+                }
+                stdin_line+='\n';
+                asio::write(terminal_connection, asio::buffer(stdin_line));
+                read_until_prompt();
+                if(remove(stdin_line,' ').find("cmd=quit")==stdin_line.npos and not std::cin.eof()){
+                    std::cout<<"mha ["<<nlines++<<"] ";
+                }
+            }
+            asio::write(terminal_connection, asio::buffer("cmd=quit\n"));
+            read_until_prompt();
+        });
+    stdin_thread.detach();
+}
+
+void mhaserver_t::send_port_announcement()
+{
     if (announce_port == 0) {
         // nothing to announce
         return;
