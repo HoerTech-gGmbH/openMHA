@@ -162,8 +162,8 @@ namespace mha_tcp {
                     connection->shutdown(asio::ip::tcp::socket::shutdown_receive);
                 }
                 catch(asio::system_error& e){
-                    if(e.what()==std::string("shutdown: Socket is not connected")){}
-                    else throw;
+                    // Errors during connection shutdown can be safely ignored as we are shutting
+                    // down anyway
                 }
             }
         }
