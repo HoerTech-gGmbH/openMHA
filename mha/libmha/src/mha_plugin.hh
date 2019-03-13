@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2011 2012 2013 HörTech gGmbH
-// Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2014 2015 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -89,7 +89,7 @@ namespace MHAPlugin {
     protected:
         runtime_cfg_t* cfg;
         runtime_cfg_t* poll_config();
-        runtime_cfg_t* last_config();
+        runtime_cfg_t* peek_config() const;
         void push_config( runtime_cfg_t * ncfg );
         void cleanup_unused_cfg();
     private:
@@ -200,34 +200,20 @@ template < class runtime_cfg_t > MHAPlugin::config_t < runtime_cfg_t >::~config_
     }
 }
 
-/** \brief Receive the latest run time configuration
-            
-    This function stores the latest run time configuration into
-    the protected class member variable `cfg'. If no configuration
-    exists, then an exception will be thrown. If no changes
-    occured, then the value of `cfg' will be untouched. This
-    function may be called instead of poll_config.
 
-    The difference between poll_config and last_config is that
-    poll_config marks previous configurations as ready for deletion,
-    while this function does not.  Therefore, memory usage of all
-    runtime configurations will accumulate if only this function is
-    called, but it enables safe access to previous runtime
-    configurations.
+/** \brief Receive the latest run time configuration without changing the configuration pointer
 
-    Also, last_config does not raise an Exception when the latest run
-    time configuration is NULL.
+    This function retrieves the latest run time configuration. 
 */
-template < class runtime_cfg_t > runtime_cfg_t* MHAPlugin::config_t < runtime_cfg_t >::last_config(  )
+template < class runtime_cfg_t > runtime_cfg_t* MHAPlugin::config_t < runtime_cfg_t >::peek_config(  ) const
 {
-    if (cfg_chain_current == 0)
-      cfg_chain_current = cfg_chain;
-
-    while( cfg_chain_current->next ) {
-        cfg_chain_current = cfg_chain_current->next;
+    auto res=cfg_chain_current;
+    if (res == nullptr)
+        res = cfg_chain;
+    while( res && res->next ) {
+        res = res->next;
     }
-    cfg = cfg_chain_current->data;
-    return cfg;
+    return res ? res->data : nullptr;
 }
 
 /** \brief Receive the latest run time configuration
