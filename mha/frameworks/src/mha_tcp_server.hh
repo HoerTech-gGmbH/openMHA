@@ -85,14 +85,7 @@ namespace mha_tcp {
          *          return the port that the operating system has selected. */
         uint16_t get_port() const;
 
-        /** @return The local endpoint of the acceptor. */
-        asio::ip::tcp::endpoint get_endpoint() const;
-
-        /** @return The ip adress that the server is bound to. */
-        asio::ip::address get_address() const;
-
-        /** @return the number of TCP connections that ha
-            ve been accepted */
+        /** @return the number of TCP connections that have been accepted */
         size_t get_num_accepted_connections() const;
 
         /** Accepts connections on the TCP port and serves them.  Triggers

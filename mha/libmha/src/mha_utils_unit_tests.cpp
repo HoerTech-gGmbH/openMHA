@@ -59,21 +59,7 @@ TEST(is_power_of_two, false){
   EXPECT_FALSE(is_power_of_two(8388607U));
   EXPECT_FALSE(is_power_of_two(67108863U));
   EXPECT_FALSE(is_power_of_two(15U));
-
 }
-
-using MHAUtils::strip;
-TEST(strip, strip){
-  EXPECT_EQ(strip(""),"");
-  EXPECT_EQ(strip("\r"),"");
-  EXPECT_EQ(strip("\n"),"");
-  EXPECT_EQ(strip("\n\r"),"");
-  EXPECT_EQ(strip("\r\n"),"");
-  EXPECT_EQ(strip("\r\nfoo"),"\r\nfoo");
-  EXPECT_EQ(strip("nolineendinghere"),"nolineendinghere");
-  EXPECT_EQ(strip("foo baz bar \n"),"foo baz bar");
-}
-
 
 // Local Variables:
 // compile-command: "make -C .. unit-tests"
