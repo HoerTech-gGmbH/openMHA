@@ -24,7 +24,7 @@
 class wavwriter_t {
 public:
     wavwriter_t(bool active,const mhaconfig_t& cf,unsigned int fifosize,unsigned int minwrite,
-                const std::string& prefix,bool use_date, unsigned id_);
+                const std::string& prefix,bool use_date);
     ~wavwriter_t();
     void process(mha_wave_t*);
     void exit_request();
@@ -33,7 +33,6 @@ private:
     void write_thread();
     void create_soundfile(const std::string& prefix, bool use_date);
     std::atomic<bool> close_session;
-    unsigned id;
     bool act_;
     mhaconfig_t cf_;
     SNDFILE* sf;
@@ -57,7 +56,6 @@ private:
     MHAParser::string_t prefix;
     MHAParser::bool_t use_date;
     MHAEvents::patchbay_t<wavrec_t> patchbay;
-    unsigned id;
 };
 
 wavrec_t::wavrec_t(const algo_comm_t& iac,const std::string&,const std::string& algo_name)
@@ -67,8 +65,7 @@ wavrec_t::wavrec_t(const algo_comm_t& iac,const std::string&,const std::string& 
       fifolen("Length of FIFO in samples","262144","[2,]"),
       minwrite("Minimal write length (must be less then fifolen)","65536","[1,]"),
       prefix("Path (including path delimiter) and file prefix",""),
-      use_date("Use date and time (yes), or only prefix (no)","yes"),
-      id(0U)
+      use_date("Use date and time (yes), or only prefix (no)","yes")
 {
     // make the plug-in findable via "?listid"
     set_node_id(algo_name);
@@ -104,7 +101,7 @@ void wavrec_t::start_new_session()
     auto latest_cfg=peek_config();
     if(latest_cfg)
         latest_cfg->exit_request();
-    push_config(new wavwriter_t(record.data,input_cfg(),fifolen.data,minwrite.data,prefix.data,use_date.data,id++));
+    push_config(new wavwriter_t(record.data,input_cfg(),fifolen.data,minwrite.data,prefix.data,use_date.data));
 }
 
 void wavwriter_t::create_soundfile(const std::string& prefix, bool use_date)
@@ -141,9 +138,8 @@ void wavwriter_t::create_soundfile(const std::string& prefix, bool use_date)
 }
 
 wavwriter_t::wavwriter_t(bool active,const mhaconfig_t& cf,unsigned int fifosize,unsigned int minwrite,
-                         const std::string& prefix, bool use_date, unsigned id_)
+                         const std::string& prefix, bool use_date)
     : close_session(false),
-      id(id_),
       act_(active),
       cf_(cf),
       sf(NULL),
