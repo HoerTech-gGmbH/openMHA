@@ -38,14 +38,11 @@ def openmha_build_steps(stage_name) {
   // Avoid that artifacts from previous builds influence this build
   sh "git reset --hard && git clean -ffdx"
 
+  // Save time by using precompiled external libs if possible.
   // Install pre-compiled external libraries for the common branches
-  if ("$BRANCH_NAME" == "development" || "$BRANCH_NAME" == "master") {
-    copyArtifacts(projectName:
-                    "openMHA/external_libs/external_libs_$BRANCH_NAME",
-                  selector:
-                    lastSuccessful())
-    sh "tar xvzf external_libs.tgz"
-  }
+  copyArtifacts(projectName: "openMHA/external_libs/external_libs_development",
+                selector:    lastSuccessful())
+  sh "tar xvzf external_libs.tgz"
 
   // if we notice any differences between the sources of the precompiled
   // dependencies and the current sources, we cannot help but need to recompile
