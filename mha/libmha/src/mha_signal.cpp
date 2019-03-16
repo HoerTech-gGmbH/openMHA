@@ -1958,7 +1958,7 @@ mha_real_t MHASignal::rmslevel(const mha_spec_t& s,unsigned int channel,unsigned
 mha_real_t MHASignal::colored_intensity(const mha_spec_t& s,
                                         unsigned int channel,
                                         unsigned int fftlen,
-                                        mha_real_t sqfreq_response[])
+                                        mha_real_t * sqfreq_response)
 {
     return intensity(s,channel,fftlen,sqfreq_response);
 }

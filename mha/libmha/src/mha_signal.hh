@@ -659,6 +659,11 @@ namespace MHASignal {
     /**
        \ingroup mhasignal
        \brief Return RMS level of a spectrum channel
+
+       Computes the RMS level of the signal in Pascal in the given channel.
+
+       Takes into account the the negative frequency bins that are not stored
+       (\ref clb).
        \param s Input spectrum
        \param channel Channel number to be tested
        \param fftlen FFT length (to correctly count the level of the Nyquist bin)
@@ -670,17 +675,21 @@ namespace MHASignal {
        \brief Colored spectrum intensity
        
        computes the squared sum of the spectrum after filtering with the
-       frequency response
+       frequency response. Takes into account the negative frequency bins
+       that are not stored (\ref clb).
        \param s Input spectrum
        \param channel Channel number to be tested
        \param fftlen FFT length (to correctly count the level of the Nyquist bin)
-       \param sqfreq_response A squared weighting factor for every fft bin.
+       \param sqfreq_response An array with one squared weighting factor for every
+                              fft bin. Array length must be equal to s->num_frames.
+                              nullptr can be given for equal weighting of all
+                              frequencies.
        \return sum of squares. Root of this is the colored level in Pa
     */
     mha_real_t colored_intensity(const mha_spec_t& s,
                                  unsigned int channel,
                                  unsigned int fftlen,
-                                 mha_real_t sqfreq_response[]);
+                                 mha_real_t * sqfreq_response = nullptr);
     /**
        \ingroup mhasignal
        \brief Find maximal absolute value

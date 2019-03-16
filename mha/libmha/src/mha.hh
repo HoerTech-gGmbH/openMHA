@@ -155,6 +155,8 @@ typedef struct {
     member num_frames describes the number of audio samples in each
     audio channel.
 
+    In a calibrated \mha, audio samples are stored in unit Pascal, see \ref clb.
+
     The field channel_info must be an array of num_channels entries or
     NULL.
 */
@@ -179,6 +181,16 @@ the imaginary part at the Nyquist frequency is zero.
 \image html spec_order.png "Data order of FFT spectrum."
 \image latex spec_order.pdf "Data order of FFT spectrum." width=0.5\linewidth
 
+Only the FFT bins for the positive frequencies, 0, and the Nyquist frequency
+are stored in this structure. The negative frequencies are not stored, because
+for a real-valued time signal they are the complex conjugates of the positive
+frequencies.
+
+The negative frequencies still contribute to the signal's level. Refer to
+\ref clb for a description of the scaling and how the level would be computed
+from the spectrum.  It is recommended to use the library function
+MHASignal::rmslevel to compute the unweighted level correctly in Pascal, or
+MHASignal::colored_intensity to compute a possibly weighted intensity.
 */
 typedef struct {
     mha_complex_t* buf; /**< signal buffer */
