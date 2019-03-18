@@ -50,21 +50,15 @@ fi
 #$BRANCH will be squash merged into master
 echo "Releasing from branch $BRANCH..."
 
-echo "Unit tests and system tests ran succesfully, now testing live examples."
-echo "When prompted, please start a JACK server with the settings needed by the live example."
-
-echo "Please start a JACK server for 00-gain and run the live configuration!"
-echo "Was everything as expected? [yes/no]"
+echo "Have you tested the live pre-release tests as described in"
+echo "https://dev.openmha.org/w/releaseprotocol/, 'Release procedure' step 3, and"
+echo "sections 'test_mhaioalsa.m and other automated live tests' and 'Run gain_live"
+echo "example, dynamic compressor live example, localizer live example'? [yes|no]"
 ask_yes_no;
 
-echo "Please start a JACK server for 01-dynamic-compression and run the live configuration!"
-echo "Was everything as expected? [yes/no]"
+echo "Was everything as expected? (refer to"
+echo "https://dev.openmha.org/w/releaseprotocol/ for expected behaviour) [yes/no]"
 ask_yes_no;
-
-echo "Please start a JACK server for 09-localizer-steering-beamformer and run the live configuration!"
-echo "Was everything as expected? [yes/no]"
-ask_yes_no;
-
 
 #Prompt for new version number and change version number in manual and code to new version.
 #Our normal version nomenclature is MAJOR.MINOR.PATCH, anything else requires a user override
