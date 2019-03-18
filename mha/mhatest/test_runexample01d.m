@@ -28,7 +28,7 @@ function mha = test_runexample01d()
   cfg = 'dynamiccompression_live.cfg';
 
   % start jack asynchronously
-  jack_pid = system('jackd -d alsa -r 44100 -p 64', false, 'async');
+  jack_pid = system('jackd -d dummy -r 44100 -p 64', false, 'async');
   assert_all(jack_pid > 0);
   % The PID we got is that of the shell that started jack, useless for killing jackd
   unittest_teardown(@system, 'killall -9 jackd');

@@ -28,7 +28,7 @@ function mha = test_runexample01e()
   cfg = 'example_dc_live_double.cfg';
 
   % start jack asynchronously
-  jack_pid = system('jackd -d alsa -r 44100 -p 256', false, 'async');
+  jack_pid = system('jackd -d dummy -r 44100 -p 256', false, 'async');
   assert_all(jack_pid > 0);
   % The PID we got is that of the shell that started jack, useless for killing jackd
   unittest_teardown(@system, 'killall -9 jackd');
