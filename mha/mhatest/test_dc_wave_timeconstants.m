@@ -21,18 +21,32 @@ function test_dc_wave_timeconstants();
   assert_difference_below(amplitude(65), process(mha, 65), 1e-6);
 
   % check rmslevel stepdown response:
-  % 5 milliseconds is 80 samples or 5 blocks
+  % 5 milliseconds (value of time constant) timecontant is 80 samples or 5
+  % blocks. rmslevel filters in intensity domain. If we send in another
+  % amplitude, the intensity difference between instantaneous level and
+  % filtered level will reduce 1/e over 5ms.
+  intensity65 = mean(amplitude(65))^2;
+  intensity45 = mean(amplitude(45))^2;
+  intensity_difference_initial = intensity65 - intensity45;
+  intensity_difference_adapted = intensity_difference_initial / exp(1);
+  intensity_adapted = intensity45 + intensity_difference_adapted;
+  dB_adapted = 10*log10(intensity_adapted / 4e-10);
+
+  expected_gain_dB_after_5ms = 65 - dB_adapted;
+  expected_gain_linear_after_5ms = 10^(expected_gain_dB_after_5ms/20);
+
+  % Perform the adaptation and check expectation
   all_output = [];
   for i = 1:5
-    output_signal = process(mha,0);
+    output_signal = process(mha,45);
     all_output = [all_output, output_signal];
   end
   output_signal = output_signal(end);
-  %plot(all_output)
-  % We expect the level estimate to be at 65dB/exp(1), and therefore
-  % expect the gain to be 65dB - 65dB/exp(1) = 65*(1-exp(-1)).
-  % applied to an input of 0dB, the gain would also be the output level:
-  %assert_difference_below(mean(amplitude(65*(1-exp(-1)))), output_signal, 1e-6);
+
+  % allow for some significant rounding error, because rounding error will
+  % accumulate and propagate over 80 individual filter updates
+  assert_almost(expected_gain_linear_after_5ms, ...
+                output_signal / mean(amplitude(45)), 3e-3);
 end
 
 function mha=prepare_mha_with_time_constants(tau_attack, tau_decay, tau_rmslev)
