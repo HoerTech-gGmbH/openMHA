@@ -136,9 +136,8 @@ void mhaserver_t::start_stdin_thread()
             asio::io_context terminal_context;
             asio::ip::tcp::socket terminal_connection(terminal_context);
             try{
-                auto server_endpoints=
-                    asio::ip::tcp::resolver(terminal_context).resolve(tcpserver->get_endpoint());
-                asio::connect(terminal_connection, std::vector<asio::ip::tcp::endpoint>{tcpserver->get_endpoint()});
+                asio::connect(terminal_connection, std::vector<asio::ip::
+                              tcp::endpoint>{tcpserver->get_endpoint()});
             }
             catch(std::exception& e){
                 std::cerr<<"Caught exception during connection to stdin:\n"<<e.what()<<'\n';
