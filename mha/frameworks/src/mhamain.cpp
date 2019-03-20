@@ -16,11 +16,14 @@
 
 #include "mha_tcp_server.hh"
 #include "mhafw_lib.h"
+#include "mha_utils.hh"
 #include <getopt.h>
 #include <fstream>
 #include <unistd.h>
 #include <asio/connect.hpp>
 #include <asio/write.hpp>
+#include <asio/read_until.hpp>
+#include <thread>
 
 #ifdef _WIN32
 #define getpid(x) _getpid(x)
@@ -63,12 +66,20 @@ public:
         @param lf File system path of file to use as log file. MHA appends.
     */
     mhaserver_t(const std::string &ao, const std::string &af,
-                const std::string &lf);
+                const std::string &lf, bool b_interactive_);
     ~mhaserver_t();
     /** A line of text was received from network client */
     virtual std::string on_received_line(const std::string & line);
     /** Notification: "TCP port is open" */
     virtual void acceptor_started();
+    /** sends an announcement which port this MHA is listening on to the creator of the
+        process. See command line option --announce */
+    virtual void send_port_announcement();
+    /** Starts a separate thread that reads lines from stdin and forwards these lines over
+        TCP to the MHA configuration thread which multiplexes multiple TCP connections.
+        Enables users to type mha configuration language commands directly into the terminal
+        where MHA was started, without the need to use third-party tools like nc or putty. */
+    virtual void start_stdin_thread();
     /** If set to nonzero, the spawning process has asked to be notified
         of the TCP port used by this process. */
     virtual void set_announce_port(unsigned short announce_port);
@@ -84,6 +95,7 @@ private:
     std::string ack_fail;
     std::string logfile;
     unsigned short announce_port;
+    bool b_interactive;
     MHAParser::int_mon_t pid_mon;
 public:
     MHAParser::int_t port;
@@ -108,6 +120,76 @@ inline void mhaserver_t::logstring(const std::string& s)
 void mhaserver_t::acceptor_started()
 {
     port.data = tcpserver->get_port();
+    if (announce_port != 0)
+        send_port_announcement();
+    if(b_interactive)
+        start_stdin_thread();
+}
+
+
+void mhaserver_t::start_stdin_thread()
+{
+    using MHAUtils::strip;
+    using MHAUtils::remove;
+    std::thread stdin_thread([this](){
+            std::string stdin_line;
+            asio::io_context terminal_context;
+            asio::ip::tcp::socket terminal_connection(terminal_context);
+            try{
+                auto server_endpoints=
+                    asio::ip::tcp::resolver(terminal_context).resolve(tcpserver->get_endpoint());
+                asio::connect(terminal_connection, std::vector<asio::ip::tcp::endpoint>{tcpserver->get_endpoint()});
+            }
+            catch(std::exception& e){
+                std::cerr<<"Caught exception during connection to stdin:\n"<<e.what()<<'\n';
+                logstring("Caught exception during connection to stdin:\n"+std::string(e.what())+'\n');
+                exit(1);
+            }
+            catch(...){
+                std::cerr<<"Caught unknown exception during connection to stdin.\n";
+                logstring("Caught unknown exception during connection to stdin.\n");
+                exit(1);
+            }
+            asio::streambuf streambuf;
+            unsigned nlines=1U;
+            auto read_until_prompt = [&](){
+                std::string response_line;
+                while (strip(response_line) != strip(ack_fail) && strip(response_line) != strip(ack_ok)) {
+                    asio::read_until(terminal_connection, streambuf, '\n');
+                    std::istream istream(&streambuf);
+                    std::getline(istream, response_line);
+                    response_line=strip(response_line);
+                    printf("%s\n", response_line.c_str());
+                }
+            };
+
+            std::cout<<"mha ["<<nlines++<<"] ";
+            while (std::getline(std::cin, stdin_line).good()) {
+                if(stdin_line.size() and stdin_line[0]=='#'){
+                    continue;
+                }
+                stdin_line=strip(stdin_line);
+                // special case: If we do not handle this, we'd try to
+                // send an exit request twice, but mha might have already
+                // closed the connection
+                if(remove(stdin_line,' ')=="cmd=quit"){
+                    break;
+                }
+                stdin_line+='\n';
+                asio::write(terminal_connection, asio::buffer(stdin_line));
+                read_until_prompt();
+                if(remove(stdin_line,' ')!="cmd=quit"){
+                    std::cout<<"mha ["<<nlines++<<"] ";
+                }
+            }
+            asio::write(terminal_connection, asio::buffer("cmd=quit\n"));
+            read_until_prompt();
+        });
+    stdin_thread.detach();
+}
+
+void mhaserver_t::send_port_announcement()
+{
     if (announce_port == 0) {
         // nothing to announce
         return;
@@ -174,12 +256,13 @@ int mhaserver_t::run(unsigned short port, const std::string & _interface)
 void mhaserver_t::set_announce_port(unsigned short announce_port)
 { this->announce_port = announce_port; }
 
-mhaserver_t::mhaserver_t(const std::string& ao,const std::string& af,const std::string& lf)
+mhaserver_t::mhaserver_t(const std::string& ao,const std::string& af,const std::string& lf, bool b_interactive_)
     : tcpserver(0),
       ack_ok(ao),
       ack_fail(af),
       logfile(lf),
       announce_port(0),
+      b_interactive(b_interactive_),
       pid_mon("PID of mha server"),
       port("Port number of MHA server (0 = use command line settings).","0","[0,]")
 {
@@ -240,6 +323,7 @@ std::string mhaserver_t::on_received_line(const std::string& cmd)
 " --quiet | -q              suppress all output\n"\
 " --port=portno | -p portno set port number (default: 33337)\n"\
 " --announce=port | -a port announce pid & portno to 127.0.0.1:port \n"\
+" --interactive             start in interactive mode\n"\
 " --interface=str | -i str  set the server interface to 'str'\n"\
 " --daemon | -d             start in daemon mode, i.e., restart after exit\n"\
 " --ok-ack=str | -o str     set ok acknowledgement string\n"\
@@ -258,7 +342,7 @@ std::string mhaserver_t::on_received_line(const std::string& cmd)
 "under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3; \n"\
 "for details see file COPYING.\n\n"
 
-void create_lock(unsigned int p,std::string s)
+void create_lock(unsigned int p,const std::string& s)
 {
     std::string fname("locks/"+MHAParser::StrCnv::val2str((int)p));
     std::ofstream lockfile(fname.c_str());
@@ -276,31 +360,34 @@ void remove_lock(unsigned int p)
 
 extern "C" int mhamain(int argc, char* argv[])
 {
-    bool b_quiet(false);
-    bool b_daemon(false);
-    std::string ack_ok("(MHA:success)\n");
-    std::string ack_fail("(MHA:failure)\n");
-    unsigned short port(33337), announce_port(0);
-    std::string interface_("127.0.0.1");
-    std::string lock_str("");
-    std::string logfile("");
-    bool b_create_lock(false);
+    unsigned short port(33337);
     srand(time(0) + 1481490587);
     try{
+        bool b_quiet(false);
+        bool b_daemon(false);
+        bool b_interactive(false);
+        std::string ack_ok("(MHA:success)\n");
+        std::string ack_fail("(MHA:failure)\n");
+        unsigned short announce_port(0);
+        std::string interface_("127.0.0.1");
+        std::string lock_str("");
+        std::string logfile("");
+        bool b_create_lock(false);
         // command line interface...
         int option;
         static struct option long_options[] = {
-            {"quiet",    0, NULL, 'q'},
-            {"help",     0, NULL, 'h'},
-            {"port",     1, NULL, 'p'},
-            {"announce", 1, NULL, 'a'},
-            {"interface",1, NULL, 'i'},
-            {"ok-ack",   1, NULL, 'o'},
-            {"fail-ack", 1, NULL, 'f'},
-            {"lockstr",  1, NULL, 'l'},
-            {"log",      1, NULL, 'm'},
-            {"daemon",   0, NULL, 'd'},
-            {NULL,       0, NULL, 0  }
+            {"quiet",      0, NULL, 'q'},
+            {"help",       0, NULL, 'h'},
+            {"port",       1, NULL, 'p'},
+            {"announce",   1, NULL, 'a'},
+            {"interactive",0, NULL, 't'},
+            {"interface",  1, NULL, 'i'},
+            {"ok-ack",     1, NULL, 'o'},
+            {"fail-ack",   1, NULL, 'f'},
+            {"lockstr",    1, NULL, 'l'},
+            {"log",        1, NULL, 'm'},
+            {"daemon",     0, NULL, 'd'},
+            {NULL,         0, NULL, 0  }
         };
         static char short_options[] = "qhp:a:o:f:i:dm:";
         while( (option = getopt_long(argc,argv,short_options,long_options,NULL)) > -1 ){
@@ -345,6 +432,9 @@ extern "C" int mhamain(int argc, char* argv[])
             case 'd' :
                 b_daemon = true;
                 break;
+            case 't':
+                b_interactive = true;
+                break;
             };
         }
         if(!b_quiet)
@@ -356,7 +446,7 @@ extern "C" int mhamain(int argc, char* argv[])
         mhaserver_t* server;
         int rval = 0;
         do{
-            server = new mhaserver_t(ack_ok,ack_fail,logfile);
+            server = new mhaserver_t(ack_ok,ack_fail,logfile,b_interactive);
             server->set_announce_port(announce_port);
             if( b_create_lock )
                 create_lock(port,lock_str);
