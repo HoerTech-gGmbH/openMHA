@@ -1,5 +1,5 @@
 % Execute MHA with example configuration 
-% mha/examples/04-prerelease-combination/prerelease_combination.cfg and check
+% examples/04-prerelease-combination/prerelease_combination.cfg and check
 % that the expected output sound file is produced.
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
@@ -18,7 +18,7 @@
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function test_runexample04()
-  dir = '../examples/04-prerelease-combination/';
+  dir = '../../examples/04-prerelease-combination/';
   cfg = 'prerelease_combination.cfg';
   inwav = '1speaker_diffNoise_4ch.wav'; 
   outwav = '1speaker_diffNoise_4ch_OUT.wav';

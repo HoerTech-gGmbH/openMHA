@@ -1,5 +1,5 @@
 % Execute MHA with example configuration 
-% mha/examples/07-single-channel-noise-reduction/single-channel-noise-reduction/ and check
+% examples/07-single-channel-noise-reduction/single-channel-noise-reduction/ and check
 % that the expected output sound file is produced.
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
@@ -18,7 +18,7 @@
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function test_runexample07()
-  dir = '../examples/07-single-channel-noise-reduction/';
+  dir = '../../examples/07-single-channel-noise-reduction/';
   cfg = 'single_channel_noise_reduction.cfg';
   inwav = '1speaker_diffNoise_2ch_16k.wav';
   outwav = 'denoised.wav';

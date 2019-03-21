@@ -1,5 +1,5 @@
 % Execute MHA with example configuration 
-% mha/examples/01-dynamic-compression/example_dc_live.cfg and check
+% examples/01-dynamic-compression/example_dc_live.cfg and check
 % that the  expected audio connections in Jack are made, and that this
 % MHA can be fitted with the fitting tool.
 %
@@ -24,7 +24,7 @@ function mha = test_runexample01c()
  global execute_live_tests;
  if execute_live_tests
 
-  dir = '../examples/01-dynamic-compression/';
+  dir = '../../examples/01-dynamic-compression/';
   cfg = 'example_dc_live.cfg';
 
   % start jack asynchronously

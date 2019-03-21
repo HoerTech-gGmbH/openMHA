@@ -29,7 +29,7 @@ Then examples are given on how to start this algorithm in different situations (
 The example in this section describes how to apply a simple gain to the input signal.
 It is meant to serve as an illustrative case.\footnote{
   The corresponding configuration file for this setup can be found at
-  \emph{mha/examples/00-gain/gain.cfg}.
+  \emph{examples/00-gain/gain.cfg}.
 }
 %
 In this example the host plugin (the plugin that loads all other
@@ -74,7 +74,7 @@ io.in = 1speaker_diffNoise_2ch.wav
 io.out = 1speaker_diffNoise_2ch_OUT.wav
 \end{verbatim}
 The configuration we described so far is provided with this release 
-in the file \emph{mha/examples/00-gain/gain.cfg}.
+in the file \emph{examples/00-gain/gain.cfg}.
 Now that we created a complete \mha{} algorithm configuration file,
 in the next step, we want to start an \mha{} framework with this configuration.
 %
@@ -118,7 +118,7 @@ situations, where it is not possible to start JACK with the desired
 fragment size. 
 
 The complete configuration for this example can be found in
-\emph{mha/examples/00-gain/gain\_live.cfg}.
+\emph{examples/00-gain/gain\_live.cfg}.
 In the previous section we have specified which libraries to use
 (plugins and the IO backend, which was \verb!MHAIOFile!). In this section 
 we want to change IO backend to JACK. 

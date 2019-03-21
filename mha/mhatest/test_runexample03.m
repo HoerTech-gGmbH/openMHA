@@ -1,5 +1,5 @@
 % Execute MHA with example configuration 
-% mha/examples/03-coherence-filter/coherence.cfg and check that the 
+% examples/03-coherence-filter/coherence.cfg and check that the 
 % expected output sound file is produced.
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
@@ -18,7 +18,7 @@
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function test_runexample03()
-  dir = '../examples/03-coherence-filter/';
+  dir = '../../examples/03-coherence-filter/';
   cfg = 'coherence.cfg';
   inwav = '1speaker_diffNoise_2ch.wav'; 
   outwav = '1speaker_diffNoise_2ch_OUT.wav';
