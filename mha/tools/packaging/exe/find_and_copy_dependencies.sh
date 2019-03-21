@@ -45,7 +45,7 @@ rm tmp*
 cp -r ../../mfiles mfiles
 find ./mfiles -name ".*" -exec rm {} \;
 # Examples
-cp -r ../../../examples examples
+cp -r ../../../../examples examples
 find ./examples -name ".*" -exec rm {} \;
 # Documentation
 mkdir -p doc

@@ -61,8 +61,8 @@ coverage
 mha/tools/mfiles/classpath.txt
 
 # python cache
-mha/examples/09-localizer-steering-beamformer/visualisation_web/__pycache__
-mha/examples/09-localizer-steering-beamformer/Output/*
+examples/09-localizer-steering-beamformer/visualisation_web/__pycache__
+examples/09-localizer-steering-beamformer/Output/*
 
 # from patching
 *.rej

@@ -37,7 +37,7 @@ usr-local-lib: l_usr_local_lib
 
 examples: l_usr_local_share
 	@mkdir -p ${WORK_D}/usr/local/share/openmha/examples
-	@${CP} -r ${REPO}/mha/examples/* ${WORK_D}/usr/local/share/openmha/examples/.
+	@${CP} -r ${REPO}/examples/* ${WORK_D}/usr/local/share/openmha/examples/.
 
 mfiles: l_usr_local_lib
 	@mkdir -p ${WORK_D}/usr/local/lib/openmha/mfiles
