@@ -144,10 +144,10 @@ For historic reasons, the variable mhalib can also not be changed
 after initial assignment, but this will most likely be relaxed in a
 future release.
 %
-When the \mha is in prepared state, the number of input channels
+When the \mha{} is in prepared state, the number of input channels
 \texttt{nchannels\_in} cannot be changed.
 %
-When an \mha variable cannot be changed, then it is "locked", and
+When an \mha{} variable cannot be changed, then it is "locked", and
 attempts to write to it will cause an error.
 
 \begin{description}
@@ -216,7 +216,7 @@ value \verb!nop!\footnote{%
 \subsection{Audio abstraction layer}%
 \label{sec:audioabstraction}
 
-The audio abstraction layer connects the audio backbone, i.e.,
+The audio abstraction layer connects the audio backbone, e.g.,
 JACK (see \secpageref{sec:jack}) or audio files, with the \mhad{}.
 %
 Different modules are available to connect to sound input and output:

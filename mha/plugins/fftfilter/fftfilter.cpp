@@ -182,7 +182,7 @@ namespace fftfilter {
         fftlen("FFT length used for FIR filter. If zero, the FFT length\n"
                "is fragsize + impulse response length - 1 (assuming that\n"
                "the discrete Dirac delta function has the IRS length 1).","0","[0,]"),
-        fftlen_final("FFT length used by FFT filter")
+        fftlen_final("FFT length used by FFT filter (computed during prepare)")
     {
         insert_item("irs",&irs);
         insert_item("fftlen",&fftlen);

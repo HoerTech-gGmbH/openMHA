@@ -164,18 +164,18 @@ MHAPLUGIN_CALLBACKS(mconv,mconv::MConv, wave, wave)
 MHAPLUGIN_DOCUMENTATION(mconv,
                         "filter",
                         "The plugin {\\em mconv} performs partitioned convolution, using a"
-                        " sparse matrix of impulse responses.\n"
+                        " sparse matrix of impulse responses.\n\n"
                         " The partition size used for the partitioned convolution is equal to"
                         " fragsize, the number of samples per channel in one block of audio. "
                         " The impulse responses are separated into partitions, and each partition"
                         " is applied with the appropriate delay. Each partition is applied using the"
                         "overlap-save method. The FFT length used is 2*fragsize."
-                        "For efficiency reasons, fragsize should be a power of two.\n"
+                        "For efficiency reasons, fragsize should be a power of two.\n\n"
                         " Partitioned convolution is used to reduce the"
                         " overall algorithmic delay of the convolution with a long impulse response."
                         " The overall computational cost of using partitioned convolution is higher"
                         " when compared to convolving the complete impulse response in a single overlap-save"
-                        " operation, because longer FFTs are more efficient.\n"
+                        " operation, because longer FFTs are more efficient.\n\n"
                         " This implementation discards impulse response partitions where the coefficients are all zero."
                         )
 
