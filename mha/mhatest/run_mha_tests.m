@@ -1,4 +1,4 @@
-function success = runtests(directory)
+function success = run_mha_tests(directory)
 % runtests([directory])
 %
 % Run all tests in the current directory or,
@@ -78,7 +78,7 @@ for index = indices(:)'
       
       % ensure teardown stack is empty (argument indicates this special case)
       unittest_teardown([]);
-      
+      printf('%s\n',filename(1:length(filename)-2));
       % invoke test
       feval(func);
       

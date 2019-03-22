@@ -192,10 +192,10 @@ chklib(){
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     if [[ $(type -P octave) ]] ; then
         echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval"\
-             "\"set_environment;exit(~runtests())\"";
+             "\"set_environment;exit(~run_mha_tests())\"";
     elif [[ $(type -P matlab) ]]; then
         echo "MHA_TEST_COMMAND=matlab -nodesktop -nosplash -nodisplay -r"\
-             "\"set_environment;exit(~runtests())\"";
+             "\"set_environment;exit(~run_mha_tests())\"";
     fi
 ) | tee config.mk
 
