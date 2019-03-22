@@ -78,7 +78,6 @@ for index = indices(:)'
       
       % ensure teardown stack is empty (argument indicates this special case)
       unittest_teardown([]);
-      printf('%s\n',filename(1:length(filename)-2));
       % invoke test
       feval(func);
       
