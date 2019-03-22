@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /*
  * This plugin receives a waveform through the ac space at each
  * iteration. Depending on the averaging method, the last consecutive
