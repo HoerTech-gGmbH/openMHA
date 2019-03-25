@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2017 2018 HörTech gGmbH
+// Copyright © 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,14 +18,14 @@
 
 /** This namespace contains the delaysum plugin. */
 namespace delaysum{
-    /** Runtime configuration of the delaysum plugin. Inherits from the already
+    /** Runtime configuration of the delaysum_wave plugin. Inherits from the already
      * present delay_t class. The constructor initializes and validates the
      * runtime configuration and forwards the delay vector to the delay_t
      * class. The process function first calls delay_t::process and then
      * multiplies every output channel with its weight and adds them into the
      * output channel.
      */
-    class delaysum_t : public MHASignal::delay_t  {
+    class delaysum_wave_t : public MHASignal::delay_t  {
     public:
         /** Constructor of the runtime configuration.
          * @param nch Number of input channels.
@@ -33,7 +33,7 @@ namespace delaysum{
          * @param weights_ Vector of weights for each channel.
          * @param delays_ Vector of delays, one entry per channel.
          */
-        delaysum_t(unsigned int nch, unsigned int fragsize,
+        delaysum_wave_t(unsigned int nch, unsigned int fragsize,
                    const std::vector<mha_real_t>& weights_,
                    const std::vector<int>& delays_);
         mha_wave_t* process(mha_wave_t*);
@@ -52,9 +52,9 @@ namespace delaysum{
      * is multiplied with the given weight and then
      * added to the single outout channel.
      */
-    class delaysum_if_t : public MHAPlugin::plugin_t<delaysum_t> {
+    class delaysum_wave_if_t : public MHAPlugin::plugin_t<delaysum_wave_t> {
     public:
-        delaysum_if_t(const algo_comm_t&,const std::string&,const std::string&);
+        delaysum_wave_if_t(const algo_comm_t&,const std::string&,const std::string&);
         mha_wave_t* process(mha_wave_t*);
         void prepare(mhaconfig_t&);
         void release();
@@ -69,10 +69,10 @@ namespace delaysum{
         MHAParser::vint_t delay;
         
         /// The patchbay to react to config changes.
-        MHAEvents::patchbay_t<delaysum_if_t> patchbay;
+        MHAEvents::patchbay_t<delaysum_wave_if_t> patchbay;
     };
 
-    delaysum_t::delaysum_t(unsigned int nch,
+    delaysum_wave_t::delaysum_wave_t(unsigned int nch,
                            unsigned int fragsize,
                            const std::vector<mha_real_t>& weights_,
                            const std::vector<int>& delays_)
@@ -91,7 +91,7 @@ namespace delaysum{
     }
 
 
-    mha_wave_t* delaysum_t::process(mha_wave_t* signal)
+    mha_wave_t* delaysum_wave_t::process(mha_wave_t* signal)
     {
         signal=MHASignal::delay_t::process(signal);
         clear(out);
@@ -104,10 +104,10 @@ namespace delaysum{
         return &out;
     }
 
-    delaysum_if_t::delaysum_if_t(
+    delaysum_wave_if_t::delaysum_wave_if_t(
                                  const algo_comm_t& iac,
                                  const std::string&,const std::string&)
-        :  MHAPlugin::plugin_t<delaysum_t>("delay and sum plugin. Mixes all "
+        :  MHAPlugin::plugin_t<delaysum_wave_t>("delay and sum plugin. Mixes all "
                                            "channels into a single output "
                                            "channel after applying channel-"
                                            "specific weights and delays.",iac),
@@ -118,17 +118,17 @@ namespace delaysum{
     {
         insert_item("weights",&weights);
         insert_item("delay",&delay);
-        patchbay.connect(&weights.writeaccess,this,&delaysum_if_t::update_cfg);
-        patchbay.connect(&delay.writeaccess,this,&delaysum_if_t::update_cfg);
+        patchbay.connect(&weights.writeaccess,this,&delaysum_wave_if_t::update_cfg);
+        patchbay.connect(&delay.writeaccess,this,&delaysum_wave_if_t::update_cfg);
     }
 
-    mha_wave_t* delaysum_if_t::process(mha_wave_t* wave)
+    mha_wave_t* delaysum_wave_if_t::process(mha_wave_t* wave)
     {
         poll_config();
         return cfg->process(wave);
     }
 
-    void delaysum_if_t::prepare(mhaconfig_t& tfcfg)
+    void delaysum_wave_if_t::prepare(mhaconfig_t& tfcfg)
     {
         if( tfcfg.domain != MHA_WAVEFORM )
             throw MHA_Error(__FILE__,__LINE__,
@@ -139,29 +139,30 @@ namespace delaysum{
         update_cfg();
     }
 
-    void delaysum_if_t::update_cfg()
+    void delaysum_wave_if_t::update_cfg()
     {
         if( input_cfg().channels )
-            push_config(new delaysum_t(input_cfg().channels,
+            push_config(new delaysum_wave_t(input_cfg().channels,
                                        input_cfg().fragsize,
                                        weights.data,
                                        delay.data));
     }
 
-    void delaysum_if_t::release(){
+    void delaysum_wave_if_t::release(){
         /** Do nothing in release. */
     }
 }
-MHAPLUGIN_CALLBACKS(delaysum,delaysum::delaysum_if_t,wave,wave)
+MHAPLUGIN_CALLBACKS(delaysum_wave,delaysum::delaysum_wave_if_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
-(delaysum,
+(delaysum_wave,
  "spatial beamformer",
  "This plugin allows to delay and "
  "sum multiple input channels using individual "
  "delays and weights. After each channel is delayed "
  "it is multiplied with the given weight and then "
- "added to the single output channel."
+ "added to the single output channel. This plugin was formerly known as delaysum."
  )
+
     // Local Variables:
     // compile-command: "make"
     // c-basic-offset: 4

@@ -19,12 +19,12 @@
 % This function tests plugin test_delaysum by comparing 
 % the delay and sum of two cosine arrays with the plugin 
 % output
-function [retval] = test_delaysum 
+function test_delaysum_wave
     dsc.instance = 'test_delaysum';
     dsc.nchannels_in = 2;
     dsc.fragsize = 200;
     
-    dsc.mhalib = 'delaysum';
+    dsc.mhalib = 'delaysum_wave';
     % fixed delay of 15 samples
     dl = 15;
     dsc.mha.delay = [0 dl];
