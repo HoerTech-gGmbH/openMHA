@@ -1412,7 +1412,13 @@ void mha_fft_spec2wave_scale(mha_fft_t h,const mha_spec_t* in, mha_wave_t* out)
 namespace MHASignal {
     class hilbert_fftw_t {
     public:
+        /** C'tor of hilbert_fftw_t
+         * @param len fft length
+         **/
         hilbert_fftw_t(unsigned int len);
+        /** D'tor of hilbert_fftw_t
+         **/
+        ~hilbert_fftw_t();
         void hilbert(const mha_wave_t*,mha_wave_t*);
     private:
         unsigned int n;
@@ -1427,15 +1433,23 @@ namespace MHASignal {
 }
 
 MHASignal::hilbert_fftw_t::hilbert_fftw_t(unsigned int len)
-    : n(len)
+    : n(len),
+      buf_r_in(new fftw_real[n]),
+      buf_r_out(new fftw_real[n]),
+      buf_c_in(new fftw_complex[n]),
+      buf_c_out(new fftw_complex[n])
 {
     p1 = rfftw_create_plan( n, FFTW_REAL_TO_COMPLEX, FFTW_ESTIMATE );
     p2 = fftw_create_plan( n, FFTW_BACKWARD, FFTW_ESTIMATE );
-    buf_r_in = new fftw_real[n];
-    buf_r_out = new fftw_real[n];
-    buf_c_in = new fftw_complex[n];
-    buf_c_out = new fftw_complex[n];
     sc = 2.0/(mha_real_t)n;
+}
+
+MHASignal::hilbert_fftw_t::~hilbert_fftw_t()
+{
+    delete [] buf_r_in;
+    delete [] buf_r_out;
+    delete [] buf_c_in;
+    delete [] buf_c_out;
 }
 
 void MHASignal::hilbert_fftw_t::hilbert(const mha_wave_t* s_in,mha_wave_t* s_out)
