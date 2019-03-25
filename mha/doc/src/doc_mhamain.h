@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2017 HörTech gGmbH
+// Copyright © 2017 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,11 +20,11 @@
 * on standard computing hardware with a low delay between sound input and output.
 * \section str Structure
 * The openMHA can be split into four major components :
-* 	- \ref mhascript "The openMHA command line application (MHA)"
-* 	- \ref plugif "Signal processing plugins"
-* 	- Audio input-output (IO) plugins (see io_file_t, MHAIOJack, io_parser_t, io_tcp_parser_t)
-* 	- \ref mhatoolbox "The openMHA toolbox library"
-* 	.
+*       - \ref mhascript "The openMHA command line application (MHA)"
+*       - \ref plugif "Signal processing plugins"
+*       - Audio input-output (IO) plugins (see io_file_t, MHAIOJack, io_parser_t, io_tcp_parser_t)
+*       - \ref mhatoolbox "The openMHA toolbox library"
+*       .
 * 
 * \image html structure_openmha.png
 * \image latex structure_openmha.pdf "openMHA structure" width=0.4\textwidth
@@ -149,13 +149,34 @@
 * the absolute physical sound pressure level corresponding to a digital
 * signal given to any openMHA plugin for processing.
 * Inside the openMHA, we achieve this with the following convention:
-* The single-precision floating point time-domain sound signal samples, that are processed
+* The single-precision floating point time-domain sound signal samples,
+* that are processed
 * inside the openMHA plugins in blocks of short durations, have the physical
 * pressure unit Pascal (\f$1 \mathrm{Pa} = 1 \mathrm{N} / \mathrm{m}^2\f$).
 * With this convention in place, all plugins can determine the
 * absolute physical sound pressure level from the sound samples that
-* they process.
-* A derived convention is employed in the spectral domain for STFT signals.
+* they process: E.g. plugins can compute the \f$\mathrm{rms}\f$
+* (root mean squared) sound pressure in Pascal of the current block by computing
+* \f$ \mathrm{rms} = \sqrt{\sum_i x_i^2} \f$, where \f$x_i\f$ refer to the
+* samples of the audio signal in a single audio channel, and the corresponding
+* free-field sound pressure level \f$\mathrm{L}\f$ in dB SPL FF as
+* \f$ \mathrm{L} = 20 \log_{10}(rms / 20\mathrm{\mu Pa}) \f$.
+* (\f$20\mathrm{\mu Pa}\f$ is the sound pressure at 0dB SPL FF).
+*
+* A derived convention is employed in the spectral domain for STFT signals:
+* The sum of the squared magnitudes of all spectral bins computes \f$\mathrm{rms}\f$
+* of the signal in the current STFT block:
+* \f$ \mathrm{rms} = \sqrt{\sum_i |X_i|^2} \f$, the \f$X_i\f$ refer to the
+* complex values of the STFT spectral bins.
+* The STFT bins of the negative frequencies are not stored, since they contain
+* the complex conjugate values of the corresponding positive frequencies.
+* When summing over all bins to compute the rms as above, care must be taken
+* to also account for the negative frequencies.
+* Note that the bins corresponding to 0Hz and to the Nyquist frequency have
+* no corresponding negative frequency bin.
+* The sound pressure level in dB can be computed from the
+* \f$\mathrm{rms}\f$ in the same way as in the time domain.
+*
 * Due to the dependency of the calibration on the hardware used, it is the responsibility 
 * of the user of the openMHA to perform calibration
 * measurements and adapt the openMHA settings to make sure that this
