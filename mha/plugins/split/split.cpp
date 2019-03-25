@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2010 2013 2012 2014 2015 2016 2018 HörTech gGmbH
+// Copyright © 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -30,14 +31,12 @@
 
 #ifdef _WIN32
 #define win32threads 1
-#define default_thread_platform_string "win32"
-#define default_thread_platform_type win32_threads_t
+#define native_thread_platform_type win32_threads_t
 #else
 #define posixthreads 1
 #include <pthread.h>
 #include <sched.h>
-#define default_thread_platform_string "posix"
-#define default_thread_platform_type posix_threads_t
+#define native_thread_platform_type posix_threads_t
 #endif
 
 // forward declaration of test classes
@@ -887,28 +886,35 @@ namespace MHAPlugin_Split {
                               " them processed by different plugins in"
                               " parallel"),
           algos("List of plugins which process the different groups of audio"
-                " channels.","[]"),
-          channels("Number of channels processed by the respective plugins.",
+                " channels.  Exactly\n"
+                "one plugin per channel group must be given.  (Use e.g."
+                " [mhachain:chain0\n"
+                "mhachain:chain1 ...] to have more than one processing"
+                " plugin per group\n"
+                "by combining them into a chain.","[]"),
+          channels("Number of channels in the respective channel groups to be"
+                   " processed by the\n"
+                   "corresponding plugins listed in \"algos\".",
                    "[]",
                    "[0,["),
           thread_platform("Thread platform to use.\n"
-                          "posix is the native linux thread platform,\n"
-                          "win32 is the native thread platform on windows,\n"
-                          "dummy means that all processing is performed in a"
+                          "\"posix\" is the native Linux and macOS thread platform,\n"
+                          "\"win32\" is the native thread platform on windows,\n"
+                          "\"dummy\" means that all processing is performed in a"
                           " single thread.",
-                          default_thread_platform_string,
+                          "dummy",
                           "[posix win32 dummy]"),
           worker_thread_scheduler("Scheduler used for worker threads."
                                   " Only used for posix threads.\n"
                                   "Suggested setting is: The same as present"
                                   " in framework_thread_scheduler\n"
-                                  "after prepare.",
+                                  "during processing.",
                                   "SCHED_OTHER",
                                   "[SCHED_OTHER SCHED_RR SCHED_FIFO]"),
           worker_thread_priority("Priority assigned to worker threads. "
                                  " Suggested setting is: The same as\n"
-                                 "present in framework_thread_priority after"
-                                 "preparing the MHA.\n"
+                                 "present in framework_thread_priority during"
+                                 " processing.\n"
                                  "The default thread priority given here is"
                                  " invalid. No attempt will be made to\n"
                                  "set the priority of the threads"
@@ -924,7 +930,10 @@ namespace MHAPlugin_Split {
                                     " thread.\n"
                                     "Only valid after first signal processing"
                                     " callback."),
-          delay("activates parallel processing of plugins at the cost of one block of additional delay","no"),
+          delay("activates processing of contained"
+                " plugins outside of the calling processing\n"
+                "thread at the cost of one block\n"
+                "additional delay","no"),
           wave_out(NULL),
           spec_out(NULL)
     {
@@ -1146,9 +1155,9 @@ namespace MHAPlugin_Split {
             throw MHA_ErrorMsg("Bug: invalid output signal handle");
         if (framework_thread_priority.data == INVALID_THREAD_PRIORITY) {
             framework_thread_priority.data =
-                default_thread_platform_type::current_thread_priority();
+                native_thread_platform_type::current_thread_priority();
             framework_thread_scheduler.data =
-                default_thread_platform_type::current_thread_scheduler();
+                native_thread_platform_type::current_thread_scheduler();
         }
         if (delay.data) {
             collect_result(signal_out(s_out));
@@ -1193,11 +1202,47 @@ MHAPLUGIN_PROC_CALLBACK(split,MHAPlugin_Split::split_t,wave,spec)
 MHAPLUGIN_DOCUMENTATION\
 (split,
  "plugin-arrangement audio-channels data-flow",
- "The plugin 'split' takes a multi-channel input signal and splits it up\n"
+ "The plugin 'split' takes a multi-channel input signal and splits it\n"
  "into separate chains of groups of channels. After processing of each\n"
- "chain, the output channels are merged into a multi-channel output\n"
- "signal.\n"
- "The order of the audio channels is left unchanged.\n"
+ "chain, the output channels of each chain are collected into a\n"
+ "multi-channel output signal.\n"
+ "\n"
+ "By default, all parallel chains are processed sequentially in a single\n"
+ "thread.  It is also possible to process the different chains in different\n"
+ "processing threads, to exploit parallel execution on multi-core CPUs:\n"
+ "Set \\texttt{thread\\_platform} to \\texttt{win32} on \\Windows{}\n"
+ "systems, or to \\texttt{posix} on \\Linux{} and \\macOS.\n"
+ "\n"
+ "For real-time processing scenarios, it is important to set up the worker\n"
+ "threads' schedulers and priorities to a reasonable value so that they\n"
+ "neither starve upstream production or downstream consumption of the\n"
+ "processed audio, nor get themselves interrupted by non-audio-related\n"
+ "tasks on the same system.\n"
+ "A reasonable choice is to use the same scheduler and priority\n"
+ "as the framework thread that invokes the processing of this\n"
+ "plugin.  Unfortunately, this cannot be determined automatically\n"
+ "and needs to be set through configuration variables\n"
+ "\\texttt{worker\\_thread\\_scheduler} and\n"
+ "\\texttt{worker\\_thread\\_priority}.  The corresponding settings of the\n"
+ "framework thread can be compared by checking the values of\n"
+ "\\texttt{framework\\_thread\\_scheduler} and\n"
+ "\\texttt{framework\\_thread\\_priority} during processing.\n"
+ "\n"
+ "'split' also supports processing all contained chains in parallel to\n"
+ "all other signal processing in the MHA by introducing a delay of one audio\n"
+ "fragment: In this case, when the split plugin is asked to process an audio\n"
+ "fragment, it immediately returns the processed audio fragment from the\n"
+ "previous invocation, and simultaneously begins processing the new audio\n"
+ "fragment in the worker threads.  This mode is activated by setting\n"
+ "\\texttt{delay=yes} and does not work for the '\\texttt{dummy}'\n"
+ "\\texttt{thread\\_platform}. Priorities of the worker threads should be set\n"
+ "to slightly less important than the priority of the framework thread.\n"
+ "\n"
+ "Thread priorities and schedulers are operating system dependent settings.\n"
+ "Check the documentation of your operating system for details on the\n"
+ "schedulers and priorities, and compare the relative priorities of all\n"
+ "processes and threads on your system against expectations with a\n"
+ "suitable tool while \\mha{} is running.\n"
  )
 
 // Local Variables:
