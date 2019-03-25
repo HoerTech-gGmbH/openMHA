@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2011 2013 2015 HörTech gGmbH
-// Copyright © 2016 2017 2018 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -717,14 +717,18 @@ void MHAOvlFilter::fftfb_t::get_fbpower(mha_wave_t * fbpow, const mha_spec_t * s
                         num_frames);
     unsigned int fr, ch, fb;
 
+    // No nyquist bin for odd fft lengths (one past last valid index)
+    const unsigned nyquist_index = (fftlen/2U) + (fftlen & 1U);
     for(fb = 0; fb < num_channels; fb++){
         for(ch = 0; ch < s_in->num_channels; ch++){
             ::value(fbpow, fb, ch) = 0;
             for(fr = bin1(fb); fr < bin2(fb); fr++){
-                ::value(fbpow, fb, ch) +=
+                float factor = 2; // account for negative frequencies
+                if (fr == 0 || fr == (nyquist_index)) {
+                    factor = 1; // no negative frequency for 0 and Nyquist
+                }
+                ::value(fbpow, fb, ch) += factor *
                     value(fr,fb) * value(fr,fb) * abs2(::value(s_in, fr, ch));
-                //(::value(s_in, fr, ch).re *::value(s_in, fr, ch).re +
-                //::value(s_in, fr, ch).im *::value(s_in, fr, ch).im);
             }
         }
     }
