@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2013 2014 2015 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -13,39 +13,132 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
- * Single channel noise reduction algorithm from Breithaupt et al,
- * based on cepstral smoothing. This is the realtime processing class.
- */
-
-#include "mha_plugin.hh"
-
-#include "timoconfig.h"
-#include "timosmooth.h"
-
+#include "smooth_cepstrum.hh"
 #include "mha_filter.hh"
+#include <algorithm>
+#include <vector>
 
-#include <algorithm> //std::min
+namespace{
 
-#define LPSCALE (5.2429e+007) //large power scaling
-#define POWSPEC_FACTOR  0.0025 //MHA default powspec scaling
-#define OVERLAP_FACTOR  2   //redefine if needed, or make into a parameter
+#define INSERT_VAR(var) insert_item(#var, &var)
+#define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, \
+                                        &smooth_cepstrum::smooth_cepstrum_if_t::on_model_param_valuechanged)
+#define INSERT_PATCH(var) INSERT_VAR(var); PATCH_VAR(var)
+constexpr static mha_real_t POWSPEC_FACTOR=0.0025; //MHA default powspec scaling
+constexpr static mha_real_t OVERLAP_FACTOR=2; //redefine if needed, or make into a parameter
+constexpr static mha_real_t EPSILON =1e-10;
+}
 
-#define EPSILON (1e-10)
+/** Constructs the beamforming plugin. */
+smooth_cepstrum::smooth_cepstrum_if_t::smooth_cepstrum_if_t(algo_comm_t & ac,
+                 const std::string & chain_name,
+                 const std::string & algo_name)
+    : MHAPlugin::plugin_t<smooth_cepstrum_t>("Cepstral smoothing single-channel noise reduction",ac),
+      xi_min_db("Minimum a priori SNR for a bin in dB(power)","-27.0","[-50,50]"),
+      f0_low("Lower limit for F0 detection in Hz","70.0","[0,400]"),
+      f0_high("Upper limit for F0 detection in Hz","300","[0,400]"),
+      delta_pitch("Quefrency half-width of pitch-set in samps","2","[0,20]"),
+      lambda_thresh("Pitch detection threshold for smooth cepstrum in magnitude","0.2","[0,3]"),
+      alpha_pitch("Alpha value to set for pitch range","0.15","[0,4]"),
+      beta_const("AR coeff for smoothing of alphas(smoothing-factors)","0.96",""),
+      kappa_const("Exponential bias correction constant for a priori SNR estimate","0.2886","[0,1]"),
+      gain_min_db("Minimum gain in dB for a frequency bin", "-17", "[-30,0]"),
+      win_f0("Window coefficients for cepstral smoothing window",
+             "[0.0207 0.0656 0.1664 0.2473 0.2473 0.1664 0.0656 0.0207]","[0,1]"),
+      alpha_const_vals("Piecewise values for steady-state alphas", "[0.2 0.4 0.92]","[0,2]"),
+      alpha_const_limits_hz("Limits for steady-state alphas given in Hz","[93.75 625.0]","[0,10000]"),
+      noisePow_name("Name of est. noise spectrum in AC space","noise_psd_estimator"),
+      spp("Subparser for exporting SPP"),
+      prior_q("priorQ for computing GLR and SPP from local SNR","0.5","[0,2]"),
+      xi_opt_db("xiOpt in dB for computing GLR and SPP from local SNR","15","[0,40]"),
+      prepared(false)
+{
+    INSERT_PATCH(xi_min_db);
+    INSERT_PATCH(f0_low);
+    INSERT_PATCH(f0_high);
+    INSERT_PATCH(delta_pitch);
+    INSERT_PATCH(lambda_thresh);
+    INSERT_PATCH(alpha_pitch);
+    INSERT_PATCH(beta_const);
+    INSERT_PATCH(kappa_const);
+    INSERT_PATCH(gain_min_db);
+    INSERT_PATCH(win_f0);
+    INSERT_PATCH(alpha_const_vals);
+    INSERT_PATCH(alpha_const_limits_hz);
+    INSERT_PATCH(noisePow_name);
 
-#define CHANLOOP for ( unsigned int c=0; c<nchan; ++c )
+    INSERT_VAR(spp);
+    spp.INSERT_VAR(prior_q);
+    spp.INSERT_VAR(xi_opt_db);
+
+    PATCH_VAR(prior_q);
+    PATCH_VAR(xi_opt_db);
+}
+
+/** Plugin preparation. This plugin checks that the input signal has the
+   * spectral domain and contains at least one channel
+   * @param signal_info
+   *   Structure containing a description of the form of the signal (domain,
+   *   number of channels, frames per block, sampling rate.
+   */
+void smooth_cepstrum::smooth_cepstrum_if_t::prepare(mhaconfig_t & signal_info)
+{
+    if (signal_info.domain != MHA_SPECTRUM)
+        throw MHA_Error(__FILE__, __LINE__,
+                        "This plugin can only process spectrum signals.");
+
+    //tell the plugin that it's ok to prepare configurations
+    prepared = true;
+
+    /* remember the transform configuration (i.e. channel numbers): */
+    tftype = signal_info;
+    /* make sure that a valid runtime configuration exists: */
+    update_cfg();
+}
+
+/* when one of the angles or radii changes, recompute the head model */
+void smooth_cepstrum::smooth_cepstrum_if_t::on_model_param_valuechanged()
+{
+    //only push configurations if prepare has already been called
+    if ( prepared ) update_cfg();
+}
+
+void smooth_cepstrum::smooth_cepstrum_if_t::update_cfg()
+{
+    smooth_params params( input_cfg(), xi_min_db.data, f0_low.data, f0_high.data,
+                        delta_pitch.data, lambda_thresh.data, alpha_pitch.data,
+                        beta_const.data, kappa_const.data, prior_q.data,
+                        xi_opt_db.data, gain_min_db.data,
+                        win_f0.data,
+                        alpha_const_vals.data, alpha_const_limits_hz.data,
+                        noisePow_name.data );
+    push_config(new smooth_cepstrum_t(ac, params) );
+}
+
+/** This plugin implements noise reduction using spectral
+   * subtraction: by nonnegative subtraction from the output magnitude
+   * of the estimated noise magnitude spectrum.
+   * @param signal
+   *   Pointer to the input signal structure.
+   * @return
+   *   Returns a pointer to the input signal structure,
+   *   with a the signal modified by this plugin.
+   */
+mha_spec_t * smooth_cepstrum::smooth_cepstrum_if_t::process(mha_spec_t * signal)
+{
+    return poll_config()->process(signal);
+}
 
 //TODO: "full" variables probably not needed,
 //ie we just use the symmetric ffts provided by MHA
 
-timoConfig::timoConfig(algo_comm_t & ac, timo_params & params) :
+smooth_cepstrum::smooth_cepstrum_t::smooth_cepstrum_t(algo_comm_t & ac, smooth_params & params_) :
 
-    ac( ac ), params( params ),
+    ac( ac ), params( params_ ),
     fftlen( params.in_cfg.fftlen ),
     mha_fft( mha_fft_new( fftlen ) ),
     nfreq( fftlen/2+1 ),
     nchan( params.in_cfg.channels ),
-    tAC(ac, fftlen, nfreq, nchan),
     ola_powspec_scale( fftlen * fftlen / POWSPEC_FACTOR / OVERLAP_FACTOR ),
     q_low( floor(params.in_cfg.srate / params.f0_high) ),
     q_high( floor(params.in_cfg.srate / params.f0_low) ),
@@ -93,7 +186,7 @@ timoConfig::timoConfig(algo_comm_t & ac, timo_params & params) :
                (hz >= params.alpha_const_limits_hz[b]))
             ++b; //advance to the next band
 
-        CHANLOOP {
+        for(unsigned c=0U; c<nchan; ++c) {
             alpha_const.value(f,c) = params.alpha_const_vals[b];
         }
     }
@@ -102,7 +195,7 @@ timoConfig::timoConfig(algo_comm_t & ac, timo_params & params) :
     lambda_ceps_prev.assign(0);
 }
 
-timoConfig::~timoConfig() {
+smooth_cepstrum::smooth_cepstrum_t::~smooth_cepstrum_t() {
     delete [] max_val;
     delete [] max_q;
     delete [] pitch_set_first;
@@ -110,10 +203,8 @@ timoConfig::~timoConfig() {
 }
 
 /* TODO: go back and make sure things are duplicated (OR NOT) across channels */
-mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
+mha_spec_t *smooth_cepstrum::smooth_cepstrum_t::process(mha_spec_t *noisyFrame)
 {
-    tAC.insert();
-
     //get the latest noise spectrum estimation
     mha_wave_t noisePowFrame = MHA_AC::get_var_waveform(ac, params.noisePow_name);
     noisePow.copy(noisePowFrame);
@@ -126,7 +217,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
 
     for (unsigned int f=0; f<nfreq; ++f)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             float denom = std::max((mha_real_t) EPSILON,noisePow.value(f,c));
             gamma_post.value(f,c) = powSpec.value(f,c) / denom;
@@ -139,7 +230,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
 
     for (unsigned int f=0; f<nfreq; ++f)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             //take the log in anticipation of cepstrum
             lambda_ml_full.value(f,c).re = log( lambda_ml_full.value(f,c).re );
@@ -150,7 +241,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     //complete the right half of the spectrum
     for (unsigned int f=1; f<nfreq; ++f)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             lambda_ml_full.value( fftlen-f, c ).re = lambda_ml_full.value(f,c).re;
         }
@@ -160,7 +251,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     mha_fft_backward_scale(mha_fft, &lambda_ml_full, &lambda_ml_ceps);
     for (unsigned int f=0; f<fftlen; ++f)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             lambda_ml_ceps.value(f,c).im = 0; //kill the imaginary
         }
@@ -174,7 +265,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     {
         for (unsigned int w=0; w<winF0.num_frames; ++w)
         {
-            CHANLOOP
+            for(unsigned c=0U; c<nchan; ++c)
             {
                 if (int(f+w)-halfWin < 0) continue;
                 if (f+w-halfWin >= nfreq) continue;
@@ -185,7 +276,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     }
 
     //init peak-picking
-    CHANLOOP
+    for(unsigned c=0U; c<nchan; ++c)
     {
         max_val[c] = -10000;
         max_q[c] = -1;
@@ -194,7 +285,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     //pick a cepstral peak
     for (unsigned int q=q_low; q<=q_high; ++q)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             if ( lambda_ml_smooth.value(q,c) > max_val[c] )
             {
@@ -205,7 +296,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     }
 
     //define the pitch set
-    CHANLOOP
+    for(unsigned c=0U; c<nchan; ++c)
     {
 
         if ( (max_val[c] > params.lambda_thresh) && (lambda_ml_ceps.value(1,c).re > 0) )
@@ -223,7 +314,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     //exponentially filter previous smoothing factors
     for (unsigned int q=0; q<nfreq; ++q)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             //watch out for denormals here
             mha_real_t f = params.beta_const * alpha_prev.value(q,c) + (1-params.beta_const) * alpha_const.value(q,c);
@@ -235,7 +326,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     alpha_frame.copy( alpha_hat ); //default vals
 
     //in pitch set, use alpha_pitch
-    CHANLOOP
+    for(unsigned c=0U; c<nchan; ++c)
     {
         if ( pitch_set_first[c] > 0 )
         {
@@ -252,7 +343,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     //quefrency adaptive smoothing
     for (unsigned int q=0; q<nfreq; ++q)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             //also watch out for denormals here
             mha_real_t f;
@@ -268,7 +359,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     //complete the spectrum
     for (unsigned int q=1; q<nfreq; ++q)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             lambda_ceps.value( fftlen-q, c ).re = lambda_ceps.value(q,c).re;
         }
@@ -277,7 +368,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     mha_fft_forward_scale(mha_fft, &lambda_ceps, &log_lambda_spec);
     for (unsigned int f=0; f<fftlen; ++f)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             log_lambda_spec.value(f,c).im = 0; //kill the imaginary
         }
@@ -287,7 +378,7 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
 
     for (unsigned int f=0; f<nfreq; ++f)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             lambda_spec.value(f,c) = exp( params.kappa_const + log_lambda_spec.value(f,c).re );
             MHAFilter::make_friendly_number( lambda_spec.value(f,c) );
@@ -306,63 +397,63 @@ mha_spec_t *timoConfig::process(mha_spec_t *noisyFrame)
     //compute SPP HERE
     for (unsigned int f=0; f<nfreq; ++f)
     {
-        CHANLOOP
+        for(unsigned c=0U; c<nchan; ++c)
         {
             GLR(f,c) = priorFact * exp(std::min(logGLRFact + GLRexp * xi_est(f,c),(float)50.0));
             MHAFilter::make_friendly_number( GLR(f,c) );
-
-            tAC.SPP(f,c) = GLR(f,c)/(1+GLR(f,c));
         }
     }
-
-    copy_AC(tAC);
 
     return &spec_out;
 }
 
-void timoConfig::copy_AC(timo_AC &tAC)
-{
-    //copy AC variables
-    tAC.gamma_post_AC.copy( gamma_post );
-    tAC.xi_ml_AC.copy( xi_ml );
-    tAC.lambda_ml_AC.copy( lambda_ml_full );
-    tAC.lambda_ml_ceps_AC.copy( lambda_ml_ceps );
-    tAC.lambda_ml_smooth_AC.copy( lambda_ml_smooth );
 
-    CHANLOOP
-    {
-        tAC.max_q_AC.value(0,c) = max_q[c];
-        tAC.max_val_AC.value(0,c) = max_val[c];
-        tAC.pitch_set_first_AC(0,c) = pitch_set_first[c];
-        tAC.pitch_set_last_AC(0,c) = pitch_set_last[c];
-    }
 
-    tAC.alpha_hat_AC.copy( alpha_hat );
-    tAC.alpha_frame_AC.copy( alpha_frame );
-    tAC.lambda_ceps_AC.copy( lambda_ceps );
-    tAC.log_lambda_spec_AC.copy( log_lambda_spec );
-    tAC.lambda_spec_AC.copy( lambda_spec );
-    tAC.xi_est_AC.copy( xi_est );
-    tAC.gain_wiener_AC.copy( gain_wiener );
-}
 
-void timo_AC::insert()
-{
-    gamma_post_AC.insert();
-    xi_ml_AC.insert();
-    lambda_ml_AC.insert();
-    lambda_ml_ceps_AC.insert();
-    lambda_ml_smooth_AC.insert();
-    max_q_AC.insert();
-    max_val_AC.insert();
-    alpha_hat_AC.insert();
-    alpha_frame_AC.insert();
-    lambda_ceps_AC.insert();
-    log_lambda_spec_AC.insert();
-    lambda_spec_AC.insert();
-    xi_est_AC.insert();
-    gain_wiener_AC.insert();
-}
+
+/*
+ * This macro connects the plugin1_t class with the MHA plugin C interface
+ * The first argument is the class name, the other arguments define the 
+ * input and output domain of the algorithm.
+ */
+MHAPLUGIN_CALLBACKS(smooth_cepstrum,smooth_cepstrum::smooth_cepstrum_if_t,spec,spec)
+
+/*
+ * This macro creates code classification of the plugin and for
+ * automatic documentation.
+ *
+ * The first argument to the macro is a space separated list of
+ * categories, starting with the most relevant category. The second
+ * argument is a LaTeX-compatible character array with some detailed
+ * documentation of the plugin.
+ */
+MHAPLUGIN_DOCUMENTATION\
+(smooth_cepstrum,
+ "noise-suppression signal-enhancement adaptive",
+ "Single-channel noise reduction applying cepstral smoothing based on\n"
+"noise power spectral density (PSD). The PSD must be provided by another plugin as an AC variable.\n"
+"The PSD computed by the 'noise\\_psd\\_estimator' plugin is compatible with this plugin.\n"
+" The name of the AC variable to read the PSD can be changed in the parameter \\emph{noisePow\\_name}.\n"
+"\n"
+"References:\n"
+"\n"
+"Colin Breithaupt, Timo Gerkmann, Rainer Martin, \"A Novel A Priori SNR\n"
+"Estimation Approach Based on Selective Cepstro-Temporal Smoothing\", IEEE\n"
+"Int. Conf. Acoustics, Speech, Signal Processing, Las Vegas, NV, USA,\n"
+"Apr. 2008.\n"
+"\n"
+"Timo Gerkmann, Rainer Martin, \"On the Statistics of Spectral Amplitudes\n"
+"After Variance Reduction by Temporal Cepstrum Smoothing and Cepstral\n"
+"Nulling\", IEEE Trans. Signal Processing, Vol. 57, No. 11, pp. 4165-4174,\n"
+"Nov. 2009.\n"
+"\n"
+"Patent:\n"
+"\n"
+"Colin Breithaupt, Timo Gerkmann, and Rainer Martin: \"Spectral Smoothing\n"
+"Method for Noisy Signals\", European Patent EP2158588B1, granted Oct.\n"
+"2010, Danish Patent DK2158588T3, granted Feb. 2011, US Patent\n"
+"US8892431B2, granted Nov. 2014.\n"
+)
 
 // Local Variables:
 // compile-command: "make"
