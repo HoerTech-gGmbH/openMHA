@@ -24,6 +24,7 @@ navigator.mediaDevices.getUserMedia({video: true})
     video.srcObject = localMediaStream;
     video.onloadedmetadata = function(e) {
         video.play();
+        video_onopen();
     };
 })
 .catch(function(e) {

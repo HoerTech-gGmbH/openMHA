@@ -19,6 +19,7 @@ function start_interval() {
     stop_interval();
     send_new_pooling_wndlen();
     send_new_pooling_type();
+    send_new_interval(interval);
 
     // periodically retrieve data from the Python server
     interval_id = setInterval(function() {
@@ -58,6 +59,10 @@ function send_new_pooling_type() {
     ws.send(JSON.stringify({new_pooling_type: new_pooling_type}));
 }
 
+function send_new_interval(interval) {
+    ws.send(JSON.stringify({new_interval: interval/1000}));
+}
+
 // update the ratelimit-status span
 function rate_limit_status_red(msg) {
     d3.select('#ratelimit-status-txt').text(msg);
@@ -93,6 +98,12 @@ function toggle_rate_limiting() {
     timer.delta = 0;
 }
 
+//Toggle beamformer
+function toggle_beamforming() {
+    var beamformer=d3.select('#beamformer').node().checked
+    ws.send(JSON.stringify({beamformer:beamformer}))
+}
+
 // toggle visibility of the rate limiting status display
 function toggle_rate_limit_display() {
     if ( d3.select('#show-ratelimit-status').node().checked ) {
@@ -119,10 +130,6 @@ ws.onopen = function() {
 
     if ( typeof twod_onopen != "undefined" ) {
         twod_onopen();
-    }
-
-    if ( typeof video_onopen != "undefined" ) {
-        video_onopen();
     }
 
     if ( typeof pseudo3d_onopen != "undefined" ) {

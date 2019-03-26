@@ -1,16 +1,18 @@
 name: doasvm_demo
+channels:
+  - defaults
 dependencies:
-- certifi=2015.9.6.2=py34_0
-- openssl=1.0.2d=0
-- pip=7.1.2=py34_0
-- python=3.4.3=2
-- readline=6.2=2
-- setuptools=18.5=py34_0
-- sqlite=3.8.4.1=1
-- system=5.8=2
-- tk=8.5.18=0
-- tornado=4.2.1=py34_1
-- wheel=0.26.0=py34_1
-- xz=5.0.5=0
-- zlib=1.2.8=0
-
+  - backports_abc=0.4=py34_0
+  - certifi=2015.9.6.2=py34_0
+  - openssl=1.0.2e=0
+  - pip=8.0.1=py34_0
+  - python=3.4.4=0
+  - readline=6.2=2
+  - setuptools=19.4=py34_0
+  - sqlite=3.9.2=0
+  - system=5.8=2
+  - tk=8.5.18=0
+  - tornado=4.3=py34_0
+  - wheel=0.26.0=py34_1
+  - xz=5.0.5=0
+  - zlib=1.2.8=0

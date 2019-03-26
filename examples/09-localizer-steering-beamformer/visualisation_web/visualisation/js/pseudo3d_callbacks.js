@@ -60,6 +60,9 @@ function set_numlines() {
     update_zaxis();
     update_video_pos();
 
+    // normally set_duration() would restart the plotting interval, and thus
+    // update the plot; however, if no interval is running we need to update
+    // the plot now
     if ( interval_id === null ) {
         plot_data();
     }
@@ -84,6 +87,9 @@ function set_xoffset() {
         .attr("width", width + margin.left + margin.right + x((num_lines-1)*x_offset) - x(0))
     update_zaxis();
 
+    // normally set_duration() would restart the plotting interval, and thus
+    // update the plot; however, if no interval is running we need to update
+    // the plot now
     if ( interval_id === null ) {
         plot_data();
     }
@@ -106,6 +112,9 @@ function set_yoffset() {
     update_svg_height();
     update_zaxis();
 
+    // normally set_duration() would restart the plotting interval, and thus
+    // update the plot; however, if no interval is running we need to update
+    // the plot now
     if ( interval_id === null ) {
         plot_data();
     }

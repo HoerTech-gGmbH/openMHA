@@ -62,26 +62,31 @@
             <label for="poolingtype">Type</label>
         </div>
         <div id="video-controls">
-            <input id="anglewidth" type="range" min="10" max="180" step="10" value="180" onchange="set_angle_width()" name="anglewidth">
+            <input id="anglewidth" type="range" min="10" max="180" step="10" value="120" onchange="set_angle_width()" name="anglewidth">
                 Angular width (<span id=anglewidth_val></span>°)
             </input>
             <br/>
-            <input id="flipvideo" type="checkbox" checked=true onchange="toggle_video_flipping()" name="flipvideo">
+            <input id="flipvideo" type="checkbox" onchange="toggle_video_flipping()" name="flipvideo">
                 Flip horizontally
             </input>
         </div>
         <div id="rate-limit-controls">
-            <input id="ratelimit" type="checkbox" checked=false onchange="toggle_rate_limiting()" name="ratelimit">
-                Activate rate limiting
+            <input id="ratelimit" type="checkbox" onchange="toggle_rate_limiting()" name="ratelimit">
+            Activate rate limiting
             </input>
-            <input id="show-ratelimit-status" type="checkbox" checked=true onchange="toggle_rate_limit_display()" name="show-ratelimit-status">
-                Display rate limiting status
+            <input id="show-ratelimit-status" type="checkbox" checked onchange="toggle_rate_limit_display()" name="show-ratelimit-status">
+            Display rate limiting status
             </input>
             <br/>
             <span id="ratelimit-status">
                 Status: <svg id="ratelimit-status-sym" onclick="reset_rate_limit_status();"></svg>
                 <span id="ratelimit-status-txt"></span>
             </span>
+        </div>
+        <div id="beamformer-control">
+            <input id="beamformer" type="checkbox" onchange="toggle_beamforming()" name="beamformer">
+            Activate beamformer
+            </input>
         </div>
     </body>
     <!-- put the scripts here because the <div> with id=d3plot needs to

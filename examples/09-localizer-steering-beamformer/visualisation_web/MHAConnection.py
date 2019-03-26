@@ -48,7 +48,8 @@ class MHAConnection(telnetlib.Telnet):
         if err_code == 0:
             return resp.rpartition(b'(MHA:success)')[0].strip()
         else:
-            raise ValueError('Error code {}:\n\t{}'.format(err_code, resp))
+            raise ValueError('Error sending message "{}" with error code {}:\nResponse: {}'
+                             .format(buffer, err_code, resp))
 
     def get_val(self, path):
         """Get the value of the variable located at "path".

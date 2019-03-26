@@ -42,6 +42,9 @@ function set_y_max() {
         update_video_pos();
     }
 
+    // normally set_duration() would restart the plotting interval, and thus
+    // update the plot; however, if no interval is running we need to update
+    // the plot now
     if ( interval_id === null ) {
         plot_data();
     }

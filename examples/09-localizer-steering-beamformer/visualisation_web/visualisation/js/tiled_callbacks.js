@@ -76,6 +76,9 @@ function set_numlines() {
     // update the duration now because num_lines changed
     set_duration();
 
+    // normally set_duration() would restart the plotting interval, and thus
+    // update the plot; however, if no interval is running we need to update
+    // the plot now
     if ( interval_id === null ) {
         plot_data();
     }
