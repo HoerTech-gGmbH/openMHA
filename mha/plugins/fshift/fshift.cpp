@@ -37,7 +37,6 @@ mha_spec_t *fshift::fshift_config_t::process(mha_spec_t *in)
   if(df==0){
     return in;
   }
-
   for(unsigned ch=0U; ch<in->num_channels; ++ch){
     if(df<0){
       for(unsigned fr=kmin; fr<kmax; ++fr){
@@ -49,7 +48,7 @@ mha_spec_t *fshift::fshift_config_t::process(mha_spec_t *in)
       }
     }
     else{
-      for(unsigned fr=kmax; fr>=kmin; --fr){
+      for(unsigned fr=kmax; (fr+1)>kmin; --fr){
         int idx=fr+df;
         if(idx<static_cast<int>(in->num_frames) and idx>=0){
           value(in,idx,ch)+=value(in,fr,ch)*delta_phi_total;
@@ -101,6 +100,8 @@ void fshift::fshift_t::prepare(mhaconfig_t & signal_info)
     m_df.data= frate;
   if( m_df.data < -frate )
     m_df.data = -frate;
+  if(m_fmax.data > frate)
+    m_fmax.data=frate;
   /* make sure that a valid runtime configuration exists: */
   update_cfg();
 }

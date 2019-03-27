@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2007 2013 2017 2018 HörTech gGmbH
+// Copyright © 2005 2007 2013 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,19 +25,16 @@
 * The \mha plugins can use the \mha configuration language for their
 * configuration. If they do so, the configuration can be changed through
 * the framework even at run time. A description of this language can be
-* found in section \ref mhascript. If the algorithms should make use of
-* the \mha configuration language, they need to be written in C++ rather than
-* pure C.
+* found in section \ref mhascript.
 *
 * In the \mha package a set of example plugins is included. These examples 
 * are the base of a step by step tutorial on how to write an \mha plugin. 
 * See section \ref example_tut for details.
 *
-* \mha plugins communicate with the \mha using a simple C language interface.
-* This way it is easy to mix plugins compiled with different C++ compilers.
-* For convenience, we provide C++ classes which can be connected
-* to the C++ interface. We strongly recommend the usage of these C++ wrappers.
-* They include out-of-the box support exporting variables to the
+* \mha plugins are implemented by inheriting from an \mha library class and
+* by implementing methods in the derived class.
+* The base class from which plugins inherit includes support for exporting
+* variables to the
 * configuration interface and for thread safe configuration update.
 *
 * The \mha C++ plugin interface consists of a few number of
@@ -78,14 +75,15 @@
 * directly or indirectly (inheriting from a class that itself inherits from
 * MHAParser::parser_t).
 *
-* \section sec_plugif_cxx Connecting the C++ class with the C Interface
+* \section sec_plugif_cxx Exporting the MHA plugin interface from the plugin
 *
-* A C++ class which provides the appropriate methods can be used as
-* an \mha Plugin by connecting it to the C interface using the
+* A shared library object containing a C++ class definition which contains
+* the required plugin methods can be used as an \mha plugin if the plugin
+* source code exports the \mha plugin interface with the help of the
 * \ref MHAPLUGIN_CALLBACKS macro. 
 *
 * The \mha Toolbox library provides a base class MHAPlugin::plugin_t\<T\>
-* (a template class) which can be used as the base class for a plugin class.
+* (a template class) which must be used as the base class for a plugin class.
 * This base class implements some necessary features for \mha plugin developers
 * like integration into the \mha configuration language environment 
 * (it inherits from MHAParser::parser_t) and 

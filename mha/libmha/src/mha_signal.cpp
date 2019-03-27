@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
-// Copyright © 2013 2016 2017 2018 HörTech gGmbH
+// Copyright © 2013 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -204,6 +204,9 @@ waveform_t::~waveform_t( void )
     }
 }
 
+std::vector<mha_real_t> waveform_t::flatten() const {
+    return std::vector<mha_real_t>(buf,buf+size(*this));
+}
 void waveform_t::copy(const std::vector<mha_real_t>& v)
 {
     if( (std::min(num_channels,num_frames)==1) && (size(*this) == v.size()) )
@@ -394,7 +397,6 @@ void waveform_t::export_to( mha_wave_t & dest )
                  channel_info, num_channels * sizeof ( mha_channel_info_t ) );
     }
 }
-
 
 /**
    \brief sum of all elements
@@ -1410,7 +1412,13 @@ void mha_fft_spec2wave_scale(mha_fft_t h,const mha_spec_t* in, mha_wave_t* out)
 namespace MHASignal {
     class hilbert_fftw_t {
     public:
+        /** C'tor of hilbert_fftw_t
+         * @param len fft length
+         **/
         hilbert_fftw_t(unsigned int len);
+        /** D'tor of hilbert_fftw_t
+         **/
+        ~hilbert_fftw_t();
         void hilbert(const mha_wave_t*,mha_wave_t*);
     private:
         unsigned int n;
@@ -1425,15 +1433,23 @@ namespace MHASignal {
 }
 
 MHASignal::hilbert_fftw_t::hilbert_fftw_t(unsigned int len)
-    : n(len)
+    : n(len),
+      buf_r_in(new fftw_real[n]),
+      buf_r_out(new fftw_real[n]),
+      buf_c_in(new fftw_complex[n]),
+      buf_c_out(new fftw_complex[n])
 {
     p1 = rfftw_create_plan( n, FFTW_REAL_TO_COMPLEX, FFTW_ESTIMATE );
     p2 = fftw_create_plan( n, FFTW_BACKWARD, FFTW_ESTIMATE );
-    buf_r_in = new fftw_real[n];
-    buf_r_out = new fftw_real[n];
-    buf_c_in = new fftw_complex[n];
-    buf_c_out = new fftw_complex[n];
     sc = 2.0/(mha_real_t)n;
+}
+
+MHASignal::hilbert_fftw_t::~hilbert_fftw_t()
+{
+    delete [] buf_r_in;
+    delete [] buf_r_out;
+    delete [] buf_c_in;
+    delete [] buf_c_out;
 }
 
 void MHASignal::hilbert_fftw_t::hilbert(const mha_wave_t* s_in,mha_wave_t* s_out)
@@ -1956,7 +1972,7 @@ mha_real_t MHASignal::rmslevel(const mha_spec_t& s,unsigned int channel,unsigned
 mha_real_t MHASignal::colored_intensity(const mha_spec_t& s,
                                         unsigned int channel,
                                         unsigned int fftlen,
-                                        mha_real_t sqfreq_response[])
+                                        mha_real_t * sqfreq_response)
 {
     return intensity(s,channel,fftlen,sqfreq_response);
 }
@@ -2728,7 +2744,6 @@ void MHASignal::copy_permuted(mha_wave_t* dest,const mha_wave_t* src)
     }
 }
 
-   
 // Local Variables:
 // compile-command: "make -C .."
 // c-basic-offset: 4

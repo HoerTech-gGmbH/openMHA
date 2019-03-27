@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -13,43 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <mha_plugin.hh>
-#include <mha_signal.hh>
-#include <math.h>
-#include <mha_events.h>
-#include <mhapluginloader.h>
-#include <mha_filter.hh>
-#include <mha_windowparser.h>
+#include "overlapadd.hh"
 
 namespace overlapadd {
-
-class overlapadd_t
-{
-public:
-    overlapadd_t(mhaconfig_t spar_in,
-                 mhaconfig_t spar_out,
-                 float wexp,
-                 float wndpos,
-                 const MHAParser::window_t& window,
-                 const MHAParser::window_t& zerowindow,
-                 float& prescale_fac,float& postscale_fac);
-    ~overlapadd_t();
-    mha_spec_t* ola1(mha_wave_t*);
-    mha_wave_t* ola2(mha_spec_t*);
-private:
-    mha_fft_t fft;
-    MHAWindow::base_t prewnd;
-    MHAWindow::base_t postwnd;
-    MHASignal::waveform_t wave_in1;
-    MHASignal::waveform_t wave_out1;
-    MHASignal::spectrum_t spec_in;
-    MHASignal::waveform_t calc_out;
-    MHASignal::waveform_t out_buf;
-    MHASignal::waveform_t write_buf;
-    unsigned int n_zero;
-    unsigned int n_pad1;
-    unsigned int n_pad2;
-};
 
 overlapadd_t::overlapadd_t(mhaconfig_t spar_in,
                            mhaconfig_t spar_out,
@@ -111,7 +78,10 @@ overlapadd_t::overlapadd_t(mhaconfig_t spar_in,
         MHAWindow::base_t pad2wnd(zerowindow.get_window(n_pad2,0,1));
         pad2wnd.ramp_end(postwnd);
     }
-    float scale_fac = sqrt(spar_in.fftlen/prewnd.sumsqr());
+    const float rms_of_window = sqrtf(prewnd.sumsqr() / spar_in.wndlen);
+    const float zeropadding_compensation = sqrtf(float(spar_in.fftlen)
+                                                 / spar_in.wndlen);
+    const float scale_fac = zeropadding_compensation / rms_of_window;
     float scale_postfac = scale_fac * spar_in.wndlen / (2.0f*spar_in.fragsize);
 
     switch( window.get_type() ){
@@ -145,20 +115,33 @@ overlapadd_t::~overlapadd_t()
     mha_fft_free(fft);
 }
 
-mha_spec_t* overlapadd_t::ola1(mha_wave_t* s)
+void overlapadd_t::wave2spec_hop_forward(mha_wave_t *s)
 {
     timeshift(wave_in1,-s->num_frames);
     assign(range(wave_in1,wave_in1.num_frames-s->num_frames,s->num_frames),*s);
+}
+void overlapadd_t::wave2spec_apply_window(void)
+{
     assign(range(wave_out1,0,n_pad1),0.0f);
     assign(range(wave_out1,n_pad1,wave_in1.num_frames),wave_in1);
     assign(range(wave_out1,n_pad1+wave_in1.num_frames,n_pad2),0.0f);
     mha_wave_t windowed_in = range(wave_out1,n_pad1,wave_in1.num_frames);
     prewnd(windowed_in);
+}
+mha_spec_t * overlapadd_t::wave2spec_compute_fft(void)
+{
     mha_fft_wave2spec(fft,&wave_out1,&spec_in);
     return &spec_in;
 }
 
-mha_wave_t* overlapadd_t::ola2(mha_spec_t* s)
+mha_spec_t* overlapadd_t::wave2spec(mha_wave_t* s)
+{
+    wave2spec_hop_forward(s);
+    wave2spec_apply_window();
+    return wave2spec_compute_fft();
+}
+
+mha_wave_t* overlapadd_t::spec2wave(mha_spec_t* s)
 {
     mha_fft_spec2wave(fft,s,&calc_out);
     postwnd(calc_out);
@@ -168,36 +151,10 @@ mha_wave_t* overlapadd_t::ola2(mha_spec_t* s)
     return &write_buf;
 }
 
-class overlapadd_if_t : public MHAPlugin::plugin_t<overlapadd_t> {
-public:
-    overlapadd_if_t(const algo_comm_t&,const std::string&,const std::string&);
-    ~overlapadd_if_t();
-    void prepare(mhaconfig_t&);
-    void release();
-    mha_wave_t* process(mha_wave_t*);
-private:
-    void update();
-    MHAEvents::patchbay_t<overlapadd_if_t> patchbay;
-    /// \brief FFT length to be used, zero-padding is FFT length-wndlength
-    MHAParser::int_t nfft;
-    /// \brief Window length to be used (overlap is 1-fragsize/wndlength)
-    MHAParser::int_t nwnd;
-    /// \brief Relative position of zero padding (0 end, 0.5 center, 1 start)
-    MHAParser::float_t wndpos;
-    MHAParser::window_t window;
-    MHAParser::float_t wndexp;
-    MHAParser::window_t zerowindow;
-    MHAParser::mhapluginloader_t plugloader;
-    MHAParser::float_mon_t prescale;
-    MHAParser::float_mon_t postscale;
-    std::string algo;
-    mhaconfig_t cf_in, cf_out;
-};
-
 overlapadd_if_t::overlapadd_if_t(const algo_comm_t& iac,const std::string&,const std::string& ialg)
     : MHAPlugin::plugin_t<overlapadd_t>(
-        "Waveform to spectrum overlap add and FFT method.\n"
-        "Audio data is collected up to wndlen, than windowed with\n"
+        "Waveform to spectrum overlap add and FFT method.\n\n"
+        "Audio data is collected up to wndlen, then windowed by\n"
         "the given window function, zero padded up to fftlength\n"
         "(symmetric zero padding or asymmetric zero padding possible),\n"
         "and Fast-Fourier-transformed.\n"
@@ -239,6 +196,9 @@ void overlapadd_if_t::prepare(mhaconfig_t& t)
         throw MHA_ErrorMsg("overlapadd: waveform input is required.");
     t.fftlen = nfft.data;
     t.wndlen = nwnd.data;
+    if(!MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize) or t.wndlen==t.fragsize)
+        throw MHA_Error(__FILE__,__LINE__,"overlapadd: The ratio of the fragsize (%d)"
+                        " and the window length (%d) must be a power of two.", t.fragsize, t.wndlen);
     if( t.fragsize > t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
                         "overlapadd: The fragment size (%d) is greater than the window size (%d).",
@@ -283,9 +243,9 @@ mha_wave_t* overlapadd_if_t::process(mha_wave_t* wave_in)
 {
     poll_config();
     mha_spec_t* spec;
-    spec = cfg->ola1(wave_in);
+    spec = cfg->wave2spec(wave_in);
     plugloader.process(spec,&spec);
-    return cfg->ola2(spec);
+    return cfg->spec2wave(spec);
 }
 
 }
@@ -295,24 +255,30 @@ MHAPLUGIN_DOCUMENTATION\
 (overlapadd,
  "plugin-arrangement signal-transformation overlap-add",
  "\n"
- "This plugin transforms fragmented waveform data into short time\n"
- "Fourier transformed audio (STFT), and after processing by spectral\n"
- "processing plugins back to the time domain. This overlap-add mechanism\n"
- "is similar to that from Allen (1977): First, the waveform signal\n"
- "is windowed with a window function, e.g., a Hanning window. In each\n"
+ "The plugin 'overlapadd' transforms fragmented waveform audio data into short\n"
+ "time Fourier transformed (STFT) audio data.\n"
+ "Both the forward and the inverse transform are performed.\n"
+ "Another plugin which processes the STFT spectra must be loaded by\n"
+ "setting \\texttt{plugin\\_name}.\n"
+ "\n"
+ "The overlap-add mechanism\n"
+ "is similar to that from Allen (1977): First the waveform signal\n"
+ "is windowed by a window function. The default window shape is the\n"
+ "Hanning window, but\n"
+ "other pre-defined and user-defined window shapes can be selected. In each\n"
  "processing frame, the window is shifted by the fragment size of the\n"
  "input waveform. Missing parts of the signal are taken from the past.\n"
  "The windowed signal is padded with zeros on both sides up to the FFT\n"
- "length, to avoid aliasing when filters are applied in the frequency\n"
- "domain.  The impulse response of the applied filter can have the\n"
+ "length to avoid aliasing when filters are applied in the frequency\n"
+ "domain.\\footnote{The impulse response of the applied filter can have the\n"
  "length of the zero padding; if the impulse response is longer, later\n"
  "parts of the impulse response will be mapped to the beginning of the\n"
  "fragment (temporal aliasing).  Linear phase filters (real gains in the\n"
  "frequency domain) produce symmetric impulse responses and therefore\n"
- "require symmetric zero padding.  The zero padded signal is now fast\n"
+ "require symmetric zero padding.}  The zero padded signal is then fast\n"
  "Fourier transformed. Parameters are FFT length $N$, window length $M$\n"
  "and the fragment size $P$.  Typical values for the window length are\n"
- "$M=2P$ or $M=4P$. The Hanning window used in the first step is $w_1(k)\n"
+ "$M=2P$ or $M=4P$. The default Hanning window is $w_1(k)\n"
  "= \\frac12(1-\\cos(2\\pi k/M))$, the windowed signal is\n"
  "\\begin{equation} x_w(m,k) = w_1(k) \\cdot x(m\\cdot P + k),\n"
  "\\end{equation} with $k=0,\\dots,M-1$ and the fragment index $m$.\n"
@@ -322,17 +288,17 @@ MHAPLUGIN_DOCUMENTATION\
  "aliasing, and thus reducing the artifacts.  The length of the Hanning\n"
  "ramps are a fraction $p$ of half the zero-padding length $(N-M)/2$.\n"
  "If $p=1$, the entire zero-padded parts are smoothed with Hanning\n"
- "ramps.  $p=0$ means, that no Hanning ramps are applied to the signal.\n"
- "This allows an exact reproduction in those cases, where the local\n"
+ "ramps.  $p=0$ means that no ramps are applied to the signal.\n"
+ "This allows an exact reproduction in those cases where the local\n"
  "impulse response of the filter (represented by all algorithms between\n"
  "FFT and inverse FFT) is shorter than the zero padding length.  The\n"
- "windowing in both stages of the overlap-add mechanism is plotted in\n"
+ "windowing in both stages of the overlap-add mechanism is shown in\n"
  "Fig.\\ \\ref{fig:overlapadd} for $M=2P$ (50\\% overlap).\n"
  "\n"
  "The total delay between input and output of a real-time system with\n"
- "fragment size $P$ and an overlap-add based linear-phase filter, is the\n"
+ "fragment size $P$ and an overlap-add based linear-phase filter is the\n"
  "window length plus half the zero-padding length, or $M+(N-M)/2$, plus\n"
- "an additional delay needed for the signal processing, and plus a delay\n"
+ "an additional delay needed for the signal processing plus a delay\n"
  "generated by the AD/DA converters (e.g., anti-aliasing filter delay).\n"
  "In an offline system, the complete input signal is available in\n"
  "advance, and thus the delay of the overlap-add method is determined\n"
@@ -360,6 +326,24 @@ MHAPLUGIN_DOCUMENTATION\
  "The delay between input and output signal is the window length.\n"
  "}{overlapadd_nozero}\n"
  "\n"
+ "The spectral signal produced by this plugin is subject to the\n"
+ "following scaling:\n"
+ "The attenuation effect of applying the analysis window "
+ "is compensated by "
+ "dividing by the RMS (root mean square) of the window. "
+ "To account for the zero-padding, which would reduce the RMS of the "
+ "signal block\\footnote{The same sum of squared samples would be divided "
+ "by fftlen instead of wndlen to compute the mean after zero-padding}, "
+ "the signal is multiplied with $\\sqrt{\\mathrm{fftlen} / \\mathrm{wndlen}}$. "
+ "Finally, the forward FFT operation in the MHA will apply a factor "
+ "$1 / \\sqrt{\\mathrm{fftlen}}$ "
+ "so that the sum of squared magnitudes of the spectral "
+ "bins produces the correct level in Pascal. "
+ "\n\n"
+ "The purpose of the scaling described in the previous paragraph is to enable"
+ " spectral algorithms to determine the physical level of the signal in the "
+ "current STFT block without having to apply correction factors for window "
+ "shape, zero-padding, overlap, FFT length, etc."
  )
 
 // Local Variables:

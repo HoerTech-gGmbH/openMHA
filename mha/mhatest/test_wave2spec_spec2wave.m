@@ -30,13 +30,14 @@ input_signal = reshape(sin([1:4000]/117),2,2000)/2 ...
 input_signal(1,:) *= -1;
 input_filename = 'test_wave2spec_spec2wave_input_signal.wav';
 output_filename = 'test_wave2spec_spec2wave_output_signal.wav';
-wavwrite(input_signal', 44100, 32, input_filename);
+
+audiowrite(input_filename,input_signal', 44100, 'BitsPerSample', 32);
 unittest_teardown(@delete, input_filename);
-wavwrite(input_signal', 44100, 32, output_filename);
+audiowrite(output_filename,input_signal', 44100, 'BitsPerSample', 32);
 unittest_teardown(@delete, output_filename);
 
 fftlen = [512 512 512 500 162 128 364 364 364];
-wndlen = [400 400 411 300 128  64 128 128 128];
+wndlen = [400 400 402 280 128  64 128 128 128];
 wndshift=[200 100 201 140  64  32  64  64  64];
 wndpos = [0.5 0.5 0.5 0.5 0.5 0.5 0.5   0   1];
 wndexp = [  1   1   1   1   1   1   1   1   1];
@@ -73,7 +74,7 @@ for scenario = 1:length(fftlen)
 
   mha_set(mha, 'cmd', 'start');
   mha_set(mha, 'cmd', 'release');
-  output_signal = wavread(output_filename)';
+  output_signal = audioread(output_filename)';
   
   real_delay(1) = maxxcorr(output_signal(1,:), input_signal(1,:));
   real_delay(2) = maxxcorr(output_signal(2,:), input_signal(2,:));

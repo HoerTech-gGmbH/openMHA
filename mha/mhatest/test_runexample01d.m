@@ -1,5 +1,5 @@
 % Execute MHA with example configuration 
-% mha/examples/01-dynamic-compression/dynamiccompression_live.cfg and check
+% examples/01-dynamic-compression/dynamiccompression_live.cfg and check
 % that the  expected audio connections in Jack are made, and that this
 % MHA can be fitted with the fitting tool.
 %
@@ -24,16 +24,18 @@ function mha = test_runexample01d()
  global execute_live_tests;
  if execute_live_tests
   
-  dir = '../examples/01-dynamic-compression/';
+  dir = '../../examples/01-dynamic-compression/';
   cfg = 'dynamiccompression_live.cfg';
 
   % start jack asynchronously
-  jack_pid = system('jackd -d alsa -r 44100 -p 64', false, 'async');
+  jack_pid = system('jackd -d dummy -r 44100 -p 64', false, 'async');
   assert_all(jack_pid > 0);
   % The PID we got is that of the shell that started jack, useless for killing jackd
   unittest_teardown(@system, 'killall -9 jackd');
+  pause(1);
   assert_all(wait_for_jack(2));
   
+  pause(1);
   mha = mha_start;
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   mha_query(mha,'',['read:' dir cfg]);

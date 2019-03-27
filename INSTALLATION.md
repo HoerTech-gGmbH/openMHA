@@ -10,12 +10,12 @@ First, add the package source with the openMHA installation packages to your sys
 In Ubuntu 18.04:
 
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7D6CDF547DA4ABD
-    sudo apt-add-repository 'deb http://apt.openmha.org/ubuntu bionic universe'
+    sudo apt-add-repository 'deb http://apt.hoertech.de bionic universe'
 
 In Ubuntu 16.04:
 
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7D6CDF547DA4ABD
-    sudo apt-add-repository 'deb http://apt.openmha.org/ubuntu xenial universe'
+    sudo apt-add-repository 'deb http://apt.hoertech.de xenial universe'
     sudo apt-get update
 
 Install openMHA:

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2008 2011 2012 2013 2016 2017 HörTech gGmbH
+// Copyright © 2005 2006 2007 2008 2011 2012 2013 2016 2017 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -73,7 +73,7 @@ protected:
 
 class fw_vars_t {
 public:
-    fw_vars_t(MHAParser::parser_t&);
+    explicit fw_vars_t(MHAParser::parser_t&);
     void lock_srate_fragsize();
     void lock_channels();
     void unlock_srate_fragsize();
@@ -95,9 +95,9 @@ private:
     void stop();    ///< stop/pause of processing
     void release(); ///< release of IO device
     void quit();    ///< controlled quit
-    static void stopped(void* h,int proc_err,int io_err){((fw_t*)h)->stopped(proc_err,io_err);};
-    static void started(void* h){((fw_t*)h)->started();};
-    static int process(void* h,mha_wave_t* sIn,mha_wave_t** sOut){return ((fw_t*)h)->process(sIn,sOut);};
+    static void stopped(void* h,int proc_err,int io_err){static_cast<fw_t*>(h)->stopped(proc_err,io_err);};
+    static void started(void* h){static_cast<fw_t*>(h)->started();};
+    static int process(void* h,mha_wave_t* sIn,mha_wave_t** sOut){return static_cast<fw_t*>(h)->process(sIn,sOut);};
     void stopped(int,int);
     void started();
     int process(mha_wave_t*,mha_wave_t**);

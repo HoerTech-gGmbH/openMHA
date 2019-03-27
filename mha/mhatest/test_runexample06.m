@@ -1,5 +1,5 @@
 % Execute MHA with example configuration 
-% mha/examples/06-binaural-beamformer/beamformer.cfg and check
+% examples/06-binaural-beamformer/beamformer.cfg and check
 % that the expected output sound file is produced.
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
@@ -18,7 +18,7 @@
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function test_runexample06()
-  dir = '../examples/06-binaural-beamformer/';
+  dir = '../../examples/06-binaural-beamformer/';
   cfg = 'beamformer.cfg';
   inwav = '2speaker_4ch_16k.wav'; 
   outwav = 'beamformer_out.wav';

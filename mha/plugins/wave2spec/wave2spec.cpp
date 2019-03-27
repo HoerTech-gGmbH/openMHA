@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -13,56 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#define MHAPLUGIN_OVERLOAD_OUTDOMAIN
-
-#include <mha_plugin.hh>
-#include <mha_signal.hh>
-#include <math.h>
-#include <mha_defs.h>
-#include <mha_events.h>
-#include "windowselector.h"
-
-class wave2spec_t : public MHA_AC::spectrum_t {
-public:
-    wave2spec_t(unsigned int nfft,
-                unsigned int nwnd_,
-                unsigned int nwndshift_,
-                unsigned int nch,
-                mha_real_t wndpos,
-                const MHAWindow::base_t& window,
-                algo_comm_t ac,
-                std::string algo);
-    mha_spec_t* process(mha_wave_t*);
-    ~wave2spec_t();
-private:
-    void calc_pre_wnd(MHASignal::waveform_t&,const MHASignal::waveform_t&);
-    unsigned int nwnd;
-    unsigned int nwndshift;
-    mha_fft_t ft;       //!< FFT class
-    unsigned int npad1; //!< length of zero padding before window
-    unsigned int npad2; //!< length of zero padding after window
-    MHAWindow::base_t window;
-    MHASignal::waveform_t calc_in;
-    MHASignal::waveform_t in_buf;
-    MHASignal::spectrum_t spec_in;      //!< non-interleaved, complex, fftlen
-};
-
-class wave2spec_if_t : public MHAPlugin::plugin_t<wave2spec_t> {
-public:
-    wave2spec_if_t(const algo_comm_t&,const std::string&,const std::string&);
-    void prepare(mhaconfig_t&);
-    void process(mha_wave_t*,mha_spec_t**);
-    void process(mha_wave_t*,mha_wave_t**);
-private:
-    void update();
-    MHAEvents::patchbay_t<wave2spec_if_t> patchbay;
-    MHAParser::int_t nfft;
-    MHAParser::int_t nwnd;
-    MHAParser::float_t wndpos;
-    windowselector_t window_config;
-    MHAParser::bool_t return_wave;
-    std::string algo;
-};
+#include "wave2spec.hh"
 
 void wave2spec_t::calc_pre_wnd(MHASignal::waveform_t& dest,const MHASignal::waveform_t& src)
 {
@@ -100,7 +52,10 @@ wave2spec_t::wave2spec_t(unsigned int nfft,
       in_buf(nwnd,nch),
       spec_in(nfft/2+1,nch)
 {
-    window *= sqrt((float)nfft/window.sumsqr());
+    const float rms_of_window = sqrtf(window.sumsqr() / nwnd);
+    const float zeropadding_compensation = sqrtf(float(nfft) / nwnd);
+    const float normalization_factor = zeropadding_compensation / rms_of_window;
+    window *= normalization_factor;
     ft = mha_fft_new( nfft );
     if (window.num_channels != 1U)
         throw MHA_Error(__FILE__,__LINE__,
@@ -138,10 +93,10 @@ mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)
 wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const std::string& ialg)
     : MHAPlugin::plugin_t<wave2spec_t>(
         "Waveform to spectrum overlap add and FFT method.\n\n"
-        "Audio data is collected up to wndlen, then windowed with\n"
+        "Audio data is collected up to wndlen, then windowed by\n"
         "the given window function, zero padded up to fftlen\n"
         "(symmetric zero padding or asymmetric zero padding possible),\n"
-        "and fast-Fourier-transformed (FFT).",iac),
+        "and fast-Fourier-transformed.",iac),
       nfft("FFT lengths","512","[1,]"),
       nwnd("window length/samples","400","[1,]"),
       wndpos("window position\n(0 = beginning, 0.5 = symmetric zero padding, 1 = end)","0.5","[0,1]"),
@@ -168,6 +123,9 @@ void wave2spec_if_t::prepare(mhaconfig_t& t)
         t.domain = MHA_SPECTRUM;
     t.fftlen = nfft.data;
     t.wndlen = nwnd.data;
+    if(!MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize) or t.wndlen==t.fragsize)
+        throw MHA_Error(__FILE__,__LINE__,"wave2spec: The ratio of the fragsize (%d)"
+                        " and the window length (%d) must be a power of two.", t.fragsize, t.wndlen);
     if( t.fragsize > t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
                         "wave2spec: The fragment size (%d) is greater than the window size (%d).",
@@ -224,11 +182,10 @@ MHAPLUGIN_PROC_CALLBACK(wave2spec,wave2spec_if_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (wave2spec,
  "signal-transformation overlap-add",
- "This plugin performs the domain transformation from time-domain "
- "waveform signal to short-time Fourier transform (STFT) signal in "
- "the spectral domain.  "
+ "The plugin 'wave2spec' transforms time-domain "
+ "waveform signal to short-time Fourier transform (STFT) signal.  "
  
- "This plugin can be used as the analysis part of a complete "
+ "It can be used as the analysis part of a complete "
  "overlap-add procedure.  "
 
  "Audio signal data is collected up to the length of the analysis "
@@ -238,25 +195,21 @@ MHAPLUGIN_DOCUMENTATION\
  "plugin receives. "
  
  "Window size and FFT length are configurable through the "
- "configuration variables of this plugin. "
+ "configuration variables. "
 
  "\n\n"
 
- "The shape of the analysis window is also configurable: "
- "Several pre-defined window shapes can be selected, and also "
- "a completely user-defined window shape. "
+ "Several pre-defined window shapes as well as user-defined "
+ "window shapes are supported. "
 
- "In addition, a configurable exponent can be applied to all samples "
- "of the window before it is used. "
+ "In addition, a configurable exponent can be applied to the "
+ "window samples. "
 
  "\n\n"
  
  "During processing, the input data samples are multiplied with the "
  "samples of the analysis window, zero "
- "padded to the FFT length and Fourier transformed. "
-
- "Please note that "
- "usually the window shift is less than the window length. "
+ "padded to the FFT length, and Fourier transformed. "
 
  "For this reason, the short time fourier transform does not exactly "
  "correspond to the current input waveform block: the analysis "
@@ -269,16 +222,15 @@ MHAPLUGIN_DOCUMENTATION\
 
  "A copy of the output spectrum is stored in the AC space in a variable\n"
  "of same name as the configured plugin name.  To access the spectrum in "
- "AC space from the code of self-developed other plugins, \n"
+ "AC space, \n"
  "the function \\verb!MHA_AC::get_var_spectrum()! can be used.\n"
- "See the \\mha developer manual or the\n"
+ "See the \\mha{} developer manual or the\n"
  "header file {\\tt mha\\_algo\\_comm.h} for details. "
 
  "\n\n"
  
- "Please refer to section \\ref{plug:overlapadd} for a description of the "
- "overlap-add method that is also followed by this plugin, "
- "\\verb!wave2spec!."
+ "See section \\ref{plug:overlapadd} for a description of the "
+ "overlap-add method that is also followed by this plugin. "
 
  "\n\n"
 
@@ -293,6 +245,25 @@ MHAPLUGIN_DOCUMENTATION\
  "\\texttt{pkg install -forge control signal} from within octave.}"
 
  "\n\n"
+
+ "The plugin performs the following scaling of the signal: "
+ "The effect on the level of applying the analysis window to "
+ "the input signal is compensated by "
+ "dividing by the RMS (root mean square) of the window. "
+ "To account for the zero-padding, which would reduce the RMS of the "
+ "signal block\\footnote{The same sum of squared samples would be divided "
+ "by fftlen instead of wndlen to compute the mean after zero-padding}, "
+ "the signal is multiplied with $\\sqrt{\\mathrm{fftlen} / \\mathrm{wndlen}}$. "
+ "Finally, the forward FFT operation in the MHA will apply a factor "
+ "$1 / \\sqrt{\\mathrm{fftlen}}$ "
+ "so that algorithms that compute signal level do not have to know the fftlen, "
+ "but can simply sum squared magnitudes of the STFT bins to compute the RMS "
+ "of the current block in Pascal. "
+ "\n\n"
+ "The purpose of the scaling described in the previous paragraph is to enable"
+ " spectral algorithms to determine the physical level of the signal in the "
+ "current STFT block without having to apply correction factors for window "
+ "shape, zero-padding, overlap, FFT length, etc."
  )
 
 // Local Variables:

@@ -31,8 +31,16 @@ namespace mha_tcp {
         acceptor->listen();
     }
 
+    asio::ip::tcp::endpoint server_t::get_endpoint() const {
+        return acceptor->local_endpoint();
+    }
+
     uint16_t server_t::get_port() const {
         return acceptor->local_endpoint().port();
+    }
+
+    asio::ip::address server_t::get_address() const {
+        return acceptor->local_endpoint().address();
     }
 
     size_t server_t::get_num_accepted_connections() const {
@@ -150,8 +158,12 @@ namespace mha_tcp {
         for (auto weak_connection : connections) {
             if (weak_connection.use_count()) {
                 auto connection = weak_connection.lock();
+                try{
                 connection->shutdown(asio::ip::tcp::socket::shutdown_receive);
-            }
+                }
+                // Ignore asio errors during connection shutdown as we are going away anyway
+                catch(asio::system_error& e){}
+                }
         }
         // in 1 second, terminate the event loop. This should give us enough
         // time to respond to the cmd=quit command with a "success" message.

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
-// Copyright © 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2013 2014 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -31,6 +31,7 @@
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <type_traits>
 #include "mha_parser.hh"
 
 // some platforms do not define M_PI in <cmath>
@@ -658,6 +659,11 @@ namespace MHASignal {
     /**
        \ingroup mhasignal
        \brief Return RMS level of a spectrum channel
+
+       Computes the RMS level of the signal in Pascal in the given channel.
+
+       Takes into account the the negative frequency bins that are not stored
+       (\ref clb).
        \param s Input spectrum
        \param channel Channel number to be tested
        \param fftlen FFT length (to correctly count the level of the Nyquist bin)
@@ -669,17 +675,21 @@ namespace MHASignal {
        \brief Colored spectrum intensity
        
        computes the squared sum of the spectrum after filtering with the
-       frequency response
+       frequency response. Takes into account the negative frequency bins
+       that are not stored (\ref clb).
        \param s Input spectrum
        \param channel Channel number to be tested
        \param fftlen FFT length (to correctly count the level of the Nyquist bin)
-       \param sqfreq_response A squared weighting factor for every fft bin.
+       \param sqfreq_response An array with one squared weighting factor for every
+                              fft bin. Array length must be equal to s->num_frames.
+                              nullptr can be given for equal weighting of all
+                              frequencies.
        \return sum of squares. Root of this is the colored level in Pa
     */
     mha_real_t colored_intensity(const mha_spec_t& s,
                                  unsigned int channel,
                                  unsigned int fftlen,
-                                 mha_real_t sqfreq_response[]);
+                                 mha_real_t * sqfreq_response = nullptr);
     /**
        \ingroup mhasignal
        \brief Find maximal absolute value
@@ -795,6 +805,8 @@ namespace MHASignal {
         waveform_t(const MHASignal::waveform_t& src);
         waveform_t(const std::vector<mha_real_t>& src);
         virtual ~waveform_t(void);
+        std::vector<mha_real_t> flatten() const;
+        explicit operator std::vector<mha_real_t>() const;
         inline void operator=(const mha_real_t& v){assign(v);};
         inline mha_real_t& operator[](unsigned int k) {return buf[k];};
         inline const mha_real_t& operator[](unsigned int k) const {return buf[k];};
@@ -2285,10 +2297,7 @@ namespace MHASignal {
        num_channels must be exchanged in dest.
      */
     void copy_permuted(mha_wave_t* dest,const mha_wave_t* src);
-
-
 }
-
 #endif
 
 // Local Variables:

@@ -7,7 +7,7 @@ include luggage.make
 REPO=../../../..
 
 #Include meta-information in the package
-PACKAGE_VERSION=4.8.1
+PACKAGE_VERSION=4.9.0
 TITLE=openMHA
 REVERSE_DOMAIN=org.openmha
 
@@ -37,7 +37,7 @@ usr-local-lib: l_usr_local_lib
 
 examples: l_usr_local_share
 	@mkdir -p ${WORK_D}/usr/local/share/openmha/examples
-	@${CP} -r ${REPO}/mha/examples/* ${WORK_D}/usr/local/share/openmha/examples/.
+	@${CP} -r ${REPO}/examples/* ${WORK_D}/usr/local/share/openmha/examples/.
 
 mfiles: l_usr_local_lib
 	@mkdir -p ${WORK_D}/usr/local/lib/openmha/mfiles

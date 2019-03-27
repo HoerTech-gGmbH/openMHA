@@ -1,9 +1,9 @@
 % Execute MHA with example configuration 
-% mha/examples/01-dynamic-compression/example_dc.cfg and check that the 
+% examples/01-dynamic-compression/example_dc.cfg and check that the 
 % expected output sound file is produced.
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2018 HörTech gGmbH
+% Copyright © 2018 2019 HörTech gGmbH
 
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -18,12 +18,12 @@
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function test_runexample01a()
-  dir = '../examples/01-dynamic-compression/';
+  dir = '../../examples/01-dynamic-compression/';
   cfg = 'example_dc.cfg';
   inwav = '1speaker_diffNoise_2ch.wav'; 
   outwav = '1speaker_diffNoise_2ch_OUT.wav';
   % we only check the expected levels of input and output sound files.
-  expected_levels = [-23.138  -21.963  -41.494  -41.065];
+  expected_levels = [-23.138  -21.963  -41.554  -41.119];
 
   % execute mha with the given config file in the example directory,
   % start processing, quit

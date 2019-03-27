@@ -1,5 +1,5 @@
 %%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
-%%% Copyright © 2005 2006 2007 2008 2009 2011 2013 2017 2018 HörTech gGmbH
+%%% Copyright © 2005 2006 2007 2008 2009 2011 2013 2017 2018 2019 HörTech gGmbH
 %%%
 %%% openMHA is free software: you can redistribute it and/or modify
 %%% it under the terms of the GNU Affero General Public License as published by
@@ -180,6 +180,20 @@ upper boundary.
 
 For keyword list variables, the range is simply a space separated list of valid
 entries.
+
+\subsubsection{Physical units}\index{physical units}
+
+Numeric variables that describe physical facts like a distance or a
+time duration need to be given in some physical unit. The default
+physical units in \mha are the SI units, e.g. seconds for a time
+value, meters for a length, kilogramms for a mass, Newton for a force,
+Pascal for a pressure, square meters for an area, meters per second
+for a velocity, Hertz for a frequency. Sometimes, configuration
+variables differ from this convention, in this case, the description
+of the variable will contain the unit to use.
+
+When assigning or reading a configuration variable, only the numerical
+value is given, the physical unit's name is never appended to the number.
 
 \subsubsection{Variable Substitution and Environment
   Variables}\index{substitution}\index{environment variable}\index{variable!environment}

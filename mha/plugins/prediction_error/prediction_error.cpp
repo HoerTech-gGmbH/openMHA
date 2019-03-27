@@ -10,8 +10,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License, version 3 for more details.
 //
-// You should have received a copy of the GNU Affero General Public License, 
+// You should have received a copy of the GNU Affero General Public License,
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+//  Ann Spriet, Ian Proudler, Marc Moonen and Jan Wouters,
+// "Adaptive Feedback Cancellation in Hearing Aids With Linear Prediction of the Desired Signal",
+// IEEE Transactions on Signal Processing, vol 53, no 10, October 2005.
+//
+// Henning Schepker and Simon Doclo,
+//"A Semidefinite Programming Approach to Min-Max Estimation of the Common Part of the Acoustic
+// Feedback Paths in Hearing Aids", IEEE/ACM Transactions on Audio,
+// Speech and Language Processing, vol 24, no 2, February 2016.
 
 /*
  * This plugin is an extension of the nlms_wave plugin and computes
@@ -31,9 +39,9 @@ prediction_error_config::prediction_error_config(algo_comm_t &ac, const mhaconfi
       frames(in_cfg.fragsize),
       channels(in_cfg.channels), //all input channels processed
       s_E(ac, pred_err->name_e.data, in_cfg.fragsize, in_cfg.channels, false), // Prediction error
-      F(ac,pred_err->name_f.data, pred_err->ntaps.data,in_cfg.channels,false), // Estimated filter is saved in the AC space and thereby made accessible to other plugins in the same chain
-      Pu(pred_err->ntaps.data,in_cfg.channels),
-      name_lpc_(pred_err->name_lpc.data),
+      F(ac,pred_err->name_f.data, pred_err->ntaps.data,in_cfg.channels,false), // Estimated filter is saved in the AC space
+      Pu(pred_err->ntaps.data,in_cfg.channels),                                // and thereby made accessible to other
+      name_lpc_(pred_err->name_lpc.data),                                      // plugins in the same chain
       n_no_update_(pred_err->n_no_update.data),
       no_iter(0),
       iter(0),
@@ -53,7 +61,8 @@ prediction_error_config::prediction_error_config(algo_comm_t &ac, const mhaconfi
 
     if( (pred_err->gains.data.size() != channels) && (pred_err->gains.data.size() != 1) )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The number of entries in the gain vector must be either %d (one per channel) or 1 (same gains for all channels)", channels);
+                        "The number of entries in the gain vector must be"
+                        " either %d (one per channel) or 1 (same gains for all channels)", channels);
 
     if( pred_err->gains.data.size() == 1 ){
 
@@ -118,10 +127,11 @@ mha_wave_t *prediction_error_config::process(mha_wave_t *s_Y, mha_real_t rho, mh
     s_LPC = MHA_AC::get_var_waveform(ac, name_lpc_);
 
     if ( s_LPC.num_channels != channels )
-    {
-        throw MHA_Error(__FILE__,__LINE__,"The number of input channels %d doesn't match the number of channels %d in name_d:%s",
-                        channels, s_LPC.num_channels, name_lpc_.c_str());
-    }
+        {
+            throw MHA_Error(__FILE__,__LINE__,"The number of input channels %d doesn't match"
+                            " the number of channels %d in name_d:%s",
+                            channels, s_LPC.num_channels, name_lpc_.c_str());
+        }
 
     unsigned int ch, kf, tap, fidx;
     mha_real_t err;
@@ -269,18 +279,18 @@ void prediction_error_config::insert()
 prediction_error::prediction_error(algo_comm_t & ac,
                                    const std::string & chain_name,
                                    const std::string & algo_name)
-    : MHAPlugin::plugin_t<prediction_error_config>("Prediction error model for adaptive feedback cancellation",ac),
-    rho("convergence coefficient","0.01","]0,2]"),
-    c("stabilization parameter","1e-5","]0,]"),
-    ntaps("number of taps in filter","32","]0,]"),
+    : MHAPlugin::plugin_t<prediction_error_config>("Prediction error method for adaptive feedback cancellation",ac),
+    rho("Step size","0.01","]0,2]"),
+    c("Regularization parameter","1e-5","]0,]"),
+    ntaps("Length of the feedback path filter in taps","32","]0,]"),
     gains("Gain in dB","[0]","[-60,60]"),
     name_e("Name of the AC variable for saving the prediction error", "E"),
     name_f("Name of the AC variable for saving the adapive filter", "F"),
     name_lpc("Name of the AC variable for the LPC coefficients", "lpc"),
-    lpc_order("Length of the lpc filter", "20", "]0, 1024]"),
-    pred_err_delay("Delay in the forward path", "96", "]0,["),
-    delay_w("Delay in the adaptive filtering path due to the microphone and loudspeaker transducers", "130", "[0,["),
-    delay_d("Delay in the adaptive filtering path for the LPC", "161", "[0,["),
+    lpc_order("Length of the lpc filter in taps", "20", "]0, 1024]"),
+    pred_err_delay("Delay in the forward path in taps", "96", "]0,["),
+    delay_w("Delay in the adaptive filtering path due to the microphone and loudspeaker transducers in taps", "130", "[0,["),
+    delay_d("Delay in the adaptive filtering path for the LPC in taps", "161", "[0,["),
     n_no_update("Number of iterations without updating the filter coefficients", "0", "[0,1024[")
 {
     // make the plug-in findable via "?listid"
@@ -373,10 +383,68 @@ MHAPLUGIN_CALLBACKS(prediction_error,prediction_error,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (prediction_error,
  "feedback-suppression adaptive",
- "This plugin computes the prediction error model to perform adaptive"
- " feedback cancellation."
- " The prediction error method produces and estimate of the"
- " feedback path by minimizing the measured and the predicted output signals."
+ "This plugin implements the prediction error method to perform adaptive feedback cancellation."
+ "The prediction error method estimates the feedback path by minimizing the error between the desired and the"
+ " predicted output signals. The algorithm handles each input sample within each input channel separately.\n"
+ "\n"
+ "The plugin computes not only the least mean squares (NLMS) estimate of the feedback path but also performs the"
+ " necessary steps for delaying the input and output signals "
+ "as well as the prewhitening using the linear predictive coding (LPC) coefficients. The flow graph of the whole"
+ " processing chain is shown in Figure~\\figref{FlowgraphAFC}.\n"
+ "\n"
+ "\\MHAfigure[][.8\\linewidth]{This figure shows the signal flow and the applied operations on the signal to perform "
+ " adaptive feedback cancellation.}{FlowgraphAFC}\n"
+ "\n"
+ "In the forward path, the error signal \\emph{vE} is estimated by subtracting the estimated feedback signal of the output"
+ " signal \\emph{vU} of the last iteration from the current input signal \\emph{vY} as shown "
+ " in Equation~\\ref{eqn:predictionerror}."
+ " This error signal is delayed a configurable number of taps, which is set using the configuration"
+ " variable \\textbf{pred\\_err\\_delay} (\\emph{dG} in the figure)."
+ " Subsequently a configurable amount of gain is applied to the delayed error signal to compute the output signal."
+ " The amount of gain can be set using the configuration variable \\textbf{gains}.\n"
+ "\\begin{equation}\n"
+ "  e[k] = y[k] - \\mathbf{vWfull}^T[k-1] \\cdot \\mathbf{u}[k-1],\n"
+ "\\label{eqn:predictionerror}\n"
+ "\\end{equation}\n"
+ "In order to compute the feedback signal (the second term in Equation~\\ref{eqn:predictionerror}),"
+ " the output signal is delayed a configurable amount of taps, filtered using the last estimate of the"
+ " feedback path \\emph{vWfull}."
+ " The aforementioned delay is set using the configuration variable \\textbf{delay\\_w} (\\emph{dW} in the figure).\n"
+ "\n"
+ "In the closed loop identification of the feedback path, the LPC coefficients are used for prewhitening the input signal"
+ " as well as the output signal."
+ " The LPC coefficients are estimated in the plugin called LPC and saved in the AC space, which the prediction\\_error "
+ "plugin reads in each iteration (\\emph{vLPC} in the figure)."
+ " The name of the corresponding AC variable must be set using the configuration variable \\textbf{name\\_lpc}."
+ " Furthermore, the dimensions of the LPC coefficients must be set using the configuration variable \\textbf{lpc\\_order}."
+ " Prior to the prewhitening step, the input as well as the output signal are delayed the same amount of taps,"
+ " which can be set by the configuration variable \\textbf{delay\\_d} (\\emph{dLp} in the figure).\n"
+ "\n"
+ "In the following step, the prewhitened error signal is computed as shown in Equation~\\ref{eqn:predictionerror}."
+ " For this, the prewhitened output signal is filtered by the last estimate of the feedback path and subtracted from"
+ " the prewhitened input signal.\n"
+ "\n"
+ "By using the prewhitened output signal and error signal, the NLMS algorithm re-estimates the coefficients of the"
+ " feedback path in each iteration.\n"
+ "\n"
+ "The estimated filter coefficients are saved in an AC variable having the same name as the plugin in"
+ " the current configuration."
+ " The name of this AC variable can also be set differently by setting the configuration variable"
+ " \\textbf{name\\_f} (\\emph{vWfull} in the figure).\n"
+ "\n"
+ "The estimation of the filter coefficients of the feedback path is performed using the update rule"
+ " given as in the following:\n"
+ "\\begin{equation}\n"
+ "  \\mathbf{vWfull}[k] = \\mathbf{vWfull}[k-1] + \\rho \\cdot \\frac{\\mathbf{u}[k-1]}{(|\\mathbf{u}^T[k-1]"
+ " \\cdot \\mathbf{u}[k-1]|+c)} \\cdot e[k],\n"
+ "\\label{eqn:predictionupdate}\n"
+ "\\end{equation}\n"
+ "where $e$ is the prewhitened error (\\emph{EPrew}) signal, and $u$ (\\emph{vUBufPrew}) is the output signal."
+ " The step size \\textbf{rho} ($\\rho$ in the equation) and the regularization parameter \\textbf{c} can be"
+ " set using the corresponding configuration variables.\n"
+ "\n"
+ "The default values of the numeric configuration variables are optimized for a sampling rate of 16KHz."
+ " They have to be adjusted for other sampling rates for optimal feedback cancellation performance. \n"
  )
 
 // Local Variables:

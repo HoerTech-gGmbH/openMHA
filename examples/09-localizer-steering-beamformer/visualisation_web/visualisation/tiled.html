@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MHA Localisation plug-in</title>
+        <meta name="description" content="A web-app for visualising localisation data from an MHA plug-in.">
+        <meta name="author" content="Marc Joliet">
+        <meta charset="UTF-8">
+        <link href="css/style.css" rel="stylesheet" type="text/css">
+        <link href="css/tiled.css" rel="stylesheet" type="text/css">
+        <link href="css/site_custom.css" rel="stylesheet" type="text/css">
+        <!--
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
+# Copyright © 2018 HörTech gGmbH
+#
+# openMHA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# openMHA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License, version 3 for more details.
+#
+# You should have received a copy of the GNU Affero General Public License, 
+# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+        -->
+    </head>
+    <body>
+        <h1>Visualisation of the MHA localisation plug-in</h1>
+        <div id="links-to-other-plots"></div>
+        <div id="video-container">
+            <video autoplay=true width=960></video>
+        </div>
+        <div id="d3plot"></div>
+        <div id="input">
+            <button id="start" onclick="start_interval();">Start</button>
+            <button id="stop" onclick="stop_interval();">Stop</button>
+            <input id="duration" type="number" min="1" value="1000" onchange="set_duration()" name="duration">Duration [ms]</input>
+            <input id="numlines" type="number" min="1" value="20" onchange="set_numlines()" name="numlines">Number of line plots</input>
+        </div>
+        <p/>
+        <div id="pooling-controls">
+            <input id="poolingwndlen" type="range" min="100" max="1000" step="10" value="200" onchange="send_new_pooling_wndlen()" name="poolingwndlen">
+                Window length: <span id="wndlen_txt"></span> ms
+            </input>
+            <input id="poolingalpha" type="range" min="0" max="1" step="0.01" value="0.0" onchange="send_new_pooling_alpha()" name="poolingalpha">
+                Alpha: <span id="alpha_txt"></span>
+            </input>
+            <select id="poolingtype" name="poolingtype" onchange="send_new_pooling_type()">
+                <option value="max">Maximum</option>
+                <option value="sum">Sum</option>
+                <option value="mean" selected>Mean</option>
+            </select>
+            <label for="poolingtype">Type</label>
+        </div>
+        <div id="video-controls">
+            <input id="anglewidth" type="range" min="10" max="180" step="10" value="120" onchange="set_angle_width()" name="anglewidth">
+                Angular width (<span id=anglewidth_val></span>°)
+            </input>
+            <br/>
+            <input id="flipvideo" type="checkbox" onchange="toggle_video_flipping()" name="flipvideo">
+                Flip horizontally
+            </input>
+        </div>
+        <div id="rate-limit-controls">
+            <input id="ratelimit" type="checkbox" onchange="toggle_rate_limiting()" name="ratelimit">
+                Activate rate limiting
+            </input>
+            <input id="show-ratelimit-status" type="checkbox" checked onchange="toggle_rate_limit_display()" name="show-ratelimit-status">
+                Display rate limiting status
+            </input>
+            <br/>
+            <span id="ratelimit-status">
+                Status: <svg id="ratelimit-status-sym" onclick="reset_rate_limit_status();"></svg>
+                <span id="ratelimit-status-txt"></span>
+            </span>
+        </div>
+        <div id="beamformer">
+            <input id="beamformer" type="checkbox" onchange="toggle_beamforming()" name="beamformer">
+            Activate beamformer
+            </input>
+        </div>
+    </body>
+    <!-- put the scripts here because the <div> with id=d3plot needs to
+    exist beforehand -->
+    <script src="js/d3.v3.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/plot_tiled.js"></script>
+    <script src="js/tiled_callbacks.js"></script>
+    <script src="js/webcam.js"></script>
+    <script src="js/video_callbacks.js"></script>
+    <script src="js/ui_callbacks.js"></script>
+</html>

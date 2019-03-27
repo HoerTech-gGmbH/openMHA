@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2008 2009 2010 2011 2013 2014 2015 2016 2018 HörTech gGmbH
+// Copyright © 2008 2009 2010 2011 2013 2014 2015 2016 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -54,8 +54,7 @@ void plugin_signals_t::update_levels(MHAOvlFilter::fftfb_t*pFb,mha_spec_t* s_in)
     unsigned int channel;
     for(band=0;band<gain.num_frames;band++)
         for(channel=0;channel<gain.num_channels;channel++){
-            // Factor 2 because get_fbpower ignores the negative frequencies.
-            gain.value(band,channel) = sqrt(2*gain.value(band,channel));
+            gain.value(band,channel) = sqrt(gain.value(band,channel));
             plug_output->buf[band+channel*gain.num_frames] =
                 gain.value(band,channel);
         }

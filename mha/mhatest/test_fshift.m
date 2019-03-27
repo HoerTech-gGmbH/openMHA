@@ -90,7 +90,6 @@ function test_fshift
     % match the phase
     [phi,e] = fminsearch(err, phi);
 
-    sqrt(e)
     % the error in the shifted range should be in the order of -40 dB SDR
     assert_difference_below(0,sqrt(e),10^(-40/20));
 

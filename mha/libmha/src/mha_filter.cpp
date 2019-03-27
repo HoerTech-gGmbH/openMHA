@@ -398,6 +398,29 @@ MHAFilter::o1flt_lowpass_t::o1flt_lowpass_t(const std::vector<mha_real_t>& tau,
         set_tau(k,tau[k]);
 }
 
+/**
+   \brief Constructor of low pass filter, sets sampling rate and time constants
+
+   \param tau Vector of time constants
+   \param fs Sampling rate
+   \param startval Initial internal state value
+*/
+MHAFilter::o1flt_lowpass_t::o1flt_lowpass_t(const std::vector<mha_real_t>& tau,
+                                            mha_real_t fs,
+                                            const std::vector<mha_real_t>& startval)
+    : MHAFilter::o1_ar_filter_t(tau.size(),fs)
+{
+    if(tau.size()!=startval.size())
+        throw MHA_Error(__FILE__,__LINE__,"o1flt_lowpass_t: Size of tau vector and initial state vector not equal"
+                        "(Got %zu and %zu)",
+                        tau.size(),startval.size()
+                        );
+    for(unsigned int k=0;k<tau.size();k++){
+        set_tau(k,tau[k]);
+    }
+    std::copy(std::begin(startval),std::end(startval),buf);
+}
+
 void MHAFilter::o1flt_lowpass_t::set_tau(unsigned int k,mha_real_t tau)
 {
     set_tau_attack(k,tau);
@@ -427,12 +450,30 @@ MHAFilter::o1flt_maxtrack_t::o1flt_maxtrack_t(const std::vector<mha_real_t>& tau
         set_tau(k,tau[k]);
 }
 
+MHAFilter::o1flt_maxtrack_t::o1flt_maxtrack_t(const std::vector<mha_real_t>& tau,
+                                              mha_real_t fs,
+                                              const std::vector<mha_real_t>& startval)
+    : MHAFilter::o1flt_lowpass_t(tau,fs,startval)
+{
+    for(unsigned int k=0;k<tau.size();k++)
+        set_tau(k,tau[k]);
+}
+
 MHAFilter::o1flt_mintrack_t::o1flt_mintrack_t(const std::vector<mha_real_t>& tau,
                                              mha_real_t fs_,
                                              mha_real_t startval)
     : MHAFilter::o1flt_lowpass_t(tau,fs_,startval)
 {
     assign(startval);
+    for(unsigned int k=0;k<tau.size();k++)
+        set_tau(k,tau[k]);
+}
+
+MHAFilter::o1flt_mintrack_t::o1flt_mintrack_t(const std::vector<mha_real_t>& tau,
+                                              mha_real_t fs,
+                                              const std::vector<mha_real_t>& startval)
+    : MHAFilter::o1flt_lowpass_t(tau,fs,startval)
+{
     for(unsigned int k=0;k<tau.size();k++)
         set_tau(k,tau[k]);
 }

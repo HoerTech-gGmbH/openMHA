@@ -19,7 +19,7 @@ function test_wave2spec_check_level
   
   % Two different combination of STFT parameters
   stft_parameters = [struct('fftlen', 800, 'wndlen', 600, 'fragsize', 300)
-                     struct('fftlen', 27, 'wndlen', 27, 'fragsize', 18)];
+                     struct('fftlen', 36, 'wndlen', 36, 'fragsize', 18)];
 
   for stft_index = 1:size(stft_parameters, 1)
     
@@ -44,7 +44,7 @@ function test_wave2spec_check_level
       % compare levels of last fragment in time domain and spectral domain
       level_wave = mha_get(mha, 'mha.level_wave.level_db');
       level_spec = mha_get(mha, 'mha.level_spec.level_db');
-      assert_almost(level_wave, level_spec, 1e-7);
+      assert_almost(level_wave, level_spec, 1e-6);
       assert_almost(93.9794, level_wave, 1e-7);
     end
   end

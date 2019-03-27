@@ -28,8 +28,8 @@ def openmha_build_steps(stage_name) {
   def system, arch, devenv
   (system,arch,devenv) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
-  // Compilation on ARM is the slowest, assign 2 CPU cores to each ARM build job
-  def cpus = (arch == "armv7") ? 2 : 1
+  // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
+  def cpus = (arch == "armv7") ? 5 : 1
 
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
@@ -38,14 +38,11 @@ def openmha_build_steps(stage_name) {
   // Avoid that artifacts from previous builds influence this build
   sh "git reset --hard && git clean -ffdx"
 
+  // Save time by using precompiled external libs if possible.
   // Install pre-compiled external libraries for the common branches
-  if ("$BRANCH_NAME" == "development" || "$BRANCH_NAME" == "master") {
-    copyArtifacts(projectName:
-                    "openMHA/external_libs/external_libs_$BRANCH_NAME",
-                  selector:
-                    lastSuccessful())
-    sh "tar xvzf external_libs.tgz"
-  }
+  copyArtifacts(projectName: "openMHA/external_libs/external_libs_development",
+                selector:    lastSuccessful())
+  sh "tar xvzf external_libs.tgz"
 
   // if we notice any differences between the sources of the precompiled
   // dependencies and the current sources, we cannot help but need to recompile
@@ -57,9 +54,11 @@ def openmha_build_steps(stage_name) {
   // On linux, we also create debian packages
   def linux = (system != "windows" && system != "mac")
   def windows = (system == "windows")
+  def mac = (system == "mac")
   def debs = linux ? " deb" : ""
+  def pkgs = mac ? " pkg" : ""
   def exes = windows ? " exe" : ""
-  sh ("make -j $cpus install unit-tests" + debs + exes)
+  sh ("make -j $cpus install unit-tests" + debs + exes + pkgs)
 
   // The system tests perform timing measurements which may fail when
   // system load is high. Retry in that case, up to 2 times.
@@ -72,7 +71,12 @@ def openmha_build_steps(stage_name) {
 
   if (windows) {
     // Store windows installer packets for later retrieval by the repository manager
-    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/exe/'
+    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/exe/*.exe'
+  }
+
+  if (mac) {
+    // Store mac installer packets for later retrieval by the repository manager
+    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/pkg/*.pkg'
   }
 }
 
@@ -125,34 +129,51 @@ pipeline {
                 }
             }
         }
-        stage("publish") {
-            agent {label "aptly"}
-            // do not publish packages for any branches except these
-            when { anyOf { branch 'master'; branch 'development' } }
-            steps {
-                checkout([$class: 'GitSCM', branches: [[name: "$BRANCH_NAME"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: "$GIT_URL-aptly"]]])
+        stage("artifacts") {
+            parallel {
+                stage("debian packages for apt") {
+                    agent {label "aptly"}
+                    // do not publish packages for any branches except these
+                    when { anyOf { branch 'master'; branch 'development' } }
+                    steps {
+                        // receive all deb packages from openmha build
+                        unstash "x86_64_bionic"
+                        unstash "x86_64_xenial"
+                        unstash "x86_64_trusty"
+                        unstash "armv7_bionic"
+                        unstash "armv7_xenial"
+                        // We can also build for 32 bits. Deactivated to save
+                        // CPU cycles on Jenkins server.
+                        // unstash "i686_bionic"
+                        // unstash "i686_xenial"
+                        // unstash "i686_trusty"
 
-                // receive all deb packages from openmha build
-                unstash "x86_64_bionic"
-                unstash "x86_64_xenial"
-                unstash "x86_64_trusty"
-                unstash "armv7_bionic"
-                unstash "armv7_xenial"
-                // We can also build for 32 bits. Deactivated to save
-                // CPU cycles on Jenkins server.
-                // unstash "i686_bionic"
-                // unstash "i686_xenial"
-                // unstash "i686_trusty"
+                        // Copies the new debs to the stash of existing debs,
+                        sh "make storage"
+                        build job:         "/hoertech-aptly/$BRANCH_NAME",
+                              quietPeriod: 300,
+                              wait:        false
+                    }
+                }
+                stage("jenkins artifacts") {
+                    steps {
+                        // Publish mac installer as a Jenkins artifact
+                        unstash "x86_64_mac"
+                        archiveArtifacts 'mha/tools/packaging/pkg/*pkg'
 
-                // Copies the new debs to the stash of existing debs,
-                // creates an apt repository, uploads.
-                sh "make"
+                        // Publish windows installer as a Jenkins artifact
+                        unstash "x86_64_windows"
+                        archiveArtifacts 'mha/tools/packaging/exe/*.exe'
 
-                // Publish windows installer on the web and as a Jenkins artifact
-                unstash "x86_64_windows"
-                archiveArtifacts 'mha/tools/packaging/exe/*.exe'
-                sh "echo 'Options +Indexes' >.htaccess"
-		sh "(echo mkdir openMHA/apt-repositories/$BRANCH_NAME/windows; echo put mha/tools/packaging/exe/*.exe openMHA/apt-repositories/$BRANCH_NAME/windows/; echo put .htaccess openMHA/apt-repositories/$BRANCH_NAME/windows/) | sftp p35492077-mha@home89585951.1and1-data.host"
+                        // Publish debian packages as Jenkins artifacts
+                        unstash "x86_64_bionic"
+                        unstash "x86_64_xenial"
+                        unstash "x86_64_trusty"
+                        unstash "armv7_bionic"
+                        unstash "armv7_xenial"
+                        archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
+                    }
+                }
             }
         }
     }
@@ -163,8 +184,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-//            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
-            mail to: 't.herzke@hoertech.de',
+            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }

@@ -1,5 +1,5 @@
 % Execute MHA with example configuration 
-% mha/examples/11-short-time-fourier-transform/example-wave2spec-spec2wave.cfg and check
+% examples/11-short-time-fourier-transform/example-wave2spec-spec2wave.cfg and check
 % that the expected output sound file is produced.
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
@@ -18,7 +18,7 @@
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function test_runexample11()
-  dir = '../examples/11-short-time-fourier-transform/';
+  dir = '../../examples/11-short-time-fourier-transform/';
   cfg = 'example-wave2spec-spec2wave.cfg';
   inwav = '2speaker_separate_ch.wav';
   outwav = '2speaker_separate_ch_delayed.wav';
