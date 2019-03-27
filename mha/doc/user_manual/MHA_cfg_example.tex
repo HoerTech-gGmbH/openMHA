@@ -18,8 +18,11 @@
 \index{example configuration}%
 \index{configuration!example}%
 \index{configuration file}%
+In this chapter there will be references to the \mha{} examples directory.
+Please refer to \emph{INSTALLATION.md} on our GitHub page\footnote{\url{https://www.github.com/hoertech-ggmbh/openMHA}} to find out where the
+examples directory is in your \mha{} distribution.
 
-In this section, an example is shown of how to configure and start the
+We will now show an example on how to configure and start the
 \mha{}. A simple algorithm is designed that applies a gain to the two-channel audio input.
 Then examples are given on how to start this algorithm in different situations (\mhad{} in command line, \Matlab{} processing).
 
@@ -27,10 +30,8 @@ Then examples are given on how to start this algorithm in different situations (
 \label{sec:dyncmp}%
 
 The example in this section describes how to apply a simple gain to the input signal.
-It is meant to serve as an illustrative case.\footnote{
-  The corresponding configuration file for this setup can be found at
-  \emph{examples/00-gain/gain.cfg}.
-}
+It is meant to serve as an illustrative case. The corresponding configuration
+file for this setup can be found at \emph{00-gain/gain.cfg} in the examples directory.
 %
 In this example the host plugin (the plugin that loads all other
 plugins) will be \verb!mhachain!.
@@ -43,11 +44,15 @@ fragsize = 64
 srate = 44100
 \end{verbatim}
 %
-We then load the host plugin and specify the audio input-output backend:
+We then specify the audio input-output backend:
 in this case we will be using audio files:
 \begin{verbatim}
-mhalib = mhachain
 iolib = MHAIOFile
+\end{verbatim}
+%
+The next step is loading the host plugin:
+\begin{verbatim}
+mhalib = mhachain
 \end{verbatim}
 %
 Next, the host plugin \verb!mhalib! loads the \verb!gain! plugin
@@ -57,9 +62,8 @@ mha.algos=[gain]
 \end{verbatim}
 %
 In the next few lines, we configure the parameters of the gain
-plugin, setting the maximum allowed values and the gain values to be applied to the first and the second audio channel. 
+plugin, setting the maximum allowed values and the gain values in dB to be applied to the first and the second audio channel. 
 %
-
 \begin{verbatim}
 mha.gain.min=-20
 mha.gain.max=20
@@ -73,20 +77,22 @@ follows:
 io.in = 1speaker_diffNoise_2ch.wav
 io.out = 1speaker_diffNoise_2ch_OUT.wav
 \end{verbatim}
-The configuration we described so far is provided with this release 
-in the file \emph{examples/00-gain/gain.cfg}.
+
 Now that we created a complete \mha{} algorithm configuration file,
 in the next step, we want to start an \mha{} framework with this configuration.
 %
 All binaries and libraries of the \verb!openMHA! should be in their respective
-search paths, see \emph{INSTALLATION.md}). After changing to the example
-directory \mha{} processing can be started with
+search paths, see \emph{INSTALLATION.md}). After changing to the gain example
+directory, \mha{} processing can be started with
 \begin{verbatim}
 mha ?read:gain.cfg cmd=start cmd=quit
 \end{verbatim}
 %
-This will process the file \emph{1speaker\_diffNoise\_2ch.wav} and output 
-\emph{1speaker\_diffNoise\_2ch\_OUT.wav}.
+This will process the file \emph{1speaker\_diffNoise\_2ch.wav} and output \\
+\emph{1speaker\_diffNoise\_2ch\_OUT.wav}\footnote{Depending on your operating
+  system and setup you may get errors about lacking permissions to write files.
+  In that case simply copy the examples directory into a location you have full
+  rights to.}.
 
 \subsection{Starting the \mhad{} with JACK input/output}%
 \label{sec:example_jack}%
@@ -143,7 +149,7 @@ by your system.
 When the JACK server is runnng, execute \emph{jack\_lsp} in your command
 line for a list of available clients and ports.
 %
-Then \mha{} live-processing can be started from the example directory with
+Then \mha{} live-processing can be started from the gain example directory with
 \begin{verbatim}
 mha ?read:gain_live.cfg cmd=start
 \end{verbatim}
@@ -186,7 +192,8 @@ connections from the local host are accepted (see section
 \ref{sec:linuxmhaserver} on page \pageref{sec:linuxmhaserver} for
 details).
 %
-To enter \mha{} commands after starting the \mha{} executable
+To enter \mha{} commands after starting the \mha{} executable in the
+\emph{examples/00-gain} directory, 
 start a network client, e.g.\ Netcat, to
 open a \mha{} console:
 \begin{verbatim}nc localhost 33337\end{verbatim}
@@ -224,19 +231,25 @@ interest, the prefix of that subset or variable can be put before the
 by typing \newline\verb!mha?!, the gain data in dB gains
 by typing \newline\verb!mha.gain.gains?!. All monitor variable contents can
 be stored into the file "example.mon" by typing
-\verb!?savemons:example.mon!. The \mhad{} will be closed
+\verb!?savemons:example.mon!\footnote{Depending on your operating
+  system and setup you may get errors about lacking permissions to write files.
+  In that case simply copy the examples directory into a location you have full
+  rights to.}. The \mhad{} will be closed
 by typing \verb!cmd = quit!.
 
 \subsection{Start the \mha{} for real-time processing with \Octave{}/\Matlab{} from Linux}%
 \index{Matlab}%
 Alternatively the \mhad{} can be controlled from within Matlab or Octave.
 %
-The \mha{} \Matlab{} tools directory (\emph{./mha/tools/mfiles/}) has to
-be in the \Matlab{} path and the mha java class must have been added by executing
+The \mha{} \Matlab{} tools directory\footnote{To find out where your \mha{}
+  tools directory is, see \emph{INSTALLATION.md}} has to be in the \Matlab{} path and the mha
+java class must have been added by executing
 \begin{verbatim}
-> javaaddpath ./mha/tools/mfiles/mhactl_java.jar
+> addpath ('[...]/mfiles')
+> javaaddpath('[...]/mfiles/mhactl_java.jar')
 \end{verbatim}
-in your \Matlab{} command window.
+in your \Matlab{} command window. The '[...]' stands for the appropriate
+directory of your \mha{} distribution. 
 %
 We assume that your \Matlab{} process is running on the same host and
 as the same user as the \mha{}, and that the \mhad{} runs with the
