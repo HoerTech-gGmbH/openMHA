@@ -32,8 +32,10 @@ function mha = test_runexample01d()
   assert_all(jack_pid > 0);
   % The PID we got is that of the shell that started jack, useless for killing jackd
   unittest_teardown(@system, 'killall -9 jackd');
+  pause(1);
   assert_all(wait_for_jack(2));
   
+  pause(1);
   mha = mha_start;
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   mha_query(mha,'',['read:' dir cfg]);

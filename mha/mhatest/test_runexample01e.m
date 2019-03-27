@@ -29,17 +29,24 @@ function mha = test_runexample01e()
 
   % start jack asynchronously
   jack_pid = system('jackd -d dummy -r 44100 -p 256', false, 'async');
+  pause(1);
   assert_all(jack_pid > 0);
   % The PID we got is that of the shell that started jack, useless for killing jackd
   unittest_teardown(@system, 'killall -9 jackd');
+  pause(1);
   assert_all(wait_for_jack(2));
   
+  pause(1);
   mha = mha_start;
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
+  pause(1);
   mha_query(mha,'',['read:' dir cfg]);
   
+  pause(1);
   expect_mha_jack_connections('');
+  pause(1);
   mha_set(mha,'cmd','start');
+  pause(1);
   expect_mha_jack_connections(sprintf(['MHA:in_1  system:capture_1\n' ...
                                        'MHA:in_2  system:capture_2\n' ...
                                        'MHA:out_1  system:playback_1\n' ...
