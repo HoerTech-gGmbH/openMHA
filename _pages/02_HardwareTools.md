@@ -10,7 +10,7 @@ menu: main
 #### Cape4all on BeagleBone Black  
 
 This setup is based on the [Beaglebone Black](https://beagleboard.org/black) or [Beaglebone Black wireless](https://beagleboard.org/black-wireless) single-board computer.
-A multi-channel audio interface board is provided as a ["cape"](https://elinux.org/Beagleboard:BeagleBone_Capes) for the BeagleBone Black: the [Cape4all](https://github.com/HoerTech-gGmbH/Cape4all).
+It is extended with a multi-channel audio interface board in the form of a ["cape"](https://elinux.org/Beagleboard:BeagleBone_Capes) for the BeagleBone: the [Cape4all](https://github.com/HoerTech-gGmbH/Cape4all).
 Its hardware design is available under open-source license on Github and was developed by the Leibniz University Hannover in the Cluster of Excellence ["Hearing4all"](http://hearing4all.eu/) with a focus on low-latency multi-channel audio capabilities.
 In collaboration with Daniel James and Chris Obbard from [64Studio](https://64studio.com/) an ALSA sound driver was developed and a Linux system was optimized for low-latency, real-time audio processing with openMHA: [Mahalia](https://github.com/64studio/mahalia-utils).     
 More information and source files are availble under the links given above.
