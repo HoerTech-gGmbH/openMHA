@@ -1,0 +1,31 @@
+---
+layout: post
+title:  "openMHA 4.9.0 available"
+date:   2019-03-27 18:00:00
+category: software
+tags: [release, 4.9.0]
+---
+
+Release __4.9.0__ of __openMHA__ contains several new plugins, features, improved documentation and bug fixes. 
+ 
+New plugins:
+- *delaysum_spec*: realizes sub-sample delay
+- *mconv*: partitioned convolution
+- *fftfilter*: FFT-based FIR filter
+
+An optional interactive mode has been added to the openMHA executable such that inputs can be passed directly in the terminal running the mha executable.  
+Checks of overlap-add configurations were implemented to ensure preservation of amplitude under the transformation.
+
+Improved [documentation of openMHA plugins](https://github.com/HoerTech-gGmbH/openMHA/blob/master/openMHA_plugins.pdf) of the *prediction_error* plugin
+and the *split* plugin.  
+The plugins that implement single-channel noise reduction (formerly known as noisePowProposed and timoSmooth) are renamed to *noise_psd_estimator* and *smooth_cepstrum* and plugin documentation has been extended.
+
+For consistency and due to the frequency-domain implementation *delaysum_spec* the delaysum plugin has been renamed to *delaysum_wave*.
+
+Bug fixes (also with thanks also to user reports on [Github](https://github.com/HoerTech-gGmbH/openMHA/issues)): 
+- Matlab gui becoming non-responsive on error
+- wrong handling of DC and Nyquist bin in FFTs
+- thread-safety of wavrec
+- crash in acPooling_wave
+- webcam handling in example 09
+
