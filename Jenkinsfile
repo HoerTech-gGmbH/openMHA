@@ -39,7 +39,7 @@ def openmha_build_steps(stage_name) {
     cpus = 2
   }
   // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
-  if (arch == "armv7")
+  if (arch == "armv7") {
     cpus = 5
   }
 
