@@ -28,8 +28,20 @@ def openmha_build_steps(stage_name) {
   def system, arch, devenv
   (system,arch,devenv) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
+  def linux = (system != "windows" && system != "mac")
+  def windows = (system == "windows")
+  def mac = (system == "mac")
+
+  // parallelize or not?
+  def cpus = 1 // default: no parallelization of build
+  // on linux, use 2 cores
+  if (linux) {
+    cpus = 2
+  }
   // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
-  def cpus = (arch == "armv7") ? 5 : 1
+  if (arch == "armv7")
+    cpus = 5
+  }
 
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
@@ -52,9 +64,6 @@ def openmha_build_steps(stage_name) {
   sh "./configure"
 
   // On linux, we also create debian packages
-  def linux = (system != "windows" && system != "mac")
-  def windows = (system == "windows")
-  def mac = (system == "mac")
   def debs = linux ? " deb" : ""
   def pkgs = mac ? " pkg" : ""
   def exes = windows ? " exe" : ""
