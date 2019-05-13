@@ -16,7 +16,7 @@
 // Encapsulation of the build steps to perform when compiling openMHA
 // dependencies
 // @param stage_name the stage name is "system && arch" where system is bionic,
-//                   xenial, trusty, windows, or mac, and arch is x86_64, i686,
+//                   xenial, windows, or mac, and arch is x86_64, i686,
 //                   or armv7. Both are separated by an && operator and spaces.
 //                   This string is also used as a valid label expression for
 //                   jenkins. The appropriate nodes have the respective labels.
@@ -29,8 +29,8 @@ def depndcy_build_steps(stage_name) {
   def system, arch, buildenv
   (system,arch,buildenv) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
-  // Compilation on ARM is the slowest, assign 2 CPU cores to each ARM build job
-  def cpus = (arch == "armv7") ? 2 : 1
+  // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
+  def cpus = (arch == "armv7") ? 5 : 2 // default on other systems is 2 cores
 
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
@@ -68,9 +68,13 @@ pipeline {
                     agent {label               "xenial && x86_64 && mhadev"}
                     steps {depndcy_build_steps("xenial && x86_64 && mhadev")}
                 }
-                stage(                         "trusty && x86_64 && mhadev") {
-                    agent {label               "trusty && x86_64 && mhadev"}
-                    steps {depndcy_build_steps("trusty && x86_64 && mhadev")}
+                stage(                         "bionic && i686 && mhadev") {
+                    agent {label               "bionic && i686 && mhadev"}
+                    steps {depndcy_build_steps("bionic && i686 && mhadev")}
+                }
+                stage(                         "xenial && i686 && mhadev") {
+                    agent {label               "xenial && i686 && mhadev"}
+                    steps {depndcy_build_steps("xenial && i686 && mhadev")}
                 }
                 stage(                         "bionic && armv7 && mhadev") {
                     agent {label               "bionic && armv7 && mhadev"}
@@ -106,7 +110,9 @@ pipeline {
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_xenial"
                 sh ("tar xzf installation.tgz && rm *.tgz")
-                unstash "x86_64_trusty"
+                unstash "i686_bionic"
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "i686_xenial"
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "armv7_bionic"
                 sh ("tar xzf installation.tgz && rm *.tgz")
@@ -130,7 +136,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-            mail to: 't.herzke@hoertech.de',
+                 mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }

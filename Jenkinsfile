@@ -15,7 +15,7 @@
 
 // Encapsulation of the build steps to perform when compiling openMHA
 // @param stage_name the stage name is "system && arch" where system is bionic,
-//                   xenial, trusty, windows, or mac, and arch is x86_64, i686,
+//                   xenial, windows, or mac, and arch is x86_64, i686,
 //                   or armv7. Both are separated by an && operator and spaces.
 //                   This string is also used as a valid label expression for
 //                   jenkins. The appropriate nodes have the respective labels.
@@ -29,7 +29,7 @@ def openmha_build_steps(stage_name) {
   (system,arch,devenv) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
   // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
-  def cpus = (arch == "armv7") ? 5 : 1
+  def cpus = (arch == "armv7") ? 5 : 2 // default on other systems is 2 cores
 
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
@@ -58,7 +58,8 @@ def openmha_build_steps(stage_name) {
   def debs = linux ? " deb" : ""
   def pkgs = mac ? " pkg" : ""
   def exes = windows ? " exe" : ""
-  sh ("make -j $cpus install unit-tests" + debs + exes + pkgs)
+  def docs = (devenv == "mhadoc") ? " mha/doc" : ""
+  sh ("make -j $cpus install unit-tests" + docs + debs + exes + pkgs)
 
   // The system tests perform timing measurements which may fail when
   // system load is high. Retry in that case, up to 2 times.
@@ -78,6 +79,12 @@ def openmha_build_steps(stage_name) {
     // Store mac installer packets for later retrieval by the repository manager
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/pkg/*.pkg'
   }
+
+  if (docs) {
+    // Store generated PDF documents as Jenkins artifacts
+    stash name: "docs", includes: 'mha/doc/*.pdf'
+    archiveArtifacts 'mha/doc/*.pdf'
+  }
 }
 
 pipeline {
@@ -85,32 +92,22 @@ pipeline {
     stages {
         stage("build") {
             parallel {
-                stage(                         "bionic && x86_64 && mhadev") {
-                    agent {label               "bionic && x86_64 && mhadev"}
-                    steps {openmha_build_steps("bionic && x86_64 && mhadev")}
+                stage(                         "bionic && x86_64 && mhadoc") {
+                    agent {label               "bionic && x86_64 && mhadoc"}
+                    steps {openmha_build_steps("bionic && x86_64 && mhadoc")}
                 }
                 stage(                         "xenial && x86_64 && mhadev") {
                     agent {label               "xenial && x86_64 && mhadev"}
                     steps {openmha_build_steps("xenial && x86_64 && mhadev")}
                 }
-                stage(                         "trusty && x86_64 && mhadev") {
-                    agent {label               "trusty && x86_64 && mhadev"}
-                    steps {openmha_build_steps("trusty && x86_64 && mhadev")}
+                stage(                         "bionic && i686 && mhadev") {
+                    agent {label               "bionic && i686 && mhadev"}
+                    steps {openmha_build_steps("bionic && i686 && mhadev")}
                 }
-                // We can also build for 32 bits. Deactivated to save
-                // CPU cycles on Jenkins server.
-                // stage(                         "bionic && i686") {
-                //     agent {label               "bionic && i686"}
-                //     steps {openmha_build_steps("bionic && i686")}
-                // }
-                // stage(                         "xenial && i686") {
-                //     agent {label               "xenial && i686"}
-                //     steps {openmha_build_steps("xenial && i686")}
-                // }
-                // stage(                         "trusty && i686") {
-                //     agent {label               "trusty && i686"}
-                //     steps {openmha_build_steps("trusty && i686")}
-                // }
+                stage(                         "xenial && i686 && mhadev") {
+                    agent {label               "xenial && i686 && mhadev"}
+                    steps {openmha_build_steps("xenial && i686 && mhadev")}
+                }
                 stage(                         "bionic && armv7 && mhadev") {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
@@ -139,14 +136,10 @@ pipeline {
                         // receive all deb packages from openmha build
                         unstash "x86_64_bionic"
                         unstash "x86_64_xenial"
-                        unstash "x86_64_trusty"
                         unstash "armv7_bionic"
                         unstash "armv7_xenial"
-                        // We can also build for 32 bits. Deactivated to save
-                        // CPU cycles on Jenkins server.
-                        // unstash "i686_bionic"
-                        // unstash "i686_xenial"
-                        // unstash "i686_trusty"
+                        unstash "i686_bionic"
+                        unstash "i686_xenial"
 
                         // Copies the new debs to the stash of existing debs,
                         sh "make storage"
@@ -168,9 +161,10 @@ pipeline {
                         // Publish debian packages as Jenkins artifacts
                         unstash "x86_64_bionic"
                         unstash "x86_64_xenial"
-                        unstash "x86_64_trusty"
                         unstash "armv7_bionic"
                         unstash "armv7_xenial"
+                        unstash "i686_bionic"
+                        unstash "i686_xenial"
                         archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
                     }
                 }

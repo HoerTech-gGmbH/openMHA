@@ -145,7 +145,7 @@ mha/doc/images: mha/doc/flowcharts
 # aptdev.hoertech.de. BRANCH_NAME is set by Jenkins
 #
 # SYSTEMs:
-# trusty, xenial, bionic, stretch, jessie, etc. Available SYSTEMs that
+# xenial, bionic, jessie, etc. Available SYSTEMs that
 # contain packages are detected automatically with $(wildcard)
 
 # There will by $SYSTEM subdirectories below this directory.
