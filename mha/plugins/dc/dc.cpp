@@ -33,6 +33,7 @@ namespace dc {
         MHAParser::vfloat_t taurmslevel;
         MHAParser::vfloat_t tauattack;
         MHAParser::vfloat_t taudecay;
+        MHAParser::vfloat_t offset;
         MHAParser::string_t filterbank;
         std::string cf_name, ef_name, bw_name;
         MHAParser::string_t chname;
@@ -94,6 +95,7 @@ namespace dc {
 
     private:
         std::vector<MHATableLookup::linear_table_t> gt;
+        std::vector<mha_real_t> offset;
         MHAFilter::o1flt_lowpass_t rmslevel;
         MHAFilter::o1flt_lowpass_t attack;
         MHAFilter::o1flt_maxtrack_t decay;
@@ -241,6 +243,9 @@ namespace dc {
             throw MHA_Error(__FILE__,__LINE__,
                             "Invalid decay time constant vector size (found %d, expected %d).",
                             v.taudecay.data.size(),s);
+        if( v.offset.data.size() != s and v.offset.data.size() )
+            throw MHA_Error(__FILE__,__LINE__,"Invalid level offset vector size (found %zu, expected %zu or 0).",
+                            v.offset.data.size(),s);
     }
 
     unsigned int get_audiochannels(unsigned int totalchannels,std::string acname,algo_comm_t ac)
@@ -269,6 +274,7 @@ namespace dc {
                )
         :
         dc_vars_validator_t(vars, nch_, domain),
+        offset(vars.offset.data),
         rmslevel([&](){
                      if(rmslevel_state.size())
                          return MHAFilter::o1flt_lowpass_t(vars.taurmslevel.data, filter_rate, rmslevel_state);
@@ -372,8 +378,7 @@ namespace dc {
                               attack(ch_idx, MHASignal::pa22dbspl(level_in)));
 
                     if (bypass) continue;
-
-                    gain = gt[ch_idx].interp( level_in_db.value(kfb,ch) );
+                    gain = gt[ch_idx].interp( level_in_db.value(kfb,ch) + (offset.size() ? offset[ch_idx] : 0));
                     if( gain < 0 )
                         gain = 0;
                     s->buf[idx] *= gain;
@@ -407,8 +412,10 @@ namespace dc {
         for(ch=0;ch<naudiochannels;ch++)
             for(kfb=0;kfb<nbands;kfb++){
                 ch_idx = kfb + nbands*ch;
-                gain = std::min(gt[ch_idx].interp(level_in_db.value(kfb,ch)),
-                                gt[ch_idx].interp(level_in_db_adjusted.value(kfb,ch)));
+                auto lvl_offset=offset.size() ? offset[ch_idx] : 0 ;
+                gain = std::min(gt[ch_idx].interp(level_in_db.value(kfb,ch) + lvl_offset),
+                                gt[ch_idx].interp(level_in_db_adjusted.value(kfb,ch)  +
+                                                  lvl_offset));
                 if( gain < 0 )
                     gain = 0;
                 for(k=0;k<s->num_frames;k++){
@@ -425,6 +432,9 @@ namespace dc {
           taurmslevel("RMS level averaging time constant in s","[]"),
           tauattack("attack time constant in s","[]"),
           taudecay("decay time constant in s","[]"),
+          offset("level offset for each band in dB. If this vector is non-empty,\n"
+                 "the computed input level are adjusted by the offset values\n"
+                 "in this vector before the gains are looked up in the gaintable.","[]"),
           filterbank("Name of fftfilterbank plugin."
                      "  Used to extract frequency information.",
                      "fftfilterbank"),
@@ -448,6 +458,7 @@ namespace dc {
         p.insert_item("tau_rmslev",&taurmslevel);
         p.insert_item("tau_attack",&tauattack);
         p.insert_item("tau_decay",&taudecay);
+        p.insert_item("level_offset",&offset);
         p.insert_item("fb", &filterbank);
         p.insert_member(chname);
         p.insert_member(bypass);
@@ -483,6 +494,10 @@ MHAPLUGIN_DOCUMENTATION\
  " For gains outside of the range of the gaintable a linear extrapolation"
  " based on the two nearest points is used."
  "\n"
+ "{\\em dc} allows to specify band-specific input level adjustments that are"
+ " applied to the measured input levels in the respective bands through the configuration"
+ " variable \\texttt{offset}. Using this variable, it is e.g. possible to compute the"
+ " gain table in LTASS levels rather than physical band levels.\n\n"
  "If spectral processing is used, the input level"
  " (abscissa of the input-output function, cf. \\figref{dc_in_out})\n"
  "is determined by an attack- and release-filter of the short time"
