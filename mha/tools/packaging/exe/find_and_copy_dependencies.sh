@@ -22,7 +22,7 @@ rm bin/thismha.sh
 # Walk the dependency tree, exclude all files that are already present in ./bin and files in windows/system
 cd ./bin
 for file in $(ls ./); do
-    cygpath -u $(cygcheck.exe ./$file | tr -d "[:blank:]") | grep -v "$(pwd)" | grep -iv "/c/" >> ../tmp;
+    cygpath -u $(cygcheck.exe ./$file | tr -d "[:blank:]") | grep -v "$(pwd)" | (grep -iv "/c/" || true) >> ../tmp
     if grep -iq "not find" ../tmp; then
         echo "find_and_copy_dependencies:" \n "Error: " `grep -i "not find" ../tmp` >&2
     fi
