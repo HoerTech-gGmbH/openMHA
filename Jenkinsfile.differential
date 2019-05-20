@@ -17,8 +17,7 @@
 // This workaround invokes the msys2 bash, sets the required environment
 // variables, and executes the desired command.
 def windows_bash(command) {
-  bat ("C:\\msys64\\usr\\bin\\bash -c" +
-       '"source /jenkins.environment && set -ex && " + command + ' "')
+  bat ('C:\\msys64\\usr\\bin\\bash -c "source /jenkins.environment && set -ex && ' + command + ' "')
   // This will probably fail if command contains multiple lines, quotes, or
   // similar.  Currently all our shell commands are simple enough for this
   // simple solution to work.  Should this no longer be sufficient, then we
