@@ -13,6 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+// On the 2019 windows build server, we cannot use the sh step anymore.
+// This workaround invokes the msys2 bash, sets the required environment
+// variables, and executes the desired command.
+def windows_bash(command) {
+  bat ("C:\\msys64\\usr\\bin\\bash -c" +
+       '"source /jenkins.environment && set -ex && " + command + ' "')
+  // This will probably fail if command contains multiple lines, quotes, or
+  // similar.  Currently all our shell commands are simple enough for this
+  // simple solution to work.  Should this no longer be sufficient, then we
+  // could write the shell command to a temporary file and execute this file
+  // after sourcing the enviroment.
+}
+
 // Encapsulation of the build steps to perform when compiling openMHA
 // @param stage_name the stage name is "system && arch" where system is bionic,
 //                   xenial, windows, or mac, and arch is x86_64, i686,
@@ -28,55 +41,62 @@ def openmha_build_steps(stage_name) {
   def system, arch, devenv
   (system,arch,devenv) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
+  // platform booleans
+  def linux = (system != "windows" && system != "mac")
+  def windows = (system == "windows")
+  def mac = (system == "mac")
+
+  // additional make targets
+  def debs = linux ? " deb" : ""
+  def pkgs = mac ? " pkg" : ""
+  def exes = windows ? " exe" : ""
+  def docs = (devenv == "mhadoc") ? " mha/doc" : ""
+
   // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
   def cpus = (arch == "armv7") ? 5 : 2 // default on other systems is 2 cores
+
+  // workaround to invoke unix shell on all systems
+  def bash = { command -> windows ? windows_bash(command) : sh(command) }
 
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
   checkout scm
 
   // Avoid that artifacts from previous builds influence this build
-  sh "git reset --hard && git clean -ffdx"
+  bash "git reset --hard && git clean -ffdx"
 
   // Save time by using precompiled external libs if possible.
   // Install pre-compiled external libraries for the common branches
   copyArtifacts(projectName: "openMHA/external_libs/external_libs_development",
                 selector:    lastSuccessful())
-  sh "tar xvzf external_libs.tgz"
+  bash "tar xvzf external_libs.tgz"
 
   // if we notice any differences between the sources of the precompiled
   // dependencies and the current sources, we cannot help but need to recompile
-  sh "git diff --exit-code || (git reset --hard && git clean -ffdx)"
+  bash "git diff --exit-code || (git reset --hard && git clean -ffdx)"
 
   // Autodetect libs/compiler
-  sh "./configure"
+  bash "./configure"
 
-  // On linux, we also create debian packages
-  def linux = (system != "windows" && system != "mac")
-  def windows = (system == "windows")
-  def mac = (system == "mac")
-  def debs = linux ? " deb" : ""
-  def pkgs = mac ? " pkg" : ""
-  def exes = windows ? " exe" : ""
-  def docs = (devenv == "mhadoc") ? " mha/doc" : ""
-  sh ("make -j $cpus install unit-tests" + docs + debs + exes + pkgs)
+  // Build executables, plugins and installers, execute unit tests
+  bash ("make -j $cpus install unit-tests" + docs + debs + exes + pkgs)
 
   // The system tests perform timing measurements which may fail when
   // system load is high. Retry in that case, up to 2 times.
-  retry(3){sh "make -C mha/mhatest"}
+  retry(3){bash "make -C mha/mhatest"}
 
   if (linux) {
-    // Store debian packets for later retrieval by the repository manager
+    // Store debian packages
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
   }
 
   if (windows) {
-    // Store windows installer packets for later retrieval by the repository manager
+    // Store windows installer
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/exe/*.exe'
   }
 
   if (mac) {
-    // Store mac installer packets for later retrieval by the repository manager
+    // Store mac installer
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/pkg/*.pkg'
   }
 

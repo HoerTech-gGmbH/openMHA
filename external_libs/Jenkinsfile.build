@@ -13,6 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+// On the 2019 windows build server, we cannot use the sh step anymore.
+// This workaround invokes the msys2 bash, sets the required environment
+// variables, and executes the desired command.
+def windows_bash(command) {
+  bat ("C:\\msys64\\usr\\bin\\bash -c" +
+       '"source /jenkins.environment && set -ex && " + command + ' "')
+  // This will probably fail if command contains multiple lines, quotes, or
+  // similar.  Currently all our shell commands are simple enough for this
+  // simple solution to work.  Should this no longer be sufficient, then we
+  // could write the shell command to a temporary file and execute this file
+  // after sourcing the enviroment.
+}
+
 // Encapsulation of the build steps to perform when compiling openMHA
 // dependencies
 // @param stage_name the stage name is "system && arch" where system is bionic,
@@ -29,27 +42,35 @@ def depndcy_build_steps(stage_name) {
   def system, arch, buildenv
   (system,arch,buildenv) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
+  // platform booleans
+  def linux = (system != "windows" && system != "mac")
+  def windows = (system == "windows")
+  def mac = (system == "mac")
+
   // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
   def cpus = (arch == "armv7") ? 5 : 2 // default on other systems is 2 cores
+
+  // workaround to invoke unix shell on all systems
+  def bash = { command -> windows ? windows_bash(command) : sh(command) }
 
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
   checkout scm
 
   // Avoid that artifacts from previous builds influence this build
-  sh "git reset --hard && git clean -ffdx"
+  bash "git reset --hard && git clean -ffdx"
 
   // Autodetect libs/compiler
-  sh "./configure"
+  bash "./configure"
 
   // Compile and install dependencies
-  sh ("make -j $cpus external_libs googletest")
+  bash ("make -j $cpus external_libs googletest")
 
   // Place dependency sources in tar file so we can manipulate their timestamp
-  sh ("tar cvzf sources.tgz --exclude=.git external_libs")
+  bash ("tar cvzf sources.tgz --exclude=.git external_libs")
   
   // Place installed dependencies in tar file to preserve their timestamps
-  sh ("tar cvzf installation.tgz external_libs/*-*-*/")
+  bash ("tar cvzf installation.tgz external_libs/*-*-*/")
 
   // Store compiled/installed dependencies for this job's build artifact
   stash name: (arch+"_"+system), includes: '*.tgz'
