@@ -87,16 +87,17 @@ def openmha_build_steps(stage_name) {
   if (linux) {
     // Store debian packages
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
+    archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
   }
 
   if (windows) {
     // Store windows installer
-    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/exe/*.exe'
+    archiveArtifacts 'mha/tools/packaging/exe/*.exe'
   }
 
   if (mac) {
     // Store mac installer
-    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/pkg/*.pkg'
+    archiveArtifacts 'mha/tools/packaging/pkg/*.pkg'
   }
 
   if (docs) {
@@ -145,51 +146,24 @@ pipeline {
                 }
             }
         }
-        stage("artifacts") {
-            parallel {
-                stage("debian packages for apt") {
-                    agent {label "aptly"}
-                    // do not publish packages for any branches except these
-                    when { anyOf { branch 'master'; branch 'development' } }
-                    steps {
-                        // receive all deb packages from openmha build
-                        unstash "x86_64_bionic"
-                        unstash "x86_64_xenial"
-                        unstash "armv7_bionic"
-                        unstash "armv7_xenial"
-                        unstash "i686_bionic"
-                        unstash "i686_xenial"
+        stage("debian packages for apt") {
+            agent {label "aptly"}
+            // do not publish packages for any branches except these
+            when { anyOf { branch 'master'; branch 'development' } }
+            steps {
+                // receive all deb packages from openmha build
+                unstash "x86_64_bionic"
+                unstash "x86_64_xenial"
+                unstash "armv7_bionic"
+                unstash "armv7_xenial"
+                unstash "i686_bionic"
+                unstash "i686_xenial"
 
-                        // Copies the new debs to the stash of existing debs,
-                        sh "make storage"
-                        build job:         "/hoertech-aptly/$BRANCH_NAME",
-                              quietPeriod: 300,
-                              wait:        false
-                    }
-                }
-                stage("jenkins artifacts") {
-                    steps {
-                        // Clean build artifacts from earlier builds
-                        sh "git clean -fdx ."
-
-                        // Publish mac installer as a Jenkins artifact
-                        unstash "x86_64_mac"
-                        archiveArtifacts 'mha/tools/packaging/pkg/*pkg'
-
-                        // Publish windows installer as a Jenkins artifact
-                        unstash "x86_64_windows"
-                        archiveArtifacts 'mha/tools/packaging/exe/*.exe'
-
-                        // Publish debian packages as Jenkins artifacts
-                        unstash "x86_64_bionic"
-                        unstash "x86_64_xenial"
-                        unstash "armv7_bionic"
-                        unstash "armv7_xenial"
-                        unstash "i686_bionic"
-                        unstash "i686_xenial"
-                        archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
-                    }
-                }
+                // Copies the new debs to the stash of existing debs,
+                sh "make storage"
+                build job:         "/hoertech-aptly/$BRANCH_NAME",
+                      quietPeriod: 300,
+                      wait:        false
             }
         }
     }

@@ -93,16 +93,17 @@ def openmha_build_steps(stage_name) {
   if (linux) {
     // Store debian packages
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
+    archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
   }
 
   if (windows) {
     // Store windows installer
-    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/exe/*.exe'
+    archiveArtifacts 'mha/tools/packaging/exe/*.exe'
   }
 
   if (mac) {
     // Store mac installer
-    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/pkg/*.pkg'
+    archiveArtifacts 'mha/tools/packaging/pkg/*.pkg'
   }
   if (docs) {
     // Store generated PDF documents as Jenkins artifacts
@@ -152,29 +153,6 @@ pipeline {
                     agent {label               "mac && x86_64 && mhadev"}
                     steps {openmha_build_steps("mac && x86_64 && mhadev")}
                 }
-            }
-        }
-        stage("artifacts") {
-            steps {
-                // Clean build artifacts from earlier builds
-                sh "git clean -fdx ."
-
-                // Publish mac installer as a Jenkins artifact
-                unstash "x86_64_mac"
-                archiveArtifacts 'mha/tools/packaging/pkg/*.pkg'
-
-                // Publish windows installer as a Jenkins artifact
-                unstash "x86_64_windows"
-                archiveArtifacts 'mha/tools/packaging/exe/*.exe'
-
-                // Publish debian packages as Jenkins artifacts
-                unstash "x86_64_bionic"
-                unstash "x86_64_xenial"
-                unstash "i686_bionic"
-                unstash "i686_xenial"
-                unstash "armv7_bionic"
-                unstash "armv7_xenial"
-                archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
             }
         }
     }
