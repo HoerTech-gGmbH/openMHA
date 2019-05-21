@@ -169,6 +169,9 @@ pipeline {
                 }
                 stage("jenkins artifacts") {
                     steps {
+                        // Clean build artifacts from earlier builds
+                        sh "git clean -fdx ."
+
                         // Publish mac installer as a Jenkins artifact
                         unstash "x86_64_mac"
                         archiveArtifacts 'mha/tools/packaging/pkg/*pkg'
