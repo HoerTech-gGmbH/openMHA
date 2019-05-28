@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2011 2013 2014 2015 2016 HörTech gGmbH
-// Copyright © 2017 2018 HörTech gGmbH
+// Copyright © 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -174,6 +174,7 @@ mha_spec_t* fftfb_plug_t::process(mha_spec_t* s)
 {
     unsigned int ch, kfb, kfr, oidx, iidx;
     memset(s_out.buf,0,sizeof(s_out.buf[0])*s_out.num_frames*s_out.num_channels);
+    insert();
     for(ch=0;ch<s->num_channels;ch++){
         for(kfb=0; kfb<nbands(); kfb++){
             for(kfr=bin1(kfb); kfr < bin2(kfb); kfr++){
@@ -189,6 +190,7 @@ mha_spec_t* fftfb_plug_t::process(mha_spec_t* s)
 
 mha_wave_t* fftfb_plug_t::process(mha_wave_t* s)
 {
+    insert();
     if( return_imag_ ){
         mha_wave_t* sRe;
         mha_wave_t* sIm;
