@@ -23,6 +23,7 @@ chklib(){
 }
 (
     PREFIX="./"
+    DEBUG="-g"
     for arg in "$@"; do
         case "$arg" in
             --prefix=*)
@@ -30,6 +31,9 @@ chklib(){
                 ;;
             --debug)
                 DEBUG="-g"
+                ;;
+            --nodebug)
+                DEBUG=""
                 ;;
             --debug=*)
                 DEBUG=`echo $arg | sed 's/--debug=/-g/'`
