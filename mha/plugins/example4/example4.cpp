@@ -55,7 +55,7 @@ public:
                const std::string & algo_name);
 
     /** Plugin preparation. This plugin checks that the input signal
-     * has the waveform domain and contains enough channels.
+     * has the spectral domain and contains enough channels.
      * @param signal_info 
      *   Structure containing a description of the form of the signal
      *   (domain, number of channels, frames per block, sampling rate.
