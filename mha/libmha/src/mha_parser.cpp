@@ -2715,7 +2715,7 @@ std::string MHAParser::c_ifc_parser_t::op_setval( MHAParser::expression_t & x )
 {
     if( c_parse_cmd ) {
         if( retv )
-            memset( retv, 0, ret_size );
+            *retv = 0;
         std::string s = x.lval + x.op + x.rval;
         liberr = c_parse_cmd( libdata, s.c_str(  ), retv, ret_size );
         test_error(  );
@@ -2728,7 +2728,7 @@ std::string MHAParser::c_ifc_parser_t::op_query( MHAParser::expression_t & x )
 {
     if( c_parse_cmd ) {
         if( retv )
-            memset( retv, 0, ret_size );
+            *retv = 0;
         std::string s = x.lval + x.op + x.rval;
         liberr = c_parse_cmd( libdata, s.c_str(  ), retv, ret_size );
         test_error(  );
@@ -2741,7 +2741,7 @@ std::string MHAParser::c_ifc_parser_t::op_subparse( MHAParser::expression_t & x 
 {
     if( c_parse_cmd ) {
         if( retv )
-            memset( retv, 0, ret_size );
+            *retv = 0;
         std::string s = x.lval + x.op + x.rval;
         liberr = c_parse_cmd( libdata, s.c_str(  ), retv, ret_size );
         test_error(  );
