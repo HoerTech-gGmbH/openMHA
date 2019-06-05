@@ -1,6 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2002 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 
-# Copyright © 2016 2017 2018 HörTech gGmbH
+# Copyright © 2016 2017 2018 2019 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -24,13 +24,7 @@ endif
 
 MHANAME = openMHA
 
-all:
-	$(MAKE) -C flowcharts
-	$(MAKE)  $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf $(MHANAME)_calibration_manual.pdf
-	$(MAKE)  plugins
-
-
-.PHONY : test images kernel parser plugins mhadoc MHA_plugin_auto_doc.pdf clean
+all: $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf $(MHANAME)_calibration_manual.pdf $(MHANAME)_plugins.pdf $(MHANAME)_starting_guide.pdf
 
 # Don't delete intermediate files
 .SECONDARY: 
@@ -45,23 +39,11 @@ PLUGIN_NAMES:=$(subst $(space),"\n",$(filter-out io,$(foreach plg,$(PLUGINDIRS),
 
 MHADISTS = openMHA
 
-test:
-	make -C src all
-
-
-mhakernel.pdf: kernel
-	make -C mhakernel/latex refman.pdf
-	@cp mhakernel/latex/refman.pdf $@
-
-mhastructure.pdf: mhastructure
-	TEXINPUTS="./:../../:../../flowcharts/fmt_png/:" make -C MHA-Structure/latex refman.pdf
-	@cp MHA-Structure/latex/refman.pdf $@
-
 $(MHANAME)_developer_manual.pdf: images mhadoc
 	@cp optparams.sty mhadoc/latex
 	@cp flowcharts/fmt_png/*.png mhadoc/latex
 	@cp flowcharts/fmt_pdf/*.pdf mhadoc/latex
-	make -C mhadoc/latex refman.pdf
+	$(MAKE) -C mhadoc/latex refman.pdf
 	@cp mhadoc/latex/refman.pdf $@
 
 $(MHANAME)_application_manual.pdf: user_manual/$(MHANAME)_application_manual.pdf
@@ -73,45 +55,32 @@ $(MHANAME)_calibration_manual.pdf: calibration/$(MHANAME)_calibration_manual.pdf
 $(MHANAME)_gui_manual.pdf: user_manual/$(MHANAME)_gui_manual.pdf
 	@cp $< $@
 
+$(MHANAME)_starting_guide.pdf: starting_guide/$(MHANAME)_starting_guide.pdf
+	@cp $< $@
+
 .PHONY : images user_manual/$(MHANAME)_application_manual.pdf user_manual/$(MHANAME)_gui_manual.pdf
 
-user_manual/$(MHANAME)_application_manual.pdf:
-	make -C user_manual $(MHANAME)_application_manual.pdf
+user_manual/$(MHANAME)_application_manual.pdf: images
+	$(MAKE) -C user_manual $(MHANAME)_application_manual.pdf
 
-user_manual/$(MHANAME)_gui_manual.pdf:
-	make -C user_manual $(MHANAME)_gui_manual.pdf
+user_manual/$(MHANAME)_gui_manual.pdf: images
+	$(MAKE) -C user_manual $(MHANAME)_gui_manual.pdf
 
-calibration/$(MHANAME)_calibration_manual.pdf:
-	make -C calibration $(MHANAME)_calibration_manual.pdf
+calibration/$(MHANAME)_calibration_manual.pdf: images
+	$(MAKE) -C calibration $(MHANAME)_calibration_manual.pdf
+
+starting_guide/$(MHANAME)_starting_guide.pdf: images
+	$(MAKE) -C starting_guide $(MHANAME)_starting_guide.pdf
 
 images:
-	make -C flowcharts
-
-kernel: images
-	rm -Rf mhakernel/latex
-	rm -Rf mhakernel/html
-	doxygen mhakernel.cfg
+	$(MAKE) -C flowcharts
 
 mhadoc: images
 	rm -Rf mhadoc
 	doxygen mhaextern.cfg
 	cp hoertechlogo.png mhadoc/html/
 
-mhastructure: images 
-	rm -Rf MHA-Structure/latex
-	doxygen MHA-Structure.cfg
-
-parser:
-	doxygen mhaparser.cfg
-
 plugins: $(MHADISTS:=_plugins.pdf)
-	rm -Rf mhaplugins
-	doxygen mhaplugins.cfg
-	cp hoertechlogo.png mhaplugins/html/
-
-MHA_plugin_auto_doc.pdf:
-	rm -f MHA_plugin_auto_doc.*
-	MHA_PARSER_PRECISION=6 ./create_doc_for_all_plugins.sh
 
 %_plugin.list: 
 	echo $(PLUGIN_NAMES) | sort > $@
@@ -126,7 +95,7 @@ MHA_plugin_auto_doc.pdf:
 	cat plugin_doc_postfix.tex >> $@
 	rm -f temp$@
 
-%.pdf: %.tex
+%.pdf: %.tex images
 	TEXINPUTS=flowcharts/fmt_png::. pdflatex -file-line-error $<
 	-bibtex $*
 	TEXINPUTS=flowcharts/fmt_png::. pdflatex -file-line-error $<
