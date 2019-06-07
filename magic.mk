@@ -49,8 +49,7 @@ SOURCE_DIR = src
 # The git commit SHA is compiled into the binaries for reproducible research.
 # Detect current git commit hash:
 GITCOMMITHASH = $(shell $(GIT_DIR)/mha/tools/get_git_commit_hash.sh)
-CFLAGS += -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
-CXXFLAGS += -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
+GITCOMMITHASHCFLAGS = -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
 
 # The name of the toolbox library.
 MHATOOLBOX_NAME = openmha

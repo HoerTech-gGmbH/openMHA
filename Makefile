@@ -96,10 +96,12 @@ deb: unit-tests
 	$(MAKE) -C mha/tools/packaging/deb pack
 endif
 
-exe: unit-tests
+exe: installer-exe unit-tests
+installer-exe: install
 	$(MAKE) -C mha/tools/packaging/exe exe
 
-pkg: install
+pkg: installer-pkg unit-tests
+installer-pkg: install
 	$(MAKE) -C mha/tools/packaging/pkg all
 
 release: test unit-tests install

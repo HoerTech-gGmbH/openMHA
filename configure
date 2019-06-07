@@ -192,6 +192,11 @@ chklib(){
             ;;
     esac
 
+    if type -P ccache >/dev/null
+    then
+        echo 'COMPILERPREFIX:=ccache $(COMPILERPREFIX)'
+    fi
+
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
     echo 'CXXFLAGS+=-Wall -Wnon-virtual-dtor -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG

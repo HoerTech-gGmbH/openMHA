@@ -78,7 +78,7 @@ def openmha_build_steps(stage_name) {
   bash "./configure"
 
   // Build executables, plugins and installers, execute unit tests
-  bash ("make -j $cpus install unit-tests" + docs + debs + exes + pkgs)
+  bash ("make -j $cpus unit-tests" + docs + debs + exes + pkgs)
 
   // The system tests perform timing measurements which may fail when
   // system load is high. Retry in that case, up to 2 times.

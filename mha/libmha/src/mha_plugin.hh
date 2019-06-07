@@ -23,6 +23,7 @@
 #include "mha_parser.hh"
 #include "mha_algo_comm.h"
 #include "mha_events.h"
+#include "mha_git_commit_hash.hh"
 
 #if _WIN32
 #include <windows.h>
@@ -32,14 +33,6 @@
 #define WINAPI
 #define HINSTANCE int
 #endif
-
-#ifndef GITCOMMITHASH
-#define GITCOMMITHASH "independent-plugin-build"
-#endif
-
-/// store git commit hash in every binary plgin to support reproducible research
-__attribute__((unused)) static const char* mha_git_commit_hash =
-  "MHA_GIT_COMMIT_HASH=" GITCOMMITHASH;
 
 class Test_mha_plugin_rtcfg_t; // Forward declaration
 
@@ -415,11 +408,6 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
         __declspec(dllexport) unsigned int prefix ## MHAGetVersion(void)                \
         {                                                               \
             return MHA_VERSION;                                         \
-        }                                                               \
-                                                                        \
-        __declspec(dllexport) const char* prefix ## MHAGetCommitHash(void)              \
-        {                                                               \
-            return mha_git_commit_hash;                                 \
         }                                                               \
                                                                         \
         __declspec(dllexport) int prefix ## MHASet(void* handle,const char *command,char *retval,unsigned int maxretlen) \
