@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 HörTech gGmbH
+# Copyright © 2018 2019 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -33,11 +33,26 @@ FULLVERSION=$(shell \
     )-$(PACKAGEVER)-$(COMMITHASH)$(GITMODIFIED)-gcc$(GCC_VER)
 CURRENTPATH=$(shell pwd)
 
+DEBARCH = $(shell dpkg-architecture --query DEB_BUILD_ARCH)
+# FIXME: allow to specify architecture per package to enable architecture "all"
+
+ALL_DEBS=$(patsubst %.csv,hoertech/$(CODENAME)/%_$(FULLVERSION)_$(DEBARCH).deb,$(ALL_CSV))
+
 build:
 	(cd $(REPO) && make all)
 
-pack:
+# Main openMHA Makefile invokes pack after openMHA has been compiled.
+pack: $(ALL_DEBS)
+
+# Target clean cannot be invoked in parallel with targe pack, needs to be called
+# separately and be allowed to finish BEFORE pack is called if clean is desired.
+clean:
 	rm -Rf hoertech
+
+hoertech/$(CODENAME)/.directory:
 	mkdir -p hoertech/$(CODENAME)
-	for c in $(ALL_CSV); do (cd $(REPO) && BUILD_DIR=$(BUILD_DIR) mhamakedeb $(CURRENTPATH)/$$c $(FULLVERSION) ) || exit 1; done
-	mv $(REPO)/*.deb hoertech/$(CODENAME)
+	touch $@
+
+hoertech/$(CODENAME)/%_$(FULLVERSION)_$(DEBARCH).deb: hoertech/$(CODENAME)/.directory %.csv %.control %.dep
+	cd $(REPO) && BUILD_DIR=$(BUILD_DIR) mhamakedeb $(CURRENTPATH)/$*.csv $(FULLVERSION)
+	mv $(REPO)/$(notdir $@) hoertech/$(CODENAME)/

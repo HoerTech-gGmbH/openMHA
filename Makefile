@@ -88,9 +88,11 @@ coverage: unit-tests
 # Unit-test can not be run when cross-compiling
 ifeq "$(ARCH)" "armhf"
 deb: install
+	$(MAKE) -C mha/tools/packaging/deb clean
 	$(MAKE) -C mha/tools/packaging/deb pack
 else
 deb: unit-tests
+	$(MAKE) -C mha/tools/packaging/deb clean
 	$(MAKE) -C mha/tools/packaging/deb pack
 endif
 
