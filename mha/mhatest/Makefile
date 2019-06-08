@@ -15,9 +15,27 @@
 
 include ../../config.mk
 
-all: octavetest reproducibilitytest thumbsup
+ifeq "$(findstring arm, $(ARCH))" "arm"
+all: paralleloctavetests reproducibilitytest
+else
+all: octavetest reproducibilitytest
+endif
 
 unit-tests:
+
+
+paralleloctavetests: paralleloctavetest_0 paralleloctavetest_1
+
+paralleloctavetest_%:
+	rm -rf ../$@
+	cp -rl . ../$@
+	$(MAKE) -C ../$@ paralleloctavetest
+	rm -rf ../$@
+
+paralleloctavetest:
+	pwd | grep -q $@
+	ls test_*.m | awk 'NR%2!='$(shell pwd | sed -e 's/.*$@_//') | xargs rm
+	$(MAKE) octavetest
 
 ifeq "$(findstring arm, $(COMPILERPREFIX))" "arm"
 octavetest:
@@ -34,10 +52,6 @@ endif
 reproducibilitytest:
 	@if [ -n "`git status --porcelain -uno`" ]; then (echo; echo "*******************************************************************"; echo "***" The following files have been modified since git check-out: "***";  echo "*******************************************************************"; git status --porcelain -uno; exit 1); fi
 	@if [ -n "`find ../plugins -type f -exec grep -- -modified '{}' ';'`" ] ; then (echo; echo "***********************************************************************"; echo "***" The following files carry a modified-since-git-check-out stamp: "***";  echo "***********************************************************************"; find ../plugins -type f -exec grep -- -modified '{}' ';'; exit 1); fi
-
-thumbsup: reproducibilitytest octavetest
-	@cat THUMBS.txt
-
 
 install: all
 

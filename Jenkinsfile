@@ -82,7 +82,7 @@ def openmha_build_steps(stage_name) {
 
   // The system tests perform timing measurements which may fail when
   // system load is high. Retry in that case, up to 2 times.
-  retry(3){bash "make -C mha/mhatest"}
+  retry(3){bash "make -j $cpus -C mha/mhatest"}
 
   if (linux) {
     // Store debian packages
