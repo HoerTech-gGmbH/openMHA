@@ -44,15 +44,11 @@ def openmha_build_steps(stage_name) {
   def linux = (system != "windows" && system != "mac")
   def windows = (system == "windows")
   def mac = (system == "mac")
-
-  // additional make targets
-  def debs = linux ? " deb" : ""
-  def pkgs = mac ? " pkg" : ""
-  def exes = windows ? " exe" : ""
-  def docs = (devenv == "mhadoc") ? " mha/doc" : ""
+  def docs = (devenv == "mhadoc")
 
   // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
   def cpus = (arch == "armv7") ? 5 : 2 // default on other systems is 2 cores
+  def additional_cpus_for_docs = 8
 
   // workaround to invoke unix shell on all systems
   def bash = { command -> windows ? windows_bash(command) : sh(command) }
@@ -77,33 +73,42 @@ def openmha_build_steps(stage_name) {
   // Autodetect libs/compiler
   bash "./configure"
 
-  // Build executables, plugins and installers, execute unit tests
-  bash ("make -j $cpus unit-tests" + docs + debs + exes + pkgs)
+  if (docs) {
+    bash ("make -j ${cpus + additional_cpus_for_docs} doc")
 
-  // The system tests perform timing measurements which may fail when
-  // system load is high. Retry in that case, up to 2 times.
-  retry(3){bash "make -j $cpus -C mha/mhatest"}
+    // Store generated PDF documents as Jenkins artifacts
+    stash name: "docs", includes: '*.pdf'
+    archiveArtifacts '*.pdf'
+  }
+
+  // Build executables, plugins, execute tests
+  bash ("make -j $cpus test")
+
+  // Retrieve the documents, wait if they are not ready yet
+  def wait_time = 1
+  retry(5){
+    sleep(wait_time)
+    wait_time = wait_time + 90
+    unstash "docs"
+  }
 
   if (linux) {
+    bash ("make -j $cpus deb")
     // Store debian packages
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
     archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
   }
 
   if (windows) {
+    bash ("make -j $cpus exe")
     // Store windows installer
     archiveArtifacts 'mha/tools/packaging/exe/*.exe'
   }
 
   if (mac) {
+    bash ("make -j $cpus pkg")
     // Store mac installer
     archiveArtifacts 'mha/tools/packaging/pkg/*.pkg'
-  }
-
-  if (docs) {
-    // Store generated PDF documents as Jenkins artifacts
-    stash name: "docs", includes: 'mha/doc/*.pdf'
-    archiveArtifacts 'mha/doc/*.pdf'
   }
 }
 
