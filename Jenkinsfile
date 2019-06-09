@@ -78,6 +78,7 @@ def openmha_build_steps(stage_name) {
 
     // Store generated PDF documents as Jenkins artifacts
     stash name: "docs", includes: '*.pdf'
+    bash ("echo stashed docs on $system $arch at \$(date -R)")
     archiveArtifacts '*.pdf'
   }
 
@@ -89,7 +90,7 @@ def openmha_build_steps(stage_name) {
   retry(12){
     sleep(wait_time)
     wait_time = wait_time + 15
-    bash ("echo unstash docs attempt ${wait_time / 15} on $system $arch")
+    bash ("echo unstash docs attempt ${wait_time / 15} on $system $arch at \$(date -R)")
     unstash "docs"
   }
 
