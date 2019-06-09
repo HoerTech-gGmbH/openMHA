@@ -111,9 +111,6 @@ parser:
 	doxygen mhaparser.cfg
 
 plugins: $(MHADISTS:=_plugins.pdf)
-	rm -Rf mhaplugins
-	doxygen mhaplugins.cfg
-	cp hoertechlogo.png mhaplugins/html/
 
 MHA_plugin_auto_doc.pdf:
 	rm -f MHA_plugin_auto_doc.*
