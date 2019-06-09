@@ -42,7 +42,7 @@ PLUGIN_NAMES:=$(subst $(space),"\n",$(filter-out io,$(foreach plg,$(PLUGINDIRS),
 MHADISTS = openMHA
 
 $(MHANAME)_developer_manual.pdf: images mhadoc
-	cp -lv optparams.sty mhadoc/latex
+	cp -lv --remove-destination optparams.sty mhadoc/latex
 	cp -lv --remove-destination flowcharts/fmt_png/*.png mhadoc/latex
 	cp -lv --remove-destination flowcharts/fmt_pdf/*.pdf mhadoc/latex
 	$(MAKE) -C mhadoc/latex refman.pdf
@@ -76,12 +76,12 @@ starting_guide/$(MHANAME)_starting_guide.pdf: images mhadoc
 
 images:
 	$(MAKE) -C images
-	$(MAKE) -C flowcharts
+	$(MAKE) -C flowcharts pdf
 
 mhadoc: images
 	rm -Rf mhadoc
 	doxygen mhaextern.cfg
-	cp -v hoertechlogo.png mhadoc/html/
+#	cp -v hoertechlogo.png mhadoc/html/
 
 plugins:
 	$(MAKE) -C ../.. mha/plugins
@@ -101,11 +101,11 @@ plugins:
 	rm -f temp$@
 
 %.pdf: %.tex images
-	TEXINPUTS=flowcharts/fmt_png::. pdflatex -file-line-error $<
+	TEXINPUTS=flowcharts/fmt_png:flowcharts/fmt_pdf:. pdflatex -file-line-error $<
 	-bibtex $*
-	TEXINPUTS=flowcharts/fmt_png::. pdflatex -file-line-error $<
+	TEXINPUTS=flowcharts/fmt_png:flowcharts/fmt_pdf:. pdflatex -file-line-error $<
 	makeindex $*
-	TEXINPUTS=flowcharts/fmt_png::. pdflatex -file-line-error $<
+	TEXINPUTS=flowcharts/fmt_png:flowcharts/fmt_pdf:. pdflatex -file-line-error $<
 	rm -f $*.{aux,dvi,log,toc,out,idx,ilg}
 
 clean:
