@@ -91,9 +91,10 @@ def openmha_build_steps(stage_name) {
 
   // Retrieve the documents, wait if they are not ready yet
   def wait_time = 1
-  retry(5){
+  retry(12){
     sleep(wait_time)
-    wait_time = wait_time + 90
+    wait_time = wait_time + 15
+    bash ("echo unstash docs attempt ${wait_time / 15} on $system $arch")
     unstash "docs"
   }
 

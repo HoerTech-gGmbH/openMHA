@@ -48,7 +48,7 @@ def openmha_build_steps(stage_name) {
 
   // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
   def cpus = (arch == "armv7") ? 5 : 2 // default on other systems is 2 cores
-  def additional_cpus_for_docs = 8
+  def additional_cpus_for_docs = 3
 
   // workaround to invoke unix shell on all systems
   def bash = { command -> windows ? windows_bash(command) : sh(command) }
@@ -86,9 +86,10 @@ def openmha_build_steps(stage_name) {
 
   // Retrieve the documents, wait if they are not ready yet
   def wait_time = 1
-  retry(5){
+  retry(12){
     sleep(wait_time)
-    wait_time = wait_time + 90
+    wait_time = wait_time + 15
+    bash ("echo unstash docs attempt ${wait_time / 15} on $system $arch")
     unstash "docs"
   }
 
