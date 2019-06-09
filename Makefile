@@ -54,7 +54,7 @@ external_libs:
 	$(MAKE) -C $@
 
 doc: mha/doc
-	cp mha/doc/*.pdf .
+	/bin/cp -lv mha/doc/*.pdf .
 
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
