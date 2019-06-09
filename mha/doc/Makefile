@@ -26,7 +26,7 @@ MHANAME = openMHA
 
 all: $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf $(MHANAME)_calibration_manual.pdf $(MHANAME)_starting_guide.pdf plugins
 
-.PHONY : test images plugins mhadoc clean
+.PHONY : images plugins mhadoc clean
 
 # Don't delete intermediate files
 .SECONDARY: 
@@ -40,9 +40,6 @@ MHA_PLUGINDIRS=$(subst $(space),;,$(PLUGINDIRS))
 PLUGIN_NAMES:=$(subst $(space),"\n",$(filter-out io,$(foreach plg,$(PLUGINDIRS),$(word 3,$(subst /,$(space),$(plg))))))
 
 MHADISTS = openMHA
-
-test:
-	make -C src all
 
 $(MHANAME)_developer_manual.pdf: images mhadoc
 	cp -lv optparams.sty mhadoc/latex
@@ -65,19 +62,20 @@ $(MHANAME)_starting_guide.pdf: starting_guide/$(MHANAME)_starting_guide.pdf
 
 .PHONY : images user_manual/$(MHANAME)_application_manual.pdf user_manual/$(MHANAME)_gui_manual.pdf
 
-user_manual/$(MHANAME)_application_manual.pdf:
+user_manual/$(MHANAME)_application_manual.pdf: images mhadoc
 	$(MAKE) -C user_manual $(MHANAME)_application_manual.pdf
 
-user_manual/$(MHANAME)_gui_manual.pdf:
+user_manual/$(MHANAME)_gui_manual.pdf: images mhadoc
 	$(MAKE) -C user_manual $(MHANAME)_gui_manual.pdf
 
-calibration/$(MHANAME)_calibration_manual.pdf:
+calibration/$(MHANAME)_calibration_manual.pdf: images mhadoc
 	$(MAKE) -C calibration $(MHANAME)_calibration_manual.pdf
 
-starting_guide/$(MHANAME)_starting_guide.pdf:
+starting_guide/$(MHANAME)_starting_guide.pdf: images mhadoc
 	$(MAKE) -C starting_guide $(MHANAME)_starting_guide.pdf
 
 images:
+	$(MAKE) -C images
 	$(MAKE) -C flowcharts
 
 mhadoc: images
@@ -85,7 +83,9 @@ mhadoc: images
 	doxygen mhaextern.cfg
 	cp -v hoertechlogo.png mhadoc/html/
 
-plugins: $(MHADISTS:=_plugins.pdf)
+plugins:
+	$(MAKE) -C ../.. mha/plugins
+	$(MAKE) $(MHADISTS:=_plugins.pdf)
 
 %_plugin.list: 
 	echo $(PLUGIN_NAMES) | sort > $@
@@ -100,7 +100,7 @@ plugins: $(MHADISTS:=_plugins.pdf)
 	cat plugin_doc_postfix.tex >> $@
 	rm -f temp$@
 
-%.pdf: %.tex
+%.pdf: %.tex images
 	TEXINPUTS=flowcharts/fmt_png::. pdflatex -file-line-error $<
 	-bibtex $*
 	TEXINPUTS=flowcharts/fmt_png::. pdflatex -file-line-error $<

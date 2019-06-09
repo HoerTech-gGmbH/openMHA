@@ -33,8 +33,6 @@ MODULES = \
 	external_libs
 
 DOCMODULES = \
-	mha/doc/flowcharts \
-	mha/doc/images \
 	mha/doc \
 
 all: $(MODULES)
@@ -112,8 +110,7 @@ mha/libmha: external_libs
 mha/frameworks: mha/libmha
 mha/plugins: mha/libmha mha/frameworks
 mha/mhatest: mha/plugins mha/frameworks
-mha/doc: mha/doc/images all
-mha/doc/images: mha/doc/flowcharts
+mha/doc: config.mk
 
 # Debian package management by Jenkins:
 # New Debian Packages are stored in our storage for debian repositories.
