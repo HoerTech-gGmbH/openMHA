@@ -24,11 +24,7 @@ endif
 
 MHANAME = openMHA
 
-all:
-	$(MAKE) -C flowcharts
-	$(MAKE)  $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf $(MHANAME)_calibration_manual.pdf $(MHANAME)_starting_guide.pdf
-	$(MAKE)  plugins
-
+all: $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf $(MHANAME)_calibration_manual.pdf $(MHANAME)_starting_guide.pdf plugins
 
 .PHONY : test images plugins mhadoc clean
 
