@@ -39,6 +39,7 @@
 \usepackage{courier}
 \usepackage{amssymb}
 \usepackage{sectsty}
+\usepackage{textcomp}
 \renewcommand{\familydefault}{\sfdefault}
 \allsectionsfont{%
   \fontseries{bc}\selectfont%
@@ -133,20 +134,18 @@ The large incidence rate of hearing loss (about 13\% of the US population), its 
 
 \begin{itemize}
    \item \large{{openMHA}}   \\
-     \footnotesize{\url{https://github.com/HoerTech-gGmbH/openMHA/releases}} 
-   %\item \large{{jack\_playrec}} \\
-   %\footnotesize{\url{https://github.com/HoerTech-gGmbH/jack\_playrec/blob/master/INSTALLATION.md}}
-   \item \large{{Matlab or Octave}}    \\
-     \footnotesize{\url{https://de.mathworks.com/downloads/}} \\
-     \footnotesize{\url{https://www.gnu.org/software/octave/download.html}}
+     \footnotesize{\url{https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md}}
+   \item \large{{either Octave or Matlab}}    \\
+     \footnotesize{\url{https://www.gnu.org/software/octave/download.html}} \\
+     \footnotesize{\url{https://de.mathworks.com/downloads/}}
    \item \large{{JACK Audio Connection Kit}}
    \begin{itemize}
-   \item \textcolor{orange}{\textbf{Linux:}} \\
+   \item \textcolor{orange}{\textbf{Linux}} \\
    $\rightarrow$ {\ttfamily sudo apt-get install jackd2} \\
    $\rightarrow$ {\ttfamily sudo apt-get install qjackctl}
    \item \textcolor{orange}{\textbf{Windows}} \\
    \footnotesize{\url{http://jackaudio.org/downloads/}}
-   \item \textcolor{orange}{\textbf{\large{MacOs}}} \\
+   \item \textcolor{orange}{\textbf{\large{macOS}}} \\
    \footnotesize{\url{http://jackaudio.org/downloads/}} %\\ or \\
    %\footnotesize{\url{http://www.jackosx.com/download.html}}
    \end{itemize}
@@ -165,15 +164,17 @@ The large incidence rate of hearing loss (about 13\% of the US population), its 
 \subsection{Update to Latest Version}
 
 
-Make sure that you are using the latest version of openMHA. You can install the new version by:
+Make sure that you are using the latest version of openMHA.
+You can upgrade to the latest version by reinstalling the
+latest version:
 
 \begin{itemize}
-   \item \textcolor{orange}{\textbf{Linux:}} \\
-   $\rightarrow$ {\ttfamily sudo apt-get install \texttt{-{}-}only-upgrade openmha} 
+   \item \textcolor{orange}{\textbf{Linux}} \\
+   $\rightarrow$ {\ttfamily sudo apt-get install openmha openmha-examples} 
    \item \textcolor{orange}{\textbf{Windows}} \\
    \footnotesize{\url{https://github.com/HoerTech-gGmbH/openMHA/releases}}
    
-   \item \textcolor{orange}{\textbf{\large{MacOs}}} \\
+   \item \textcolor{orange}{\textbf{\large{macOS}}} \\
    \footnotesize{\url{https://github.com/HoerTech-gGmbH/openMHA/releases}}
    \end{itemize}
 
@@ -190,7 +191,7 @@ Make sure that you are using the latest version of openMHA. You can install the 
     \subsection{Starting openMHA}
     \label{starting_openmha}
     
-After installing openMHA (download link: see section \ref{subsec:required_prog}) you can start openMHA by: 
+After installing openMHA (see section \ref{subsec:required_prog}) you can start openMHA by: 
 
 \subsubsection*{\textcolor{orange}{\textbf{Linux}}}
 
@@ -206,7 +207,7 @@ $\rightarrow$ "\textbf{Windows + R}" \\
    
 
 
-\subsubsection*{\textcolor{orange}{MacOS}}
+\subsubsection*{\textcolor{orange}{macOS}}
 
 Open your \textbf{terminal} by pressing \textbf{Command + Space} in order to open spotlight search, type "terminal" and press enter. Type: \\ \\
 $\rightarrow$ {{\ttfamily \textbf{mha \texttt{-{}-}interactive}} \\ \\ in your \textbf{terminal}.\\
@@ -221,8 +222,17 @@ $\rightarrow$ {{\ttfamily \textbf{mha \texttt{-{}-}interactive}} \\ \\ in your \
 
 \dotfill \\
 
-\large{\textbf{Note}}: It does matter in which directory openMHA is started! This is very important to understand for later tasks: If you are using your console \\ e.g. in \textit{/home/YourUserName/Documents/workshop/}, by typing {{\ttfamily \textit{mha \texttt{-{}-}interactive}}, openMHA will be started in \textbf{this} directory! You can start openMHA from any path you want. \\
-
+\large{\textbf{Note}}:
+The current filesystem directory of the terminal becomes the
+current working directory (CWD) of the openMHA process.
+openMHA resolves relative file names relative to the CWD.
+If in some of the following examples in this guide
+openMHA raises an error because it cannot find some file,
+check that the file name can be resolved from the CWD.
+To fix file lookup problems, either change the CWD in the
+terminal before restarting the openMHA, or adapt any file
+names to include correct absolute or relative paths.
+\\
 
 \textcolor{orange}{\textbf{You have managed to start openMHA. In the next section there will be a step-by-step tutorial on how to use a simple configuration.}}
 
@@ -242,9 +252,11 @@ One possibility to transfer audio signals to a JACK server is the jack\_playrec.
 \item Start a JACK server (sample rate = 44100)
 \item Check if you already followed the instructions from \textbf{section \ref{sec:beforeplayrec}}
     \item \textbf{Start Matlab} 
-    \item \textbf{Go to} $\rightarrow$ \textbf{/Users/usr/local/lib YourUserName/usr/local/lib Documents/usr/local/lib jack-playrec/usr/local/lib mfiles} using the Matlab \textbf{"Current Folder"} Section
+    \item \textbf{Go to} $\rightarrow$ \textbf{/Users/usr/local/lib YourUserName/usr/local/lib Documents/usr/local/lib jack-playrec/usr/local/lib mfiles}
+      using the Matlab/Octave \textbf{"Current Folder"} Section
     
-    You can now copy the following lines of code into the Matlab command windows. This simple code below shows a minimal example of how to send an audio signal to a JACK client (here system:playback\_1). 
+      You can now copy the following lines of code into the Matlab/Octave command windows.
+      This simple code below shows a minimal example of how to send an audio signal to a JACK client (here system:playback\_1). 
 
 
 \begin{verbatim}
@@ -268,16 +280,21 @@ jack_playrec(sinus,'output',{'system:playback_1'});
 \textbf{First Steps}
 \label{sec:first_steps}
 
-A simple openMHA use case is the application of a gain to a signal. We will start by applying a gain factor to a audio file {{\ttfamily \textit{1speaker\_diffNoise\_2ch.wav}}}. The corresponding parameters (e.g. gain factor, input channels, fragment size and sample size) can be set manually, however for this example there is already a configuration file available under: 
-\begin{itemize}
+A simple openMHA use case is the application of a gain to an audio signal.
+We will start by applying a gain factor to an audio file named {{\ttfamily \textit{1speaker\_diffNoise\_2ch.wav}}}. The corresponding parameters (e.g. gain factor, input channels, fragment size and sample size) can be set manually, however for this example there is already an openMHA configuration file available at: 
+\begin{itemize}\label{list:examples-location}
 \item \textcolor{orange}{\textbf{Linux}}: \textit{/usr/share/openmha/examples/00-gain} 
 \item \textcolor{orange}{\textbf{Windows}}: \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 00-gain}
-\item \textcolor{orange}{\textbf{MacOS}}: \textit{/usr/local/share/openmha/examples/00-gain} 
+\item \textcolor{orange}{\textbf{macOS}}: \textit{/usr/local/share/openmha/examples/00-gain} 
 \end{itemize}
 
-The commands of gain.cfg are shown below. It is not nessesary to understand each line of code. However, a short description for the purpose of every command line is denoted by \# which is used for comments. \\
+A shortened version of the gain.cfg file is shown below.
+A short description precedes each command
+in a line starting with \# which is used for comments.
+The actual file on disk contains more verbose comments.
+\\
 
-\textbf{Gain.cfg:}
+\textbf{gain.cfg:}
 
 \begin{Verbatim}[frame=single,numbers=left,commandchars=\\\{\}]
 #The number of channels we want to process
@@ -314,14 +331,21 @@ The commands of gain.cfg are shown below. It is not nessesary to understand each
 
 
 \newpage 
-For now we will just use the configuration file, which was already created for demontration purposes. In order to use the configuration file, do the following steps:
+In this guide we will use the example files from the openMHA installer.
+Since these are installed in a read-only directory, we need to copy
+the examples to a writable location before using them. 
+Follow these steps:
 
 
 \begin{enumerate}
     \item \textbf{Close all} running openMHA processes
     
-    \item \textbf{Copy} the examples folder from the protected directory
-    \\ (e.g. /usr/share/openmha/examples/) (\textcolor{orange}{\textbf{see above for your specific operating system}})
+    \item \textbf{Copy} the examples folder from the installation directory
+      \\
+      (e.g. /usr/share/openmha/examples/)
+      (\textcolor{orange}
+        {\textbf{see the list on page \pageref{list:examples-location}
+            for your specific operating system}})
    
 \begin{figure}[H]
 \centering
@@ -329,15 +353,7 @@ For now we will just use the configuration file, which was already created for d
 \caption{- Copy the examples folder from the protected directory (e.g. /usr/share/openmha/}
 \end{figure}
 
-\item \textbf{Paste} the examples into folder within a non-protected directory, e.g. your home directory:
-
-\begin{comment}
-	\begin{itemize}
-\item \textcolor{orange}{\textbf{Linux}}: \textit{/home/YourUserName/Documents/} 
-\item \textcolor{orange}{\textbf{Windows}}: \textit{\textbackslash Users\textbackslash YourUserName\textbackslash Documents\textbackslash } 
-\item \textcolor{orange}{\textbf{MacOS}}: \textit{/Users/YourUserName/Documents/} 
-\end{itemize} 
-\end{comment}
+\item \textbf{Paste} the examples into folder within a writable directory, e.g. your home directory:
 
 \begin{figure}[H]
 \centering
@@ -348,25 +364,28 @@ For now we will just use the configuration file, which was already created for d
     
     \item Open your \textbf{terminal} (see \ref{starting_openmha})
     \item \textbf{Navigate inside the examples folder into the subdirectory of the first example $\rightarrow$ \textbf{00-gain}} \\ (e.g. \textit{/home/YourUserName/Documents/examples/00-gain} )\\ \\
-    $\rightarrow$ you can use \textbf{cd ..} to navigate one folder level higher \\
-    $\rightarrow$ and \textbf{cd foldername} to navigate one folder level down
+    $\rightarrow$ you can use \textbf{cd ..} to navigate one folder level up \\
+    $\rightarrow$ and \textbf{cd foldername} to navigate to that subfolder \\
+    $\rightarrow$ if the \textcolor{orange}{macOS or Linux} terminal does not show the current directory, type \textbf{pwd} \\
     \item Type {{\ttfamily mha \texttt{-{}-}interactive}} and press \textbf{Enter}
 \end{enumerate}
 
 \subsection{File to File}
 
-Since you are now connected to openMHA you can type in commands. In order to read in the configuration file \textbf{gain.cfg} (which lies directly in \textit{00-gain}), type: \\
+You have started the openMHA in interactive mode and can now type in openMHA commands.
+The current working directory of the openMHA should be the copy of the 00-gain example directory in the writable location.
+In order to read in the configuration file \textbf{gain.cfg} (which lies directly in \textit{00-gain}), type: \\
 
 %$\rightarrow${\ttfamily ?read:\textbackslash Users\textbackslash YourUserName\textbackslash Documents\textbackslash examples\textbackslash 00-gain\textbackslash gain.cfg}
 $\rightarrow${\ttfamily ?read:gain.cfg}
 
 
 %with the corresponding file directory of gain.cfg. 
-Run the script by:
+Start the openMHA signal processing by:
 
 $\rightarrow$ {\ttfamily cmd=start}
 
-and close it by typing:
+and then exit openMHA by typing:
 
 $\rightarrow$ {\ttfamily cmd=quit} 
 \\
@@ -377,15 +396,25 @@ $\rightarrow$ {\ttfamily cmd=quit}
 \caption{Interactive mode: Applying gain to a static audio signal}
 \end{figure}
 
-\textcolor{orange}{\textbf{After quitting the openMHA process a second .wav file "1speaker\_diffNoise\_2ch \\ \_OUT.wav" should have appeared within the folder you are working in. (e.g. \textit{/home/YourUserName/Documents/examples/00-gain}). You can listen to it and compare it to "1speaker\_diffNoise\_2ch.wav".}}
+\textcolor{orange}{\textbf{openMHA has created a second .wav file "1speaker\_diffNoise\_2ch\_OUT.wav" in the current 00-gain folder. (e.g. \textit{/home/YourUserName/Documents/examples/00-gain}). You can listen to it and compare it to "1speaker\_diffNoise\_2ch.wav".}}
 
 \newpage
 
 \subsection{Starting openMHA with JACK Input/Output}
 
-In this section the configuration settings described in the previous section will be applied while using a JACK server as audio backend. This means that we can apply a gain to e.g. our microphone input in real time. The configuration file {{\ttfamily \textit{gain\_live.cfg}}} will be used for this. \\
+In this section we perform the same signal processing as before, but replace the sound files with the JACK server as audio backend. This means that we can apply a gain to e.g. our microphone input in real time. The configuration file {{\ttfamily \textit{gain\_live.cfg}}} will be used for this. \\
 
-\textbf{Gain\_live.cfg:}
+\large{\textbf{Note}}:
+This and all following live processing examples configure
+the sound card with small buffer sizes. Your combination of
+computer, sound card, and operating system may be unable
+to process the sound with these settings without dropouts.
+If you experience problems, try a faster computer, optimize
+the operating system for real-time performance, use a
+different sound card or operating system.
+\\
+
+\textbf{gain\_live.cfg:}
 
 \begin{Verbatim}[frame=single,numbers=left,commandchars=\\\{\}]
 #The number of channels we want to process
@@ -416,7 +445,7 @@ In order to set up and connect a JACK server you can follow the steps below:
     \begin{itemize}
 \item \textcolor{orange}{\textbf{Linux}}: \\ Type {\ttfamily qjackctl} into your \textbf{terminal} 
 \item \textcolor{orange}{\textbf{Windows}}: \\ Use the \textbf{JACK Control} Icon
-\item \textcolor{orange}{\textbf{MacOS}}: \\ \textbf{Start} the \textbf{Jack Audio Connection Kit} GUI by starting the \textit{qjackctl} application found in \textit{/Applications/Jack/}.
+\item \textcolor{orange}{\textbf{macOS}}: \\ \textbf{Start} the \textbf{Jack Audio Connection Kit} GUI by starting the \textit{qjackctl} application found in \textit{/Applications/Jack/}.
 \end{itemize}
 
 \begin{figure}[H]
@@ -440,11 +469,11 @@ In order to set up and connect a JACK server you can follow the steps below:
 \caption{Jack GUI with running server}
 \end{figure}
 
-    %\textcolor{red}{\textbf{For MacOs Users: If you encounter any problem using JACK you can try \textit{\textbf{JackPilot}}, you can find the download link in section \ref{subsec:required_prog}}}
+    %\textcolor{red}{\textbf{For macOS Users: If you encounter any problem using JACK you can try \textit{\textbf{JackPilot}}, you can find the download link in section \ref{subsec:required_prog}}}
     
 
 
-\item In order to test your Jack server, you can go to the \textbf{Connect} section and connect the inputs of your (internal) microphones to the output channels of the jack server. (See Figure \ref{fig: jack_connection})
+\item In order to test your Jack server, you can go to the \textbf{Connect} section and connect the inputs of your (internal) microphones to the output channels of the jack server (see Figure \ref{fig: jack_connection}).
 
 \begin{figure}[H]
 \centering
@@ -454,12 +483,11 @@ In order to set up and connect a JACK server you can follow the steps below:
 \end{figure}
 
 
+Disconnect these connections again before proceeding.
 You can now use the JACK server as audio backend. For this, start openMHA in the same directory as before:
 
 \item Open your \textbf{terminal} (see \ref{starting_openmha})
     \item \textbf{Navigate inside the examples folder into the subdirectory of the first example $\rightarrow$ \textbf{00-gain}} \\ 
-    $\rightarrow$ you can use \textbf{cd ..} to navigate one folder level higher \\
-    $\rightarrow$ and \textbf{cd foldername} to navigate one folder level down
     \item Type {{\ttfamily mha \texttt{-{}-}interactive}} and press \textbf{Enter}
  
     %\item $\rightarrow$ {\ttfamily ?read:\textbackslash Users\textbackslash YourUserName\textbackslash Documents\textbackslash examples\textbackslash 00-gain\textbackslash \\ gain\_live.cfg}
@@ -471,7 +499,7 @@ OpenMHA is now applying a gain to your own voice input. In order to close openMH
 
 \end{enumerate}
 
-\textcolor{orange}{\textbf{You have now managed to start some simple configurations for a static audio file as well as a live input using Jack. In the next session Matlab will be used as GUI for openMHA.}}
+\textcolor{orange}{\textbf{You have now managed to start some simple configurations for a static audio file as well as a live input using Jack. In the next session Matlab or Octave will be used as GUI for openMHA.}}
 
 
 \newpage
@@ -505,41 +533,49 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 %\textbf{\textbackslash Users\textbackslash YourUserName\textbackslash
 %Documents}
 \item \textbf{End} all running \textbf{mha processes} 
-\item \textbf{Open Matlab} 
-\item Set LD\_LIBRARY\_PATH to empty by typing {\ttfamily setenv('LD\_LIBRARY\_PATH','')} into the \textbf{Command Window}
-\item Use the Matlab \textbf{"Current Folder"} Section to navigate to:
+\item \textbf{Open Matlab or Octave} 
+\item Set LD\_LIBRARY\_PATH to empty by typing {\ttfamily
+  setenv(\textquotesingle
+  LD\_LIBRARY\_PATH\textquotesingle,\textquotesingle\textquotesingle)}
+  into the \textbf{Command Window}
+\item Use the Matlab/Octave \textbf{"Current Folder"} Section to navigate to:
 
 \begin{itemize}
 \item \textcolor{orange}{\textbf{Linux}}: \textit{/usr/share/openmha/examples/05-frequency-shifting} 
 \item \textcolor{orange}{\textbf{Windows}}: \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 05-frequency-shifting}
-\item \textcolor{orange}{\textbf{MacOS}}: \textit{/usr/local/share/openmha/examples/05-frequency-shifting} 
+\item \textcolor{orange}{\textbf{macOS}}: \textit{/usr/local/share/openmha/examples/05-frequency-shifting} 
 \end{itemize}
 
 \item In order to use the Matlab functions of openMHA type the following using the \textbf{Command Window:} 
 
 \begin{itemize}
-\item \textcolor{orange}{\textbf{Linux}}: {\ttfamily addpath('/usr/lib/openmha/mfiles')}
-\item \textcolor{orange}{\textbf{Windows}}: {\ttfamily addpath('C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles')}
-\item \textcolor{orange}{\textbf{MacOS}}: {\ttfamily addpath('/usr/local/lib/openmha/mfiles/')}
+\item \textcolor{orange}{\textbf{Linux}}:
+  {\ttfamily addpath(\textquotesingle{}/usr/lib/openmha/mfiles\textquotesingle{})}
+\item \textcolor{orange}{\textbf{Windows}}:
+  {\ttfamily addpath(\textquotesingle{}C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textquotesingle{})}
+\item \textcolor{orange}{\textbf{macOS}}:
+  {\ttfamily addpath(\textquotesingle{}/usr/local/lib/openmha/mfiles/\textquotesingle{})}
 \end{itemize}
 
 
-\item Use the Command Windows to enable communication with openMHA through java by typing: 
+\item Use the Command Window to enable communication with openMHA through java by typing: 
 
 \begin{itemize}
-\item \textcolor{orange}{\textbf{Linux}}: \\{\ttfamily javaaddpath('/usr/lib/openmha/mfiles/mhactl\_java.jar')} 
-\item \textcolor{orange}{\textbf{Windows}}: \\ {\ttfamily addpath('C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textbackslash mhactl\_java.jar')}
-\item \textcolor{orange}{\textbf{MacOS}}: \\ {\ttfamily addpath('/usr/local/lib/openmha/mfiles/mhactl\_java.jar')}
+\item \textcolor{orange}{\textbf{Linux}}: \\{\ttfamily javaaddpath(\textquotesingle{}/usr/lib/openmha/mfiles/mhactl\_java.jar\textquotesingle{})} 
+\item \textcolor{orange}{\textbf{Windows}}: \\ {\ttfamily javaaddpath(\textquotesingle{}C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textbackslash mhactl\_java.jar\textquotesingle{})}
+\item \textcolor{orange}{\textbf{macOS}}: \\ {\ttfamily javaaddpath(\textquotesingle{}/usr/local/lib/openmha/mfiles/mhactl\_java.jar\textquotesingle{})}
 \end{itemize}
 
 %\item \textbf{Start openMHA} in the directory where \textbf{fshift\_live.cfg} is stored
 %\item In order to create a handle, type in the following into the Matlab \textbf{Command Window}: \\ {\ttfamily h = struct( 'port', 33337, 'host', 'localhost' );}
 %\item You can now use this handle to connect to openMHA by typing \\ {\ttfamily mha = mha\_get( h, '' );} into the  Matlab \textbf{Command Window}
 \item In order to start openMHA type {\ttfamily openmha = mha\_start;} 
-\item In order to read in the configuration file type: \\ {\ttfamily mha\_query(openmha,'','read:fbc.cfg');}
+\item In order to read in the configuration file type: \\ {\ttfamily mha\_query(openmha,\textquotesingle{}\textquotesingle{},\textquotesingle{}read:fbc.cfg\textquotesingle{});}
 \item \textbf{Start JACK Server} using \textbf{JACK Control}\\ (Setting: Sample Rate = 44100, Frames/Period = 64)
-\item Start the mha process by typing {\ttfamily mha\_set(openmha, 'cmd', 'start' );}
-\item \textbf{JACK Control}: Connect the input clients correctly
+\item Start the mha process by typing {\ttfamily mha\_set(openmha, \textquotesingle{}cmd\textquotesingle{}, \textquotesingle{}start\textquotesingle{} );}
+\item \textbf{JACK Control}: Connect the "capture" and "playback" channels
+  of the sound card to the MHA "in" and "out" channels.
+  Connect a microphone to the soundcard.
 \item Start GUI by typing {\ttfamily mhagui\_generic(openmha)} into the \textbf{Command Window}
 \begin{enumerate}
 \item \textbf{mha ->open sub-parser}
@@ -547,7 +583,7 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 \item \textbf{fshift\_hilbert ->open sub-parser}
 \item \textbf{df -> open vector<float>control}
 \end{enumerate}
-\item Play around with the settings of the GUI and have fun :)
+\item Change the settings of the GUI and listen to the processed microphone sound.
 \end{enumerate}
 
 \newpage
@@ -558,45 +594,45 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 
 \begin{enumerate}
 \item \textbf{End} all running \textbf{mha processes} (You can type \textbf{killall mha} in the terminal to any running mha processes [Linux/macOS only])
-\item \textbf{Open Matlab}
-\item Set LD\_LIBRARY\_PATH to empty by typing {\ttfamily setenv('LD\_LIBRARY\_PATH','')} into the \textbf{Command Window}
-\item Use the Matlab \textbf{"Current Folder"} Section to navigate to:
+\item \textbf{Open Matlab or Octave}
+\item Set LD\_LIBRARY\_PATH to empty by typing {\ttfamily setenv(\textquotesingle{}LD\_LIBRARY\_PATH\textquotesingle{},\textquotesingle{}\textquotesingle{})} into the \textbf{Command Window}
+\item Use the Matlab/Octave \textbf{"Current Folder"} Section to navigate to:
 
 \begin{itemize}
 \item \textcolor{orange}{\textbf{Linux}}: \textit{/usr/share/openmha/examples/01-dynamic-compression} 
 \item \textcolor{orange}{\textbf{Windows}}: \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 01-dynamic-compression}
-\item \textcolor{orange}{\textbf{MacOS}}: \textit{/usr/local/share/openmha/examples/01-dynamic-compression} 
+\item \textcolor{orange}{\textbf{macOS}}: \textit{/usr/local/share/openmha/examples/01-dynamic-compression} 
 \end{itemize}
 
 \item In order to use the Matlab functions of openMHA type the following using the \textbf{Command Window:} 
 
 \begin{itemize}
-\item \textcolor{orange}{\textbf{Linux}}: {\ttfamily addpath('/usr/lib/openmha/mfiles')}
-\item \textcolor{orange}{\textbf{Windows}}: {\ttfamily addpath('C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles')}
-\item \textcolor{orange}{\textbf{MacOS}}: {\ttfamily addpath('/usr/local/lib/openmha/mfiles/')}
+\item \textcolor{orange}{\textbf{Linux}}: {\ttfamily addpath(\textquotesingle{}/usr/lib/openmha/mfiles\textquotesingle{})}
+\item \textcolor{orange}{\textbf{Windows}}: {\ttfamily addpath(\textquotesingle{}C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textquotesingle{})}
+\item \textcolor{orange}{\textbf{macOS}}: {\ttfamily addpath(\textquotesingle{}/usr/local/lib/openmha/mfiles/\textquotesingle{})}
 \end{itemize}
 
 
 \item Use the Command Windows to enable communication with openMHA through java by typing: 
 
 \begin{itemize}
-\item \textcolor{orange}{\textbf{Linux}}: \\{\ttfamily javaaddpath('/usr/lib/openmha/mfiles/mhactl\_java.jar')} 
-\item \textcolor{orange}{\textbf{Windows}}: \\ {\ttfamily addpath('C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textbackslash mhactl\_java.jar')}
-\item \textcolor{orange}{\textbf{MacOS}}: \\ {\ttfamily addpath('/usr/local/lib/openmha/mfiles/mhactl\_java.jar')}
+\item \textcolor{orange}{\textbf{Linux}}: \\{\ttfamily javaaddpath(\textquotesingle{}/usr/lib/openmha/mfiles/mhactl\_java.jar\textquotesingle{})} 
+\item \textcolor{orange}{\textbf{Windows}}: \\ {\ttfamily javaaddpath(\textquotesingle{}C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textbackslash mhactl\_java.jar\textquotesingle{})}
+\item \textcolor{orange}{\textbf{macOS}}: \\ {\ttfamily javaaddpath(\textquotesingle{}/usr/local/lib/openmha/mfiles/mhactl\_java.jar\textquotesingle{})}
 \end{itemize}
 
 \item In order to start openMHA type {\ttfamily openmha = mha\_start;} 
-\item Read in configuration into mha by \\ {\ttfamily mha\_query(openmha,'','read:dynamiccompression\_live.cfg')}
+\item Read in configuration into mha by \\ {\ttfamily mha\_query(openmha,\textquotesingle{}\textquotesingle{},\textquotesingle{}read:dynamiccompression\_live.cfg\textquotesingle{})}
 \item \textbf{Start JACK Server} using \textbf{JACK Control}\\ (Setting: Sample Rate = 44100, Frames/Period = 64)
-\item In order to start the mha process type {\ttfamily mha\_set(openMHA,'cmd','start')}
+\item In order to start the mha process type {\ttfamily mha\_set(openMHA,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{})}
 \item In order to read out the current gaintable and relevant paramters type the following: \\
-{\ttfamily gaintable = mha\_get(openmha,'mha.overlapadd.mhachain.dc.gtdata');}\\
-{\ttfamily gtmin = mha\_get(openmha,'mha.overlapadd.mhachain.dc.gtmin');}\\
-{\ttfamily gtstep = mha\_get(openmha,'mha.overlapadd.mhachain.dc.gtstep');}
+{\ttfamily gaintable = mha\_get(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtdata\textquotesingle{});}\\
+{\ttfamily gtmin = mha\_get(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtmin\textquotesingle{});}\\
+{\ttfamily gtstep = mha\_get(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtstep\textquotesingle{});}
 \item Plot the I/O characteristics \\
 {\ttfamily level\_in = ((1:size(gaintable,2))-1) * gtstep + gtmin;}\\
 {\ttfamily level\_out = level\_in + gaintable;}
-\item In order to plot in-and output level type {\ttfamily figure, plot(level\_in,level\_out)}
+\item In order to plot input and output level, type {\ttfamily figure, plot(level\_in,level\_out)}
 \item You can design your own gaintable in Matlab by using 
   {\ttfamily gaintable\_new = [...]}
   \begin{itemize}
@@ -607,11 +643,11 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
   \item e.g. compress high frequency band only: ...
   \end{itemize}
 \item In order to apply the new gaintable type \\
-{\ttfamily mha\_set(openmha,'mha.overlapadd.mhachain.dc.gtdata',gaintable\_new);}
-\item You can stop openMHA using {\ttfamily mha\_set(openmha,'cmd','quit')}
+{\ttfamily mha\_set(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtdata\textquotesingle{},gaintable\_new);}
+\item You can stop openMHA using {\ttfamily mha\_set(openmha,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}quit\textquotesingle{})}
 \item More complex gaintable example would be \\
-{\ttfamily openMHA = mha\_start([],\{\},\{'?read:dynamiccompression\_live.cfg'\})}\\
-{\ttfamily mha\_set(openMHA,'cmd','start')}
+{\ttfamily openMHA = mha\_start([],\{\},\{\textquotesingle{}?read:dynamiccompression\_live.cfg\textquotesingle{}\})}\\
+{\ttfamily mha\_set(openMHA,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{})}
 \item Start fitting GUI by typing {\ttfamily mhacontrol(openmha)}
 
 
