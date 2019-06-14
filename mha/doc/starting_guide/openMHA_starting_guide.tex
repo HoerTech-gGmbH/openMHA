@@ -91,6 +91,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{subcaption}
+\usepackage{fancyvrb} %Für Rahmen um Code Boxen
 
 \begin{document}
 \MHAtitle{Getting Started}
@@ -145,20 +146,21 @@ The large incidence rate of hearing loss (about 13\% of the US population), its 
    $\rightarrow$ {\ttfamily sudo apt-get install qjackctl}
    \item \textcolor{orange}{\textbf{Windows}} \\
    \footnotesize{\url{http://jackaudio.org/downloads/}}
-   \item \textcolor{orange}{\textbf{MacOS}} \\
+   \item \textcolor{orange}{\textbf{\large{MacOs}}} \\
    \footnotesize{\url{http://jackaudio.org/downloads/}} %\\ or \\
    %\footnotesize{\url{http://www.jackosx.com/download.html}}
    \end{itemize}
 \end{itemize}
 
+\begin{comment}
 \subsection{Path Setup (\textcolor{orange}{Windows only})}
 \label{subsec:windows_path_setup}
 
 \begin{itemize}
 \item \textbf{Rightclick Windows "Start" Icon} $\rightarrow$ \textbf{System} $\rightarrow$ search for \textbf{Erweiterte Systemeinstellungen anzeigen} $\rightarrow$ \textbf{Umgebungsvariablen} $\rightarrow$ \textbf{Systemvariablen} $\rightarrow$ look for variable \textbf{"Path"} $\rightarrow$ \textbf{Bearbeiten} $\rightarrow$ \textbf{Neu} $\rightarrow$ type in \textbf{C:\textbackslash Program Files\textbackslash openMHA\textbackslash bin\textbackslash} $\rightarrow$ close all open windows by pressing \textbf{OK}
 \end{itemize}
+\end{comment}
 
-\newpage
 
 \subsection{Update to Latest Version}
 
@@ -170,7 +172,8 @@ Make sure that you are using the latest version of openMHA. You can install the 
    $\rightarrow$ {\ttfamily sudo apt-get install \texttt{-{}-}only-upgrade openmha} 
    \item \textcolor{orange}{\textbf{Windows}} \\
    \footnotesize{\url{https://github.com/HoerTech-gGmbH/openMHA/releases}}
-   \item \textcolor{orange}{\textbf{MacOS}} \\
+   
+   \item \textcolor{orange}{\textbf{\large{MacOs}}} \\
    \footnotesize{\url{https://github.com/HoerTech-gGmbH/openMHA/releases}}
    \end{itemize}
 
@@ -196,8 +199,7 @@ $\rightarrow$ {{\ttfamily \textbf{mha \texttt{-{}-}interactive}}
 
 
 \subsubsection*{\textcolor{orange}{Windows}}}
-Make sure that you did the path setup from section \ref{subsec:windows_path_setup}.
-In windows you can open your \textbf{terminal} by: \\ \\
+Open your \textbf{terminal} by: \\ \\
 $\rightarrow$ "\textbf{Windows + R}" \\
     $\rightarrow$ type in {{\ttfamily \textbf{cmd}}} and press \textbf{Enter} \\
     Type now {{\ttfamily \textbf{mha \texttt{-{}-}interactive}}  into the terminal window. 
@@ -266,16 +268,54 @@ jack_playrec(sinus,'output',{'system:playback_1'});
 \textbf{First Steps}
 \label{sec:first_steps}
 
-A simple openMHA configuration is the gain application. The corresponding parameters (e.g. gain factor, input channels, fragment size and sample size) can be set manually, however for this examples there is already a configuration script available under: 
+A simple openMHA use case is the application of a gain to a signal. We will start by applying a gain factor to a audio file {{\ttfamily \textit{1speaker\_diffNoise\_2ch.wav}}}. The corresponding parameters (e.g. gain factor, input channels, fragment size and sample size) can be set manually, however for this example there is already a configuration file available under: 
 \begin{itemize}
 \item \textcolor{orange}{\textbf{Linux}}: \textit{/usr/share/openmha/examples/00-gain} 
 \item \textcolor{orange}{\textbf{Windows}}: \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 00-gain}
 \item \textcolor{orange}{\textbf{MacOS}}: \textit{/usr/local/share/openmha/examples/00-gain} 
 \end{itemize}
 
-If you are curious what each line of the configuration script means you can read the comments which are denoted by \#. For now we will just use the configuration script, which was already created for demontration purposes. In order to use the configuration file, do the following steps:
+The commands of gain.cfg are shown below. It is not nessesary to understand each line of code. However, a short description for the purpose of every command line is denoted by \# which is used for comments. \\
 
-\dotfill \\
+\textbf{Gain.cfg:}
+
+\begin{Verbatim}[frame=single,numbers=left,commandchars=\\\{\}]
+#The number of channels we want to process
+\textcolor{orange}{\textbf{nchannels_in = 2 }}
+#Number of frames to be processed in each block.
+\textcolor{orange}{\textbf{fragsize = 64}}
+#Sampling rate. Has to be the same as the input file
+\textcolor{orange}{\textbf{srate = 44100 }}
+#We want to use the plugin "mhachain"
+\textcolor{orange}{\textbf{mhalib = mhachain }}
+#Now we need to define input-output backend "iolib"
+#Here we decide if the audio should come from a static audio
+#file or from e.g. a live input source such as a microphone
+#input
+#In this case we will use simple static audio files
+\textcolor{orange}{\textbf{iolib = MHAIOFile}}
+#The plugin "mhachain" can load multiple plugins and
+#will connect them in series which is denoted by "[...]"
+#Here we will only use one plugin "gain"
+\textcolor{orange}{\textbf{mha.algos=[ gain ]}}
+#Set max and min gain factors in dB
+\textcolor{orange}{\textbf{mha.gain.min=-20}}
+\textcolor{orange}{\textbf{mha.gain.max=20}}
+#nchannels_in was set to 2 (see line 2), so we have to define 
+#two gain factors (left and right)
+\textcolor{orange}{\textbf{mha.gain.gains=[ -10 10 ]}}
+#Define the name of the input and output file
+#The input file needs to be in the same directory 
+#as the .cfg file itself
+\textcolor{orange}{\textbf{io.in = 1speaker_diffNoise_2ch.wav}}
+\textcolor{orange}{\textbf{io.out = 1speaker_diffNoise_2ch_OUT.wav}}
+\end{Verbatim} 
+
+
+
+\newpage 
+For now we will just use the configuration file, which was already created for demontration purposes. In order to use the configuration file, do the following steps:
+
 
 \begin{enumerate}
     \item \textbf{Close all} running openMHA processes
@@ -289,13 +329,15 @@ If you are curious what each line of the configuration script means you can read
 \caption{- Copy the examples folder from the protected directory (e.g. /usr/share/openmha/}
 \end{figure}
 
-\item \textbf{Paste} the examples into folder within a non-protected directory, e.g.:
+\item \textbf{Paste} the examples into folder within a non-protected directory, e.g. your home directory:
 
+\begin{comment}
 	\begin{itemize}
 \item \textcolor{orange}{\textbf{Linux}}: \textit{/home/YourUserName/Documents/} 
 \item \textcolor{orange}{\textbf{Windows}}: \textit{\textbackslash Users\textbackslash YourUserName\textbackslash Documents\textbackslash } 
 \item \textcolor{orange}{\textbf{MacOS}}: \textit{/Users/YourUserName/Documents/} 
 \end{itemize} 
+\end{comment}
 
 \begin{figure}[H]
 \centering
@@ -311,7 +353,7 @@ If you are curious what each line of the configuration script means you can read
     \item Type {{\ttfamily mha \texttt{-{}-}interactive}} and press \textbf{Enter}
 \end{enumerate}
 
-\subsection{Static Audio File}
+\subsection{File to File}
 
 Since you are now connected to openMHA you can type in commands. In order to read in the configuration file \textbf{gain.cfg} (which lies directly in \textit{00-gain}), type: \\
 
@@ -341,7 +383,32 @@ $\rightarrow$ {\ttfamily cmd=quit}
 
 \subsection{Starting openMHA with JACK Input/Output}
 
-In this section the configuration settings described in the previous section will be used while using a JACK server as audio backend. This means that we can apply a gain to e.g. our microphone input in real time. In order to set up and connect a JACK server you can follow the steps below:
+In this section the configuration settings described in the previous section will be applied while using a JACK server as audio backend. This means that we can apply a gain to e.g. our microphone input in real time. The configuration file {{\ttfamily \textit{gain\_live.cfg}}} will be used for this. \\
+
+\textbf{Gain\_live.cfg:}
+
+\begin{Verbatim}[frame=single,numbers=left,commandchars=\\\{\}]
+#The number of channels we want to process
+\textcolor{orange}{\textbf{nchannels_in = 2}}
+#Number of frames to be processed in each block.
+\textcolor{orange}{\textbf{fragsize = 64}}
+#Sampling rate. Has to be the same as the input signal of JACK
+\textcolor{orange}{\textbf{srate = 44100}}
+#Again, we want to use the plugin "mhachain"
+\textcolor{orange}{\textbf{mhalib = mhachain}}
+Here we will only use one plugin "gain"
+\textcolor{orange}{\textbf{mha.algos=[ gain ]}}
+#Set max and min gain factors in dB
+\textcolor{orange}{\textbf{mha.gain.min=-20}}
+\textcolor{orange}{\textbf{mha.gain.max=20}}
+#two gain factors (left and right)
+\textcolor{orange}{\textbf{mha.gain.gains=[ -10 10 ]}}
+#In this example, we load the IO library that connects
+#the MHA to the Jack audio server.
+\textcolor{orange}{\textbf{iolib = MHAIOJackdb}}
+\end{Verbatim} 
+
+In order to set up and connect a JACK server you can follow the steps below:
 
 \begin{enumerate}
     \item \textbf{Start Jack Audio Connection Kit} 
@@ -390,7 +457,7 @@ In this section the configuration settings described in the previous section wil
 You can now use the JACK server as audio backend. For this, start openMHA in the same directory as before:
 
 \item Open your \textbf{terminal} (see \ref{starting_openmha})
-    \item \textbf{Navigate inside the examples folder into the subdirectory of the first example $\rightarrow$ \textbf{00-gain}} \\ (e.g. \textit{/home/YourUserName/Documents/examples/00-gain} )\\ \\
+    \item \textbf{Navigate inside the examples folder into the subdirectory of the first example $\rightarrow$ \textbf{00-gain}} \\ 
     $\rightarrow$ you can use \textbf{cd ..} to navigate one folder level higher \\
     $\rightarrow$ and \textbf{cd foldername} to navigate one folder level down
     \item Type {{\ttfamily mha \texttt{-{}-}interactive}} and press \textbf{Enter}
@@ -490,7 +557,7 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 %As in section \ref{sec:freqshifter}: During the openMHA installation process several Matlab functions were copied to the corresponding installation directory. In  the standard case you can find these Matlab function in \textbf{Program Files\textbackslash openMHA\textbackslash mfiles}.
 
 \begin{enumerate}
-\item \textbf{End} all running \textbf{mha processes} (You can type \textbf{killall mha} in the terminal to any running mha processes)
+\item \textbf{End} all running \textbf{mha processes} (You can type \textbf{killall mha} in the terminal to any running mha processes [Linux/macOS only])
 \item \textbf{Open Matlab}
 \item Set LD\_LIBRARY\_PATH to empty by typing {\ttfamily setenv('LD\_LIBRARY\_PATH','')} into the \textbf{Command Window}
 \item Use the Matlab \textbf{"Current Folder"} Section to navigate to:
