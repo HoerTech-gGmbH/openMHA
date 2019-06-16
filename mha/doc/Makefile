@@ -42,23 +42,23 @@ PLUGIN_NAMES:=$(subst $(space),"\n",$(filter-out io,$(foreach plg,$(PLUGINDIRS),
 MHADISTS = openMHA
 
 $(MHANAME)_developer_manual.pdf: images mhadoc
-	cp -lv optparams.sty mhadoc/latex
+	cp -lv --remove-destination optparams.sty mhadoc/latex
 	cp -lv --remove-destination flowcharts/fmt_png/*.png mhadoc/latex
 	cp -lv --remove-destination flowcharts/fmt_pdf/*.pdf mhadoc/latex
 	$(MAKE) -C mhadoc/latex refman.pdf
-	cp -lv mhadoc/latex/refman.pdf $@
+	cp -lv --remove-destination mhadoc/latex/refman.pdf $@
 
 $(MHANAME)_application_manual.pdf: user_manual/$(MHANAME)_application_manual.pdf
-	cp -lv $< $@
+	cp -lv --remove-destination $< $@
 
 $(MHANAME)_calibration_manual.pdf: calibration/$(MHANAME)_calibration_manual.pdf
-	cp -lv $< $@
+	cp -lv --remove-destination $< $@
 
 $(MHANAME)_gui_manual.pdf: user_manual/$(MHANAME)_gui_manual.pdf
-	cp -lv $< $@
+	cp -lv --remove-destination $< $@
 
 $(MHANAME)_starting_guide.pdf: starting_guide/$(MHANAME)_starting_guide.pdf
-	cp -lv $< $@
+	cp -lv --remove-destination $< $@
 
 .PHONY : images user_manual/$(MHANAME)_application_manual.pdf user_manual/$(MHANAME)_gui_manual.pdf
 
