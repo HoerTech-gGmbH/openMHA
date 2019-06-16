@@ -467,8 +467,8 @@ In order to set up and connect a JACK server you can follow the steps below:
     \item \textbf{Start Jack Audio Connection Kit} 
     
     \begin{itemize}
-\item \textcolor{orange}{\textbf{Linux}}: \\ Type {\ttfamily qjackctl} into your \textbf{terminal} 
-\item \textcolor{orange}{\textbf{Windows}}: \\ Use the \textbf{JACK Control} Icon
+\item \textcolor{orange}{\textbf{Linux}}: \\ Type {\ttfamily qjackctl} into your \textbf{terminal}. 
+\item \textcolor{orange}{\textbf{Windows}}: \\ Use the \textbf{JACK Control} start menu entry.
 \item \textcolor{orange}{\textbf{macOS}}: \\ \textbf{Start} the \textbf{Jack Audio Connection Kit} GUI by starting the \textit{qjackctl} application found in \textit{/Applications/Jack/}.
 \end{itemize}
 
@@ -616,7 +616,12 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 \item \textbf{fshift\_hilbert ->open sub-parser}
 \item \textbf{df -> open vector<float>control}
 \end{enumerate}
-\item Change the settings of the GUI and listen to the processed microphone sound.
+\item Change the settings df, fmin and fmax in the GUI and listen to the
+  processed microphone sound.
+  You can not only move the sliders, but also replace the numbers directly
+  by typing new numbers and pressing enter in the text fields of the GUI.
+  These settings control a frequency shifter, which band is shifted and how
+  much.
 \end{enumerate}
 
 \newpage
@@ -679,7 +684,7 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 {\ttfamily mha\_set(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtdata\textquotesingle{},gaintable\_new);}
 \item You can stop openMHA using {\ttfamily mha\_set(openmha,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}quit\textquotesingle{})}
 \item More complex gaintable example would be \\
-{\ttfamily openMHA = mha\_start([],\{\},\{\textquotesingle{}?read:dynamiccompression\_live.cfg\textquotesingle{}\})}\\
+{\ttfamily openmha = mha\_start([],\{\},\{\textquotesingle{}?read:dynamiccompression\_live.cfg\textquotesingle{}\})}\\
 {\ttfamily mha\_set(openMHA,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{})}
 \item Start fitting GUI by typing {\ttfamily mhacontrol(openmha)}
 
