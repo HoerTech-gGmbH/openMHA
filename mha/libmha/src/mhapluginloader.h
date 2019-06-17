@@ -92,9 +92,7 @@ namespace PluginLoader {
           public fourway_processor_t
     {
     public:
-        using MHAParser::c_ifc_parser_t::parse;
-        std::string parse(const std::string & str) 
-            {return MHAParser::c_ifc_parser_t::parse(str);}
+        std::string parse(const std::string & str) override;
         /** Loads and initializes mha plugin and establishes interface.
          * @param iac
          *   AC space (algorithm communication variables)
@@ -129,12 +127,12 @@ namespace PluginLoader {
         bool has_parser() const;
         mha_domain_t input_domain() const;
         mha_domain_t output_domain() const;
-        void prepare(mhaconfig_t&);
-        void release();
-        void process(mha_wave_t*,mha_wave_t**);
-        void process(mha_spec_t*,mha_spec_t**);
-        void process(mha_wave_t*,mha_spec_t**);
-        void process(mha_spec_t*,mha_wave_t**);
+        void prepare(mhaconfig_t&) override;
+        void release() override;
+        void process(mha_wave_t*,mha_wave_t**) override;
+        void process(mha_spec_t*,mha_spec_t**) override;
+        void process(mha_wave_t*,mha_spec_t**) override;
+        void process(mha_spec_t*,mha_wave_t**) override;
         std::string getfullname() const {return lib_handle.getname();};
         std::string get_documentation() const {return plugin_documentation;};
         std::vector<std::string> get_categories() const {return plugin_categories;};
@@ -159,6 +157,7 @@ namespace PluginLoader {
         MHAProc_wave2spec_t MHAProc_wave2spec_cb;
         MHAProc_spec2wave_t MHAProc_spec2wave_cb;
         MHASet_t MHASet_cb;
+        MHASetcpp_t MHASetcpp_cb;
         MHAStrError_t MHAStrError_cb;
         mhaconfig_t cf_input;
         mhaconfig_t cf_output;
@@ -167,7 +166,6 @@ namespace PluginLoader {
         bool b_check_version;
         bool b_is_prepared;
     };
-
 }
 
 namespace MHAParser {
