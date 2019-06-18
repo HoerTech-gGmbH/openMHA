@@ -50,6 +50,7 @@ PluginLoader::mhapluginloader_t::mhapluginloader_t(algo_comm_t iac,const std::st
       MHAProc_wave2spec_cb(NULL),
       MHAProc_spec2wave_cb(NULL),
       MHASet_cb(NULL),
+      MHASetcpp_cb(NULL),
       MHAStrError_cb(NULL),
       plugin_documentation(""),
       b_check_version(check_version),
@@ -70,6 +71,7 @@ void PluginLoader::mhapluginloader_t::resolve_and_init()
     MHA_RESOLVE((&lib_handle),MHAProc_wave2spec);
     MHA_RESOLVE((&lib_handle),MHAProc_spec2wave);
     MHA_RESOLVE((&lib_handle),MHASet);
+    MHA_RESOLVE((&lib_handle),MHASetcpp);
     MHA_RESOLVE((&lib_handle),MHAPrepare);
     MHA_RESOLVE((&lib_handle),MHARelease);
     MHA_RESOLVE((&lib_handle),MHAStrError);
@@ -253,6 +255,13 @@ mha_domain_t PluginLoader::mhapluginloader_t::input_domain() const
 mha_domain_t PluginLoader::mhapluginloader_t::output_domain() const
 {
     return cf_output.domain;
+}
+
+std::string PluginLoader::mhapluginloader_t::parse(const std::string & str)
+{
+    if (MHASetcpp_cb)
+        return MHASetcpp_cb(lib_data, str);
+    return MHAParser::c_ifc_parser_t::parse(str);
 }
 
 const char* PluginLoader::mhastrdomain(mha_domain_t d)
