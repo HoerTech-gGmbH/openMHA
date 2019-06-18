@@ -618,7 +618,8 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 \end{enumerate}
 \item Change the settings df, fmin and fmax in the GUI and listen to the
   processed microphone sound.
-  You can not only move the sliders, but also replace the numbers directly
+  You can not only move the sliders using the mouse cursor or up- and
+  down-arrow keys, but also replace the numbers directly
   by typing new numbers and pressing enter in the text fields of the GUI.
   These settings control a frequency shifter, which band is shifted and how
   much.
@@ -660,9 +661,9 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 \end{itemize}
 
 \item In order to start openMHA type {\ttfamily openmha = mha\_start;} 
-\item Read in configuration into mha by \\ {\ttfamily mha\_query(openmha,\textquotesingle{}\textquotesingle{},\textquotesingle{}read:dynamiccompression\_live.cfg\textquotesingle{})}
+\item Read in configuration into mha by \\ {\ttfamily mha\_query(openmha,\textquotesingle{}\textquotesingle{},\textquotesingle{}read:dynamiccompression\_live.cfg\textquotesingle{});}
 \item \textbf{Start JACK Server} using \textbf{JACK Control}\\ (Setting: Sample Rate = 44100, Frames/Period = 64)
-\item In order to start the mha process type {\ttfamily mha\_set(openMHA,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{})}
+\item In order to start the mha process type {\ttfamily mha\_set(openmha,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{});}
 \item In order to read out the current gaintable and relevant paramters type the following: \\
 {\ttfamily gaintable = mha\_get(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtdata\textquotesingle{});}\\
 {\ttfamily gtmin = mha\_get(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtmin\textquotesingle{});}\\
@@ -675,9 +676,9 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
   {\ttfamily gaintable\_new = [...]}
   \begin{itemize}
   \item e.g. Squash all input levels to the same output level, infinite compression:
-    \\ \texttt{gaintable\_new = [65;65;65;65] - level\_in;}
+    \\ \texttt{gaintable\_new = 65.*ones(18,1) - level\_in;}
   \item e.g. noise gate, compressive region, output limit: \\
-    \texttt{gaintable\_new = repmat(4,1,[0,25,5,-35]);}
+    \texttt{gaintable\_new =repmat([-50,30:-2:0,-4:-4:-32],18,1);}
   \item e.g. compress high frequency band only: ...
   \end{itemize}
 \item In order to apply the new gaintable type \\
@@ -685,7 +686,7 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 \item You can stop openMHA using {\ttfamily mha\_set(openmha,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}quit\textquotesingle{})}
 \item More complex gaintable example would be \\
 {\ttfamily openmha = mha\_start([],\{\},\{\textquotesingle{}?read:dynamiccompression\_live.cfg\textquotesingle{}\})}\\
-{\ttfamily mha\_set(openMHA,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{})}
+{\ttfamily mha\_set(openmha,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{})}
 \item Start fitting GUI by typing {\ttfamily mhacontrol(openmha)}
 
 
