@@ -50,3 +50,4 @@ find ./examples -name ".*" -exec rm {} \;
 # Documentation
 mkdir -p doc
 cp ../../../../*pdf doc/.
+cp ../../../../COPYING doc/.

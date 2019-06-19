@@ -51,6 +51,7 @@ matfiles: l_usr_local_share
 
 docfiles:
 	@mkdir -p ${WORK_D}/usr/local/doc/openmha/
+	@${CP} ${REPO}/COPYING ${WORK_D}/usr/local/doc/openmha/
 	@${CP} ${REPO}/*.pdf ${WORK_D}/usr/local/doc/openmha/
 
 clean:
