@@ -43,13 +43,13 @@ For installation instructions, please see INSTALLATION.md
 
 We provide with this release several examples of configuration files
 and sound examples. These are contained in the directory
-./mha/examples
+./examples
 
 For instance, we can start an example featuring multiple algorithms together by 
 changing the working directory to the directory that contains the example
 
 ```
-cd ./mha/examples/04-prerelease-combination
+cd ./examples/04-prerelease-combination
 ```
 
 read the configuration file, run processing of the audio file specified in 
