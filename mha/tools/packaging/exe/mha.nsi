@@ -46,6 +46,9 @@ File bin\*
 SetOutPath $INSTDIR
 File /oname=README.txt "..\..\..\..\README.md"
 CreateShortcut $INSTDIR\${PRODUCT_NAME}.lnk" "$INSTDIR\bin\mha.exe"
+
+; Add mha dir to path
+EnVar::AddValue "path" "$INSTDIR\bin"
 ; Write the installation path into the registry
 WriteRegStr HKLM SOFTWARE\${PRODUCT_PUBLISHER}\${PRODUCT_NAME} "Install_Dir" "$INSTDIR"
   
@@ -85,6 +88,8 @@ Section "Start Menu Shortcuts"
 SectionEnd
 
 Section "Uninstall"
+  
+  EnVar::DeleteValue "path" "$INSTDIR\bin"
   
   ; Remove registry keys
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
