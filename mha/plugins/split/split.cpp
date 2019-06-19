@@ -1243,6 +1243,13 @@ MHAPLUGIN_DOCUMENTATION\
  "schedulers and priorities, and compare the relative priorities of all\n"
  "processes and threads on your system against expectations with a\n"
  "suitable tool while \\mha{} is running.\n"
+ "\n"
+ "Plugins loaded by split cannot access algorithm communication (AC)\n"
+ "variables created outside of split, nor pass on algorithm communication\n"
+ "variables created inside of split to the outside, nor can parallel plugins\n"
+ "access each others AC variables.  Each of the parallel plugins loaded by\n"
+ "split receives an isolated and initially empty AC variable space to avoid\n"
+ "synchronization overhead.\n"
  )
 
 // Local Variables:
