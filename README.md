@@ -41,23 +41,9 @@ For installation instructions, please see INSTALLATION.md
 
 ## Usage instructions:
 
-We provide with this release several examples of configuration files
-and sound examples. These are contained in the directory
-./examples
+Please follow our getting-started guide:
+http://www.openmha.org/docs/openMHA_starting_guide.pdf
 
-For instance, we can start an example featuring multiple algorithms together by 
-changing the working directory to the directory that contains the example
-
-```
-cd ./examples/04-prerelease-combination
-```
-
-read the configuration file, run processing of the audio file specified in 
-the configuration in openMHA and quit openMHA afterwards with the following command:
-
-```
-mha ?read:prerelease_combination.cfg cmd=start cmd=quit
-```
 ## Known issues
 * There are some known issues with Octave under macOS. The openMHA gui may not work correctly with octave. As an alternative Matlab can be used.
 * The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp) (May not be necessary any more, check for yourself).
