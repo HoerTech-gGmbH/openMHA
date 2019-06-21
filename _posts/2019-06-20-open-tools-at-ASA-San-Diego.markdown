@@ -2,7 +2,7 @@
 layout: post
 title:  "Upcoming: Hands-on session @ ASA meeting, San Diego"
 date:   2019-06-20 18:00:00
-category: publication
+category: meeting
 tags: []
 ---
 
