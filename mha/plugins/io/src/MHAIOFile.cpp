@@ -126,7 +126,6 @@ void io_file_t::prepare(int nch_in,int nch_out)
                             sfinf_in.samplerate, samplerate);
         sfinf_out = sfinf_in;
         sfinf_out.channels = nchannels_out;
-        
         int count(0);
         sf_command(NULL, SFC_GET_FORMAT_SUBTYPE_COUNT, &count, sizeof(int));
         for(int k=0;k<count;k++){
@@ -143,6 +142,7 @@ void io_file_t::prepare(int nch_in,int nch_out)
         sf_out = sf_open( filename_output.data.c_str(), SFM_WRITE, &sfinf_out );
         if( !sf_out )
             throw MHA_Error(__FILE__,__LINE__,"Unable to open \"%s\" for writing.",filename_output.data.c_str());
+        sf_command(sf_out, SFC_SET_CLIPPING, NULL, SF_TRUE);
         s_in = new MHASignal::waveform_t(fragsize,nchannels_in);
         s_file_in = new MHASignal::waveform_t(fragsize,nchannels_file_in);
         if( startsample.data )
@@ -211,7 +211,7 @@ io_file_t::io_file_t(int ifragsize,
         output_sample_format.data.add_entry(fmtname);
     }
 }
-
+  
 void io_file_t::start()
 {
     if( !b_prepared )
