@@ -63,10 +63,14 @@ documentation is found in `doc`.
 An openMHA installer for macOS can be downloaded from our
 Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
 
+On some machines macOS refuses to open the installer because it is from an
+unverified developer. Opening the installer while holding Ctrl makes macOS
+offer an override option.
+
 The installer installs openMHA example setups and some tools. We recommend to
 copy the examples folder to a writable location inside your user directory.
 
-On Mac OS, you can find the examples folder in
+On macOS, you can find the examples folder in
 `/usr/local/share/openmha/examples/`. m-files for interacting with the openMHA
 from Matlab or Octave are installed in `/usr/local/lib/openmha/mfiles/`, and
 documentation can be found in `/usr/local/doc/openmha/`.
