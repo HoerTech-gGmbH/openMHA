@@ -52,7 +52,7 @@ external_libs:
 	$(MAKE) -C $@
 
 doc: mha/doc
-	/bin/cp -lv mha/doc/*.pdf .
+	/bin/cp -lv --remove-destination mha/doc/*.pdf .
 
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
