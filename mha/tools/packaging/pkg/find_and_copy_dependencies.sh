@@ -1,62 +1,52 @@
-#!/bin/bash
+#!/bin/bash -e
 # Copy all binaries into the destination folder
 
-function fix_install_names {
-    path=$1
-    file=$2;
-    if [[ $1 == "lib" ]]; then
-        INSTALL_NAME=$(echo @rpath/../lib/`basename $file` | sed -E 's/\.[0-9]+//g');
-        install_name_tool -id $INSTALL_NAME ./lib/`basename $file`;
-    else
-        name=`basename $file`
-        DYLIBS=$(otool -L ./$path/`basename $file` | grep -v "/usr/lib"| grep -v "/System" | sed "/$name/d" | Awk -F' ' '{ print $1 }')
+# remove any leftovers from last run
+rm -rf bin/ lib/
+mkdir -p bin lib
+
+# copy openMHA binaries and libraries
+cp -v ../../../../lib/* lib/.
+cp -v ../../../../bin/* bin/.
+rm -f bin/thismha.sh
+chmod 755 bin/* lib/*
+
+# adds dependencies (more libs) and corrects shared library references for the
+# installation location /usr/local
+function resolve_and_correct_references_of()
+{
+    local file="$1"
+    # if this is a library, correct its own idea where it is installed
+    if [[ $(dirname "$file") == "lib" ]]
+    then install_name_tool -id /usr/local/"$file" "$file"
     fi
-    echo $DYLIBS
-    for dylib in $DYLIBS; do
-        LIB_NAME=$(echo @rpath/../lib/`basename $dylib`| sed -E 's/\.[0-9]+//g');
-        install_name_tool -change $dylib $LIB_NAME ./$path/`basename $file`;
-    done;
+
+    local dependency
+    otool -L "$file" | cut -d" " -f1 | grep -v "/usr/lib"| grep -v "/System" | \
+        grep -v : | while read dependency
+    do
+        local installed_dependency="lib/$(basename "$dependency")"
+
+        # resolve dependency
+        if [ ! -e "$installed_dependency" ]
+        then
+            cp -v "$dependency" "$installed_dependency"
+            chmod 755  "$installed_dependency"
+            resolve_and_correct_references_of "$installed_dependency"
+        fi
+
+        # correct reference of file to dependency
+        install_name_tool -change "$dependency" "/usr/local/$installed_dependency" "$file"
+    done
 }
-function find_lib {
-    file=$1;
-    name=`basename $file`
-    DYLIBS=$(otool -L $file | grep -v "/usr/lib"| grep -v "/System" | sed "/$name/d" | awk -F' ' '{ print $1 }' | xargs -n1)
-    for dylib in $DYLIBS; do
-        dest=lib/$(echo `basename $dylib` | sed -E 's/\.[0-9]+//g');
-        if [ ! -f $dest ]; then
-            cp $dylib lib/$(echo `basename $dylib` | sed -E 's/\.[0-9]+//g');
-        fi;
-    done;
-}
 
-mkdir -p bin
-mkdir -p lib
-cp ../../../../lib/* lib/.
-cp ../../../../bin/* bin/.
-rm bin/thismha.sh
+# for each binary and library
+for file in bin/* lib/*
+do
+    resolve_and_correct_references_of "$file"
+done
 
-for file in bin/*; do
-    find_lib $file;
-done;
-
-while [ "$LIBS" != "$(ls lib/)" ]; do
-    LIBS=$(ls lib/)
-    for file in lib/*; do
-        find_lib $file;
-    done;
-done;
-
-for file in lib/*dylib; do
-    fix_install_names lib $file;
-done;
-
-for file in bin/*; do
-    fix_install_names bin $file;
-done;
-
-for file in $(cat expected_dependencies.txt); do
-    if [ ! -f lib/$file ]; then
-       echo "Error: Expected dependency" $file "not found in lib/. ";
-       exit 1;
-    fi
-done;
+# make sure there is no local/opt leftover reference (regression)
+if grep -r local/opt lib
+then exit 1
+fi
