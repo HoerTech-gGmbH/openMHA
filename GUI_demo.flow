@@ -2,7 +2,14 @@
     {
         "id": "a877d21.227c23",
         "type": "tab",
-        "label": "AAS 2019 demo",
+        "label": "main",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "b1d19124.18d7c8",
+        "type": "tab",
+        "label": "analysis",
         "disabled": false,
         "info": ""
     },
@@ -10,9 +17,10 @@
         "id": "401bc39f.af9f54",
         "type": "ui_group",
         "z": "",
-        "name": "AAS 2019",
+        "name": "main",
         "tab": "5a95dddd.c4488c",
-        "disp": false,
+        "order": 1,
+        "disp": true,
         "width": "6",
         "collapse": false
     },
@@ -20,7 +28,7 @@
         "id": "5a95dddd.c4488c",
         "type": "ui_tab",
         "z": "",
-        "name": "AAS 2019 demo",
+        "name": "openMHA GUI demo",
         "icon": "dashboard",
         "disabled": false,
         "hidden": false
@@ -124,6 +132,46 @@
         }
     },
     {
+        "id": "c9cbcfdb.9d991",
+        "type": "ui_group",
+        "z": "",
+        "name": "Group 2",
+        "tab": "",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "88bfcf14.8bb9b",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "",
+        "order": 1,
+        "disp": true,
+        "width": 6
+    },
+    {
+        "id": "191d131.715d0ed",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "",
+        "order": 2,
+        "disp": true,
+        "width": 6
+    },
+    {
+        "id": "5a47267e.b59508",
+        "type": "ui_group",
+        "z": "",
+        "name": "controls",
+        "tab": "5a95dddd.c4488c",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
         "id": "b191d860.5d4098",
         "type": "function",
         "z": "a877d21.227c23",
@@ -131,8 +179,8 @@
         "func": "if (!flow.get(\"value\")) {\n  flow.set(\"value\",msg.payload);\n}\nvar values = flow.get(\"value\");\n\nif (values[0] == msg.payload[0] && values[1] == msg.payload[1]){\n}\nelse{\n    flow.set(\"value\", msg.payload);\n    return msg;    \n}\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 610,
-        "y": 260,
+        "x": 625,
+        "y": 263,
         "wires": [
             [
                 "7943caea.9897dc"
@@ -151,8 +199,8 @@
         "round": true,
         "property": "payload[1]",
         "name": "",
-        "x": 430,
-        "y": 260,
+        "x": 445,
+        "y": 263,
         "wires": [
             [
                 "b191d860.5d4098"
@@ -171,8 +219,8 @@
         "round": true,
         "property": "payload[0]",
         "name": "",
-        "x": 290,
-        "y": 260,
+        "x": 305,
+        "y": 263,
         "wires": [
             [
                 "1d8060a1.630317"
@@ -189,8 +237,8 @@
         "console": false,
         "tostatus": false,
         "complete": "payload",
-        "x": 1100,
-        "y": 380,
+        "x": 1115,
+        "y": 383,
         "wires": []
     },
     {
@@ -202,8 +250,8 @@
         "out": "time",
         "splitc": "5",
         "name": "",
-        "x": 450,
-        "y": 340,
+        "x": 465,
+        "y": 343,
         "wires": [
             [
                 "22becb6f.a1f184"
@@ -218,12 +266,11 @@
         "func": "msg.payload=\"?read:./gaintables/table_\" + msg.payload[0] + \"_\" + msg.payload[1] + \"_0.cfg\\n\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 820,
-        "y": 260,
+        "x": 835,
+        "y": 263,
         "wires": [
             [
-                "63372524.cb9afc",
-                "bebecff2.dc757"
+                "63372524.cb9afc"
             ]
         ]
     },
@@ -233,38 +280,19 @@
         "z": "a877d21.227c23",
         "group": "401bc39f.af9f54",
         "name": "2dAreaTouch",
-        "order": 3,
+        "order": 1,
         "width": "0",
         "height": "0",
         "format": "<div id=\"2dArea\" \nstyle=\"position: relative; height: 170px; width: 270px; \nbackground-color: #e2e2e2;\" \n></div>\n\n<div id=\"cursor\"\nstyle=\"position: absolute; top: 130px; left: 130px; height: 20px; width: 20px; \nbackground-color: green; border-radius: 100%; cursor: none\" \n></div>\n\n\n<script>\n\n(function($scope) {\n   $('#2dArea').on('touchstart touchmove',function(e){\n    e.preventDefault();\n    const area = document.getElementById(\"2dArea\");\n    let rect = area.getBoundingClientRect();\n    let xCoordinate = ((e.touches[0].clientX - rect.left)/ (rect.right- rect.left)).toFixed(4);\n    let yCoordinate = ((e.touches[0].clientY - rect.top)/(rect.bottom - rect.top)).toFixed(4);\n    if (xCoordinate < 1 && xCoordinate > 0 && yCoordinate < 1 && yCoordinate > 0){\n        $(\"#cursor\").css( \"left\", (e.touches[0].clientX - rect.left) - 10 ); // offset to half of the cursor's width\n        $(\"#cursor\").css( \"top\", (e.touches[0].clientY - rect.top) - 10 );  // offset to half of the cursor's height\n        $scope.send({\"payload\":[xCoordinate, yCoordinate]});\n    }\n});\n\n    $('#2dArea').on('mousemove mousedown mouseup',function(e){\n    e.preventDefault();\n    const area = document.getElementById(\"2dArea\");\n    let rect = area.getBoundingClientRect();\n    let xCoordinate = ((e.clientX - rect.left)/ (rect.right- rect.left)).toFixed(4);\n    let yCoordinate = ((e.clientY - rect.top)/(rect.bottom - rect.top)).toFixed(4);\n    if (xCoordinate < 1 && xCoordinate > 0 && yCoordinate < 1 && yCoordinate > 0 && e.buttons == 1){ \n        $(\"#cursor\").css( \"left\", (e.clientX - rect.left) - 10 ); // offset to half of the cursor's width\n        $(\"#cursor\").css( \"top\", (e.clientY - rect.top) - 10 );  // offset to half of the cursor's height\n        $scope.send({\"payload\":[xCoordinate, yCoordinate]});\n    }\n    });\n\n})(scope);\n\n\n</script>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "templateScope": "local",
-        "x": 130,
-        "y": 260,
+        "x": 145,
+        "y": 263,
         "wires": [
             [
                 "fcb6aca7.75f3"
             ]
-        ]
-    },
-    {
-        "id": "5d05164b.10e6a8",
-        "type": "ui_template",
-        "z": "a877d21.227c23",
-        "group": "401bc39f.af9f54",
-        "name": "Headline 1",
-        "order": 1,
-        "width": "5",
-        "height": "1",
-        "format": "<h1>openMHA</h1>",
-        "storeOutMessages": true,
-        "fwdInMessages": true,
-        "templateScope": "local",
-        "x": 130,
-        "y": 180,
-        "wires": [
-            []
         ]
     },
     {
@@ -275,7 +303,7 @@
         "label": "PASS / COMPRESSOR",
         "tooltip": "",
         "group": "401bc39f.af9f54",
-        "order": 4,
+        "order": 2,
         "width": "6",
         "height": "1",
         "passthru": false,
@@ -424,7 +452,7 @@
         "z": "a877d21.227c23",
         "name": "",
         "group": "401bc39f.af9f54",
-        "order": 10,
+        "order": 7,
         "width": "3",
         "height": "2",
         "gtype": "gage",
@@ -501,7 +529,7 @@
         "z": "a877d21.227c23",
         "name": "",
         "group": "401bc39f.af9f54",
-        "order": 11,
+        "order": 8,
         "width": "3",
         "height": "2",
         "gtype": "gage",
@@ -528,8 +556,8 @@
         "name": "",
         "label": "Noise",
         "tooltip": "",
-        "group": "401bc39f.af9f54",
-        "order": 5,
+        "group": "5a47267e.b59508",
+        "order": 3,
         "width": "2",
         "height": "1",
         "passthru": false,
@@ -544,8 +572,8 @@
         "offvalueType": "bool",
         "officon": "",
         "offcolor": "",
-        "x": 50,
-        "y": 560,
+        "x": 65,
+        "y": 563,
         "wires": [
             [
                 "2923b911.00c766"
@@ -560,8 +588,8 @@
         "func": "if (msg.payload === true){\nmsg.payload=\"mha.mhachain.alt_noise.select=noise\\n\"\n}\nelse{\nmsg.payload=\"mha.mhachain.alt_noise.select=pass\\n\"\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 210,
-        "y": 560,
+        "x": 225,
+        "y": 563,
         "wires": [
             [
                 "63372524.cb9afc"
@@ -576,7 +604,7 @@
         "label": "Pure tone",
         "tooltip": "",
         "group": "401bc39f.af9f54",
-        "order": 7,
+        "order": 4,
         "width": "2",
         "height": "1",
         "passthru": false,
@@ -591,8 +619,8 @@
         "offvalueType": "bool",
         "officon": "",
         "offcolor": "",
-        "x": 60,
-        "y": 680,
+        "x": 75,
+        "y": 683,
         "wires": [
             [
                 "9a32f36a.0aa8d8"
@@ -607,8 +635,8 @@
         "func": "if (msg.payload === true){\nmsg.payload=\"mha.mhachain.alt_sine.select=sine\\n\"\n}\nelse{\nmsg.payload=\"mha.mhachain.alt_sine.select=pass\\n\"\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 230,
-        "y": 680,
+        "x": 245,
+        "y": 683,
         "wires": [
             [
                 "63372524.cb9afc"
@@ -623,7 +651,7 @@
         "label": "frequency",
         "tooltip": "",
         "group": "401bc39f.af9f54",
-        "order": 9,
+        "order": 6,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -632,8 +660,8 @@
         "min": "50",
         "max": "12000",
         "step": 1,
-        "x": 70,
-        "y": 780,
+        "x": 85,
+        "y": 783,
         "wires": [
             [
                 "fff6af74.993f88"
@@ -648,8 +676,8 @@
         "func": "msg.payload=\"mha.mhachain.alt_sine.sine.f=\" + msg.payload.toString() + \"\\n\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 280,
-        "y": 780,
+        "x": 295,
+        "y": 783,
         "wires": [
             [
                 "63372524.cb9afc"
@@ -664,7 +692,7 @@
         "label": "level",
         "tooltip": "",
         "group": "401bc39f.af9f54",
-        "order": 6,
+        "order": 3,
         "width": "4",
         "height": "1",
         "passthru": true,
@@ -673,8 +701,8 @@
         "min": "40",
         "max": "80",
         "step": 1,
-        "x": 50,
-        "y": 620,
+        "x": 65,
+        "y": 623,
         "wires": [
             [
                 "fc53f9e2.899ac"
@@ -689,8 +717,8 @@
         "func": "msg.payload=\"mha.mhachain.alt_noise.noise.lev=\" + msg.payload.toString() + \"\\n\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 270,
-        "y": 620,
+        "x": 285,
+        "y": 623,
         "wires": [
             [
                 "63372524.cb9afc"
@@ -705,7 +733,7 @@
         "label": "level",
         "tooltip": "",
         "group": "401bc39f.af9f54",
-        "order": 8,
+        "order": 5,
         "width": "4",
         "height": "1",
         "passthru": true,
@@ -714,8 +742,8 @@
         "min": "40",
         "max": "80",
         "step": 1,
-        "x": 50,
-        "y": 720,
+        "x": 65,
+        "y": 723,
         "wires": [
             [
                 "479618ce.38c74"
@@ -730,8 +758,8 @@
         "func": "msg.payload=\"mha.mhachain.alt_sine.sine.lev=\" + msg.payload.toString() + \"\\n\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 216,
-        "y": 726,
+        "x": 231,
+        "y": 729,
         "wires": [
             [
                 "63372524.cb9afc"
@@ -746,10 +774,24 @@
         "func": "msg.payload=msg.payload.toString('utf8');\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 720,
-        "y": 340,
+        "x": 735,
+        "y": 343,
         "wires": [
             []
         ]
+    },
+    {
+        "id": "cfa1738d.2ad5a8",
+        "type": "debug",
+        "z": "b1d19124.18d7c8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 940,
+        "y": 380,
+        "wires": []
     }
 ]

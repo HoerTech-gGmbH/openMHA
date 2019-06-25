@@ -82,6 +82,9 @@ mha/tools/packaging/deb
 #Windows packaging artifacts
 *.exe
 
+#Node-red auto-backup files
+*.flow.backup
+
 # Local Variables:
 # coding: utf-8-unix
 # End:
