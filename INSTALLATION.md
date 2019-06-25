@@ -43,22 +43,7 @@ For updating openMHA when a new release is available run
 sudo apt-get install --only-upgrade openmha
 ```
 
-## II. Windows installer
-
-An openMHA installer for 64 bit Windows can be downloaded from our
-Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
-
-On Windows, you may want to add the bin directory to the system PATH.
-
-The installer installs openMHA example setups and some tools. We recommend to
-copy the examples folder to a writable location inside your user directory.
-
-You can find the examples folder in the `examples sub-directory` of
-the installation directory (e.g. `C:\Program Files\openMHA`). The sub-directories
-`mfiles` contains Matlab / Octave files for interacting with openMHA and
-documentation is found in `doc`.
-
-## III. macOS installer
+## II. macOS installer
 
 An openMHA installer for macOS can be downloaded from our
 Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
@@ -74,3 +59,18 @@ On macOS, you can find the examples folder in
 `/usr/local/share/openmha/examples/`. m-files for interacting with the openMHA
 from Matlab or Octave are installed in `/usr/local/lib/openmha/mfiles/`, and
 documentation can be found in `/usr/local/doc/openmha/`.
+
+## III. Windows installer
+
+An openMHA installer for 64 bit Windows can be downloaded from our
+Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
+
+On Windows, you may want to add the bin directory to the system PATH.
+
+The installer installs openMHA example setups and some tools. We recommend to
+copy the examples folder to a writable location inside your user directory.
+
+You can find the examples folder in the `examples sub-directory` of
+the installation directory (e.g. `C:\Program Files\openMHA`). The sub-directories
+`mfiles` contains Matlab / Octave files for interacting with openMHA and
+documentation is found in `doc`.
