@@ -46,6 +46,9 @@ do
     resolve_and_correct_references_of "$file"
 done
 
+# We do not want to redistribute jack - see T719
+rm lib/libjack*dylib
+
 # make sure there is no local/opt leftover reference (regression)
 if grep -r local/opt lib
 then exit 1

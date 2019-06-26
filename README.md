@@ -45,10 +45,11 @@ Please follow our getting-started guide:
 http://www.openmha.org/docs/openMHA_starting_guide.pdf
 
 ## Known issues
+### macOS
 * There are some known issues with Octave under macOS. The openMHA gui may not work correctly with octave. As an alternative Matlab can be used.
+* The jack audio plugin expects the [JackOSX distribution](http://www.jackaudio.org) to be installed. Developers wanting to use jack from other sources must compile openMHA themselves.
 * The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp) (May not be necessary any more, check for yourself).
-
-* On some Apple machines jack needs to be run with root privileges to get real-time priority.
+* On some Apple machines Jack needs to be run with root privileges to get real-time priority.
 
 ## References for individual algorithms.
 

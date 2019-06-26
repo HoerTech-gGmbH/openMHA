@@ -48,6 +48,9 @@ sudo apt-get install --only-upgrade openmha
 An openMHA installer for macOS can be downloaded from our
 Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
 
+To use the Jack audio plugin, the [JackOSX distribution](http://www.jackaudio.org)
+needs to be installed.
+
 On some machines macOS refuses to open the installer because it is from an
 unverified developer. Opening the installer while holding Ctrl makes macOS
 offer an override option.
