@@ -279,7 +279,7 @@ namespace dc {
                      if(rmslevel_state.size())
                          return MHAFilter::o1flt_lowpass_t(vars.taurmslevel.data, filter_rate, rmslevel_state);
                      else
-                         return MHAFilter::o1flt_lowpass_t(vars.taurmslevel.data, filter_rate, pow(10,65*0.01)*4e-10);
+                         return MHAFilter::o1flt_lowpass_t(vars.taurmslevel.data, filter_rate, pow(10,65*0.1)*4e-10);
                  }()),
         attack([&](){if(attack_state.size())
                     return MHAFilter::o1flt_lowpass_t(vars.tauattack.data, filter_rate, attack_state);

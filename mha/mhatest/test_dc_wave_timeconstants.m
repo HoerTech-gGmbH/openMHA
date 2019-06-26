@@ -73,16 +73,6 @@ function mha=prepare_mha_with_time_constants(tau_attack, tau_decay, tau_rmslev)
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
 
   mha_set(mha,'cmd','start');
-
-  input_signal = amplitude(65);
-  output_signal = [1,2,3,4,5,6,7,8];
-  all_output = [];
-  while output_signal(1) ~= output_signal(end)
-    mha_set(mha,'io.input',input_signal);
-    output_signal = mha_get(mha, 'io.output');
-    all_output = [all_output; output_signal];
-  end
-  %plot(all_output(1:100));
 end
 
 function output_signal = process(mha, dB)
