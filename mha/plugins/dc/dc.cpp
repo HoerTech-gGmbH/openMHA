@@ -521,7 +521,7 @@ MHAPLUGIN_DOCUMENTATION\
  "The linear interpolation of gains originally given in dB can have undesired "
  "interpolation effects which should be avoided by choosing a small step size "
  "gtstep between the input levels, e.g. 1 dB. We provide the mfile tool "
- "\\texttt{dc\\_measure\\_io.m} "
+ "\\texttt{dc\\_plot\\_io.m} "
  "which can be used to plot the resulting input/output "
  "characteristic resulting from a {\\em dc} gain table configuration with "
  "Octave/Matlab, refer to the inline help in that mfile."

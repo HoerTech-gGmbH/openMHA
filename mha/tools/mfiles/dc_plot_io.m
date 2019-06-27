@@ -1,9 +1,17 @@
-function output_levels = dc_measure_io(gtmin, gtstep, gtdata, input_levels)
-% output_levels = dc_measure_io(gtmin, gtstep, gtdata, input_levels)
+function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
+% function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
+%
 % gtmin, gtstep, gtdata - configuration variable values for the dc plugin
 % input_levels          - 1xn row vector with test input levels in dB SPL
 % output_levels         - mxn matrix of produced output levels for each of the
 %                         n input levels and each of the m bands/channels
+%
+% This function temporarily starts an openMHA instance and has it process test
+% data. Your Octave/Matlab session needs to be set up to call mha_start, mha_set
+% etc. Please refer to the getting started guide for examples how to do this:
+% http://www.openmha.org/docs/openMHA_starting_guide.pdf
+% The function plots the input-output characteristic that it measures in a new
+% figure.
 
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2019 HörTech gGmbH
@@ -57,4 +65,8 @@ function output_levels = dc_measure_io(gtmin, gtstep, gtdata, input_levels)
   output_levels = log10(outamps) * 20 + max_level;
 
   mha_set(mha,'cmd','quit');
+
+  plot(input_levels, output_levels);
+  xlabel('input level / dB');
+  ylabel('output level / dB');
 end
