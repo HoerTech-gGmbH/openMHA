@@ -558,10 +558,12 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 %Documents}
 \item \textbf{End} all running \textbf{mha processes} 
 \item \textbf{Open Matlab or Octave} 
-\item Set LD\_LIBRARY\_PATH to empty by typing \\ {\ttfamily
+\item \textcolor{orange}{\textbf{Linux and Windows:}} Set LD\_LIBRARY\_PATH to empty by typing \\ {\ttfamily
   $\rightarrow$ setenv(\textquotesingle
   LD\_LIBRARY\_PATH\textquotesingle,\textquotesingle\textquotesingle)} \\
-  into the \textbf{Command Window}
+  into the \textbf{Command Window} \\
+\textcolor{orange}{\textbf{MacOS only:}} \\Type: \\{\ttfamily $\rightarrow$ setenv(\textquotesingle PATH\textquotesingle, [getenv(\textquotesingle PATH\textquotesingle) \textquotesingle :/usr/local/bin\textquotesingle]);} \\
+into the \textbf{Command Window} \\  
 \item Use the Matlab/Octave \textbf{"Current Folder"} control to navigate to:
 
 \begin{itemize}
@@ -634,7 +636,12 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 \begin{enumerate}
 \item \textbf{End} all running \textbf{mha processes} (You can type \textbf{killall mha} in the terminal to any running mha processes [Linux/macOS only])
 \item \textbf{Open Matlab or Octave}
-\item Set LD\_LIBRARY\_PATH to empty by typing {\ttfamily setenv(\textquotesingle{}LD\_LIBRARY\_PATH\textquotesingle{},\textquotesingle{}\textquotesingle{})} into the \textbf{Command Window}
+\item \textcolor{orange}{\textbf{Linux and Windows:}} Set LD\_LIBRARY\_PATH to empty by typing \\ {\ttfamily
+  $\rightarrow$ setenv(\textquotesingle
+  LD\_LIBRARY\_PATH\textquotesingle,\textquotesingle\textquotesingle)} \\
+  into the \textbf{Command Window} \\
+\textcolor{orange}{\textbf{MacOS only:}} \\Type: \\{\ttfamily $\rightarrow$ setenv(\textquotesingle PATH\textquotesingle, [getenv(\textquotesingle PATH\textquotesingle) \textquotesingle :/usr/local/bin\textquotesingle]);} \\
+into the \textbf{Command Window} \\  
 \item Use the Matlab/Octave \textbf{"Current Folder"} Section to navigate to:
 
 \begin{itemize}
@@ -692,7 +699,101 @@ For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{
 
 
 \end{enumerate}
+\newpage
+\section{Dealing with AC Variables}
+\label{sec:ac_variables}
 
+%During the openMHA installation process several Matlab functions were copied to the corresponding installation directory. In  the standard case you can find these Matlab function in \textbf{Program Files\textbackslash openMHA\textbackslash mfiles}.
+%For this section you will make use of several openMHA Matlab function which you can find in \textit{/usr/lib/openmha/mfiles}. \textbf{Copy} these files to a non-protected directory, e.g. \textit{/home/YourUserName/Documents/}.
+
+The objective of this section is to learn about dealing with AC-Variables in combination with Matlab. \\ \\
+
+\textbf{What are AC Variables?} \\
+
+Sometimes plugin algorithms need to share more information than just the current audio signal. OpenMHA supports this by providing a mechanism to share any type of additional data between plugins in the form of \textcolor{orange}{\textbf{algorithm communication variables}} or \textcolor{orange}{\textbf{AC variables}}. Further information on the purpose of AC Variables can be found in the \textit{Application Manual} section~2.2. \\
+
+\dotfill \\
+
+The coherence between two live microphone signals is investigated. A JACK server is used to connect both microphone signals to openMHA.  
+
+\begin{enumerate}
+
+\item \textbf{Start JACK Server} using \textbf{JACK Control}\\
+  (Setting: Sample Rate = 44100, Frames/Period = 64) \\
+  \textcolor{red}{\textbf{Note: You need to have \underline{two microphone inputs} available for this task}}
+
+\item Start Matlab/Octave and the \textbf{"Current Folder"} control to navigate to: 
+
+\begin{itemize}
+\item \textcolor{orange}{\textbf{Linux}}: \textit{/usr/share/openmha/examples/15-ac-variables} 
+\item \textcolor{orange}{\textbf{Windows}}: \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 15-ac-variables}
+\item \textcolor{orange}{\textbf{macOS}}: \textit{/usr/local/share/openmha/examples/15-ac-variables} 
+\end{itemize}
+
+\item Open the Matlab script \textbf{\textit{acmatlab.m}} \\
+
+The most important lines of \textbf{acmatlab.m} are shown below:
+
+\begin{Verbatim}[numbers=left,commandchars=\\\{\}]
+%Start openMHA process
+\textcolor{orange}{\textbf{openmha = mha_start;}}
+% Read configuration file
+\textcolor{orange}{\textbf{mha_query(openmha,'','read:coherence_live.cfg');}}
+% Start configuration file
+\textcolor{orange}{\textbf{mha_set(openmha,'cmd','start')}}
+
+%% Label center frequencies and set gain factor of ac_proc
+
+% Label center frequencies
+\textcolor{orange}{\textbf{freqs=mha_get(openmha,'mha.overlapadd.mhachain.coherence.cf'); 
+}} 
+% Set gain factor in dB - default value was choosen to be 6
+\textcolor{orange}{\textbf{mha_set(openmha,'mha.overlapadd.mhachain.coh_gain.gain.gains',6);}}
+\end{Verbatim} 
+
+
+
+%mha_get(openmha,'mha.overlapadd.mhachain.acmon')
+\newpage
+
+\textbf{Explanation}
+
+The configuration used is called \textit{coherence\_live.cfg}. It uses the plugin \textbf{mhachain} in order to connect three plugins: \\
+1. coherence \\
+2. ac\_proc:coh\_gain \\
+3. acmon in series. \\
+Within the configuration file this is denoted by: \\
+
+{\ttfamily mha.overlapadd.mhachain.algos = [coherence ac\_proc:coh\_gain acmon]} \\
+
+
+
+ The purpose of each plugin is the following: \\
+
+\textbf{coherence:} This plugin measures the coherence between the two microphone input signals. \\ \\
+\textbf{ac\_proc:coh\_gain:} The real name of the plugin is \textit{ac\_proc}, however in this case the alias \textit{coh\_gain} is used. This plugin interprets the AC variable data stream received from \textit{coherence} as an audio signal. The plugin itself can load another plugin. In this case the gain plugin is loaded. The gain factor was choosen to be 6 dB. This means that the AC variable output "signal" is amplified by 6 dB. (line 12) Outside the plugin ac\_proc the signal is provided as AC variable stream.\\ \\
+\textbf{acmon:} This plugin is used to convert incoming AC variable data streams into monitor variables. In this case the output of \textit{coherence} as well as \textit{ac\_proc:coh\_gain} is used.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{coherence_chain.png}
+\caption{Schematics of AC variable data stream between plugins: coherence, ac\_proc, acmon}
+\end{figure}
+
+
+\newpage
+\item Start the Matlab script \textbf{acmatlab.m}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{ac_variables_coherence.png}
+\caption{Matlab: Coherence plotted as a function of frequency}
+\end{figure}
+
+The purpose of this example is to show that the plugin ac\_proc can be used to apply common signal processing operationd such as a gain to an originally non-audio signal such as an AC variable data stream.
+
+
+\end{enumerate}
 \end{document}
 
 %%% Local Variables: 
