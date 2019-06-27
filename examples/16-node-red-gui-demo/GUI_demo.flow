@@ -2,7 +2,7 @@
     {
         "id": "a877d21.227c23",
         "type": "tab",
-        "label": "main",
+        "label": "control",
         "disabled": false,
         "info": ""
     },
@@ -17,7 +17,7 @@
         "id": "401bc39f.af9f54",
         "type": "ui_group",
         "z": "",
-        "name": "main",
+        "name": "Control",
         "tab": "5a95dddd.c4488c",
         "order": 1,
         "disp": true,
@@ -164,9 +164,31 @@
         "id": "5a47267e.b59508",
         "type": "ui_group",
         "z": "",
-        "name": "controls",
+        "name": "Analysis",
         "tab": "5a95dddd.c4488c",
         "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ada45029.e0ab",
+        "type": "ui_group",
+        "z": "",
+        "name": "Control",
+        "tab": "",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "fbe7bbab.9b1cd8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Control",
+        "tab": "",
+        "order": 1,
         "disp": true,
         "width": "6",
         "collapse": false
@@ -179,8 +201,8 @@
         "func": "if (!flow.get(\"value\")) {\n  flow.set(\"value\",msg.payload);\n}\nvar values = flow.get(\"value\");\n\nif (values[0] == msg.payload[0] && values[1] == msg.payload[1]){\n}\nelse{\n    flow.set(\"value\", msg.payload);\n    return msg;    \n}\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 625,
-        "y": 263,
+        "x": 610,
+        "y": 60,
         "wires": [
             [
                 "7943caea.9897dc"
@@ -199,8 +221,8 @@
         "round": true,
         "property": "payload[1]",
         "name": "",
-        "x": 445,
-        "y": 263,
+        "x": 430,
+        "y": 60,
         "wires": [
             [
                 "b191d860.5d4098"
@@ -219,27 +241,13 @@
         "round": true,
         "property": "payload[0]",
         "name": "",
-        "x": 305,
-        "y": 263,
+        "x": 290,
+        "y": 60,
         "wires": [
             [
                 "1d8060a1.630317"
             ]
         ]
-    },
-    {
-        "id": "bebecff2.dc757",
-        "type": "debug",
-        "z": "a877d21.227c23",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "x": 1115,
-        "y": 383,
-        "wires": []
     },
     {
         "id": "63372524.cb9afc",
@@ -250,12 +258,10 @@
         "out": "time",
         "splitc": "5",
         "name": "",
-        "x": 465,
-        "y": 343,
+        "x": 1100,
+        "y": 120,
         "wires": [
-            [
-                "22becb6f.a1f184"
-            ]
+            []
         ]
     },
     {
@@ -266,8 +272,8 @@
         "func": "msg.payload=\"?read:./gaintables/table_\" + msg.payload[0] + \"_\" + msg.payload[1] + \"_0.cfg\\n\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 835,
-        "y": 263,
+        "x": 820,
+        "y": 60,
         "wires": [
             [
                 "63372524.cb9afc"
@@ -280,15 +286,15 @@
         "z": "a877d21.227c23",
         "group": "401bc39f.af9f54",
         "name": "2dAreaTouch",
-        "order": 1,
-        "width": "0",
-        "height": "0",
-        "format": "<div id=\"2dArea\" \nstyle=\"position: relative; height: 170px; width: 270px; \nbackground-color: #e2e2e2;\" \n></div>\n\n<div id=\"cursor\"\nstyle=\"position: absolute; top: 130px; left: 130px; height: 20px; width: 20px; \nbackground-color: green; border-radius: 100%; cursor: none\" \n></div>\n\n\n<script>\n\n(function($scope) {\n   $('#2dArea').on('touchstart touchmove',function(e){\n    e.preventDefault();\n    const area = document.getElementById(\"2dArea\");\n    let rect = area.getBoundingClientRect();\n    let xCoordinate = ((e.touches[0].clientX - rect.left)/ (rect.right- rect.left)).toFixed(4);\n    let yCoordinate = ((e.touches[0].clientY - rect.top)/(rect.bottom - rect.top)).toFixed(4);\n    if (xCoordinate < 1 && xCoordinate > 0 && yCoordinate < 1 && yCoordinate > 0){\n        $(\"#cursor\").css( \"left\", (e.touches[0].clientX - rect.left) - 10 ); // offset to half of the cursor's width\n        $(\"#cursor\").css( \"top\", (e.touches[0].clientY - rect.top) - 10 );  // offset to half of the cursor's height\n        $scope.send({\"payload\":[xCoordinate, yCoordinate]});\n    }\n});\n\n    $('#2dArea').on('mousemove mousedown mouseup',function(e){\n    e.preventDefault();\n    const area = document.getElementById(\"2dArea\");\n    let rect = area.getBoundingClientRect();\n    let xCoordinate = ((e.clientX - rect.left)/ (rect.right- rect.left)).toFixed(4);\n    let yCoordinate = ((e.clientY - rect.top)/(rect.bottom - rect.top)).toFixed(4);\n    if (xCoordinate < 1 && xCoordinate > 0 && yCoordinate < 1 && yCoordinate > 0 && e.buttons == 1){ \n        $(\"#cursor\").css( \"left\", (e.clientX - rect.left) - 10 ); // offset to half of the cursor's width\n        $(\"#cursor\").css( \"top\", (e.clientY - rect.top) - 10 );  // offset to half of the cursor's height\n        $scope.send({\"payload\":[xCoordinate, yCoordinate]});\n    }\n    });\n\n})(scope);\n\n\n</script>",
+        "order": 2,
+        "width": "6",
+        "height": "5",
+        "format": "<div id=\"2dArea\" \nstyle=\"position: relative; height: 220px; width: 270px; \nbackground-color: #e2e2e2;\" \n></div>\n\n<div id=\"cursor\"\nstyle=\"position: absolute; top: 130px; left: 130px; height: 20px; width: 20px; \nbackground-color: green; border-radius: 100%; cursor: none\" \n></div>\n\n\n<script>\n\n(function($scope) {\n   $('#2dArea').on('touchstart touchmove',function(e){\n    e.preventDefault();\n    const area = document.getElementById(\"2dArea\");\n    let rect = area.getBoundingClientRect();\n    let xCoordinate = ((e.touches[0].clientX - rect.left)/ (rect.right- rect.left)).toFixed(4);\n    let yCoordinate = ((e.touches[0].clientY - rect.top)/(rect.bottom - rect.top)).toFixed(4);\n    if (xCoordinate < 1 && xCoordinate > 0 && yCoordinate < 1 && yCoordinate > 0){\n        $(\"#cursor\").css( \"left\", (e.touches[0].clientX - rect.left) - 10 ); // offset to half of the cursor's width\n        $(\"#cursor\").css( \"top\", (e.touches[0].clientY - rect.top) - 10 );  // offset to half of the cursor's height\n        $scope.send({\"payload\":[xCoordinate, yCoordinate]});\n    }\n});\n\n    $('#2dArea').on('mousemove mousedown mouseup',function(e){\n    e.preventDefault();\n    const area = document.getElementById(\"2dArea\");\n    let rect = area.getBoundingClientRect();\n    let xCoordinate = ((e.clientX - rect.left)/ (rect.right- rect.left)).toFixed(4);\n    let yCoordinate = ((e.clientY - rect.top)/(rect.bottom - rect.top)).toFixed(4);\n    if (xCoordinate < 1 && xCoordinate > 0 && yCoordinate < 1 && yCoordinate > 0 && e.buttons == 1){ \n        $(\"#cursor\").css( \"left\", (e.clientX - rect.left) - 10 ); // offset to half of the cursor's width\n        $(\"#cursor\").css( \"top\", (e.clientY - rect.top) - 10 );  // offset to half of the cursor's height\n        $scope.send({\"payload\":[xCoordinate, yCoordinate]});\n    }\n    });\n\n})(scope);\n\n\n</script>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "templateScope": "local",
-        "x": 145,
-        "y": 263,
+        "x": 120,
+        "y": 60,
         "wires": [
             [
                 "fcb6aca7.75f3"
@@ -296,312 +302,11 @@
         ]
     },
     {
-        "id": "e4103bf1.4819a8",
-        "type": "ui_switch",
-        "z": "a877d21.227c23",
-        "name": "",
-        "label": "PASS / COMPRESSOR",
-        "tooltip": "",
-        "group": "401bc39f.af9f54",
-        "order": 2,
-        "width": "6",
-        "height": "1",
-        "passthru": false,
-        "decouple": "false",
-        "topic": "",
-        "style": "",
-        "onvalue": "true",
-        "onvalueType": "bool",
-        "onicon": "",
-        "oncolor": "",
-        "offvalue": "false",
-        "offvalueType": "bool",
-        "officon": "",
-        "offcolor": "",
-        "x": 570,
-        "y": 640,
-        "wires": [
-            [
-                "72e21051.9db6b"
-            ]
-        ]
-    },
-    {
-        "id": "72e21051.9db6b",
-        "type": "function",
-        "z": "a877d21.227c23",
-        "name": "Toggle compression",
-        "func": "if (msg.payload == true){\nmsg.payload=\"mha.mhachain.altplugs.select=comp\\n\"\n}\nelse{\nmsg.payload=\"mha.mhachain.altplugs.select=pass\\n\"\n}\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 620,
-        "y": 520,
-        "wires": [
-            [
-                "fb2fc96b.083a88"
-            ]
-        ]
-    },
-    {
-        "id": "ee567caa.60456",
-        "type": "inject",
-        "z": "a877d21.227c23",
-        "name": "",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "0.2",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "0.2",
-        "x": 490,
-        "y": 400,
-        "wires": [
-            [
-                "f9d84262.3288"
-            ]
-        ]
-    },
-    {
-        "id": "f9d84262.3288",
-        "type": "function",
-        "z": "a877d21.227c23",
-        "name": "Read altplugs state",
-        "func": "msg.payload=\"mha.mhachain.altplugs.select?val\\n\"\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 500,
-        "y": 460,
-        "wires": [
-            [
-                "fb2fc96b.083a88"
-            ]
-        ]
-    },
-    {
-        "id": "c69daa26.912f08",
-        "type": "function",
-        "z": "a877d21.227c23",
-        "name": "Parse altplugs state",
-        "func": "var s1=msg.payload.toString('utf8');\nif(s1.includes(\"pass\")){\n    msg.payload=false;\n}\nelse {\n    msg.payload=true;\n}\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 880,
-        "y": 640,
-        "wires": [
-            [
-                "e4103bf1.4819a8"
-            ]
-        ]
-    },
-    {
-        "id": "8d731552.5611a8",
-        "type": "function",
-        "z": "a877d21.227c23",
-        "name": "get level",
-        "func": "msg.payload=\"mha.mhachain.rmslevel.level_db?val\\n\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 260,
-        "y": 60,
-        "wires": [
-            [
-                "33316136.a5b0d6"
-            ]
-        ]
-    },
-    {
-        "id": "ce350826.462298",
-        "type": "inject",
-        "z": "a877d21.227c23",
-        "name": "",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "0.05",
-        "crontab": "",
-        "once": false,
-        "onceDelay": "0.1",
-        "x": 110,
-        "y": 60,
-        "wires": [
-            [
-                "8d731552.5611a8"
-            ]
-        ]
-    },
-    {
-        "id": "3530efdf.4a1948",
-        "type": "function",
-        "z": "a877d21.227c23",
-        "name": "toString level L",
-        "func": "msg.payload=msg.payload.toString('utf8');\nmsg.payload=msg.payload.replace(\"[\", \"\");\nmsg.payload=msg.payload.replace(\"]\", \"\");\nmsg.payload=msg.payload.split(\" \");\nmsg.payload=parseFloat(msg.payload[0]);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 600,
-        "y": 60,
-        "wires": [
-            [
-                "6b6f1fa2.dbf22"
-            ]
-        ]
-    },
-    {
-        "id": "6b6f1fa2.dbf22",
-        "type": "ui_gauge",
-        "z": "a877d21.227c23",
-        "name": "",
-        "group": "401bc39f.af9f54",
-        "order": 7,
-        "width": "3",
-        "height": "2",
-        "gtype": "gage",
-        "title": "level L",
-        "label": "",
-        "format": "",
-        "min": 0,
-        "max": "100",
-        "colors": [
-            "#00b500",
-            "#e6e600",
-            "#ca3838"
-        ],
-        "seg1": "",
-        "seg2": "",
-        "x": 830,
-        "y": 60,
-        "wires": []
-    },
-    {
-        "id": "33316136.a5b0d6",
-        "type": "tcp request",
-        "z": "a877d21.227c23",
-        "server": "localhost",
-        "port": "33337",
-        "out": "time",
-        "splitc": "5",
-        "name": "Level",
-        "x": 410,
-        "y": 60,
-        "wires": [
-            [
-                "3530efdf.4a1948",
-                "36525d99.3803c2"
-            ]
-        ]
-    },
-    {
-        "id": "fb2fc96b.083a88",
-        "type": "tcp request",
-        "z": "a877d21.227c23",
-        "server": "localhost",
-        "port": "33337",
-        "out": "time",
-        "splitc": "5",
-        "name": "Altplugs state",
-        "x": 800,
-        "y": 440,
-        "wires": [
-            [
-                "c69daa26.912f08"
-            ]
-        ]
-    },
-    {
-        "id": "36525d99.3803c2",
-        "type": "function",
-        "z": "a877d21.227c23",
-        "name": "toString level R",
-        "func": "msg.payload=msg.payload.toString('utf8');\nmsg.payload=msg.payload.replace(\"[\", \"\");\nmsg.payload=msg.payload.replace(\"]\", \"\");\nmsg.payload=msg.payload.split(\" \");\nmsg.payload=parseFloat(msg.payload[1]);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 600,
-        "y": 120,
-        "wires": [
-            [
-                "33dd4c15.b259dc"
-            ]
-        ]
-    },
-    {
-        "id": "33dd4c15.b259dc",
-        "type": "ui_gauge",
-        "z": "a877d21.227c23",
-        "name": "",
-        "group": "401bc39f.af9f54",
-        "order": 8,
-        "width": "3",
-        "height": "2",
-        "gtype": "gage",
-        "title": "level R",
-        "label": "",
-        "format": "",
-        "min": 0,
-        "max": "100",
-        "colors": [
-            "#00b500",
-            "#e6e600",
-            "#ca3838"
-        ],
-        "seg1": "",
-        "seg2": "",
-        "x": 830,
-        "y": 120,
-        "wires": []
-    },
-    {
         "id": "b43cd7f.53a9228",
         "type": "ui_switch",
         "z": "a877d21.227c23",
         "name": "",
         "label": "Noise",
-        "tooltip": "",
-        "group": "5a47267e.b59508",
-        "order": 3,
-        "width": "2",
-        "height": "1",
-        "passthru": false,
-        "decouple": "false",
-        "topic": "",
-        "style": "",
-        "onvalue": "true",
-        "onvalueType": "bool",
-        "onicon": "",
-        "oncolor": "",
-        "offvalue": "false",
-        "offvalueType": "bool",
-        "officon": "",
-        "offcolor": "",
-        "x": 65,
-        "y": 563,
-        "wires": [
-            [
-                "2923b911.00c766"
-            ]
-        ]
-    },
-    {
-        "id": "2923b911.00c766",
-        "type": "function",
-        "z": "a877d21.227c23",
-        "name": "Toggle noise",
-        "func": "if (msg.payload === true){\nmsg.payload=\"mha.mhachain.alt_noise.select=noise\\n\"\n}\nelse{\nmsg.payload=\"mha.mhachain.alt_noise.select=pass\\n\"\n}\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 225,
-        "y": 563,
-        "wires": [
-            [
-                "63372524.cb9afc"
-            ]
-        ]
-    },
-    {
-        "id": "20b9522b.a34e56",
-        "type": "ui_switch",
-        "z": "a877d21.227c23",
-        "name": "",
-        "label": "Pure tone",
         "tooltip": "",
         "group": "401bc39f.af9f54",
         "order": 4,
@@ -619,8 +324,55 @@
         "offvalueType": "bool",
         "officon": "",
         "offcolor": "",
-        "x": 75,
-        "y": 683,
+        "x": 90,
+        "y": 160,
+        "wires": [
+            [
+                "2923b911.00c766"
+            ]
+        ]
+    },
+    {
+        "id": "2923b911.00c766",
+        "type": "function",
+        "z": "a877d21.227c23",
+        "name": "Toggle noise",
+        "func": "if (msg.payload === true){\nmsg.payload=\"mha.mhachain.alt_noise.select=noise\\n\"\n}\nelse{\nmsg.payload=\"mha.mhachain.alt_noise.select=pass\\n\"\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 250,
+        "y": 160,
+        "wires": [
+            [
+                "63372524.cb9afc"
+            ]
+        ]
+    },
+    {
+        "id": "20b9522b.a34e56",
+        "type": "ui_switch",
+        "z": "a877d21.227c23",
+        "name": "",
+        "label": "Pure tone",
+        "tooltip": "",
+        "group": "401bc39f.af9f54",
+        "order": 6,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 100,
+        "y": 300,
         "wires": [
             [
                 "9a32f36a.0aa8d8"
@@ -635,8 +387,8 @@
         "func": "if (msg.payload === true){\nmsg.payload=\"mha.mhachain.alt_sine.select=sine\\n\"\n}\nelse{\nmsg.payload=\"mha.mhachain.alt_sine.select=pass\\n\"\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 245,
-        "y": 683,
+        "x": 290,
+        "y": 300,
         "wires": [
             [
                 "63372524.cb9afc"
@@ -648,10 +400,10 @@
         "type": "ui_slider",
         "z": "a877d21.227c23",
         "name": "",
-        "label": "frequency",
+        "label": "Frequency",
         "tooltip": "",
         "group": "401bc39f.af9f54",
-        "order": 6,
+        "order": 8,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -660,8 +412,8 @@
         "min": "50",
         "max": "12000",
         "step": 1,
-        "x": 85,
-        "y": 783,
+        "x": 110,
+        "y": 420,
         "wires": [
             [
                 "fff6af74.993f88"
@@ -676,8 +428,8 @@
         "func": "msg.payload=\"mha.mhachain.alt_sine.sine.f=\" + msg.payload.toString() + \"\\n\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 295,
-        "y": 783,
+        "x": 280,
+        "y": 420,
         "wires": [
             [
                 "63372524.cb9afc"
@@ -686,47 +438,6 @@
     },
     {
         "id": "b07d7ab7.674778",
-        "type": "ui_slider",
-        "z": "a877d21.227c23",
-        "name": "",
-        "label": "level",
-        "tooltip": "",
-        "group": "401bc39f.af9f54",
-        "order": 3,
-        "width": "4",
-        "height": "1",
-        "passthru": true,
-        "outs": "all",
-        "topic": "",
-        "min": "40",
-        "max": "80",
-        "step": 1,
-        "x": 65,
-        "y": 623,
-        "wires": [
-            [
-                "fc53f9e2.899ac"
-            ]
-        ]
-    },
-    {
-        "id": "fc53f9e2.899ac",
-        "type": "function",
-        "z": "a877d21.227c23",
-        "name": "noise level",
-        "func": "msg.payload=\"mha.mhachain.alt_noise.noise.lev=\" + msg.payload.toString() + \"\\n\"\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 285,
-        "y": 623,
-        "wires": [
-            [
-                "63372524.cb9afc"
-            ]
-        ]
-    },
-    {
-        "id": "be4e5c3c.7926d8",
         "type": "ui_slider",
         "z": "a877d21.227c23",
         "name": "",
@@ -742,8 +453,49 @@
         "min": "40",
         "max": "80",
         "step": 1,
-        "x": 65,
-        "y": 723,
+        "x": 90,
+        "y": 220,
+        "wires": [
+            [
+                "fc53f9e2.899ac"
+            ]
+        ]
+    },
+    {
+        "id": "fc53f9e2.899ac",
+        "type": "function",
+        "z": "a877d21.227c23",
+        "name": "noise level",
+        "func": "msg.payload=\"mha.mhachain.alt_noise.noise.lev=\" + msg.payload.toString() + \"\\n\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 250,
+        "y": 220,
+        "wires": [
+            [
+                "63372524.cb9afc"
+            ]
+        ]
+    },
+    {
+        "id": "be4e5c3c.7926d8",
+        "type": "ui_slider",
+        "z": "a877d21.227c23",
+        "name": "",
+        "label": "level",
+        "tooltip": "",
+        "group": "401bc39f.af9f54",
+        "order": 7,
+        "width": "4",
+        "height": "1",
+        "passthru": true,
+        "outs": "all",
+        "topic": "",
+        "min": "40",
+        "max": "80",
+        "step": 1,
+        "x": 90,
+        "y": 360,
         "wires": [
             [
                 "479618ce.38c74"
@@ -758,8 +510,8 @@
         "func": "msg.payload=\"mha.mhachain.alt_sine.sine.lev=\" + msg.payload.toString() + \"\\n\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 231,
-        "y": 729,
+        "x": 280,
+        "y": 360,
         "wires": [
             [
                 "63372524.cb9afc"
@@ -767,31 +519,526 @@
         ]
     },
     {
-        "id": "22becb6f.a1f184",
+        "id": "83e28fc6.fe79b",
         "type": "function",
-        "z": "a877d21.227c23",
+        "z": "b1d19124.18d7c8",
+        "name": "read center frequncies",
+        "func": "msg.payload = \"mha.mhachain.comp.smoothgains_bridge.mhachain.mbc.dc.cf?\\n\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 350,
+        "y": 80,
+        "wires": [
+            [
+                "43dc601d.14b3"
+            ]
+        ]
+    },
+    {
+        "id": "e0de5915.d76d98",
+        "type": "delay",
+        "z": "b1d19124.18d7c8",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 110,
+        "y": 180,
+        "wires": [
+            [
+                "de985529.034c08",
+                "44357f58.fb1fb",
+                "65ddf000.273e18"
+            ]
+        ]
+    },
+    {
+        "id": "43dc601d.14b3",
+        "type": "tcp request",
+        "z": "b1d19124.18d7c8",
+        "server": "localhost",
+        "port": "33337",
+        "out": "time",
+        "splitc": "5",
+        "name": "",
+        "x": 600,
+        "y": 80,
+        "wires": [
+            [
+                "c585cf7b.429378"
+            ]
+        ]
+    },
+    {
+        "id": "de985529.034c08",
+        "type": "trigger",
+        "z": "b1d19124.18d7c8",
+        "op1": "1",
+        "op2": "0",
+        "op1type": "str",
+        "op2type": "str",
+        "duration": "-100",
+        "extend": false,
+        "units": "ms",
+        "reset": "stop",
+        "bytopic": "all",
+        "name": "",
+        "x": 320,
+        "y": 320,
+        "wires": [
+            [
+                "6ce34535.634834",
+                "6456759d.f63c0c"
+            ]
+        ]
+    },
+    {
+        "id": "44357f58.fb1fb",
+        "type": "trigger",
+        "z": "b1d19124.18d7c8",
+        "op1": "1",
+        "op2": "0",
+        "op1type": "str",
+        "op2type": "str",
+        "duration": "-500",
+        "extend": false,
+        "units": "ms",
+        "reset": "stop",
+        "bytopic": "all",
+        "name": "",
+        "x": 320,
+        "y": 440,
+        "wires": [
+            [
+                "9096342a.6a9c8"
+            ]
+        ]
+    },
+    {
+        "id": "c585cf7b.429378",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
         "name": "toString",
         "func": "msg.payload=msg.payload.toString('utf8');\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 735,
-        "y": 343,
+        "x": 780,
+        "y": 80,
+        "wires": [
+            [
+                "2af2c473.ad959c"
+            ]
+        ]
+    },
+    {
+        "id": "65ddf000.273e18",
+        "type": "delay",
+        "z": "b1d19124.18d7c8",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 290,
+        "y": 380,
+        "wires": [
+            [
+                "74559ff0.6018f"
+            ]
+        ]
+    },
+    {
+        "id": "9096342a.6a9c8",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "update chart",
+        "func": "var time=new Date().getTime();\nvar dataarray=global.get('dataarray') ||  [[]];\n\nvar chart = [{\n    \"series\":[\"Level =\"],\n    \"data\":dataarray,\n    \"labels\":[\"\"],\n    \"time\":time\n}];\n\n\nmsg.payload = chart;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530,
+        "y": 440,
+        "wires": [
+            [
+                "63aa2380.74f3fc"
+            ]
+        ]
+    },
+    {
+        "id": "2af2c473.ad959c",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "save_center_f",
+        "func": "var lines = msg.payload.split(\"\\n\");\nlines = lines[2].slice(1,-1);\nmsg.payload = lines.split(\" \").map(function(item) {\n    return parseInt(item, 10);\n});\n\nglobal.set('center_f',msg.payload);\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 960,
+        "y": 80,
         "wires": [
             []
         ]
     },
     {
-        "id": "cfa1738d.2ad5a8",
-        "type": "debug",
+        "id": "f3f61447.8a5298",
+        "type": "tcp request",
+        "z": "b1d19124.18d7c8",
+        "server": "localhost",
+        "port": "33337",
+        "out": "sit",
+        "splitc": " ",
+        "name": "",
+        "x": 840,
+        "y": 320,
+        "wires": [
+            [
+                "f7d39636.2a825"
+            ]
+        ]
+    },
+    {
+        "id": "74559ff0.6018f",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "to chart",
+        "func": "var m={};\nvar cf=global.get('center_f') || [200,1000,1500,2000,3000,4000,5500,7000];\nvar zero_values = Array(cf.length).fill(0)\nm.labels = cf;\nm.series = ['Left ear', 'Right ear'];\nm.data = [\n    zero_values,\n    zero_values,\n    ];\n    \n    \n\nvar dataarray= [[]];\nglobal.set('dataarray',dataarray);  \n\n    \nreturn {payload:[m]};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 520,
+        "y": 380,
+        "wires": [
+            [
+                "d61a171d.9382e8"
+            ]
+        ]
+    },
+    {
+        "id": "63aa2380.74f3fc",
+        "type": "ui_chart",
         "z": "b1d19124.18d7c8",
         "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "x": 940,
+        "group": "5a47267e.b59508",
+        "order": 12,
+        "width": 0,
+        "height": 0,
+        "label": "Overall level",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "3",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 710,
+        "y": 440,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "f7d39636.2a825",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "toArray",
+        "func": "msg.payload=msg.payload.toString('utf8');\nvar lines = msg.payload.split(\"\\n\");\nlines = lines[2].slice(1,-1);\nmsg.payload = lines.split(\" \").map(function(item) {\n    return parseInt(item, 10);\n});\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1020,
+        "y": 320,
+        "wires": [
+            [
+                "fa84f949.20af7",
+                "b56e24f5.bf19b"
+            ]
+        ]
+    },
+    {
+        "id": "d61a171d.9382e8",
+        "type": "ui_chart",
+        "z": "b1d19124.18d7c8",
+        "name": "",
+        "group": "5a47267e.b59508",
+        "order": 11,
+        "width": 0,
+        "height": 0,
+        "label": "Compressor input level (dB)",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "auto",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": true,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "8",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 1420,
         "y": 380,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "fa84f949.20af7",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "to chart",
+        "func": "var m={};\nvar cf=global.get('center_f') || [200,1000,1500,2000,3000,4000,5500,7000];\n\nm.labels = cf;\nm.series = ['Left ear', 'Right ear'];\nm.data = [\n    msg.payload.slice(0,cf.length),\n    msg.payload.slice(cf.length),\n    ];\nreturn {payload:[m]};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1200,
+        "y": 320,
+        "wires": [
+            [
+                "d61a171d.9382e8"
+            ]
+        ]
+    },
+    {
+        "id": "b56e24f5.bf19b",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "save chart",
+        "func": "var cf=global.get('center_f') || [200,1000,1500,2000,3000,4000,5500,7000];\nvar left_level = msg.payload.slice(0,cf.length);\nvar right_level = msg.payload.slice(cf.length);\n\nvar i;\nvar sum_left=0;\nvar sum_right=0;\nvar overall_level = 0;\nleft_level[0] = 0;\nright_level[0] = 0;\n\nfor (i = 1; i < left_level.length; i++) {\n   left_level[i] = Math.pow(10,left_level[i]/10);\n   sum_left = sum_left + left_level[i];\n   right_level[i] = Math.pow(10,right_level[i]/10);\n   sum_right = sum_right + right_level[i];\n} \n\noverall_level = Math.round(10*(10*Math.log10(sum_left)+10*Math.log10(sum_right))/2)/10;\nglobal.set('overall_level',overall_level);\n\n\nvar time=new Date().getTime();\n\nvar dataarray=global.get('dataarray') ||  [[]];\noverall_level = Number(overall_level);\n\ndataarray[0][dataarray[0].length] = {\"x\":time,\"y\":overall_level};\nif (dataarray[0].length>100){\n    dataarray[0].shift();\n}\nglobal.set('dataarray',dataarray);\n\nvar chart = [{\n    \"series\":[\"Level =\"],\n    \"data\":dataarray,\n    \"labels\":[\"\"],\n    \"time\":time\n}];\n\n\nmsg.payload = chart;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1210,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "89439d23.84d8f8",
+        "type": "inject",
+        "z": "b1d19124.18d7c8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0",
+        "x": 110,
+        "y": 80,
+        "wires": [
+            [
+                "83e28fc6.fe79b",
+                "e0de5915.d76d98"
+            ]
+        ]
+    },
+    {
+        "id": "6ce34535.634834",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "read compressor-in levels",
+        "func": "msg.payload = \"mha.mhachain.comp.smoothgains_bridge.mhachain.mbc.dc.level_in?\\n\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 580,
+        "y": 320,
+        "wires": [
+            [
+                "f3f61447.8a5298"
+            ]
+        ]
+    },
+    {
+        "id": "404a73a1.5e6dac",
+        "type": "tcp request",
+        "z": "b1d19124.18d7c8",
+        "server": "localhost",
+        "port": "33337",
+        "out": "time",
+        "splitc": "5",
+        "name": "Level",
+        "x": 670,
+        "y": 160,
+        "wires": [
+            [
+                "d5bff4a1.4415c",
+                "41ff75fa.3cd274"
+            ]
+        ]
+    },
+    {
+        "id": "6456759d.f63c0c",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "get level",
+        "func": "msg.payload=\"mha.mhachain.rmslevel.level_db?val\\n\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 520,
+        "y": 160,
+        "wires": [
+            [
+                "404a73a1.5e6dac"
+            ]
+        ]
+    },
+    {
+        "id": "d5bff4a1.4415c",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "toString level L",
+        "func": "msg.payload=msg.payload.toString('utf8');\nmsg.payload=msg.payload.replace(\"[\", \"\");\nmsg.payload=msg.payload.replace(\"]\", \"\");\nmsg.payload=msg.payload.split(\" \");\nmsg.payload=parseFloat(msg.payload[0]);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 860,
+        "y": 160,
+        "wires": [
+            [
+                "26d4d07a.c81c9"
+            ]
+        ]
+    },
+    {
+        "id": "41ff75fa.3cd274",
+        "type": "function",
+        "z": "b1d19124.18d7c8",
+        "name": "toString level R",
+        "func": "msg.payload=msg.payload.toString('utf8');\nmsg.payload=msg.payload.replace(\"[\", \"\");\nmsg.payload=msg.payload.replace(\"]\", \"\");\nmsg.payload=msg.payload.split(\" \");\nmsg.payload=parseFloat(msg.payload[1]);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 860,
+        "y": 220,
+        "wires": [
+            [
+                "3877b486.661a74"
+            ]
+        ]
+    },
+    {
+        "id": "26d4d07a.c81c9",
+        "type": "ui_gauge",
+        "z": "b1d19124.18d7c8",
+        "name": "",
+        "group": "5a47267e.b59508",
+        "order": 7,
+        "width": "3",
+        "height": "2",
+        "gtype": "gage",
+        "title": "Mic level L",
+        "label": "",
+        "format": "",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 1110,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "3877b486.661a74",
+        "type": "ui_gauge",
+        "z": "b1d19124.18d7c8",
+        "name": "",
+        "group": "5a47267e.b59508",
+        "order": 8,
+        "width": "3",
+        "height": "2",
+        "gtype": "gage",
+        "title": "Mic level R",
+        "label": "",
+        "format": "",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 1090,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "bb686c48.08e43",
+        "type": "ui_text",
+        "z": "a877d21.227c23",
+        "group": "401bc39f.af9f54",
+        "order": 3,
+        "width": "6",
+        "height": "1",
+        "name": "",
+        "label": "Signal generator",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 130,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "6e3ff728.5af1f",
+        "type": "ui_text",
+        "z": "a877d21.227c23",
+        "group": "401bc39f.af9f54",
+        "order": 1,
+        "width": "6",
+        "height": "1",
+        "name": "",
+        "label": "Compressor settings",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 140,
+        "y": 20,
         "wires": []
     }
 ]
