@@ -1,6 +1,6 @@
-This is a toy example of a graphical control interface that can be used
-to modify parameters of an openMHA configuartion at runtime and that can read
-out monitor variables.
+This directory contains a toy example of a graphical control interface that can be used
+to modify parameters of an openMHA configuration while processing the live audio signal
+and that can continuously read monitor variables from the running openMHA.
 
 Requirements:
 The GUI is based on the flow-based programming tool Node-RED, which needs to be
@@ -12,12 +12,12 @@ are used in this example and must be installed on your system.
 Please note that this example has been developed and tested under a Linux operating
 system. Hence, the following instructions assume that a Linux system is used to run
 the example. In general there is no obstacle to run the example under other operating
-system as openMHA and Node-RED are available for sveral platforms. 
+system as openMHA and Node-RED are available for several platforms. 
 
 Run the example:
 This example comes with an openMHA configuration file which performs live processing
-of microphone input signals. The resulting signal is provided via the soundcard output
-channels.
+of microphone input signals. The resulting signal is provided via the sound device
+output channels.
 A JACK server needs to be started with parameters according to the openMHA
 configuration, here fs=44100 and 64 frames/period.
 
@@ -27,15 +27,15 @@ mha ?read:node-red-gui-demo.cfg cmd=start
 
 in this example directory. The configuration basically contains a dynamic range
 compression plugin, a noise generator and a sine generator. These plugins can be
-controlled using the GUI via a webbrowser.
+controlled using the GUI via a web browser.
 
 The GUI can be started by running
 
 node-red GUI_demo.flow
 
-in the same example directory. A webserver will be started that provides the Node-RED
+in the same example directory. A web server will be started that provides the Node-RED
 configuration interface.
-It can be reached through a webbrowser under:
+It can be reached through a web browser under:
 http://127.0.0.1:1880/.
 
 The dashboard, i.e., openMHA control interface defined in the Node-RED configuration
@@ -51,16 +51,16 @@ is used here as an  example.
 An overview of the characteristics at the center, edges and corner position of
 the 2d-panel is provided in gaintables.pdf.
 - Noise and sine generator can be switched on and off, levels controlled and
-the frequncy of the sine tone
+the frequency of the sine tone
 
 Right panel:
 - Broadband input levels of left and right microphone channels is measured.
-Note that your're working with an non-calibrated setup such that the displayed
+Note that you are working with an non-calibrated setup such that the displayed
 levels do not accord to the physical sound level reaching the microphones.
-- Compressor input level displays the levels in the different frequncy bands
+- Compressor input level displays the levels in the different frequency bands
 of the dynamic range compressor for left and right input channel. Here, the
 contributions of the signal generators are observable.
-- Overall level displays the braodband level averaged over left and right input
+- Overall level displays the broadband level averaged over left and right input
 channel.
 
 
