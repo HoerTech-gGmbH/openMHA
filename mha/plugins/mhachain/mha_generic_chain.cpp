@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2010 2012 2013 2014 2015 2016 2017 HörTech gGmbH
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,8 +18,12 @@
 
 mhachain::chain_base_t::chain_base_t(algo_comm_t iac,const std::string& ichain,const std::string & ialgo)
     : MHAPlugin::plugin_t<mhachain::plugs_t>("MHA Chain",iac),
-      bprofiling("use profiling method","no"),
-      algos("list of plugins","[]"),
+      bprofiling("Profile the loaded plugins. Needs to be set to true before setting algos.",
+                 "no"),
+      algos("List of plugins to load and arrange in a signal processing chain.  Entries\n"
+            "are separated by spaces and given in the order of the signal processing.\n"
+            "Please refer to the detailed description of this plugin in the plugin manual\n"
+            "for more details.", "[]"),
       b_prepared(false),
       chain(ialgo)
 {
