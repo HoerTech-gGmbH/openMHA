@@ -518,13 +518,24 @@ To do this, start openMHA in the same directory as before:
     \item $\rightarrow$ {\ttfamily ?read:gain\_live.cfg}
     \item $\rightarrow$ {\ttfamily cmd=start}
 
-OpenMHA is now applying a gain to your own voice input. In order to close openMHA type:
+\mha{} is now applying a gain to your own voice input. In order to close openMHA type:
 \item  $\rightarrow$ {\ttfamily cmd=quit}
 
 \end{enumerate}
 
-\textcolor{orange}{\textbf{You have now managed to start some simple configurations for a static audio file as well as a live input using Jack. In the next session Matlab or Octave will be used as GUI for openMHA.}}
+\subsubsection{Adjusting the fragment size}%
+\index{fragment size}%
+\index{double buffering}%
 
+If the required fragment size is not supported by the audio hardware,
+double buffering can be used in the \mha{} framework. Decoupling of the JACK
+fragment size and the \mha{} fragment size can be reached by inserting the
+double buffer plugin \textit{db} between the framework and the
+algorithm. This is demonstrated in gain\_live\_double.cfg.
+
+\textcolor{orange}{\textbf{You have now managed to start some simple
+    configurations for a static audio file as well as a live input using Jack.
+    In the next session Matlab or Octave will be used as user interface for openMHA.}}
 
 \newpage
 
@@ -532,7 +543,7 @@ OpenMHA is now applying a gain to your own voice input. In order to close openMH
 \section{The remote connection - openMHA}
 \label{sec_remote}
 
-OpenMHA is now running and can be reached by default using port 33337. In order to communicate with OpenMHA you can use the network client \textbf{\textit{Netcat.}} Use a \textbf{second terminal windows} and type: \\
+\mha{} is now running and can be reached by default using port 33337. In order to communicate with \mha{} you can use the network client \textbf{\textit{Netcat.}} Use a \textbf{second terminal windows} and type: \\
 $\rightarrow$ \textbf{{\ttfamily nc localhost 33337}} 
 
 For more details look into "openMHA\_application\_manual.pdf" (p. 4-7)\footnote{\label{foot:1}\url{https://github.com/HoerTech-gGmbH/openMHA/blob/master/openMHA_application_manual.pdf}}. \\
@@ -710,7 +721,7 @@ The objective of this section is to learn about dealing with AC-Variables in com
 
 \textbf{What are AC Variables?} \\
 
-Sometimes plugin algorithms need to share more information than just the current audio signal. OpenMHA supports this by providing a mechanism to share any type of additional data between plugins in the form of \textcolor{orange}{\textbf{algorithm communication variables}} or \textcolor{orange}{\textbf{AC variables}}. Further information on the purpose of AC Variables can be found in the \textit{Application Manual} section~2.2. \\
+Sometimes plugin algorithms need to share more information than just the current audio signal. \mha{} supports this by providing a mechanism to share any type of additional data between plugins in the form of \textcolor{orange}{\textbf{algorithm communication variables}} or \textcolor{orange}{\textbf{AC variables}}. Further information on the purpose of AC Variables can be found in the \textit{Application Manual} section~2.2. \\
 
 \dotfill \\
 
