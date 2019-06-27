@@ -84,7 +84,7 @@ def openmha_build_steps(stage_name) {
     // Store generated PDF documents as Jenkins artifacts
     stash name: "docs", includes: '*.pdf'
     bash ("echo stashed docs on $system $arch at \$(date -R)")
-    archiveArtifacts '*.pdf'
+    archiveArtifacts 'pdf-*.zip'
   }
 
   // Build executables, plugins, execute tests

@@ -53,6 +53,7 @@ external_libs:
 
 doc: mha/doc
 	/bin/cp -lv --remove-destination mha/doc/*.pdf .
+	zip -r pdf-$$(cat version).zip *.pdf
 
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
