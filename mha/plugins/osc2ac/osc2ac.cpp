@@ -279,7 +279,7 @@ MHAPLUGIN_DOCUMENTATION\
  "Receive open sound control (OSC) messages and mirror their data "
  "in AC variables. "
  "This plugin can receive OSC messages provided that they contain only "
- "single-precision floating-point values (scalars or vectors). "
+ "numbers (scalars or vectors). "
  "\n\n"
  "The configuration variable \\texttt{vars} can be used to control which "
  " OSC messages to receive, and to define the names of the AC variables "
