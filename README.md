@@ -37,7 +37,11 @@ publications at the end of this README.
 
 ## Installation
 
-For installation instructions, please see INSTALLATION.md
+For installation instructions for Linux, Windows and macOS, please refer
+to the instructions in file INSTALLATION.md.
+
+We also provide SD card images for Beaglebone Black with the Cape4all
+sound card here: http://mahalia.openmha.org/.
 
 ## Usage instructions:
 
