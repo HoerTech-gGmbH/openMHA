@@ -1,0 +1,38 @@
+---
+layout: post
+title:  "2019 Release of openMHA available"
+date:   2019-06-27 08:00:00
+category: software
+tags: [release, 4.10.0]
+---
+
+__openMHA 4.10.0__ is the 2019 major release of the software platform featuring:
+
+### Advanced system support
+
+- An up-to-date [MAHALIA](http://mahalia.openmha.org/) image for Beaglebone Black single-board computers containing the latest release of openMHA is available
+- Installers for Windows and macOS were improved requiring practically no user interaction anymore
+- Improved parser processing performance on Linux and Windows
+   
+
+### Extended documentation and usability
+- A Getting-started manual providing a guided introduction to the
+operation of openMHA as well as tutorials for openMHA control from
+Matlab or Octave
+- Launch of the [openMHA web forum](https://forum.openmha.org/) to enable exchange between users and mutual help with their openMHA projetcs
+
+### New tools
+- An example of a configuration for the [Node-RED](https://nodered.org/) framework that enables a lightweight graphical user interface to control and monitor openMHA parameters during processing
+<p align="center">
+  <img src="/images/openMHA_gui_demo.png">
+</p>
+- Gain table analysis under Matlab/Octave
+
+### More plugins
+
+- _levelmeter_ flexible level measurement
+
+Extended support for incorporation of non-audio data such as sensor information into hearing aid processing:
+- _osc2ac_ Converts open sound control (OSC) formatted data to algorithm communication data format that can be used to control parameters inside the openMHA processing chain
+- _ac_proc_ Allows application of signal processing plugins to non-audio time signals such as motion sensor data, EEG data or information extracted from the audio stream    
+
