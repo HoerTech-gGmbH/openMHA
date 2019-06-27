@@ -1,0 +1,9 @@
+*.aux
+*.idx
+*.log
+*.out
+*.pdf
+*.ind
+*.ilg
+*.toc
+plug_*

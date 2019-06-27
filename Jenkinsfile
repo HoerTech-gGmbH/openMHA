@@ -13,9 +13,21 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+// On the 2019 windows build server, we cannot use the sh step anymore.
+// This workaround invokes the msys2 bash, sets the required environment
+// variables, and executes the desired command.
+def windows_bash(command) {
+  bat ('C:\\msys64\\usr\\bin\\bash -c "source /jenkins.environment && set -ex && ' + command + ' "')
+  // This will probably fail if command contains multiple lines, quotes, or
+  // similar.  Currently all our shell commands are simple enough for this
+  // simple solution to work.  Should this no longer be sufficient, then we
+  // could write the shell command to a temporary file and execute this file
+  // after sourcing the enviroment.
+}
+
 // Encapsulation of the build steps to perform when compiling openMHA
 // @param stage_name the stage name is "system && arch" where system is bionic,
-//                   xenial, trusty, windows, or mac, and arch is x86_64, i686,
+//                   xenial, windows, or mac, and arch is x86_64, i686,
 //                   or armv7. Both are separated by an && operator and spaces.
 //                   This string is also used as a valid label expression for
 //                   jenkins. The appropriate nodes have the respective labels.
@@ -28,55 +40,79 @@ def openmha_build_steps(stage_name) {
   def system, arch, devenv
   (system,arch,devenv) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
 
+  // platform booleans
+  def linux = (system != "windows" && system != "mac")
+  def windows = (system == "windows")
+  def mac = (system == "mac")
+  def docs = (devenv == "mhadoc")
+
   // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
-  def cpus = (arch == "armv7") ? 5 : 1
+  def cpus = (arch == "armv7") ? 5 : 2 // default on other systems is 2 cores
+  def additional_cpus_for_docs = 7
+
+  // workaround to invoke unix shell on all systems
+  def bash = { command -> windows ? windows_bash(command) : sh(command) }
 
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
   checkout scm
 
   // Avoid that artifacts from previous builds influence this build
-  sh "git reset --hard && git clean -ffdx"
+  bash "git reset --hard && git clean -ffdx"
 
   // Save time by using precompiled external libs if possible.
   // Install pre-compiled external libraries for the common branches
   copyArtifacts(projectName: "openMHA/external_libs/external_libs_development",
                 selector:    lastSuccessful())
-  sh "tar xvzf external_libs.tgz"
+  bash "tar xvzf external_libs.tgz"
 
   // if we notice any differences between the sources of the precompiled
   // dependencies and the current sources, we cannot help but need to recompile
-  sh "git diff --exit-code || (git reset --hard && git clean -ffdx)"
+  bash "git diff --exit-code || (git reset --hard && git clean -ffdx)"
 
   // Autodetect libs/compiler
-  sh "./configure"
+  bash "./configure"
 
-  // On linux, we also create debian packages
-  def linux = (system != "windows" && system != "mac")
-  def windows = (system == "windows")
-  def mac = (system == "mac")
-  def debs = linux ? " deb" : ""
-  def pkgs = mac ? " pkg" : ""
-  def exes = windows ? " exe" : ""
-  sh ("make -j $cpus install unit-tests" + debs + exes + pkgs)
+  if (docs) {
+    bash ("make -j ${cpus + additional_cpus_for_docs} doc")
 
-  // The system tests perform timing measurements which may fail when
-  // system load is high. Retry in that case, up to 2 times.
-  retry(3){sh "make -C mha/mhatest"}
+    // Store generated PDF documents as Jenkins artifacts
+    stash name: "docs", includes: '*.pdf'
+    bash ("echo stashed docs on $system $arch at \$(date -R)")
+    archiveArtifacts 'pdf-*.zip'
+  }
+
+  // Build executables, plugins, execute tests
+  bash ("make -j $cpus test")
+
+  // Retrieve the documents, wait if they are not ready yet
+  def wait_time = 1
+  def attempt = 0
+  retry(45){
+    sleep(wait_time)
+    wait_time = 15
+    attempt = attempt + 1
+    bash ("echo unstash docs attempt $attempt on $system $arch at \$(date -R)")
+    unstash "docs"
+  }
 
   if (linux) {
-    // Store debian packets for later retrieval by the repository manager
+    bash ("make -j $cpus deb")
+    // Store debian packages
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
+    archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
   }
 
   if (windows) {
-    // Store windows installer packets for later retrieval by the repository manager
-    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/exe/*.exe'
+    bash ("make -j $cpus exe")
+    // Store windows installer
+    archiveArtifacts 'mha/tools/packaging/exe/*.exe'
   }
 
   if (mac) {
-    // Store mac installer packets for later retrieval by the repository manager
-    stash name: (arch+"_"+system), includes: 'mha/tools/packaging/pkg/*.pkg'
+    bash ("make -j $cpus pkg")
+    // Store mac installer
+    archiveArtifacts 'mha/tools/packaging/pkg/*.pkg'
   }
 }
 
@@ -85,32 +121,22 @@ pipeline {
     stages {
         stage("build") {
             parallel {
-                stage(                         "bionic && x86_64 && mhadev") {
-                    agent {label               "bionic && x86_64 && mhadev"}
-                    steps {openmha_build_steps("bionic && x86_64 && mhadev")}
+                stage(                         "bionic && x86_64 && mhadoc") {
+                    agent {label               "bionic && x86_64 && mhadoc"}
+                    steps {openmha_build_steps("bionic && x86_64 && mhadoc")}
                 }
                 stage(                         "xenial && x86_64 && mhadev") {
                     agent {label               "xenial && x86_64 && mhadev"}
                     steps {openmha_build_steps("xenial && x86_64 && mhadev")}
                 }
-                stage(                         "trusty && x86_64 && mhadev") {
-                    agent {label               "trusty && x86_64 && mhadev"}
-                    steps {openmha_build_steps("trusty && x86_64 && mhadev")}
+                stage(                         "bionic && i686 && mhadev") {
+                    agent {label               "bionic && i686 && mhadev"}
+                    steps {openmha_build_steps("bionic && i686 && mhadev")}
                 }
-                // We can also build for 32 bits. Deactivated to save
-                // CPU cycles on Jenkins server.
-                // stage(                         "bionic && i686") {
-                //     agent {label               "bionic && i686"}
-                //     steps {openmha_build_steps("bionic && i686")}
-                // }
-                // stage(                         "xenial && i686") {
-                //     agent {label               "xenial && i686"}
-                //     steps {openmha_build_steps("xenial && i686")}
-                // }
-                // stage(                         "trusty && i686") {
-                //     agent {label               "trusty && i686"}
-                //     steps {openmha_build_steps("trusty && i686")}
-                // }
+                stage(                         "xenial && i686 && mhadev") {
+                    agent {label               "xenial && i686 && mhadev"}
+                    steps {openmha_build_steps("xenial && i686 && mhadev")}
+                }
                 stage(                         "bionic && armv7 && mhadev") {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
@@ -129,51 +155,24 @@ pipeline {
                 }
             }
         }
-        stage("artifacts") {
-            parallel {
-                stage("debian packages for apt") {
-                    agent {label "aptly"}
-                    // do not publish packages for any branches except these
-                    when { anyOf { branch 'master'; branch 'development' } }
-                    steps {
-                        // receive all deb packages from openmha build
-                        unstash "x86_64_bionic"
-                        unstash "x86_64_xenial"
-                        unstash "x86_64_trusty"
-                        unstash "armv7_bionic"
-                        unstash "armv7_xenial"
-                        // We can also build for 32 bits. Deactivated to save
-                        // CPU cycles on Jenkins server.
-                        // unstash "i686_bionic"
-                        // unstash "i686_xenial"
-                        // unstash "i686_trusty"
+        stage("debian packages for apt") {
+            agent {label "aptly"}
+            // do not publish packages for any branches except these
+            when { anyOf { branch 'master'; branch 'development' } }
+            steps {
+                // receive all deb packages from openmha build
+                unstash "x86_64_bionic"
+                unstash "x86_64_xenial"
+                unstash "armv7_bionic"
+                unstash "armv7_xenial"
+                unstash "i686_bionic"
+                unstash "i686_xenial"
 
-                        // Copies the new debs to the stash of existing debs,
-                        sh "make storage"
-                        build job:         "/hoertech-aptly/$BRANCH_NAME",
-                              quietPeriod: 300,
-                              wait:        false
-                    }
-                }
-                stage("jenkins artifacts") {
-                    steps {
-                        // Publish mac installer as a Jenkins artifact
-                        unstash "x86_64_mac"
-                        archiveArtifacts 'mha/tools/packaging/pkg/*pkg'
-
-                        // Publish windows installer as a Jenkins artifact
-                        unstash "x86_64_windows"
-                        archiveArtifacts 'mha/tools/packaging/exe/*.exe'
-
-                        // Publish debian packages as Jenkins artifacts
-                        unstash "x86_64_bionic"
-                        unstash "x86_64_xenial"
-                        unstash "x86_64_trusty"
-                        unstash "armv7_bionic"
-                        unstash "armv7_xenial"
-                        archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
-                    }
-                }
+                // Copies the new debs to the stash of existing debs,
+                sh "make storage"
+                build job:         "/hoertech-aptly/$BRANCH_NAME",
+                      quietPeriod: 300,
+                      wait:        false
             }
         }
     }

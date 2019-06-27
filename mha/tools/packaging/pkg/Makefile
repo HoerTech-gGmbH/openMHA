@@ -7,7 +7,7 @@ include luggage.make
 REPO=../../../..
 
 #Include meta-information in the package
-PACKAGE_VERSION=4.9.0
+PACKAGE_VERSION=4.10.0
 TITLE=openMHA
 REVERSE_DOMAIN=org.openmha
 
@@ -51,6 +51,7 @@ matfiles: l_usr_local_share
 
 docfiles:
 	@mkdir -p ${WORK_D}/usr/local/doc/openmha/
+	@${CP} ${REPO}/COPYING ${WORK_D}/usr/local/doc/openmha/
 	@${CP} ${REPO}/*.pdf ${WORK_D}/usr/local/doc/openmha/
 
 clean:

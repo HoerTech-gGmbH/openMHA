@@ -43,6 +43,10 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(BUILD_DIR)/.directory
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c $(BUILD_DIR)/.directory
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+# Pattern for building object containing the git commit hash for reproducibility
+$(BUILD_DIR)/%_mha_git_commit_hash.o: $(GIT_DIR)/mha/libmha/src/mha_git_commit_hash.cpp $(BUILD_DIR)/.directory
+	$(CXX) $(CXXFLAGS) $(GITCOMMITHASHCFLAGS) -c -o $@ $<
+
 # Pattern for linking shared libraries and dynamic plugins
 $(BUILD_DIR)/%$(DYNAMIC_LIB_EXT):
 	$(CXX) -shared -o $$PWD/$@ $^ ${LDFLAGS} ${LDLIBS}
@@ -83,7 +87,7 @@ $(BUILD_DIR)/unit-test-runner: $(BUILD_DIR)/.directory $(unit_tests_test_files) 
 	if test -n "$(unit_tests_test_files)"; then $(CXX) $(CXXFLAGS) --coverage -o $@ $(wordlist 2, $(words $^), $^) $(LDFLAGS) $(LDLIBS) -lgmock_main -lpthread; fi
 
 # Static Pattern Rule defines standard prerequisites for plugins
-$(PLUGINS:%=$(BUILD_DIR)/%$(PLUGIN_EXT)): %$(PLUGIN_EXT): %.o
+$(PLUGINS:%=$(BUILD_DIR)/%$(PLUGIN_EXT)): %$(PLUGIN_EXT): %.o %_mha_git_commit_hash.o
 
 # Always dive into subdirectories
 .PHONY : $(SUBDIRS)

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 2019 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@ chklib(){
 }
 (
     PREFIX="./"
+    DEBUG="-g"
     for arg in "$@"; do
         case "$arg" in
             --prefix=*)
@@ -30,6 +31,9 @@ chklib(){
                 ;;
             --debug)
                 DEBUG="-g"
+                ;;
+            --nodebug)
+                DEBUG=""
                 ;;
             --debug=*)
                 DEBUG=`echo $arg | sed 's/--debug=/-g/'`
@@ -181,11 +185,17 @@ chklib(){
             echo "COMPILERPREFIX=arm-linux-gnueabihf-"
             ;;
         arm*)
+            echo "SSE+=-mcpu=cortex-a8 -mfloat-abi=hard -mfpu=neon"
             ;;
         x86_64*|i686*)
             echo "SSE+=-msse -msse2 -mfpmath=sse"
             ;;
     esac
+
+    if type -P ccache >/dev/null
+    then
+        echo 'COMPILERPREFIX:=ccache $(COMPILERPREFIX)'
+    fi
 
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
     echo 'CXXFLAGS+=-Wall -Wnon-virtual-dtor -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG

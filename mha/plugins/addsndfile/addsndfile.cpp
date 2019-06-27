@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2009 2010 2011 2012 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -267,34 +268,49 @@ namespace addsndfile {
     };
 
     addsndfile_if_t::addsndfile_if_t(algo_comm_t iac,const char*,const char*)
-        : MHAPlugin::plugin_t<sndfile_t>(
-                                         "Add data from a sound file to some channels of input signal.\n\n"
-                                         "The sound file is read into memory and scaled to a given peak\n"
-                                         "level, i.e. the RMS level of an abstract signal with 0 dB full\n"
-                                         "scale.\n"
-                                         "Changing any parameter will start playing the file from the\n"
-                                         "beginning. Playback of the file starts only after the complete\n"
-                                         "file has been read.  If the sound file has fewer channels then\n"
-                                         "the 'channels' vector has elements, then the file channels will\n"
-                                         "be repeated.\n"
-                                         ,iac),
-        filename("File name of the sound file.",""),
-        path("Optional path to sound file",""),
-        loop("Infinitely loop the playback of the sound file","yes"),
-        level("Level in dB (SPL) of the input file","0"),
-        levelmode("Level mode","relative","[relative peak rms rms_limit40]"),
-        resamplingmode("Resampling mode","do_resample","[dont_resample_permissive dont_resample_strict do_resample]"),
-        channels("Output signal channels in which to store the individual sound file channels.  Output channel indices"
-                 " start from 0.  Note: The addsndfile plugin does not change the number of MHA audio channels.  If you"
-                 " specify a channel index >= the number of MHA audio channels, then that channel from the sound file"
-                 " will not be used.","[0]","[0,]"),
-        mode("Playback mode","add","[add replace input mute]"),
+        : MHAPlugin::plugin_t<sndfile_t>
+        (
+         "Add sound data from a sound file to the MHA audio channels.\n\n"
+         "The sound file is read into memory and scaled as determined by configuration\n"
+         "variables \"level\" and \"levelmode\".\n\n"
+         "Changing any parameter except \"mode\" will start playing the file from the\n"
+         "beginning.  addsndfile stores the complete sound file in RAM memory before\n"
+         "starting playback, this limits the total duration of sound files that can\n"
+         "be read by addsndfile.",
+         iac),
+        filename("File name of the sound file.  If empty, addsndfile does not modify the sound.",""),
+        path("The directory containing the sound file to read.\n"
+             "Should end in the system-specific directory separator, e.g. /,\n"
+             "if non-empty.  If empty, then the current working directory of the\n"
+             "mha process is used.  path can be given absolute or relative\n"
+             "to the current working directory of the mha process.",""),
+        loop("Infinitely loop sound file playback","yes"),
+        level("Level in dB. Exact meaning of this parameter depends on levelmode.","0"),
+        levelmode("relative - scaling relative to original level\n"
+                  "peak - scaling to maximum absolute magnitude\n"
+                  "rms - scaling to long-term rms level\n"
+                  "Refer to the detailed description subsection in the plugins manual for details.",
+                  "relative", "[relative peak rms]"),
+        resamplingmode("Resampling mode, for details refer to the detailed description subsection\n"
+                       "in the plugins manual.","do_resample",
+                       "[dont_resample_permissive dont_resample_strict do_resample]"),
+        channels("Indices of MHA channels in which to store each of the sound file channels.\n"
+                 "Indices start from 0.  If the sound file has fewer channels\n"
+                 "than the \"channels\" vector has elements, then the channels of the file will\n"
+                 "be duplicated.  Note: The addsndfile plugin does not change the number of MHA\n"
+                 "audio channels.  If you specify an MHA channel index >= the number of MHA\n"
+                 "channels, then that channel from the sound file will not be used.",
+                 "[0]","[0,]"),
+        mode("add: combine sounds from file and MHA input, replace: discard MHA input,\n"
+             "play only file, input: leave MHA input unmodified, mute: no sound output.\n"
+             "This parameter can be changed during playback without causing rewind",
+             "add","[add replace input mute]"),
         ramplen("Length of hanning ramp at level changes in seconds","0","[0,]"),
         startpos("Starting position in samples, loop will begin from zero","0","[0,]"),
         mapping("Channel mapping"),
         numchannels("Number of channels in current file"),
         mhachannels("Number of MHA channels at plugin position"),
-        active("indicates whether sound is currently played back"),
+        active("indicates if sound currently plays back"),
         search_pattern("Search pattern for file list","*.wav"),
         search_result("Available files"),
         uint_mode(0)
@@ -436,20 +452,61 @@ MHAPLUGIN_CALLBACKS(addsndfile,addsndfile::addsndfile_if_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (addsndfile,
  "data-import disk-files signal-generator",
- "Add data from a sound file to some channels of input signal.\n\n"
- "The sound file is read into memory and scaled to a given peak\n"
- "level, i.e. the RMS level of an abstract signal with 0 dB full\n"
- "scale.\n"
- "Changing any parameter will start playing the file from the\n"
- "beginning. Playback of the file starts only after the complete\n"
- "file has been read.  If the sound file has fewer channels then\n"
- "the 'channels' vector has elements, then the file channels will\n"
- "be repeated.\n"
- "The addsndfile plugin does not change the number of MHA audio"
- " channels.  If you specify a channel index $\\ge$ the number of"
- " MHA audio channels, then the channel from the sound file will"
- " not be used."
- )
+ "The {\\em addsndfile} plugin modifies the audio signal by either mixing"
+ " the sound from a sound file to the \\mha{} audio signal that reaches"
+ " the {\\em addsndfile} plugin, or by replacing the \\mha{} audio signal"
+ " completely with the sound from a sound file.\n"
+ "The {\\em addsndfile} plugin to does not change the number of \\mha{} audio"
+ " channels.\n"
+ "\n"
+ "The playback level of the sound inside the \\mha{} and the meaning of the"
+ " \\verb!level! variable depend on the settings in the \\verb!levelmode!"
+ " field:\n"
+ "\\begin{description}\n"
+ "\\item{\\texttt{levelmode=relative}}\n"
+ "Each sound file channel plays back inside the \\mha{} at a level of\n"
+ "  $(\\mathrm{level} + L_{fs})$\n"
+ "  where $\\mathrm{level}$ is the value of configuration variable"
+ " \\verb!level!"
+ "  and $L_{fs}$ is the level of the respective channel in dB re full scale\n"
+ "  inside the sound file.\n"
+ "\\item{\\texttt{levelmode=peak}}\n"
+ "If \\verb!peak! is selected, the $\\mathrm{level}$ denotes the peak level of"
+ "  the input file: The sound file will be scaled so that the maximum magnitude"
+ "  sound sample will be mapped to an amplitude "
+ "  $10^{\\frac{\\mathrm{level}}{20}}\\cdot 2\\cdot 10^{-5}\\mathrm{Pa}$,"
+ "  which is the amplitude of a rectangular wave with that level in dB SPL.\n"
+ "\\item{\\texttt{levelmode=rms}}\n"
+ "The sound file will be scaled so that it plays back with the"
+ "  level defined by $\\mathrm{level}$ (in dB SPL) inside \\mha{}. "
+ "  \\mha{} uses the same scaling factor for all audio channels of the sound"
+ "  file based on the RMS level across all channels.  Therefore, if different"
+ "  channels inside the sound file have different levels re full scale, then"
+ "  the scaling will result in some channels playing back at a softer level,"
+ "  and some at a higher level than $\\mathrm{level}$.\n"
+ "  The inter-channel level difference in \\mha{} playback "
+ "  levels will be the same as in the sound file.\n"
+ "\\end{description}\n"
+ "\n"
+ "The sound file may be stored with a different sampling rate than the the"
+ " sampling rate of the \\mha{} at the point where the addsndfile plugin is"
+ " loaded into the processing chain.\n"
+ "The parameter \\texttt{resamplingmode} controls how addsndfile behaves when"
+ " differing sampling rates are detected in the sound file and in \\mha{}:\n"
+ "\\begin{description}\n"
+ "\\item{\\texttt{resamplingmode=dont\\_resample\\_permissive}}\n"
+ "  The sound samples from the sound file are played inside \\mha{} without"
+ "  resampling.  The file will play back at too high or too low pitches"
+ "  if the sampling rates in the file and in \\mha{} differ.\n"
+ "\\item{\\texttt{resamplingmode=dont\\_resample\\_strict}}\n"
+ "  The sound from the sound file is only played back inside \\mha{} if"
+ "  the sampling rates in sound file and \\mha{} match exactly.  If the"
+ "  sampling rates differ, an error is triggered.\n"
+ "\\item{\\texttt{resamplingmode=do\\_resample}}\n"
+ "  The sound from the sound file is resampled to the \\mha{} sampling rate if"
+ "  the sampling rates in sound file and \\mha{} differ."
+ "\\end{description}\n"
+)
 
 /*
  * Local Variables:

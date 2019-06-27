@@ -33,8 +33,6 @@ MODULES = \
 	external_libs
 
 DOCMODULES = \
-	mha/doc/flowcharts \
-	mha/doc/images \
 	mha/doc \
 
 all: $(MODULES)
@@ -54,7 +52,8 @@ external_libs:
 	$(MAKE) -C $@
 
 doc: mha/doc
-	cp -i mha/doc/*.pdf .
+	/bin/cp -lv --remove-destination mha/doc/*.pdf .
+	zip -r pdf-$$(cat version).zip *.pdf
 
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
@@ -88,16 +87,20 @@ coverage: unit-tests
 # Unit-test can not be run when cross-compiling
 ifeq "$(ARCH)" "armhf"
 deb: install
+	$(MAKE) -C mha/tools/packaging/deb clean
 	$(MAKE) -C mha/tools/packaging/deb pack
 else
 deb: unit-tests
+	$(MAKE) -C mha/tools/packaging/deb clean
 	$(MAKE) -C mha/tools/packaging/deb pack
 endif
 
-exe: unit-tests
+exe: installer-exe unit-tests
+installer-exe: install
 	$(MAKE) -C mha/tools/packaging/exe exe
 
-pkg: install
+pkg: installer-pkg unit-tests
+installer-pkg: install
 	$(MAKE) -C mha/tools/packaging/pkg all
 
 release: test unit-tests install
@@ -108,8 +111,7 @@ mha/libmha: external_libs
 mha/frameworks: mha/libmha
 mha/plugins: mha/libmha mha/frameworks
 mha/mhatest: mha/plugins mha/frameworks
-mha/doc: mha/doc/images all
-mha/doc/images: mha/doc/flowcharts
+mha/doc: config.mk
 
 # Debian package management by Jenkins:
 # New Debian Packages are stored in our storage for debian repositories.
@@ -145,7 +147,7 @@ mha/doc/images: mha/doc/flowcharts
 # aptdev.hoertech.de. BRANCH_NAME is set by Jenkins
 #
 # SYSTEMs:
-# trusty, xenial, bionic, stretch, jessie, etc. Available SYSTEMs that
+# xenial, bionic, jessie, etc. Available SYSTEMs that
 # contain packages are detected automatically with $(wildcard)
 
 # There will by $SYSTEM subdirectories below this directory.

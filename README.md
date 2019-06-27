@@ -2,7 +2,7 @@
 
 HörTech Open Master Hearing Aid (openMHA)
 
-## Content of the openMHA release 4.9.0 (2019-03-27)
+## Content of the openMHA release 4.10.0 (2019-06-27)
 
 The software contains the source code of the openMHA Toolbox library, of the
 openMHA framework and command line application, and of a selection of algorithm
@@ -37,32 +37,23 @@ publications at the end of this README.
 
 ## Installation
 
-For installation instructions, please see INSTALLATION.md
+For installation instructions for Linux, Windows and macOS, please refer
+to the instructions in file INSTALLATION.md.
+
+We also provide SD card images for Beaglebone Black with the Cape4all
+sound card here: http://mahalia.openmha.org/.
 
 ## Usage instructions:
 
-We provide with this release several examples of configuration files
-and sound examples. These are contained in the directory
-./mha/examples
+Please follow our getting-started guide:
+http://www.openmha.org/docs/openMHA_starting_guide.pdf
 
-For instance, we can start an example featuring multiple algorithms together by 
-changing the working directory to the directory that contains the example
-
-```
-cd ./mha/examples/04-prerelease-combination
-```
-
-read the configuration file, run processing of the audio file specified in 
-the configuration in openMHA and quit openMHA afterwards with the following command:
-
-```
-mha ?read:prerelease_combination.cfg cmd=start cmd=quit
-```
 ## Known issues
+### macOS
 * There are some known issues with Octave under macOS. The openMHA gui may not work correctly with octave. As an alternative Matlab can be used.
+* The jack audio plugin expects the [JackOSX distribution](http://www.jackaudio.org) to be installed. Developers wanting to use jack from other sources must compile openMHA themselves.
 * The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp) (May not be necessary any more, check for yourself).
-
-* On some Apple machines jack needs to be run with root privileges to get real-time priority.
+* On some Apple machines Jack needs to be run with root privileges to get real-time priority.
 
 ## References for individual algorithms.
 

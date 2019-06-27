@@ -1,5 +1,5 @@
 README.md,usr/share/doc/openmha/
-external_libs/fftw-2.1.5/matlab/fftw.m,usr/lib/openmha/mfiles/
+COPYING,usr/share/doc/openmha/
 mha/frameworks/${BUILD_DIR}/analysemhaplugin,usr/bin/
 mha/frameworks/${BUILD_DIR}/browsemhaplugins,usr/bin/
 mha/frameworks/${BUILD_DIR}/generatemhaplugindoc,usr/bin/

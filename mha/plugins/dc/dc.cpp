@@ -33,6 +33,7 @@ namespace dc {
         MHAParser::vfloat_t taurmslevel;
         MHAParser::vfloat_t tauattack;
         MHAParser::vfloat_t taudecay;
+        MHAParser::vfloat_t offset;
         MHAParser::string_t filterbank;
         std::string cf_name, ef_name, bw_name;
         MHAParser::string_t chname;
@@ -94,6 +95,7 @@ namespace dc {
 
     private:
         std::vector<MHATableLookup::linear_table_t> gt;
+        std::vector<mha_real_t> offset;
         MHAFilter::o1flt_lowpass_t rmslevel;
         MHAFilter::o1flt_lowpass_t attack;
         MHAFilter::o1flt_maxtrack_t decay;
@@ -241,6 +243,9 @@ namespace dc {
             throw MHA_Error(__FILE__,__LINE__,
                             "Invalid decay time constant vector size (found %d, expected %d).",
                             v.taudecay.data.size(),s);
+        if( v.offset.data.size() != s and v.offset.data.size() )
+            throw MHA_Error(__FILE__,__LINE__,"Invalid level offset vector size (found %zu, expected %zu or 0).",
+                            v.offset.data.size(),s);
     }
 
     unsigned int get_audiochannels(unsigned int totalchannels,std::string acname,algo_comm_t ac)
@@ -269,11 +274,12 @@ namespace dc {
                )
         :
         dc_vars_validator_t(vars, nch_, domain),
+        offset(vars.offset.data),
         rmslevel([&](){
                      if(rmslevel_state.size())
                          return MHAFilter::o1flt_lowpass_t(vars.taurmslevel.data, filter_rate, rmslevel_state);
                      else
-                         return MHAFilter::o1flt_lowpass_t(vars.taurmslevel.data, filter_rate, pow(10,65*0.01)*4e-10);
+                         return MHAFilter::o1flt_lowpass_t(vars.taurmslevel.data, filter_rate, pow(10,65*0.1)*4e-10);
                  }()),
         attack([&](){if(attack_state.size())
                     return MHAFilter::o1flt_lowpass_t(vars.tauattack.data, filter_rate, attack_state);
@@ -372,8 +378,7 @@ namespace dc {
                               attack(ch_idx, MHASignal::pa22dbspl(level_in)));
 
                     if (bypass) continue;
-
-                    gain = gt[ch_idx].interp( level_in_db.value(kfb,ch) );
+                    gain = gt[ch_idx].interp( level_in_db.value(kfb,ch) + (offset.size() ? offset[ch_idx] : 0));
                     if( gain < 0 )
                         gain = 0;
                     s->buf[idx] *= gain;
@@ -407,8 +412,10 @@ namespace dc {
         for(ch=0;ch<naudiochannels;ch++)
             for(kfb=0;kfb<nbands;kfb++){
                 ch_idx = kfb + nbands*ch;
-                gain = std::min(gt[ch_idx].interp(level_in_db.value(kfb,ch)),
-                                gt[ch_idx].interp(level_in_db_adjusted.value(kfb,ch)));
+                auto lvl_offset=offset.size() ? offset[ch_idx] : 0 ;
+                gain = std::min(gt[ch_idx].interp(level_in_db.value(kfb,ch) + lvl_offset),
+                                gt[ch_idx].interp(level_in_db_adjusted.value(kfb,ch)  +
+                                                  lvl_offset));
                 if( gain < 0 )
                     gain = 0;
                 for(k=0;k<s->num_frames;k++){
@@ -419,12 +426,33 @@ namespace dc {
     }
 
     dc_vars_t::dc_vars_t(MHAParser::parser_t& p)
-        : gtdata("gaintable data in dB gains","[[]]"),
-          gtmin("input level for first gain entry in dB SPL","[]"),
-          gtstep("level step size in dB","[]"),
+        : gtdata("gaintable data with gains in dB.  Each "
+                 "row in this matrix contains gains for one\n"
+                 "channel or band.  Internally, the "
+                 "dB gains of this table are converted to\n"
+                 "linear gain factors, and interpolated and "
+                 "extrapolated linearly between mesh\n"
+                 "points.","[[]]"),
+          gtmin("a vector containing one entry for each "
+                "channel/band which is the input sound\n"
+                "level in dB SPL for which first gain "
+                "in the corresponding row of gain table\n"
+                "gtdata is applied to amplify the signal","[]"),
+          gtstep("input sound level difference in dB between "
+                 "table columns in the corresponding row\n"
+                 "of gain table gtdata.  I.e. the first "
+                 "entry in each gtdata row is applied\n"
+                 "when input level is gtmin dB, the second "
+                 "entry is applied when input level is\n"
+                 "gtmin+gtstep dB, etc.  A small step "
+                 "size (e.g. 1 dB) is recommended to avoid\n"
+                 "undesired effects of the linear interpolation","[]"),
           taurmslevel("RMS level averaging time constant in s","[]"),
           tauattack("attack time constant in s","[]"),
           taudecay("decay time constant in s","[]"),
+          offset("level offset for each band in dB. If this vector is non-empty,\n"
+                 "the computed input level are adjusted by the offset values\n"
+                 "in this vector before the gains are looked up in the gaintable.","[]"),
           filterbank("Name of fftfilterbank plugin."
                      "  Used to extract frequency information.",
                      "fftfilterbank"),
@@ -442,12 +470,13 @@ namespace dc {
                        "Computed as (sum of squared fft-bin-weigths) / num_frames.")
     {
         p.set_node_id("dc");
-        p.insert_member(gtdata);
         p.insert_member(gtmin);
         p.insert_member(gtstep);
+        p.insert_member(gtdata);
         p.insert_item("tau_rmslev",&taurmslevel);
         p.insert_item("tau_attack",&tauattack);
         p.insert_item("tau_decay",&taudecay);
+        p.insert_item("level_offset",&offset);
         p.insert_item("fb", &filterbank);
         p.insert_member(chname);
         p.insert_member(bypass);
@@ -473,17 +502,68 @@ MHAPLUGIN_DOCUMENTATION\
  " compression algorithm.}{dc_in_out}"
  "The plugin {\\em dc} is a multiband dynamic range compression plugin.\n"
  "One compression function (input-output function) is applied to\n"
- "each audio channel."
- " Frequency-dependent compression can be achieved by using the\n"
- "{\\em fftfilterbank} plugin in conjunction with this plugin. \n"
- "The input-level dependent gain function is determined by a gain table"
- " containing the gain values applied in different \n"
- " channels and frequency bands."
- " Between the points of the gain table linear interpolation is used."
- " For gains outside of the range of the gaintable a linear extrapolation"
- " based on the two nearest points is used."
+ "each audio channel.\n"
+ "Frequency-dependent compression can be achieved by using the\n"
+ "{\\em fftfilterbank} plugin in conjunction with this plugin, which\n"
+ "separates broadband audio channels into multiple frequency bands.\n"
  "\n"
- "If spectral processing is used, the input level"
+ "The input-level dependent gain function is configured by a gain table"
+ " containing the gain values in dB applied in different \n"
+ " channels and frequency bands.  When a gain table is read by the {\\em dc}"
+ " plugin the gains contained in the gain table are converted from dB gains"
+ " to linear factors."
+ " Between the mesh points of the gain table, linear interpolation  of the"
+ " linear gain factors is used."
+ " For input levels outside of the range covered by the gain table a linear"
+ " extrapolation of the linear gain factors based on the two nearest points"
+ " is used."
+ "\n\n"
+ "The linear interpolation of gains originally given in dB can have undesired "
+ "interpolation effects which should be avoided by choosing a small step size "
+ "gtstep between the input levels, e.g. 1 dB. We provide the mfile tool "
+ "\\texttt{dc\\_plot\\_io.m} "
+ "which can be used to plot the resulting input/output "
+ "characteristic resulting from a {\\em dc} gain table configuration with "
+ "Octave/Matlab, refer to the inline help in that mfile."
+ "\n\n"
+ "The following configuration fragment e.g. reproduces the I/O characteristic "
+ "shown in \\figref{dc_in_out}. To keep the example readable, a gtstep size of "
+ "4 dB was used, reducing the amount of numbers to give here and avoiding "
+ "fractional dB gains. An actual configuration should use a step size of 1 dB "
+ "and not avoid fractions.  The fitting GUI can be used to configure the dc "
+ "plugins, and it uses a 1 dB step size. Refer to the fitting GUI manual "
+ "\\href{http://www.openmha.org/docs/openMHA\\_gui\\_manual.pdf}"
+ "{openMHA\\_gui\\_manual.pdf}.\n"
+ "\n"
+ "\\begin{verbatim}\n"
+ "algos = [fftfilterbank dc combinechannels]\n"
+ "fftfilterbank.ftype = center\n"
+ "fftfilterbank.f = [200 2000]\n"
+ "fftfilterbank.ovltype = rect\n"
+ "dc.gtmin=[16 16]\n"
+ "dc.gtstep=[4 4]\n"
+ "dc.gtdata = [[37 40 39 38 37 36 35 34 33 32 31 30 26 22 18 14 10 6 2 -2 -2];...\n"
+ "             [37 40 39 38 37 36 35 34 33 32 31 30 26 22 18 14 10 6 2 -2 -2];]\n"
+ "dc.tau_attack = [0.005 0.005]\n"
+ "dc.tau_decay =  [0.060 0.060]\n"
+ "dc.combinechannels.name = fftfilterbank_channels\n"
+ "\\end{verbatim}\n"
+ "In this configuration it is assumed that one audio channel is "
+ "configured. All variables of {\\em dc} have two entries, one for "
+ "each frequency band.\n"
+ "This configuration applies 40 dB gain at 20 dB SPL input level, and 30 dB at "
+ "60 dB input level. Above 60 dB input level, it limits the output level to 90 "
+ "dB SPL until the output level is softer than the input level.  At low input "
+ "levels below 20 dB SPL, it applies a noise gate.  This example configuration "
+ "is not a fitting recommendation. Established fitting rules should be used "
+ "to derive individual fittings for test subjects depending on the individual "
+ "hearing impairment."
+ "\n\n" 
+ "{\\em dc} allows to specify band-specific input level adjustments that are"
+ " applied to the measured input levels in the respective bands through the configuration"
+ " variable \\texttt{offset}.  Using this variable, it is e.g. possible to compute the"
+ " gain table in LTASS levels rather than physical band levels.\n\n"
+ "The input level"
  " (abscissa of the input-output function, cf. \\figref{dc_in_out})\n"
  "is determined by an attack- and release-filter of the short time"
  " RMS level $L_{st}$, given in dB (SPL)."
@@ -499,27 +579,6 @@ MHAPLUGIN_DOCUMENTATION\
  " The order of row indices is \n"
  "$0...n_{f}...n_{f} \\cdot n_{ch}$. The x-values for the n-th column"
  " of the gain table are given as $x_n=gtmin+gtstep\\cdot n$."
- " See also \\figref{dc_in_out}.\n"
- " A configuration fragment reproducing \\figref{dc_in_out} could be:\n"
- "\n"
- "\\begin{verbatim}\n"
- "algos = [fftfilterbank dc combinechannels]\n"
- "fftfilterbank.ftype = center\n"
- "fftfilterbank.f = [200 2000]\n"
- "fftfilterbank.ovltype = rect\n"
- "fftfilterbank.fscale = bark\n"
- "dc.gtmin=[20 20]\n"
- "dc.gtstep=[40 40]\n"
- "dc.gtdata = [[40 30 -10];[40 30 -10];]\n"
- "dc.tau_attack = [0.005 0.005]\n"
- "dc.tau_rmslev = [0.005 0.005]\n"
- "dc.tau_decay = [0.015 0.015]\n"
- "dc.combinechannels.name = fftfilterbank_channels\n"
- "\\end{verbatim}\n"
- "\n"
- "In this configuration it is assumed that one audio channel is\n"
- "configured. All variables of {\\em dc} have two entries, one for"
- " each frequency band.\n"
  )
 // Local Variables:
 // compile-command: "make"

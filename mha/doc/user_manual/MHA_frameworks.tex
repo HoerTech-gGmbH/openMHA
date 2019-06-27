@@ -306,6 +306,9 @@ is inherited from the input file, e.g.\ if the input file is a 32 bit
 WAVE file, also the output file will be. The plugin supports most
 commonly used file formats.
 
+Nota bene: When writing to WAVE files in integer formats MHAIOFile clips all
+values above +1.0 and below -1.0. To avoid clipping use floating point WAVE files.
+
 The variables of 'MHAIOFile' are:
 
 \begin{description}

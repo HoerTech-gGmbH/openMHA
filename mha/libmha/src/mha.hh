@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <cstddef>
+#include <string>
 
 /** Test macro to compare function type definition and declaration */
 #define MHA_CALLBACK_TEST(x) {\
@@ -43,7 +44,7 @@
 #define MHA_VERSION_MAJOR 4
 
 /** Minor version number of MHA */
-#define MHA_VERSION_MINOR 9
+#define MHA_VERSION_MINOR 10
 
 /** Release number of MHA */
 #define MHA_VERSION_RELEASE 0
@@ -311,6 +312,8 @@ typedef int (*MHASet_t)(void* h,
                         const char *cmd,
                         char *retval,
                         unsigned int len);
+typedef std::string (*MHASetcpp_t)(void* h,
+                                   const std::string & command);
 
 typedef const char* (*MHAStrError_t)(void* h, 
                                      int err);

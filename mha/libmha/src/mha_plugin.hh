@@ -23,6 +23,7 @@
 #include "mha_parser.hh"
 #include "mha_algo_comm.h"
 #include "mha_events.h"
+#include "mha_git_commit_hash.hh"
 
 #if _WIN32
 #include <windows.h>
@@ -32,14 +33,6 @@
 #define WINAPI
 #define HINSTANCE int
 #endif
-
-#ifndef GITCOMMITHASH
-#define GITCOMMITHASH "independent-plugin-build"
-#endif
-
-/// store git commit hash in every binary plgin to support reproducible research
-__attribute__((unused)) static const char* mha_git_commit_hash =
-  "MHA_GIT_COMMIT_HASH=" GITCOMMITHASH;
 
 class Test_mha_plugin_rtcfg_t; // Forward declaration
 
@@ -385,6 +378,23 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
         }}
 #endif
 
+#ifdef __APPLE__
+// We cannot export a function with extern "C" linkage on Apple when it
+// returns a C++ object
+#define MHAPLUGIN_SETCPP_CALLBACK_PREFIX(prefix,classname)
+#else
+// We can export a function with extern "C" linkage when it
+// returns a C++ object on Linux and Windows with GCC
+#define MHAPLUGIN_SETCPP_CALLBACK_PREFIX(prefix,classname)              \
+        __declspec(dllexport) std::string prefix ## MHASetcpp(void* handle, const std::string & command) \
+        {                                                               \
+            if( handle ){                                               \
+                return ((classname*)handle)->parse(command);            \
+            }                                                           \
+            throw MHA_Error(__FILE__, __LINE__,"Invalid plugin handle");\
+        }
+#endif
+
 #define MHAPLUGIN_INIT_CALLBACKS_PREFIX(prefix,classname)               \
     extern "C" {                                                        \
         __declspec(dllexport) int prefix ## MHAInit(algo_comm_t algo_comm,const char* chain, const char*algo,void** handle) \
@@ -417,11 +427,6 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
             return MHA_VERSION;                                         \
         }                                                               \
                                                                         \
-        __declspec(dllexport) const char* prefix ## MHAGetCommitHash(void)              \
-        {                                                               \
-            return mha_git_commit_hash;                                 \
-        }                                                               \
-                                                                        \
         __declspec(dllexport) int prefix ## MHASet(void* handle,const char *command,char *retval,unsigned int maxretlen) \
         {                                                               \
             if( handle ){                                               \
@@ -438,6 +443,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
             }                                                           \
             return MHA_ERR_INVALID_HANDLE;                              \
         }                                                               \
+        MHAPLUGIN_SETCPP_CALLBACK_PREFIX(prefix,classname)              \
                                                                         \
         __declspec(dllexport) int prefix ## MHAPrepare(void* handle,mhaconfig_t* cfg) \
         {                                                               \

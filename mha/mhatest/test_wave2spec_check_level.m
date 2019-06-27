@@ -20,6 +20,12 @@ function test_wave2spec_check_level
   % Two different combination of STFT parameters
   stft_parameters = [struct('fftlen', 800, 'wndlen', 600, 'fragsize', 300)
                      struct('fftlen', 36, 'wndlen', 36, 'fragsize', 18)];
+  inwav = 'test_wave2spec_check_level_in.wav';
+  outwav = 'test_wave2spec_check_level_out.wav';
+  fclose(fopen(inwav, 'w'));
+  unittest_teardown(@delete, inwav);
+  fclose(fopen(outwav, 'w'));
+  unittest_teardown(@delete, outwav);
 
   for stft_index = 1:size(stft_parameters, 1)
     
@@ -37,9 +43,12 @@ function test_wave2spec_check_level
       
       % create a rectangular waveform signal as a test input signal
       input_signal = create_rectangular_wave(stft_parameters(stft_index));
+      audiowrite(inwav, input_signal, 44100, 'BitsPerSample', 32);
 
       % process signal in mha
-      mha_process_by_parser(mha, input_signal');
+      mha_set(mha,'io.in',inwav);
+      mha_set(mha,'io.out',outwav);
+      mha_set(mha,'cmd','start');
 
       % compare levels of last fragment in time domain and spectral domain
       level_wave = mha_get(mha, 'mha.level_wave.level_db');
@@ -64,7 +73,7 @@ function mha_config = generate_mha_test_config(stft_parameters, window_type)
   if isequal(window_type, 'user')
     mha_config.mha.wave2spec.userwnd = repeatable_rand(1, stft_parameters.wndlen, 'u'-0);
   end
-  mha_config.iolib = 'MHAIOParser';
+  mha_config.iolib = 'MHAIOFile';
 end
 
 function  mha = start_mha_test_instance_with_config(mha_config)
@@ -72,7 +81,6 @@ function  mha = start_mha_test_instance_with_config(mha_config)
   mha = mha_start;
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   mha_set(mha,'',mha_config);
-  mha_set(mha,'cmd','start');
 end
 
 function input_signal = create_rectangular_wave(stft_parameters);
