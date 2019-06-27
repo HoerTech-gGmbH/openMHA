@@ -22,7 +22,7 @@ The plugins that implement single-channel noise reduction (formerly known as noi
 
 For consistency and due to the frequency-domain implementation *delaysum_spec* the delaysum plugin has been renamed to *delaysum_wave*.
 
-Bug fixes (also with thanks also to user reports on [Github](https://github.com/HoerTech-gGmbH/openMHA/issues)): 
+Bug fixes (also with thanks to user reports on [Github](https://github.com/HoerTech-gGmbH/openMHA/issues)): 
 - Matlab gui becoming non-responsive on error
 - wrong handling of DC and Nyquist bin in FFTs
 - thread-safety of wavrec
