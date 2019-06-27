@@ -15,10 +15,9 @@ See [README](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README.md) on
 
 [Ubuntu Linux](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#i-installation-from-binary-packages-on-ubuntu) 
 
-[macOS](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#iii-macos-installer)
+[macOS](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#ii-macos-installer)
 
-[Windows](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#ii-windows-installer) 
-
+[Windows](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#iii-windows-installer)
 
 #### Compling from source
 
