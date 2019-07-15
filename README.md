@@ -54,6 +54,8 @@ http://www.openmha.org/docs/openMHA_starting_guide.pdf
 * The jack audio plugin expects the [JackOSX distribution](http://www.jackaudio.org) to be installed. Developers wanting to use jack from other sources must compile openMHA themselves.
 * The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp) (May not be necessary any more, check for yourself).
 * On some Apple machines Jack needs to be run with root privileges to get real-time priority.
+### Windows
+* On Windows 7, the openMHA Windows installer openMHA-4.10.0-installer.exe may trigger a crash report from the operating system when it exits even though openMHA was successfully installed.
 
 ## References for individual algorithms.
 
