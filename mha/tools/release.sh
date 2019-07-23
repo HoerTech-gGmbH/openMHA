@@ -157,6 +157,8 @@ else
     ask_yes_no;
     git push git@github.com:HoerTech-gGmbH/openMHA.git master
     git push git@github.com:HoerTech-gGmbH/openMHA.git v$VER
+    git push origin development
+    git push origin v$VER
 fi
 echo "Now the mac and windows installers need to be attached to the github release."
 echo "Answer yes when finished."
