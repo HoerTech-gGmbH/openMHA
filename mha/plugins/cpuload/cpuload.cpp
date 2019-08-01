@@ -23,11 +23,8 @@ public:
   mha_wave_t* process(mha_wave_t*);
   void prepare(mhaconfig_t&);
 private:
-  void update();
   MHAParser::float_t factor;
-  MHAParser::int_t table_size;
   MHAParser::bool_t use_sine;
-  MHAEvents::patchbay_t<cpuload_t> patchbay;
   float phase;
   volatile float result;
   std::vector<float> table;
@@ -47,7 +44,6 @@ private:
 cpuload_t::cpuload_t(algo_comm_t iac,const char*,const char*)
   : MHAPlugin::plugin_t<float>("cpu load generator. CPU load is proportional to number of channels, number of frames, and factor",iac),
     factor("cpu load factor. Values > 1 increase cpu load, values < 1 decrease it","1","[0,]"),
-    table_size("Size of the lookup table","65536","[1,]"),
     use_sine("Whether to use the sine function. If not, table interpolation will be used","yes"),
     phase(0),
     result(0),
@@ -55,24 +51,10 @@ cpuload_t::cpuload_t(algo_comm_t iac,const char*,const char*)
 {
   insert_member(factor);
   insert_member(use_sine);
-  insert_member(table_size);
-
-  patchbay.connect(&table_size.writeaccess,this,&cpuload_t::update);
-
-  table.resize(table_size.data);
   for (unsigned i = 0; i < table.size(); ++i) {
     table[i] = rand();
   }
 }
-
-void cpuload_t::update()
-{
-  table.resize(table_size.data);
-  for (unsigned i = 0; i < table.size(); ++i) {
-    table[i] = rand();
-  }
-}
-
 
 mha_spec_t* cpuload_t::process(mha_spec_t* s)
 {
@@ -103,9 +85,7 @@ MHAPLUGIN_PROC_CALLBACK(cpuload,cpuload_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (cpuload,
  "test-tool",
- "This plugin artificially generates cpu load. The achieved CPU load is proportional to number of channels, number of frames, and factor.\n"
- "If use_sine is set, a sine of an arbitrary phase is calculated, making the load mainly cpu-bound. Alternatively a table-lookup can is done, simulatung"
- " stress on cpu cache and cache lines or, depending on table size, memory access.")
+ "")
 
 // Local Variables:
 // compile-command: "make"
