@@ -68,8 +68,8 @@ gain_if_t::gain_if_t(const algo_comm_t& iac,
     : MHAPlugin::plugin_t<scaler_t>("Gain plugin:\n\nApply a gain to each channel",iac),
       gains("Gain in dB","[0]","[-16,16]"),
       bbgain("Broadband gain in dB\n(setting of broad band gain overrides band gain)","0","[-16,16]"),
-      vmin("Minimal gain","-16","[,0]"),
-      vmax("Maximal gain","16","[0,]")
+      vmin("Minimal gain in dB","-16","[,0]"),
+      vmax("Maximal gain in dB","16","[0,]")
 {
     set_node_id("gain");
     insert_item("min",&vmin);
@@ -159,7 +159,7 @@ MHAPLUGIN_PROC_CALLBACK(gain,gain::gain_if_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION\
 (gain,
  "level-modification",
- "")
+ "This plugin applies a configurable gain to each channel. For security reasons, a overridable maximum and minimum gains are preconfigured.")
 
 
 // Local variables:
