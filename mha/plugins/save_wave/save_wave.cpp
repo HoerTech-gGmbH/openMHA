@@ -43,8 +43,7 @@ MHAPLUGIN_CALLBACKS(save_wave,save_wave_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (save_wave,
  "data-flow algorithm-communication",
- "This plugin saves the waveform signal to an AC variable. The name of the variable is the same as the name of the plugin\n"
- "and can be changed by assigning an alias to the plugin with the usual plugin_name:alias_name syntax.")
+ "")
 
 // Local Variables:
 // compile-command: "make"
