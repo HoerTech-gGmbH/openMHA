@@ -1,12 +1,12 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 # Copy all binaries into the destination folder
 
 # remove any leftovers from last run
 rm -rf bin/ lib/
-mkdir -p bin lib
+mkdir -p bin lib/openmha
 
 # copy openMHA binaries and libraries
-cp -v ../../../../lib/* lib/.
+cp -v ../../../../lib/* lib/openmha/.
 cp -v ../../../../bin/* bin/.
 rm -f bin/thismha.sh
 chmod 755 bin/* lib/*
@@ -17,15 +17,16 @@ function resolve_and_correct_references_of()
 {
     local file="$1"
     # if this is a library, correct its own idea where it is installed
-    if [[ $(dirname "$file") == "lib" ]]
+    if [[ $(dirname "$file") == "lib/openmha" ]]
     then install_name_tool -id /usr/local/"$file" "$file"
     fi
 
     local dependency
+    otool -L "$file"
     otool -L "$file" | cut -d" " -f1 | grep -v "/usr/lib"| grep -v "/System" | \
-        grep -v : | while read dependency
+        grep -v : | grep -v libjack | while read dependency
     do
-        local installed_dependency="lib/$(basename "$dependency")"
+        local installed_dependency="lib/openmha/$(basename "$dependency")"
 
         # resolve dependency
         if [ ! -e "$installed_dependency" ]
@@ -41,13 +42,13 @@ function resolve_and_correct_references_of()
 }
 
 # for each binary and library
-for file in bin/* lib/*
+for file in bin/* lib/openmha/*
 do
     resolve_and_correct_references_of "$file"
 done
 
-# We do not want to redistribute jack - see T719
-rm lib/libjack*dylib
+# Wo do not want to redistribute libjack - See D191
+rm -f lib/openmha/*libjack*dylib
 
 # make sure there is no local/opt leftover reference (regression)
 if grep -r local/opt lib

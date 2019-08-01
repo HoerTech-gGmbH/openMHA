@@ -91,6 +91,10 @@ std::list<std::string> mha_library_paths()
 #ifndef MHA_STATIC_PLUGINS
     std::string lp;
     lp = mha_getenv("MHA_LIBRARY_PATH");
+#ifdef __APPLE__
+    if (lp.size() == 0)
+        lp = "/usr/local/lib/openmha";
+#endif //  __APPLE__
     if( !lp.size() )
         lp += ";";
     else if( lp[lp.size()-1] != ';' )
