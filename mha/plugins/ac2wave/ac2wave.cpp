@@ -106,8 +106,7 @@ ac2wave_if_t::ac2wave_if_t(const algo_comm_t& iac,
     : MHAPlugin::plugin_t<ac2wave_t>(
         "Mix the main input signal with a waveform stored into AC\n"
         "variables. Main and AC signal can be attenuated or delayed\n"
-        "by integer fragments. The AC variable and the input waveform have to\n"
-        "have the same dimensions.\n\n"
+        "by integer fragments.\n\n"
         "Spectral input is discarded and replaced by a zero signal.\n\n",iac),
       name("AC variable name",""),
       gain_in("Linear gain for main input signal","0"),
