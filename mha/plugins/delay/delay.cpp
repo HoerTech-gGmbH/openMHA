@@ -63,8 +63,7 @@ MHAPLUGIN_CALLBACKS(delay,delay::interface_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (delay,
  "data-flow audio-channels signal-transformation",
- "Delays the signal by an integer number of samples which is configurable on a"
- " per-channel basis.")
+ "")
 
 // Local Variables:
 // compile-command: "make"
