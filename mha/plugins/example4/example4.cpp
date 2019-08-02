@@ -177,7 +177,8 @@ MHAPLUGIN_CALLBACKS(example4,example4_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION\
 (example4,
  "example level-modification audio-channels",
- "")
+ "This plugin scales one channel of the input signal, working in the spectral domain.\n"
+ "The scale factor and the scaled channel number is made accessible to the configuration structure.\n")
 
 // Local Variables:
 // compile-command: "make"
