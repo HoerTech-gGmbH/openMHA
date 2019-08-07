@@ -21,7 +21,7 @@
 #include "mha_plugin.hh"
 #include "mha_windowparser.h"
 #include <valarray>
-
+#include <type_traits>
 /**
     \ingroup mhatoolbox
     \file mha_filter.hh
@@ -34,34 +34,28 @@
 */
 namespace MHAFilter {
 
-    inline void make_friendly_number(mha_real_t& x)
-    {
-        if( (-std::numeric_limits<float>::max() <= x) && (x <= std::numeric_limits<float>::max() ) ){
-            if( (0 < x) && (x < std::numeric_limits<float>::min()) )
+    template<typename T,
+             typename std::enable_if< std::is_floating_point< T >::value,
+                                      T >::type* = nullptr >
+    inline void make_friendly_number(T& x){
+        if( (-std::numeric_limits<T>::max() <= x) && (x <= std::numeric_limits<T>::max() ) ){
+            if( (0 < x) && (x < std::numeric_limits<T>::min()) )
                 x = 0;
-            if( (0 > x) && (x > -std::numeric_limits<float>::min()) )
+            if( (0 > x) && (x > -std::numeric_limits<T>::min()) )
                 x = 0;
             return;
         }
         x = 0;
     }
 
-    inline void make_friendly_number(mha_complex_t& x)
+    template<typename T,
+             typename std::enable_if< std::is_same< T, mha_complex_t >::value,
+                                      T >::type* = nullptr >
+    inline void
+    make_friendly_number(T& x)
     {
         make_friendly_number(x.re);
         make_friendly_number(x.im);
-    }
-
-    inline void make_friendly_number(double& x)
-    {
-        if( (-std::numeric_limits<double>::max() <= x) && (x <= std::numeric_limits<double>::max() ) ){
-            if( (0 < x) && (x < std::numeric_limits<double>::min()) )
-                x = 0;
-            if( (0 > x) && (x > -std::numeric_limits<double>::min()) )
-                x = 0;
-            return;
-        }
-        x = 0;
     }
 
     /** \brief Generic IIR filter class
