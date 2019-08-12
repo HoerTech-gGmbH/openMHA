@@ -642,13 +642,8 @@ void MHAParser::parser_t::remove_item( const base_t * addr )
 std::string MHAParser::parser_t::op_setval( expression_t & x )
 {
     if( !x.lval.size(  ) ){
-        std::vector<std::string> subcmds;
-        MHAParser::StrCnv::str2val( x.rval, subcmds );
-        std::string retval;
-        for( std::vector<std::string>::iterator i=subcmds.begin(); i!= subcmds.end(); ++i){
-            retval += parse( *i );
-        }
-        return retval;
+        throw MHA_Error(__FILE__, __LINE__,
+                        "Cannot assign value to parser node.");
     }
     for( entry_map_t::iterator i = entries.begin(  ); i != entries.end(  ); ++i )
         if( i->name == x.lval ) {
@@ -1228,7 +1223,7 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
 {
     arg_t tmpval;
     std::vector<arg_t> val;
-    unsigned int nbr = MHAParser::StrCnv::num_brackets( s );
+    int nbr = MHAParser::StrCnv::num_brackets( s );
     if( nbr == 0 ){
         MHAParser::StrCnv::str2val( s, tmpval );
         val.push_back( tmpval );
@@ -1241,6 +1236,8 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
             val.push_back( tmpval );
         }
         v = val;
+    }else if (nbr == -1){
+        v = val; // empty string without brackets creates empty vector
     }else{
         throw MHA_Error(__FILE__,__LINE__,"Invalid number of brackets (\"%s\", %d)",s.c_str(),nbr);
     }
