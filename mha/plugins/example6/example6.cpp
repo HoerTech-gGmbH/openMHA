@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2010 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -212,7 +213,8 @@ void example6_t::update_cfg()
 MHAPLUGIN_DOCUMENTATION\
 (example6,
  "example feature-extraction algorithm-communication",
- "This plugin calculates the RMS level of a given channel of the input signal, working in the time domain.\n"
+ "This plugin calculates the RMS level of a given channel of the input signal,"
+ " working in the time domain.\n"
  "The channel number is made accessible to the configuration structure and\n"
  "the result is stored into a algorithm communication variable (AC variable).")
 

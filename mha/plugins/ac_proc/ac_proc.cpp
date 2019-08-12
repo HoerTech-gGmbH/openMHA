@@ -10,7 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License, version 3 for more details.
 //
-// You should have received a copy of the GNU Affero General Public License,
+// You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mha_toolbox.h"
@@ -95,7 +95,7 @@ namespace ac_proc {
         // prepare sub-plugin with dimensions based on AC variable:
         plug.prepare(cf);
         if( cf.domain != MHA_WAVEFORM )
-            throw MHA_Error(__FILE__,__LINE__,"The sub plugin returned spectrum "
+            throw MHA_Error(__FILE__,__LINE__,"The sub plugin returned spectrum"
                             " output, currently only waveform is supported.");
         // allocate output variable and insert into AC space:
         if( s_out )

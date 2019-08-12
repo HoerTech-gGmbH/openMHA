@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2008 2009 2010 2011 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2006 2008 2009 2010 2011 2013 2014 2015 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -68,7 +68,7 @@ public:
      * @param stream_dir capture or playback
      */
     alsa_dev_par_parser_t(snd_pcm_stream_t stream_dir);
-    
+    /** Name of the device in the alsa world, like "hw:0.0", "default", etc */
     MHAParser::string_t device;
 
     /** Number of buffers of fragsize to hold in the alsa buffer.

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2006 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2004 2006 2013 2014 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -133,40 +133,53 @@ namespace ADM {
     ~Delay();
 
     /**
-     * Apply delay to signal. Whenever a new audio sample enters the delay line, a previous audio sample, now delayed,
-     * is returned by this method. Sub-sample-delays are implemented by applying a first-order recursive lowpass filter.
-     * This method needs to be called repeatedly, once for each incoming audio sample
-     * in correct order for a block of audio with multiple samples (oldest first, newest last).
+     * Apply delay to signal. Whenever a new audio sample enters the
+     * delay line, a previous audio sample, now delayed, is returned
+     * by this method.  Sub-sample-delays are implemented by applying
+     * a first-order recursive lowpass filter.  This method needs to
+     * be called repeatedly, once for each incoming audio sample in
+     * correct order for a block of audio with multiple samples
+     * (oldest first, newest last).
      *
      * @param in_sample
      *   The current input signal sample
      * @return
-     *   The output sample, which is one of the previously received input samples except for the sub-sample delay.
+     *   The output sample, which is one of the previously received
+     *   input samples except for the sub-sample delay.
      */
     inline
     F process(const F & in_sample)
     {
-        // m_state is an array of length m_fullsamples+1 and used as a ringbuffer.
-        // It stores historic samples AFTER sub-sample delay has already been applied.
-        // m_now_in points to the index of the ringbuffer where the next sample has to
-        // be stored
+        // m_state is an array of length m_fullsamples+1 and used as a
+        // ringbuffer.  It stores historic samples AFTER sub-sample
+        // delay has already been applied.  m_now_in points to the
+        // index of the ringbuffer where the next sample has to be
+        // stored.
 
         // The index m_now_out directly following m_now_in contains the oldest
         // stored audio sample which will be returned from this method.
         const unsigned m_now_out = (m_now_in + 1) % (m_fullsamples + 1);
 
-        /// Index of the previous low-pass-filter result (subsample-delay).
-        /// This is m_now_in-1 except for the wraparound in the ringbuffer.
-        /// The additive part protects against (0-1)%x.
-        const auto prev_index = (m_now_in+(m_fullsamples+1) -1) % (m_fullsamples+1);
-        // Value of the previous low-pass-filter (subsample-delay) result, needed for recursive filtering
+        // Index of the previous low-pass-filter result (subsample-delay).
+        // This is m_now_in-1 except for the wraparound in the ringbuffer.
+        // The additive part protects against (0-1)%x.
+        const auto prev_index =
+            (m_now_in+(m_fullsamples+1) -1) % (m_fullsamples+1);
+
+        // Value of the previous low-pass-filter (subsample-delay)
+        // result, needed for recursive filtering
         const auto & prev_value = m_state[prev_index];
+
         // recursive filter step
         m_state[m_now_in] = prev_value * m_coeff + m_norm * in_sample;
-        // protect future filter operations as well as downstream processing from subnormals
+
+        // protect future filter operations as well as downstream
+        // processing from subnormals
         MHAFilter::make_friendly_number(m_state[m_now_in]);
+
         // Update write index
         m_now_in = (m_now_in + 1) % (m_fullsamples + 1);
+
         return m_state[m_now_out];
     }
 
