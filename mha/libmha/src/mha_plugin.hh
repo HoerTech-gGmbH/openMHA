@@ -378,8 +378,8 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
         }}
 #endif
 
-#ifdef __APPLE__
-// We cannot export a function with extern "C" linkage on Apple when it
+#ifdef __clang__
+// We cannot export a function with extern "C" linkage with clang when it
 // returns a C++ object
 #define MHAPLUGIN_SETCPP_CALLBACK_PREFIX(prefix,classname)
 #else
