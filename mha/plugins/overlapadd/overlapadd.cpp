@@ -165,6 +165,7 @@ overlapadd_if_t::overlapadd_if_t(const algo_comm_t& iac,const std::string&,const
       window("window type"),
       wndexp("window exponent to be applied to all elements of window function","1"),
       zerowindow("zero padding post window type"),
+      strict_window_ratio("Disallow window sizes that are not a multiple of the frag size a by power of two.","yes"),
       plugloader(*this,iac),
       prescale("scaling factor (pre-scaling)"),
       postscale("scaling factor (post-scaling)"),
@@ -178,6 +179,7 @@ overlapadd_if_t::overlapadd_if_t(const algo_comm_t& iac,const std::string&,const
     window.insert_item("exp",&wndexp);
     insert_item("wnd",&window);
     insert_item("zerownd",&zerowindow);
+    insert_item("strict_window_ratio",&strict_window_ratio);
     insert_member(prescale);
     insert_member(postscale);
     patchbay.connect(&wndexp.writeaccess,this,&overlapadd_if_t::update);
@@ -196,7 +198,7 @@ void overlapadd_if_t::prepare(mhaconfig_t& t)
         throw MHA_ErrorMsg("overlapadd: waveform input is required.");
     t.fftlen = nfft.data;
     t.wndlen = nwnd.data;
-    if(!MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize) or t.wndlen==t.fragsize)
+    if(!(MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize) or t.wndlen==t.fragsize) and strict_window_ratio.data)
         throw MHA_Error(__FILE__,__LINE__,"overlapadd: The ratio of the fragsize (%d)"
                         " and the window length (%d) must be a power of two.", t.fragsize, t.wndlen);
     if( t.fragsize > t.wndlen )

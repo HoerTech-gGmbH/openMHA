@@ -84,6 +84,8 @@ private:
     MHAParser::window_t window;
     MHAParser::float_t wndexp;
     MHAParser::window_t zerowindow;
+    /// \brief Disallow window sizes that are not a multiple of the frag size a by power of two
+    MHAParser::bool_t strict_window_ratio;
     MHAParser::mhapluginloader_t plugloader;
     MHAParser::float_mon_t prescale;
     MHAParser::float_mon_t postscale;
