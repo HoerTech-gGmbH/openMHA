@@ -165,7 +165,7 @@ overlapadd_if_t::overlapadd_if_t(const algo_comm_t& iac,const std::string&,const
       window("window type"),
       wndexp("window exponent to be applied to all elements of window function","1"),
       zerowindow("zero padding post window type"),
-      strict_window_ratio("Disallow window sizes that are not a multiple of the frag size a by power of two.","yes"),
+      strict_window_ratio("Disallow window sizes that are not a multiple of hop size a by power of two.","yes"),
       plugloader(*this,iac),
       prescale("scaling factor (pre-scaling)"),
       postscale("scaling factor (post-scaling)"),
@@ -199,11 +199,12 @@ void overlapadd_if_t::prepare(mhaconfig_t& t)
     t.fftlen = nfft.data;
     t.wndlen = nwnd.data;
     if(!(MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize) or t.wndlen==t.fragsize) and strict_window_ratio.data)
-        throw MHA_Error(__FILE__,__LINE__,"overlapadd: The ratio of the fragsize (%d)"
+        throw MHA_Error(__FILE__,__LINE__,
+                        "overlapadd: The ratio between the hop size (\"fragsize\", %d)"
                         " and the window length (%d) must be a power of two.", t.fragsize, t.wndlen);
     if( t.fragsize > t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
-                        "overlapadd: The fragment size (%d) is greater than the window size (%d).",
+                        "overlapadd: The hop size (\"fragsize\", %d) is greater than the window length (%d).",
                         t.fragsize, t.wndlen);
     if( t.fftlen < t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
