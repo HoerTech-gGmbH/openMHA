@@ -163,6 +163,8 @@ namespace mconv {
 
     void MConv::update_irs()
     {
+        if (!is_prepared())
+            return;
         if (irs.data.size() != inch.data.size()
             || irs.data.size() != outch.data.size())
             throw MHA_Error(__FILE__, __LINE__,
@@ -178,8 +180,7 @@ namespace mconv {
             tm.push_back(tf);
         }
 
-        if (is_prepared())
-            push_config(new MHAFilter::partitioned_convolution_t(fragsize,
+        push_config(new MHAFilter::partitioned_convolution_t(fragsize,
                                                              nchannels_in,
                                                              nchannels_out.data,
                                                              tm));
