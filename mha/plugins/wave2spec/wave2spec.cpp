@@ -101,6 +101,8 @@ wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const s
       nwnd("window length/samples","400","[1,]"),
       wndpos("window position\n(0 = beginning, 0.5 = symmetric zero padding, 1 = end)","0.5","[0,1]"),
       window_config("hanning"),
+      strict_window_ratio("Disallow window sizes that are not a multiple of the"
+                          " hop size (fragsize) by power of two.","yes"),
       return_wave("return input waveform signal, store spectrum only to AC","no"),
       algo(ialg)
 {
@@ -108,6 +110,7 @@ wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const s
     insert_item("wndlen",&nwnd);
     insert_item("wndpos",&wndpos);
     window_config.insert_items(this);
+    insert_item("strict_window_ratio", &strict_window_ratio);
     insert_item("return_wave",&return_wave);
     patchbay.connect(&wndpos.writeaccess,this,&wave2spec_if_t::update);
     patchbay.connect(&window_config.updated,this,&wave2spec_if_t::update);
