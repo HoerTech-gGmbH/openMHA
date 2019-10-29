@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2013 2016 HörTech gGmbH
-// Copyright © 2017 2018 HörTech gGmbH
+// Copyright © 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -437,6 +437,26 @@ int MHAKernel::algo_comm_class_t::insert_var_float(void* handle,const char* name
         var.num_entries = 1;
         var.stride = 1;
         var.data = ivar;
+        p->local_insert_var(name,var);
+        return AC_SUCCESS;
+    }
+    catch(MHA_Error& e){
+        (void)e;
+        return AC_INVALID_NAME;
+    }
+}
+
+int MHAKernel::algo_comm_class_t::insert_var_vfloat(void* handle,const char* name,std::vector<float>& ivar)
+{
+    try{
+        algo_comm_class_t* p = algo_comm_safe_cast(handle);
+        if(!p)
+            return AC_INVALID_HANDLE;
+        comm_var_t var;
+        var.data_type = MHA_AC_FLOAT;
+        var.num_entries = ivar.size();
+        var.stride = 1;
+        var.data = static_cast<void*>(const_cast<float*>(ivar.data()));
         p->local_insert_var(name,var);
         return AC_SUCCESS;
     }

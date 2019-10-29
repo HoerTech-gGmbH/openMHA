@@ -245,7 +245,7 @@ namespace ADM {
      *   Time constant of the lowpass filter used for averaging the power of
      *   the output signal
      * @param mu_beta
-     *   adaption speed
+     *   adaptation speed
      */
     ADM(F fs, F dist,
         unsigned lp_order, const F* lp_alphas,
@@ -264,12 +264,13 @@ namespace ADM {
      *   filter out. Else, the beta parameter is adapted to filtered out a
      *   direction so that best reduction of signal intensity from the back
      *   hemisphere is achieved.
+     * @param update_beta Perform the beta adaptation step?
      * @return
      *   The computed output sample
      */
     inline
     F process(const F & front, const F & back,
-              const F & external_beta = F(-1))
+              const F & external_beta = F(-1), bool update_beta=true)
     {
       // apply delay
       F delayed_front = m_delay_front.process(front);
@@ -285,22 +286,23 @@ namespace ADM {
       if (external_beta >= 0)
         m_beta = external_beta;
       else {
-        // low pass filter signals used in adaption
-        F lp_back_facing = m_lp_bf.process(back_facing);
-        F lp_comb_result = m_lp_result.process(comb_result);
-        
-        // adapt beta
-        m_powerfilter_state = 
-          m_powerfilter_state * m_powerfilter_coeff +
-          m_powerfilter_norm * lp_back_facing * lp_back_facing;
-        F increment =
-            m_mu_beta * lp_back_facing * lp_comb_result / m_powerfilter_state;
-        if ( ! (std::isnan(increment)) )
-            m_beta = m_beta + increment;
-        if (m_beta < 0) m_beta = -m_beta;
-        if (m_beta > 1) m_beta = 1;
+          if(update_beta){
+              // low pass filter signals used in adaptation
+              F lp_back_facing = m_lp_bf.process(back_facing);
+              F lp_comb_result = m_lp_result.process(comb_result);
+              
+              // adapt beta
+              m_powerfilter_state = 
+                  m_powerfilter_state * m_powerfilter_coeff +
+                  m_powerfilter_norm * lp_back_facing * lp_back_facing;
+              F increment =
+                  m_mu_beta * lp_back_facing * lp_comb_result / m_powerfilter_state;
+              if ( ! (std::isnan(increment)) )
+                  m_beta = m_beta + increment;
+              if (m_beta < 0) m_beta = -m_beta;
+              if (m_beta > 1) m_beta = 1;
+          }
       }
-
       // Apply comb filter compensation
       return m_decomb.process(comb_result);
     }
