@@ -15,10 +15,11 @@
 
 #ifndef __MHA_UTILS_HH__
 #define __MHA_UTILS_HH__
-
+#include "mha.hh"
 #include "mha_error.hh"
 #include <string>
 #include <algorithm>
+#include <vector>
 namespace MHAUtils {
   inline bool is_multiple_of(const unsigned big, const unsigned small) {
     if(small==0)
@@ -49,6 +50,16 @@ namespace MHAUtils {
     str.erase(end_pos, str.end());
     return str;
   }
+
+  /// Get the offset of between dB(SPL) and dB(HL) for a given frequency
+  /// according to ISO 389-7:2005 (freefield); e.g. an intensity of 22.1 dB(SPL)
+  /// at 125 Hz is equivalent to 0 dB(HL), so spl2hl(125)=-22.1. Interpolation between
+  /// mesh points is linear.  The correction values for frequencies above 16 kHz are extrapolated."
+  /// @param [in] f The frequency in Hz for which the offset shall be returned
+  /// @returns The offet between dB(SPL) and dB(HL) at frequency f
+  /// @throw MHA_Error if f<0
+  mha_real_t spl2hl(mha_real_t f);
+
 } // MHAUtils
 
 #endif // __MHA_UTILS_HH__
