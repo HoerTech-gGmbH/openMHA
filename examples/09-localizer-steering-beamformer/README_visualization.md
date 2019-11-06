@@ -49,8 +49,7 @@ purpose, an environment file `environment.yml` is included in this repository.
 By executing the commands
 
     conda env create
-    source activate doasvm_demo  # Linux
-    activate doasvm_demo         # Windows
+    conda activate doasvm_demo
 
 in the directory where this README_visualization.md file is located.
 A conda environment that is identical to the one used to develop and

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -i
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2018 HörTech gGmbH
 #
@@ -43,7 +43,7 @@ sleep 2
 # as described in README_visualization.md
 (
     sleep 2
-    source activate doasvm_demo
+    conda activate doasvm_demo
     set -x
     cd ./visualisation_web/
 

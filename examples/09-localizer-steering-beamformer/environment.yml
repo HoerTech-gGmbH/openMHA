@@ -2,17 +2,24 @@ name: doasvm_demo
 channels:
   - defaults
 dependencies:
-  - backports_abc=0.4=py34_0
-  - certifi=2015.9.6.2=py34_0
-  - openssl=1.0.2e=0
-  - pip=8.0.1=py34_0
-  - python=3.4.4=0
-  - readline=6.2=2
-  - setuptools=19.4=py34_0
-  - sqlite=3.9.2=0
-  - system=5.8=2
-  - tk=8.5.18=0
-  - tornado=4.3=py34_0
-  - wheel=0.26.0=py34_1
-  - xz=5.0.5=0
-  - zlib=1.2.8=0
+  - _libgcc_mutex=0.1=main
+  - backports_abc=0.5=py37_0
+  - ca-certificates=2019.10.16=0
+  - certifi=2019.9.11=py37_0
+  - libedit=3.1.20181209=hc058e9b_0
+  - libffi=3.2.1=hd88cf55_4
+  - libgcc-ng=9.1.0=hdf63c60_0
+  - libstdcxx-ng=9.1.0=hdf63c60_0
+  - ncurses=6.1=he6710b0_1
+  - openssl=1.1.1d=h7b6447c_3
+  - pip=19.3.1=py37_0
+  - python=3.7.5=h0371630_0
+  - readline=7.0=h7b6447c_5
+  - setuptools=41.6.0=py37_0
+  - sqlite=3.30.1=h7b6447c_0
+  - tk=8.6.8=hbc83047_0
+  - tornado=6.0.3=py37h7b6447c_0
+  - wheel=0.33.6=py37_0
+  - xz=5.2.4=h14c3975_4
+  - zlib=1.2.11=h7b6447c_3
+prefix: /home/joma/.anaconda3/envs/doasvm_demo
