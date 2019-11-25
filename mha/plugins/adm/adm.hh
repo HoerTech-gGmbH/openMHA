@@ -65,6 +65,7 @@ namespace ADM {
     inline
     F process(const F & in_sample)
     {
+      if (m_order == 0U) return in_sample;
       F addend;
       signed out_index_1 = m_now;
       signed out_index_2 = (m_now + m_order) % (m_order + 1);
@@ -234,7 +235,7 @@ namespace ADM {
      *   (coefficients for linear-phase FIR filters are symmetric).
      * @param decomb_order
      *   Filter order of FIR compensation filter (compensates for comb filter
-     *   characteristic)
+     *   characteristic).  decomb_order <= 1 deactivates filter.
      * @param decomb_alphas
      *   Pointer to array of alpha coefficients for the compensation filter
      *   used to compensate for the comb filter characteristic. Since this
@@ -390,7 +391,7 @@ namespace ADM {
 
 // Local Variables:
 // compile-command: "make"
-// c-basic-offset: 4
+// c-basic-offset: 2
 // coding: utf-8-unix
 // indent-tabs-mode: nil
 // End:

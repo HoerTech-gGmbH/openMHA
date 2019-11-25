@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2003 2004 2005 2006 2007 2008 2009 2010  HörTech gGmbH
+// Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 HörTech gGmbH
 // Copyright © 2011 2012 2013 2014 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
@@ -754,23 +754,23 @@ namespace MHAFilter {
     /**
        \brief Smooth spectral gains, create a windowed impulse response.
 
-       Spectral gains are smoothed by multiplicating the impulse
+       Spectral gains are smoothed by multiplying the impulse
        response with a window function.
        
        If a minimal phase is used, then the original phase is
-       discarded and replaced by the minimal phase function. In this
+       discarded and replaced by the minimal phase function.  In this
        case, the window is applied to the beginning of the inverse
        Fourier transform of the input spectrum, and the remaining
-       signal set to zero. If the original phase is kept, the window
-       is applied symmetrical arround zero, i.e. to the first and last
+       signal set to zero.  If the original phase is kept, the window
+       is applied symmetrically arround zero, i.e. to the first and last
        samples of the inverse Fourier transform of the input
-       spectrum. The spec2fir() function creates a causal impulse
-       response by circular shifting the impulse response by half of
+       spectrum.  The spec2fir() function creates a causal impulse
+       response by circularly shifting the impulse response by half of
        the window length.
 
        The signal dimensions of the arguments of smoothspec() must
        correspond to the FFT length and number of channels provided in
-       the constructor. The function spec2fir() can fill signal
+       the constructor.  The function spec2fir() can fill signal
        structures with more than window length frames.
     */
     class smoothspec_t {

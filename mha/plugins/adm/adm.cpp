@@ -265,9 +265,10 @@ adm_if_t::adm_if_t(const algo_comm_t& ac,
       distances("Distance between front and rear microphones",
                 "[0.0108  0.0108]",
                 "[0.0008,0.08]"),
-      lp_order("Filter order of FIR lowpass filter", "46", "[46,128]"),
-      decomb_order("Filter order of FIR comb compensation filter",
-                   "54", "[46,128]"),
+      lp_order("Filter order of FIR lowpass filter", "46", "[0,128]"),
+      decomb_order("Filter order of FIR comb compensation filter. "
+                   " Values <=1 deactivate filter.",
+                   "54", "[0,128]"),
       bypass("If 1, output front microphones directly; "\
              "if 2, output rear microphones directly",
              "0", "[0,2]"),
