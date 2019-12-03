@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 2011 HörTech gGmbH
-// Copyright © 2012 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2012 2013 2014 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -642,13 +642,8 @@ void MHAParser::parser_t::remove_item( const base_t * addr )
 std::string MHAParser::parser_t::op_setval( expression_t & x )
 {
     if( !x.lval.size(  ) ){
-        std::vector<std::string> subcmds;
-        MHAParser::StrCnv::str2val( x.rval, subcmds );
-        std::string retval;
-        for( std::vector<std::string>::iterator i=subcmds.begin(); i!= subcmds.end(); ++i){
-            retval += parse( *i );
-        }
-        return retval;
+        throw MHA_Error(__FILE__, __LINE__,
+                        "Cannot assign value to parser node.");
     }
     for( entry_map_t::iterator i = entries.begin(  ); i != entries.end(  ); ++i )
         if( i->name == x.lval ) {
@@ -1228,7 +1223,7 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
 {
     arg_t tmpval;
     std::vector<arg_t> val;
-    unsigned int nbr = MHAParser::StrCnv::num_brackets( s );
+    int nbr = MHAParser::StrCnv::num_brackets( s );
     if( nbr == 0 ){
         MHAParser::StrCnv::str2val( s, tmpval );
         val.push_back( tmpval );
@@ -1241,6 +1236,8 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
             val.push_back( tmpval );
         }
         v = val;
+    }else if (nbr == -1){
+        v = val; // empty string without brackets creates empty vector
     }else{
         throw MHA_Error(__FILE__,__LINE__,"Invalid number of brackets (\"%s\", %d)",s.c_str(),nbr);
     }
@@ -1960,6 +1957,54 @@ std::string MHAParser::vcomplex_t::op_setval( expression_t & x )
 }
 
 
+
+/** Create a int matrix parser variable.
+ * @param h A human-readable text describing the purpose of this configuration variable.
+ * @param v The initial value of the variable, as a string, in \mha configuration language:
+ *  (e.g. "[[0 1]; [2 3]]" for a matrix), described in the "Multidimensional Variables" s2.1.3 section of the \mha User Manual.
+ * @param rg The numeric range to enforce on all members of the matrix. */
+MHAParser::mint_t::mint_t( const std::string & h, const std::string & v, const std::string & rg )
+    :range_var_t( h, rg )
+{
+    parse( "=" + v );
+    data_is_initialized = true;
+}
+
+std::string MHAParser::mint_t::query_val( const std::string & s )
+{
+    prereadaccess(  );prereadaccess( s );
+    std::string tmp = StrCnv::val2str( data );
+    readaccess(  );readaccess( s );
+    return tmp;
+}
+
+std::string MHAParser::mint_t::query_type( const std::string & s )
+{
+    return "matrix<int>";
+}
+
+std::string MHAParser::mint_t::op_setval( expression_t & x )
+{
+    variable_t::op_setval( x );
+    std::vector < std::vector < int > > newval( data );
+    std::vector < std::vector < int > > oldval( data );
+    StrCnv::str2val( x.rval, newval );
+    validate( newval );
+    data = newval;
+    try {
+        writeaccess(  );
+        writeaccess( x.rval );
+        if( data_is_initialized )
+            if( data != oldval )
+                valuechanged();
+    }
+    catch( ... ) {
+        data = oldval;
+        throw;
+    }
+    return "";
+}
+
 /****************************************************************************/
 /* vvfloat                                                                    **/
 /****************************************************************************/
@@ -2383,6 +2428,41 @@ void MHAParser::range_var_t::validate( const std::vector < mha_complex_t > &v )
         catch( MHA_Error & e ) {
             std::string tmp = StrCnv::val2str( v );
             throw MHA_Error( __FILE__, __LINE__, "%s\n(while scanning %d. entry of %s)", Getmsg( e ), k, tmp.c_str(  ) );
+        }
+    }
+}
+
+void MHAParser::range_var_t::validate(const std::vector<std::vector<int> > &v) {
+    if( !check_range )
+        return;
+    bool ok( true );
+    for( unsigned int k = 0; k < v.size(  ); k++ ) {
+        for( unsigned int k2 = 0; k2 < v[k].size(  ); k2++ ) {
+            if( check_low ) {
+                if( low_incl ) {
+                    if( v[k][k2] < low_limit )
+                        ok = false;
+                } else {
+                    if( v[k][k2] <= low_limit )
+                        ok = false;
+                }
+            }
+            if( check_up ) {
+                if( up_incl ) {
+                    if( v[k][k2] > up_limit )
+                        ok = false;
+                } else {
+                    if( v[k][k2] >= up_limit )
+                        ok = false;
+                }
+            }
+            if( !ok ) {
+                std::string rg = query_range( "" );
+                std::string vl1 = StrCnv::val2str( v[k][k2] );
+                throw MHA_Error( __FILE__, __LINE__,
+                                 "The (%d, %d). entry (value: %s) is not in the range %s.",
+                                 k + 1, k2 + 1, vl1.c_str(  ), rg.c_str(  ) );
+            }
         }
     }
 }

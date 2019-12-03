@@ -110,7 +110,7 @@ $(BUILD_DIR)/googlemock.is_installed: googletest/WORKSPACE \
 
 googletest/WORKSPACE:
 	git clone https://github.com/google/googletest
-
+	cd googletest && git checkout dc792bc607a4c7d6644b9b9b8a1cf31f9aafb9bb
 
 network-asio: $(BUILD_DIR)/network-asio.is_installed
 

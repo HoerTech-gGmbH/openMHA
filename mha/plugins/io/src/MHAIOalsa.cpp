@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2008 2009 2010 2011 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2006 2008 2009 2010 2011 2013 2014 2015 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -46,11 +46,11 @@ public:
      * the internal structure.  Converts sound samples from the integer
      * data type provided by the sound card to floating-point values
      * needed by the MHA in the range [-1.0,1.0] */
-    virtual int read(mha_wave_t**)=0;
+    virtual bool read(mha_wave_t**)=0;
     /** write audio samples from the given waveform buffer to the sound device.
      * converts the floating point values coming from the MHA to the integer
      * samples required by the sound card.*/
-    virtual int write(mha_wave_t*)=0;
+    virtual bool write(mha_wave_t*)=0;
     /** The underlying alsa handle to this sound card. */
     snd_pcm_t* pcm;
 
@@ -111,11 +111,11 @@ public:
      * the internal structure.  Converts sound samples from the integer
      * data type provided by the sound card to floating-point values
      * needed by the MHA in the range [-1.0,1.0] */
-    int read(mha_wave_t**) override;
+    bool read(mha_wave_t**) override;
     /** write audio samples from the given waveform buffer to the sound device.
      * converts the floating point values coming from the MHA to the integer
      * samples required by the sound card.*/
-    int write(mha_wave_t*) override;
+    bool write(mha_wave_t*) override;
 
 private:
     unsigned int channels;
@@ -131,28 +131,27 @@ private:
 };
 
 template <typename T>
-int alsa_t<T>::read(mha_wave_t** s)
+bool alsa_t<T>::read(mha_wave_t** s)
 {
     unsigned k, ch;
     snd_pcm_sframes_t cnt;
     *s = &wave;
     clear(wave);
     cnt = snd_pcm_readi(pcm,buffer,fragsize);
-    if (cnt == -EPIPE)
-        return cnt;
+    if (cnt == -EPIPE or (cnt > 0 and cnt < static_cast<int>(fragsize))){
+        return false;
+    }
     if( cnt < 0 )
         throw MHA_Error(__FILE__,__LINE__,
                         "Read failed: %s",snd_strerror(cnt));
-    if( cnt < (int)fragsize )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Read failed (read only %d frames)",cnt);
     for(k=0;k<fragsize;k++)
         for(ch=0;ch<channels;ch++)
             wave(k,ch) = gain * buffer[channels*k+ch];
-    return 0;
+    return true;
 }
+
 template <typename T>
-int alsa_t<T>::write(mha_wave_t* s)
+bool alsa_t<T>::write(mha_wave_t* s)
 {
     unsigned int k, ch;
     snd_pcm_sframes_t cnt;
@@ -174,16 +173,13 @@ int alsa_t<T>::write(mha_wave_t* s)
             for(ch=0;ch<channels;ch++)
                 buffer[channels*k+ch] = 0;
     cnt = snd_pcm_writei(pcm,buffer,fragsize);
-    if (cnt == -EPIPE) {
-        return cnt;
+    if (cnt == -EPIPE or (cnt > 0 and cnt < (int)fragsize) ) {
+        return false;
     }
     if (cnt < 0)
         throw MHA_Error(__FILE__,__LINE__,
                         "Write failed: %s",snd_strerror(cnt));
-    if (cnt < (int)fragsize)
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Write failed (wrote only %d frames)",cnt);
-    return 0;
+    return true;
 }
 template <typename T>
 void alsa_t<T>::start()
@@ -387,19 +383,20 @@ void io_alsa_t::process()
                 alsa_start_counter.data++;
                 devices_running = true;
             }
-
-            if (dev_in->read(&s) < 0) {
+            if (!dev_in->read(&s)) {
                 devices_running = false;
                 continue;
             }
             if( b_process ){
                 proc_event(proc_handle,s,&s);
-                if (dev_out->write(s) < 0)
+                if (!dev_out->write(s)){
                     devices_running = false;
+                }
             }
         }
-        if( stop_event )
+        if( stop_event ){
             stop_event(stop_handle,0,0);
+        }
     }
     catch( MHA_Error& e){
         b_process = false;

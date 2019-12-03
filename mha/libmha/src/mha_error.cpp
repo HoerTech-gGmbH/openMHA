@@ -164,6 +164,8 @@ MHA_Error::~MHA_Error() throw ()
 
 MHA_Error& MHA_Error::operator=(const MHA_Error& p)
 {
+    if(&p==this)
+        return *this;
     if( msg )
         delete [] msg;
     if( longmsg )

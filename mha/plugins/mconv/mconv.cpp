@@ -43,9 +43,12 @@ namespace mconv {
         void release();
         mha_wave_t* process(mha_wave_t*);
     private:
-        /** update is not stricly needed, since this plugin allows no
-         * reconfiguration after prepare(). */
+        /** Update is needed only once, since this plugin allows only
+         * change of irs after prepare(). */
         void update();
+        /**  This function updates the irs without allowing a change
+         * of its size after prepare(). */
+        void update_irs();
         /** Number of output channels to produce */
         MHAParser::int_t nchannels_out;
         /** Vector of input channel indices.
@@ -69,6 +72,8 @@ namespace mconv {
         /** Fragsize, set during prepare, is used as the partition length in the
          * partitioned convolution */
         unsigned int fragsize;
+
+        MHAEvents::patchbay_t<MConv> patchbay;
     };
 
     MConv::MConv(const algo_comm_t & iac,
@@ -100,6 +105,8 @@ namespace mconv {
         insert_item("inch", &inch);
         insert_item("outch", &outch);
         insert_item("irs", &irs);
+
+        patchbay.connect(&irs.writeaccess, this, &MConv::update_irs);
     }
 
     void MConv::prepare(mhaconfig_t & mhaconfig)
@@ -112,7 +119,6 @@ namespace mconv {
         update();
         inch.setlock(true);
         outch.setlock(true);
-        irs.setlock(true);
         nchannels_out.setlock(true);
     }
 
@@ -121,14 +127,15 @@ namespace mconv {
         nchannels_out.setlock(false);
         inch.setlock(false);
         outch.setlock(false);
-        irs.setlock(false);
     }
 
     void MConv::update()
     {
         if (irs.data.size() != inch.data.size()
             || irs.data.size() != outch.data.size())
-            throw MHA_ErrorMsg("Sizes of irs, inch, and outch do not match");
+            throw MHA_Error(__FILE__, __LINE__,
+                            "Sizes of irs (%zu), inch (%zu), and outch (%zu) do not match",
+                            irs.data.size(), inch.data.size(), outch.data.size());
 
         MHAFilter::transfer_function_t tf;
         MHAFilter::transfer_matrix_t tm;
@@ -146,6 +153,33 @@ namespace mconv {
             tf.impulse_response = irs.data[index];
             tm.push_back(tf);
         }
+
+        if (is_prepared())
+            push_config(new MHAFilter::partitioned_convolution_t(fragsize,
+                                                             nchannels_in,
+                                                             nchannels_out.data,
+                                                             tm));
+    }
+
+    void MConv::update_irs()
+    {
+        if (!is_prepared())
+            return;
+        if (irs.data.size() != inch.data.size()
+            || irs.data.size() != outch.data.size())
+            throw MHA_Error(__FILE__, __LINE__,
+                            "Sizes of irs (%d), inch (%d), and outch (%d) do not match",
+                            irs.data.size(), inch.data.size(), outch.data.size());
+
+        MHAFilter::transfer_function_t tf;
+        MHAFilter::transfer_matrix_t tm;
+        for (size_t index = 0; index < irs.data.size(); ++index) {
+            tf.source_channel_index = inch.data[index];
+            tf.target_channel_index = outch.data[index];
+            tf.impulse_response = irs.data[index];
+            tm.push_back(tf);
+        }
+
         push_config(new MHAFilter::partitioned_convolution_t(fragsize,
                                                              nchannels_in,
                                                              nchannels_out.data,

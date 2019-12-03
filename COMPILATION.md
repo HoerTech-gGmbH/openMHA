@@ -21,7 +21,7 @@ or a Beaglebone Black running Debian Stretch.
 - portaudio19-dev
 - optional:
   - GNU Octave with the signal package and default-jre
-  - liblo
+  - liblo-dev
   - liblsl
 
 Octave and default-jre are not essential for building or running openMHA.
@@ -183,10 +183,14 @@ will be created in the ./mha/doc/ directory.  In addition, HTML
 documentation is generated in ./mha/doc/mhadoc/html/ and
 ./mha/doc/mhaplugins/html/
 
-Prerequisites for recreating the documents (optional!):
+Linux recommended for document regeneration. 
+
+Please install all dependencies for openMHA compilation first, along 
+with the following prerequisites for recreating the documents (optional!):
 
 - doxygen
 - xfig
 - graphviz
 - texlive
 - texlive-latex-extra
+- texlive-font-utils

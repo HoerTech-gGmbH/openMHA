@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2006 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2004 2006 2013 2014 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,6 +17,8 @@
 
 #ifndef ADM_HH
 #define ADM_HH
+
+#include "mha_filter.hh"
 
 #include <cassert>
 #include <algorithm>
@@ -63,6 +65,7 @@ namespace ADM {
     inline
     F process(const F & in_sample)
     {
+      if (m_order == 0U) return in_sample;
       F addend;
       signed out_index_1 = m_now;
       signed out_index_2 = (m_now + m_order) % (m_order + 1);
@@ -108,8 +111,9 @@ namespace ADM {
     unsigned m_now;
   };
 
-  /**
-   * A delay-line class which can also do subsample-delays for a limited 
+  /** A delay-line class. It can delay samples in a single audio channel.
+   *  It stores samples while they are delayed until they have reached their target delay.
+   * It can also do subsample-delays for a limited
    * frequency range below fs/4.
    */
   template <class F>
@@ -121,31 +125,63 @@ namespace ADM {
      * @param samples
      *   number of samples to delay (may be non-integer)
      * @param f_design
-     *   subsampledelay is exact for this frequency
+     *  design frequency (in Hz). Subsampledelay is exact for this frequency and approximate for different frequencies
      * @param fs
-     *   sampling frequency
+     *   sampling frequency (in Hz).
      */
     Delay(F samples, F f_design, F fs);
 
     ~Delay();
 
     /**
-     * Apply delay to signal
+     * Apply delay to signal. Whenever a new audio sample enters the
+     * delay line, a previous audio sample, now delayed, is returned
+     * by this method.  Sub-sample-delays are implemented by applying
+     * a first-order recursive lowpass filter.  This method needs to
+     * be called repeatedly, once for each incoming audio sample in
+     * correct order for a block of audio with multiple samples
+     * (oldest first, newest last).
      *
      * @param in_sample
      *   The current input signal sample
      * @return
-     *   The computed output sample
+     *   The output sample, which is one of the previously received
+     *   input samples except for the sub-sample delay.
      */
     inline
     F process(const F & in_sample)
     {
-      const unsigned m_now_out = (m_now_in + 1) % (m_fullsamples + 1);
-      m_state[m_now_in] = 
-        m_state[(m_now_in+(m_fullsamples+1) -1) % (m_fullsamples+1)] * m_coeff +
-        (m_norm) * in_sample;
-      m_now_in = (m_now_in + 1) % (m_fullsamples + 1);
-      return m_state[m_now_out];
+        // m_state is an array of length m_fullsamples+1 and used as a
+        // ringbuffer.  It stores historic samples AFTER sub-sample
+        // delay has already been applied.  m_now_in points to the
+        // index of the ringbuffer where the next sample has to be
+        // stored.
+
+        // The index m_now_out directly following m_now_in contains the oldest
+        // stored audio sample which will be returned from this method.
+        const unsigned m_now_out = (m_now_in + 1) % (m_fullsamples + 1);
+
+        // Index of the previous low-pass-filter result (subsample-delay).
+        // This is m_now_in-1 except for the wraparound in the ringbuffer.
+        // The additive part protects against (0-1)%x.
+        const auto prev_index =
+            (m_now_in+(m_fullsamples+1) -1) % (m_fullsamples+1);
+
+        // Value of the previous low-pass-filter (subsample-delay)
+        // result, needed for recursive filtering
+        const auto & prev_value = m_state[prev_index];
+
+        // recursive filter step
+        m_state[m_now_in] = prev_value * m_coeff + m_norm * in_sample;
+
+        // protect future filter operations as well as downstream
+        // processing from subnormals
+        MHAFilter::make_friendly_number(m_state[m_now_in]);
+
+        // Update write index
+        m_now_in = (m_now_in + 1) % (m_fullsamples + 1);
+
+        return m_state[m_now_out];
     }
 
   private:
@@ -199,7 +235,7 @@ namespace ADM {
      *   (coefficients for linear-phase FIR filters are symmetric).
      * @param decomb_order
      *   Filter order of FIR compensation filter (compensates for comb filter
-     *   characteristic)
+     *   characteristic).  decomb_order <= 1 deactivates filter.
      * @param decomb_alphas
      *   Pointer to array of alpha coefficients for the compensation filter
      *   used to compensate for the comb filter characteristic. Since this
@@ -210,7 +246,7 @@ namespace ADM {
      *   Time constant of the lowpass filter used for averaging the power of
      *   the output signal
      * @param mu_beta
-     *   adaption speed
+     *   adaptation speed
      */
     ADM(F fs, F dist,
         unsigned lp_order, const F* lp_alphas,
@@ -229,12 +265,13 @@ namespace ADM {
      *   filter out. Else, the beta parameter is adapted to filtered out a
      *   direction so that best reduction of signal intensity from the back
      *   hemisphere is achieved.
+     * @param update_beta Perform the beta adaptation step?
      * @return
      *   The computed output sample
      */
     inline
     F process(const F & front, const F & back,
-              const F & external_beta = F(-1))
+              const F & external_beta = F(-1), bool update_beta=true)
     {
       // apply delay
       F delayed_front = m_delay_front.process(front);
@@ -250,22 +287,23 @@ namespace ADM {
       if (external_beta >= 0)
         m_beta = external_beta;
       else {
-        // low pass filter signals used in adaption
-        F lp_back_facing = m_lp_bf.process(back_facing);
-        F lp_comb_result = m_lp_result.process(comb_result);
-        
-        // adapt beta
-        m_powerfilter_state = 
-          m_powerfilter_state * m_powerfilter_coeff +
-          m_powerfilter_norm * lp_back_facing * lp_back_facing;
-        F increment =
-            m_mu_beta * lp_back_facing * lp_comb_result / m_powerfilter_state;
-        if ( ! (std::isnan(increment)) )
-            m_beta = m_beta + increment;
-        if (m_beta < 0) m_beta = -m_beta;
-        if (m_beta > 1) m_beta = 1;
+          if(update_beta){
+              // low pass filter signals used in adaptation
+              F lp_back_facing = m_lp_bf.process(back_facing);
+              F lp_comb_result = m_lp_result.process(comb_result);
+              
+              // adapt beta
+              m_powerfilter_state = 
+                  m_powerfilter_state * m_powerfilter_coeff +
+                  m_powerfilter_norm * lp_back_facing * lp_back_facing;
+              F increment =
+                  m_mu_beta * lp_back_facing * lp_comb_result / m_powerfilter_state;
+              if ( ! (std::isnan(increment)) )
+                  m_beta = m_beta + increment;
+              if (m_beta < 0) m_beta = -m_beta;
+              if (m_beta > 1) m_beta = 1;
+          }
       }
-
       // Apply comb filter compensation
       return m_decomb.process(comb_result);
     }
@@ -353,7 +391,7 @@ namespace ADM {
 
 // Local Variables:
 // compile-command: "make"
-// c-basic-offset: 4
+// c-basic-offset: 2
 // coding: utf-8-unix
 // indent-tabs-mode: nil
 // End:

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2003 2004 2005 2006 2007 2008 2009 2010  HörTech gGmbH
-// Copyright © 2011 2012 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 HörTech gGmbH
+// Copyright © 2011 2012 2013 2014 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -677,7 +677,8 @@ void MHAFilter::smoothspec_t::smoothspec(const mha_spec_t& s_in,mha_spec_t& s_ou
 void MHAFilter::smoothspec_t::spec2fir(const mha_spec_t& spec,mha_wave_t& fir)
 {
     if( fir.num_frames < window.num_frames )
-        throw MHA_Error(__FILE__,__LINE__,"Provided FIR variable to short (got %d, expected %d).",fir.num_frames,window.num_frames);
+        throw MHA_Error(__FILE__,__LINE__,"Provided FIR variable too short (got"
+                        " %d, expected %d).",fir.num_frames,window.num_frames);
     if( fir.num_channels != nchannels )
         throw MHA_Error(__FILE__,__LINE__,"Mismatching number of channels in FIR variable (got %d, expected %d).",fir.num_channels,nchannels);
     internal_fir(spec);

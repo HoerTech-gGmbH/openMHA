@@ -1,5 +1,5 @@
 .PHONY: all
-all: build pkg
+
 .PHONY= build
 include luggage.make
 
@@ -7,9 +7,11 @@ include luggage.make
 REPO=../../../..
 
 #Include meta-information in the package
-PACKAGE_VERSION=4.10.0
+PACKAGE_VERSION=4.11.0
 TITLE=openMHA
 REVERSE_DOMAIN=org.openmha
+
+all: build pkg
 
 #Targets to execute before packing
 PAYLOAD= \
@@ -27,13 +29,12 @@ UTIL=openMHA-installer
 
 build:
 	@./find_and_copy_dependencies.sh
-	@(cd $(REPO) && make install)
 
 usr-local-bin: l_usr_local_bin
 	@${CP} ./bin/* ${WORK_D}/usr/local/bin/
 
 usr-local-lib: l_usr_local_lib
-	@${CP} ./lib/* ${WORK_D}/usr/local/lib/
+	@${CP} -r ./lib/* ${WORK_D}/usr/local/lib/
 
 examples: l_usr_local_share
 	@mkdir -p ${WORK_D}/usr/local/share/openmha/examples

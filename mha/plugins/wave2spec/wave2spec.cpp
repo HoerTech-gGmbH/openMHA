@@ -101,6 +101,8 @@ wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const s
       nwnd("window length/samples","400","[1,]"),
       wndpos("window position\n(0 = beginning, 0.5 = symmetric zero padding, 1 = end)","0.5","[0,1]"),
       window_config("hanning"),
+      strict_window_ratio("Disallow window sizes that are not a multiple of the"
+                          " hop size (fragsize) by power of two.","yes"),
       return_wave("return input waveform signal, store spectrum only to AC","no"),
       algo(ialg)
 {
@@ -108,6 +110,7 @@ wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const s
     insert_item("wndlen",&nwnd);
     insert_item("wndpos",&wndpos);
     window_config.insert_items(this);
+    insert_item("strict_window_ratio", &strict_window_ratio);
     insert_item("return_wave",&return_wave);
     patchbay.connect(&wndpos.writeaccess,this,&wave2spec_if_t::update);
     patchbay.connect(&window_config.updated,this,&wave2spec_if_t::update);
@@ -123,9 +126,13 @@ void wave2spec_if_t::prepare(mhaconfig_t& t)
         t.domain = MHA_SPECTRUM;
     t.fftlen = nfft.data;
     t.wndlen = nwnd.data;
-    if(!MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize) or t.wndlen==t.fragsize)
-        throw MHA_Error(__FILE__,__LINE__,"wave2spec: The ratio of the fragsize (%d)"
-                        " and the window length (%d) must be a power of two.", t.fragsize, t.wndlen);
+    if (strict_window_ratio.data)
+        if (t.wndlen==t.fragsize ||
+            !MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize))
+            throw MHA_Error(__FILE__,__LINE__,
+                            "The ratio between the hop size (\"fragsize\", %d) "
+                            "and the window length (%d) must be a power of two.",
+                            t.fragsize, t.wndlen);
     if( t.fragsize > t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
                         "wave2spec: The fragment size (%d) is greater than the window size (%d).",

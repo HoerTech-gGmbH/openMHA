@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2010 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2018 2019  HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -53,11 +54,9 @@ public:
     void release();
 private:
     void update_gain();
-    void update_bbgain();
     void update_minmax();
     MHAEvents::patchbay_t<gain_if_t> patchbay;
     MHAParser::vfloat_t gains;
-    MHAParser::float_t bbgain;
     MHAParser::float_t vmin;
     MHAParser::float_t vmax;
 };
@@ -67,17 +66,14 @@ gain_if_t::gain_if_t(const algo_comm_t& iac,
                      const std::string&)
     : MHAPlugin::plugin_t<scaler_t>("Gain plugin:\n\nApply a gain to each channel",iac),
       gains("Gain in dB","[0]","[-16,16]"),
-      bbgain("Broadband gain in dB\n(setting of broad band gain overrides band gain)","0","[-16,16]"),
-      vmin("Minimal gain","-16","[,0]"),
-      vmax("Maximal gain","16","[0,]")
+      vmin("Minimal gain in dB","-16","[,0]"),
+      vmax("Maximal gain in dB","16","[0,]")
 {
     set_node_id("gain");
     insert_item("min",&vmin);
     insert_item("max",&vmax);
-    insert_item("bbgain",&bbgain);
     insert_item("gains",&gains);
     patchbay.connect(&gains.writeaccess,this,&gain_if_t::update_gain);
-    patchbay.connect(&bbgain.writeaccess,this,&gain_if_t::update_bbgain);
     patchbay.connect(&vmin.writeaccess,this,&gain_if_t::update_minmax);
     patchbay.connect(&vmax.writeaccess,this,&gain_if_t::update_minmax);
 }
@@ -122,14 +118,6 @@ void gain_if_t::update_gain()
         push_config(new scaler_t(tftype.channels,gains));
 }
 
-void gain_if_t::update_bbgain()
-{
-    if( tftype.channels ){
-        gains.data = std::vector<float>(tftype.channels,bbgain.data);
-        update_gain();
-    }
-}
-
 void gain_if_t::update_minmax()
 {
     std::string s("[");
@@ -138,17 +126,12 @@ void gain_if_t::update_minmax()
     s += vmax.parse("?val");
     s += "]";
     gains.set_range(s);
-    bbgain.set_range(s);
     for(unsigned int ch=0;ch<gains.data.size();ch++){
         if( gains.data[ch] < vmin.data )
             gains.data[ch] = vmin.data;
         if( gains.data[ch] > vmax.data )
             gains.data[ch] = vmax.data;
     }
-    if( bbgain.data < vmin.data )
-        bbgain.data = vmin.data;
-    if( bbgain.data > vmax.data )
-        bbgain.data = vmax.data;
     update_gain();
 }
 
@@ -159,7 +142,15 @@ MHAPLUGIN_PROC_CALLBACK(gain,gain::gain_if_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION\
 (gain,
  "level-modification",
- "")
+ "This plugin applies a configurable gain to each channel.\n"
+ "The number of entries in the gain vector must be either one per channel or 1 (same gains for all channels)"
+ "\n\n"
+ "For security reasons, the gain is limited to the range given by"
+ " \\texttt{min} and \\texttt{max} which are preconfigured to -16dB and +16dB,"
+ " respectively.\n"
+ "Maximum and minimum gains are themselves configurable and need to be adjusted"
+ " before gains exceeding the range [-16,+16] can be set through variables"
+ " \\texttt{gains}.\n\n")
 
 
 // Local variables:

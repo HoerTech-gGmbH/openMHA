@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2007 2009 2010 2013 2014 2015 2016 2017 2018 HörTech gGmbH
-//
+// Copyright © 2006 2007 2009 2010 2013 2014 2015 2016 HörTech gGmbH
+// Copyright © 2017 2018 2019 HörTech gGmbH
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
 // the Free Software Foundation, version 3 of the License.
@@ -69,6 +69,9 @@ private:
     /** Indices of channels containing the signals from the rear microphones */
     std::vector<int> rear_channels;
 
+    /** Prescale */
+    int adaptation_ratio;
+
     /** Lowpass filter coefficients */
     MHASignal::waveform_t* lp_coeffs;
 
@@ -89,6 +92,7 @@ public:
         \brief Construct new ADMs. Used when configuration changes.
         \param nchannels_in   Number of input channels
         \param nchannels_out  Number of output channels
+        \param adaptation_ratio_       Update beta every adaptation_ratio frames
         \param front_channels Parser's front_channels setting
         \param rear_channels  Parser's front_channels setting
         \param fs             Sampling rate / Hz
@@ -103,6 +107,7 @@ public:
      */
     adm_rtconfig_t(unsigned nchannels_in,
                    unsigned nchannels_out,
+                   int adaptation_ratio_,
                    const std::vector<int> & front_channels,
                    const std::vector<int> & rear_channels,
                    const mha_real_t fs,
@@ -127,10 +132,14 @@ public:
     /** Returns index of rear channel for adm number index */
     inline int rear_channel(unsigned index) const
     { check_index(index); return rear_channels[index]; }
+
+    inline int get_adaptation_ratio() const
+    { return adaptation_ratio; }
 };
 
 adm_rtconfig_t::adm_rtconfig_t(unsigned nchannels_in,
                                unsigned nchannels_out,
+                               int adaptation_ratio_,
                                const std::vector<int> & front_channels_,
                                const std::vector<int> & rear_channels_,
                                const mha_real_t fs,
@@ -141,6 +150,7 @@ adm_rtconfig_t::adm_rtconfig_t(unsigned nchannels_in,
                                const std::vector<mha_real_t> & mu_beta)
     : front_channels(front_channels_),
       rear_channels(rear_channels_),
+      adaptation_ratio(adaptation_ratio_),
       decomb_coeffs(front_channels_.size(), NULL ),
       adms(front_channels_.size(), static_cast<adm_t *>(0))
 {
@@ -234,10 +244,10 @@ private:
     MHAParser::vfloat_t tau_beta;
     MHAParser::vfloat_mon_t coeff_lp;
     MHAParser::vfloat_mon_t coeff_decomb;
-
+    MHAParser::int_t adaptation_ratio;
     unsigned input_channels;
+    int framecnt;
     mha_real_t srate;
-
     MHAEvents::patchbay_t<adm_if_t> patchbay;
 
     void update();
@@ -255,9 +265,10 @@ adm_if_t::adm_if_t(const algo_comm_t& ac,
       distances("Distance between front and rear microphones",
                 "[0.0108  0.0108]",
                 "[0.0008,0.08]"),
-      lp_order("Filter order of FIR lowpass filter", "46", "[46,128]"),
-      decomb_order("Filter order of FIR comb compensation filter",
-                   "54", "[46,128]"),
+      lp_order("Filter order of FIR lowpass filter", "46", "[0,128]"),
+      decomb_order("Filter order of FIR comb compensation filter. "
+                   " Values <=1 deactivate filter.",
+                   "54", "[0,128]"),
       bypass("If 1, output front microphones directly; "\
              "if 2, output rear microphones directly",
              "0", "[0,2]"),
@@ -267,8 +278,10 @@ adm_if_t::adm_if_t(const algo_comm_t& ac,
       tau_beta("time constant / s of low pass filter for averaging power of "
                "output signal\n(used for adaptation)","[50e-3 50e-3]","[0,]"),
       coeff_lp("Lowpass coefficients"),
-      coeff_decomb("Decomb coefficients"),
-      input_channels(0)
+    coeff_decomb("Decomb coefficients"),
+    adaptation_ratio("Calculate beta every n frames","1","[1,]"),
+    input_channels(0),
+    framecnt(1)
 {
     insert_item("front_channels", &front_channels);
     insert_item("rear_channels", &rear_channels);
@@ -281,6 +294,7 @@ adm_if_t::adm_if_t(const algo_comm_t& ac,
     insert_member(tau_beta);
     insert_item("coeff_lp",&coeff_lp);
     insert_item("coeff_decomb",&coeff_decomb);
+    insert_item("adaptation_ratio",&adaptation_ratio);
     patchbay.connect(&writeaccess, this, &adm_if_t::update);
 }
 
@@ -331,17 +345,18 @@ void adm_if_t::update()
     // odd filter orders are not supported
     lp_order.data &= ~1;
     decomb_order.data &= ~1;
-
-    push_config(new adm_rtconfig_t(input_channels,
-                                   out->num_channels,
-                                   front_channels.data,
-                                   rear_channels.data,
-                                   srate,
-                                   distances.data,
-                                   lp_order.data,
-                                   decomb_order.data,
-                                   tau_beta.data,
-                                   mu_beta.data));
+    auto cfg=new adm_rtconfig_t(input_channels,
+                                out->num_channels,
+                                adaptation_ratio.data,
+                                front_channels.data,
+                                rear_channels.data,
+                                srate,
+                                distances.data,
+                                lp_order.data,
+                                decomb_order.data,
+                                tau_beta.data,
+                                mu_beta.data);
+    push_config(cfg);
 }
 
 mha_wave_t* adm_if_t::process(mha_wave_t * in)
@@ -354,19 +369,24 @@ mha_wave_t* adm_if_t::process(mha_wave_t * in)
     poll_config();
 
     out->num_frames = in->num_frames;
+    bool calc_beta=false;
+    auto start_framecnt=framecnt;
     for (unsigned out_channel = 0;
          out_channel < out->num_channels;
          ++out_channel) {
         int front_channel = cfg->front_channel(out_channel);
         int rear_channel = cfg->rear_channel(out_channel);
+        framecnt=start_framecnt;
         for (unsigned frame = 0;
              frame <  out->num_frames;
              ++frame) {
+            calc_beta = framecnt >= cfg->get_adaptation_ratio();
+            framecnt = calc_beta ? 1 : framecnt+1;
           switch (bypass.data) {
           case 0:
               out->value(frame, out_channel) =
                   cfg->adm(out_channel).process(value(in,frame, front_channel),
-                                                value(in,frame, rear_channel),beta.data);
+                                                value(in,frame, rear_channel),beta.data,calc_beta);
               break;
           case 1:
               out->value(frame, out_channel) = value(in,frame, front_channel);
@@ -403,6 +423,9 @@ MHAPLUGIN_DOCUMENTATION\
  "ADM is located in the rear half-plane. The adaptation step size,\n"
  "{\\tt mu\\_beta}, can be chosen in order to find the optimal combination of\n"
  "adaptation speed and accuracy.\n"
+ "\n"
+ "To save cpu time on weak devices the adaptation of {\\tt beta} can be performed only\n"
+ "every p frames by setting the adaptation\\_ratio configuration variable to p.\n"
  "\n"
  "\\MHAfigure{Output signals illustrating convergence of the ADM algorithm for\n"
  "three different values of {\\tt mu\\_beta} (input signal: white Gaussian\n"

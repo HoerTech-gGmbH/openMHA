@@ -35,13 +35,22 @@ all: $(BUILD_DIR)/.directory $(patsubst %,$(BUILD_DIR)/%,$(TARGETS)) $(PLUGIN_AR
 # BUILD_DIR is a compiler- and platform dependent subdirectory name
 # for placing build output files
 
-# Pattern for building object files from C++ sources
+# Pattern for building object files from C++ sources - with headers
+$(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(SOURCE_DIR)/%.hh $(BUILD_DIR)/.directory
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+# Pattern for building object files from C++ sources - w/o headers
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(BUILD_DIR)/.directory
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-# Pattern for building object files from C sources
+# Pattern for building object files from C sources - with headers
+$(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c $(SOURCE_DIR)/%.h $(BUILD_DIR)/.directory
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+# Pattern for building object files from C sources - w/o headers
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c $(BUILD_DIR)/.directory
 	$(CC) $(CFLAGS) -c -o $@ $<
+
 
 # Pattern for building object containing the git commit hash for reproducibility
 $(BUILD_DIR)/%_mha_git_commit_hash.o: $(GIT_DIR)/mha/libmha/src/mha_git_commit_hash.cpp $(BUILD_DIR)/.directory

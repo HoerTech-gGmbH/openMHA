@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2010 2012 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -147,7 +148,7 @@ mha_spec_t* example5_t::process(mha_spec_t* spec)
 plugin_interface_t::plugin_interface_t(
     const algo_comm_t& iac,
     const std::string&,const std::string&)
-    : MHAPlugin::plugin_t<example5_t>("example plugin configuration structure",iac),
+    : MHAPlugin::plugin_t<example5_t>("example plugin scaling a spectral signal",iac),
       /* initialzing variable 'scale_ch' with MHAParser::int_t(char* name, .... ) */
       scale_ch("channel number to be scaled","0","[0,["),
       /* initialzing variable 'factor' with MHAParser::float_t(char* name, .... ) */
@@ -216,7 +217,11 @@ MHAPLUGIN_CALLBACKS(example5,plugin_interface_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION\
 (example5,
  "example level-modification audio-channels",
- "")
+ "This plugin scales one channel of the input signal,"
+ " working in the spectral domain.\n"
+ "The scale factor and the scaled channel number"
+ " is made accessible to the configuration structure."
+)
 
 // Local Variables:
 // compile-command: "make"

@@ -74,6 +74,14 @@ TEST(strip, strip){
   EXPECT_EQ(strip("foo baz bar \n"),"foo baz bar");
 }
 
+using MHAUtils::spl2hl;
+TEST(spl2hl,spl2hl){
+  EXPECT_NEAR(spl2hl(125),-22.1,1e-4);
+  EXPECT_NEAR(spl2hl(1250),-3.5,1e-4);
+  EXPECT_NEAR(spl2hl(16000),-40.2,1e-4);
+  EXPECT_NEAR(spl2hl(18000),-62.0,1e-4);
+  EXPECT_THROW(spl2hl(-1), MHA_Error);
+}
 
 // Local Variables:
 // compile-command: "make -C .. unit-tests"

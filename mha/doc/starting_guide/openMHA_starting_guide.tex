@@ -70,12 +70,52 @@
 \fancyfoot[CO]{\fancyplain{}{}}
 \fancyfoot[RO]{\fancyplain{}{}}
 
+
+
+
+
+
+
+
+
+
+
+
 % Indices & bibliography
 \usepackage{natbib}
 \usepackage{tocloft}
 \setcounter{tocdepth}{2}
 \setcounter{secnumdepth}{4}
 \addtolength{\cftsubsecnumwidth}{5pt}
+\usepackage{fancyvrb}
+
+
+\RecustomVerbatimCommand{\VerbatimInput}{VerbatimInput}%
+{fontsize=\footnotesize,
+ %
+ frame=lines,  % top and bottom rule only
+ framesep=2em, % separation between frame and text
+ rulecolor=\color{Gray},
+ %
+ label=\fbox{\color{Black}data.txt},
+ labelposition=topline,
+ %
+ commandchars=\|\(\), % escape character and argument delimiters for
+                      % commands within the verbatim
+ commentchar=*        % comment character
+}
+
+
+
+
+
+
+
+
+
+
+
+
 \makeindex
 
 % Custom commands
@@ -93,6 +133,28 @@
 \usepackage{color}
 \usepackage{subcaption}
 \usepackage{fancyvrb} %Für Rahmen um Code Boxen
+\usepackage{listings}
+
+
+\lstdefinestyle{customc}{
+language = tcl,
+commentstyle=\color{orange},
+  %columns = flexible
+  basicstyle = \ttfamily,
+  showstringspaces = false,
+  numbers=left,
+  numberstyle=\tiny,
+  frame = single
+}
+
+\lstset{escapechar=@,style=customc}
+
+
+
+
+
+
+
 
 \begin{document}
 \MHAtitle{Getting Started}
@@ -317,41 +379,9 @@ in a line starting with \# which is used for comments.
 The actual file on disk contains more verbose comments.
 \\
 
-\textbf{gain.cfg:}
+\textbf{gain\_getting\_started.cfg:} \\
 
-\begin{Verbatim}[frame=single,numbers=left,commandchars=\\\{\}]
-#The number of channels we want to process
-\textcolor{orange}{\textbf{nchannels_in = 2 }}
-#Number of frames to be processed in each block.
-\textcolor{orange}{\textbf{fragsize = 64}}
-#Sampling rate. Has to be the same as the input file
-\textcolor{orange}{\textbf{srate = 44100 }}
-#We want to use the plugin "mhachain"
-\textcolor{orange}{\textbf{mhalib = mhachain }}
-#Now we need to define input-output backend "iolib"
-#Here we decide if the audio should come from a static audio
-#file or from e.g. a live input source such as a microphone
-#input
-#In this case we will use simple static audio files
-\textcolor{orange}{\textbf{iolib = MHAIOFile}}
-#The plugin "mhachain" can load multiple plugins and
-#will connect them in series which is denoted by "[...]"
-#Here we will only use one plugin "gain"
-\textcolor{orange}{\textbf{mha.algos=[ gain ]}}
-#Set max and min gain factors in dB
-\textcolor{orange}{\textbf{mha.gain.min=-20}}
-\textcolor{orange}{\textbf{mha.gain.max=20}}
-#nchannels_in was set to 2 (see line 2), so we have to define 
-#two gain factors (left and right)
-\textcolor{orange}{\textbf{mha.gain.gains=[ -10 10 ]}}
-#Define the name of the input and output file
-#The input file needs to be in the same directory 
-#as the .cfg file itself
-\textcolor{orange}{\textbf{io.in = 1speaker_diffNoise_2ch.wav}}
-\textcolor{orange}{\textbf{io.out = 1speaker_diffNoise_2ch_OUT.wav}}
-\end{Verbatim} 
-
-
+\lstinputlisting{../../../examples/00-gain/gain_getting_started.cfg}
 
 \newpage 
 In this guide we will use the example files from the openMHA installer.
@@ -401,7 +431,7 @@ The current working directory of the openMHA should be the copy of the 00-gain e
 In order to read in the configuration file \textbf{gain.cfg} (which lies directly in \textit{00-gain}), type: \\
 
 %$\rightarrow${\ttfamily ?read:\textbackslash Users\textbackslash YourUserName\textbackslash Documents\textbackslash examples\textbackslash 00-gain\textbackslash gain.cfg}
-$\rightarrow${\ttfamily ?read:gain.cfg}
+$\rightarrow${\ttfamily ?read:gain\_getting\_started.cfg}
 
 
 %with the corresponding file directory of gain.cfg. 
@@ -438,28 +468,11 @@ the operating system for real-time performance, or use a
 different sound card or operating system.
 \\
 
-\textbf{gain\_live.cfg:}
+\textbf{gain\_live\_getting\_started.cfg:} \\
 
-\begin{Verbatim}[frame=single,numbers=left,commandchars=\\\{\}]
-#The number of channels we want to process
-\textcolor{orange}{\textbf{nchannels_in = 2}}
-#Number of frames to be processed in each block.
-\textcolor{orange}{\textbf{fragsize = 64}}
-#Sampling rate. Has to be the same as the input signal of JACK
-\textcolor{orange}{\textbf{srate = 44100}}
-#Again, we want to use the plugin "mhachain"
-\textcolor{orange}{\textbf{mhalib = mhachain}}
-Here we will only use one plugin "gain"
-\textcolor{orange}{\textbf{mha.algos=[ gain ]}}
-#Set max and min gain factors in dB
-\textcolor{orange}{\textbf{mha.gain.min=-20}}
-\textcolor{orange}{\textbf{mha.gain.max=20}}
-#two gain factors (left and right)
-\textcolor{orange}{\textbf{mha.gain.gains=[ -10 10 ]}}
-#In this example, we load the IO library that connects
-#the MHA to the Jack audio server.
-\textcolor{orange}{\textbf{iolib = MHAIOJackdb}}
-\end{Verbatim} 
+\lstinputlisting{../../../examples/00-gain/gain_live_getting_started.cfg}
+
+
 
 In order to set up and connect a JACK server you can follow the steps below:
 
@@ -515,7 +528,7 @@ To do this, start openMHA in the same directory as before:
     \item \textbf{Navigate inside the examples folder into the subdirectory of the first example $\rightarrow$ \textbf{00-gain}} \\ 
     \item Type {{\ttfamily mha \texttt{-{}-}interactive}} and press \textbf{Enter}
  
-    \item $\rightarrow$ {\ttfamily ?read:gain\_live.cfg}
+    \item $\rightarrow$ {\ttfamily ?read:gain\_live\_getting\_started.cfg}
     \item $\rightarrow$ {\ttfamily cmd=start}
 
 \mha{} is now applying a gain to your own voice input. In order to close openMHA type:

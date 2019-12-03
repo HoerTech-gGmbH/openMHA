@@ -1,0 +1,17 @@
+The configuration files in this directory, generic-hearing-aid,
+combines plugins for calibration, adaptive differential microphones,
+STFT processing, coherence filtering, a filterbank, dynamic compression,
+and a pitch shifter. In combination this constitutes a generic hearing aid,
+similar to example 4 but optimized for usage on weak hardware.
+Some example settings for the dynamic compressor are also provided.
+
+openMHAcontrol.flow provides a flow file for a node-red based GUI. 
+The node 'node-red-dashboard' is required for this flow.
+
+The processing is started like this:
+mha ?read:generic-hearing-aid.cfg cmd=start
+
+To use this example in an mahalia beaglebone setup, copy the config file, the 'generic-hearing-aid'
+and 'headphones' directories into /etc/mahalia and copy the flow file to /etc/nodered. 
+
+Usage in other contexts may require you to adapt the paths in the configuration files.

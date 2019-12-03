@@ -21,7 +21,7 @@ function test_runexample01b()
   dir = '../../examples/01-dynamic-compression/';
   cfg = 'dynamiccompression.cfg';
   inwav = '1speaker_diffNoise_2ch.wav'; 
-  outwav = '1speaker_diffNoise_2ch_OUT.wav';
+  outwav = '1speaker_diffNoise_2ch_OUT_b.wav';
   % we only check the expected levels of input and output sound files.
   expected_levels = [-23.138  -21.963  -18.570  -16.902];
 

@@ -351,6 +351,7 @@ namespace MHAParser {
         void validate(const std::vector<int>&);
         void validate(const std::vector<float>&);
         void validate(const std::vector<mha_complex_t>&);
+        void validate(const std::vector<std::vector<int> >&);
         void validate(const std::vector<std::vector<float> >&);
         void validate(const std::vector<std::vector<mha_complex_t> >&);
     protected:
@@ -541,6 +542,18 @@ namespace MHAParser {
     public:
         vcomplex_t(const std::string&,const std::string&,const std::string& ="");
         std::vector<mha_complex_t> data;//!< Data field
+    protected:
+        std::string op_setval(expression_t&);
+        std::string query_type(const std::string&);
+        std::string query_val(const std::string&);
+    };
+
+    /** \brief Matrix variable with int value */
+    class mint_t : public range_var_t
+    {
+    public:
+        mint_t(const std::string&,const std::string&,const std::string& ="");
+        std::vector<std::vector<int> > data;//!< Data field
     protected:
         std::string op_setval(expression_t&);
         std::string query_type(const std::string&);

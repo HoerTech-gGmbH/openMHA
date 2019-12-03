@@ -65,10 +65,8 @@ documentation can be found in `/usr/local/doc/openmha/`.
 
 ## III. Windows installer
 
-An openMHA installer for 64 bit Windows can be downloaded from our
+An openMHA installer for 64 bit Windows 10 can be downloaded from our
 Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
-
-On Windows, you may want to add the bin directory to the system PATH.
 
 The installer installs openMHA example setups and some tools. We recommend to
 copy the examples folder to a writable location inside your user directory.

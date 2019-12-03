@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2003 2004 2005 2006 2007 2008 2009 2010  HörTech gGmbH
-// Copyright © 2011 2012 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 HörTech gGmbH
+// Copyright © 2011 2012 2013 2014 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@
 #include "mha_plugin.hh"
 #include "mha_windowparser.h"
 #include <valarray>
-
+#include <type_traits>
 /**
     \ingroup mhatoolbox
     \file mha_filter.hh
@@ -34,34 +34,28 @@
 */
 namespace MHAFilter {
 
-    inline void make_friendly_number(mha_real_t& x)
-    {
-        if( (-std::numeric_limits<float>::max() <= x) && (x <= std::numeric_limits<float>::max() ) ){
-            if( (0 < x) && (x < std::numeric_limits<float>::min()) )
+    template<typename T,
+             typename std::enable_if< std::is_floating_point< T >::value,
+                                      T >::type* = nullptr >
+    inline void make_friendly_number(T& x){
+        if( (-std::numeric_limits<T>::max() <= x) && (x <= std::numeric_limits<T>::max() ) ){
+            if( (0 < x) && (x < std::numeric_limits<T>::min()) )
                 x = 0;
-            if( (0 > x) && (x > -std::numeric_limits<float>::min()) )
+            if( (0 > x) && (x > -std::numeric_limits<T>::min()) )
                 x = 0;
             return;
         }
         x = 0;
     }
 
-    inline void make_friendly_number(mha_complex_t& x)
+    template<typename T,
+             typename std::enable_if< std::is_same< T, mha_complex_t >::value,
+                                      T >::type* = nullptr >
+    inline void
+    make_friendly_number(T& x)
     {
         make_friendly_number(x.re);
         make_friendly_number(x.im);
-    }
-
-    inline void make_friendly_number(double& x)
-    {
-        if( (-std::numeric_limits<double>::max() <= x) && (x <= std::numeric_limits<double>::max() ) ){
-            if( (0 < x) && (x < std::numeric_limits<double>::min()) )
-                x = 0;
-            if( (0 > x) && (x > -std::numeric_limits<double>::min()) )
-                x = 0;
-            return;
-        }
-        x = 0;
     }
 
     /** \brief Generic IIR filter class
@@ -760,23 +754,23 @@ namespace MHAFilter {
     /**
        \brief Smooth spectral gains, create a windowed impulse response.
 
-       Spectral gains are smoothed by multiplicating the impulse
+       Spectral gains are smoothed by multiplying the impulse
        response with a window function.
        
        If a minimal phase is used, then the original phase is
-       discarded and replaced by the minimal phase function. In this
+       discarded and replaced by the minimal phase function.  In this
        case, the window is applied to the beginning of the inverse
        Fourier transform of the input spectrum, and the remaining
-       signal set to zero. If the original phase is kept, the window
-       is applied symmetrical arround zero, i.e. to the first and last
+       signal set to zero.  If the original phase is kept, the window
+       is applied symmetrically arround zero, i.e. to the first and last
        samples of the inverse Fourier transform of the input
-       spectrum. The spec2fir() function creates a causal impulse
-       response by circular shifting the impulse response by half of
+       spectrum.  The spec2fir() function creates a causal impulse
+       response by circularly shifting the impulse response by half of
        the window length.
 
        The signal dimensions of the arguments of smoothspec() must
        correspond to the FFT length and number of channels provided in
-       the constructor. The function spec2fir() can fill signal
+       the constructor.  The function spec2fir() can fill signal
        structures with more than window length frames.
     */
     class smoothspec_t {

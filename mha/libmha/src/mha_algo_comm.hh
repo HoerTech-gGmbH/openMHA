@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2005 2013 2016 2017 2018 HörTech gGmbH
+// Copyright © 2004 2005 2013 2016 2017 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -40,6 +40,7 @@ namespace MHAKernel {
         algo_comm_t get_c_handle();
         static int insert_var(void*,const char*,comm_var_t);
         static int insert_var_int(void*,const char*,int*);
+        static int insert_var_vfloat(void* handle,const char* name, std::vector<float>& ivar);
         static int insert_var_float(void*,const char*,float*);
         static int remove_var(void*,const char*);
         static int remove_ref(void*,void*);

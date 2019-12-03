@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -42,7 +42,11 @@ MHAPLUGIN_CALLBACKS(save_spec,save_spec_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION\
 (save_spec,
  "data-flow algorithm-communication",
- "")
+ "This plugin saves the spectral signal to an AC variable."
+ " The name of the variable is the same as the name of the plugin\n"
+ "and can be changed by assigning an alias to the plugin with the"
+ " usual plugin\\_name:alias\\_name syntax.")
+
 
 // Local Variables:
 // compile-command: "make"

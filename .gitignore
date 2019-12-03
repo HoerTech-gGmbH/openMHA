@@ -73,11 +73,14 @@ examples/09-localizer-steering-beamformer/Output/*
 debian/
 
 # debian packages
-
 mha/tools/packaging/deb
+
 #local editor configuration
 .clang_complete
 .dir-locals.el
+GPATH
+GRTAGS
+GTAGS
 
 #Windows packaging artifacts
 *.exe

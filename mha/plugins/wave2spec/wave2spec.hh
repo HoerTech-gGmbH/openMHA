@@ -65,6 +65,9 @@ private:
     MHAParser::int_t nwnd;
     MHAParser::float_t wndpos;
     windowselector_t window_config;
+    /** Switch to disallow window sizes that are not a
+        multiple of the fragsize a by power of two. */
+    MHAParser::bool_t strict_window_ratio;
     MHAParser::bool_t return_wave;
     std::string algo;
 };
