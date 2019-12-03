@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2018 HörTech gGmbH
 #
