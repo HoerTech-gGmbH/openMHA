@@ -110,7 +110,7 @@ sed -i "s/$MAJOR_OLD\\.$MINOR_OLD\\.$POINT_OLD/$VER/g" version
 
 git commit -a -m"Increase version number to $VER"
 git clean -fdx . 2>/dev/null 1>/dev/null;
-echo "Testing regeneratiion of documentation..."
+echo "Testing regeneration of documentation..."
 ./configure 1>/dev/null && make -j5 doc 1>/dev/null 2>/dev/null
 printf "Documentation generated correctly? [yes/no]"
 ask_yes_no;
