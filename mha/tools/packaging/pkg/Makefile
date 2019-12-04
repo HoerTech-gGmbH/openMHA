@@ -11,7 +11,8 @@ PACKAGE_VERSION=4.11.0
 TITLE=openMHA
 REVERSE_DOMAIN=org.openmha
 
-all: build pkg
+all: pkg
+pkg: build
 
 #Targets to execute before packing
 PAYLOAD= \
