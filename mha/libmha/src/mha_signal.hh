@@ -144,6 +144,15 @@ namespace MHASignal {
                                unsigned   fftlen,
                                mha_real_t srate)
     {
+        if (bin < 0) {
+            throw MHA_Error(__FILE__,__LINE__,
+                            "frequency for negative bin %f requested", bin);
+        }
+        if (bin*2 > fftlen) {
+            throw MHA_Error(__FILE__,__LINE__,
+                            "frequency for trans-nyquist bin %f "
+                            "(fftlen=%u) requested", bin, fftlen);
+        }
         return bin / fftlen * srate;
     }
 
@@ -159,6 +168,16 @@ namespace MHASignal {
                                 unsigned   fftlen,
                                 mha_real_t srate)
     {
+        if (freq < 0) {
+            throw MHA_Error(__FILE__,__LINE__,
+                            "bin index for negative frequency %f requested",
+                            freq);
+        }
+        if (freq > srate / 2) {
+            throw MHA_Error(__FILE__,__LINE__,
+                            "bin index for trans-nyquist frequency %f "
+                            "(samplint rate=%f) requested", freq, srate);
+        }
         return freq * fftlen / srate;
     }
     

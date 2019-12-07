@@ -609,6 +609,24 @@ TEST(blockprocessing_polyphase_resampling_t, test_48k_16k_64_20_roundtrip)
   ASSERT_NEAR(0.0f, zero, 0.017);
 }
 
+TEST(mha_signal_helper_functions, freq2bin) {
+  EXPECT_EQ(0.0f, MHASignal::freq2bin(0, 256, 44100));
+  EXPECT_EQ(128.0f, MHASignal::freq2bin(22050, 256, 44100));
+  // asking for FFT bin for frequencies > nyquist is probably an error
+  EXPECT_THROW(MHASignal::freq2bin(22050.01f, 256, 44100), MHA_Error);
+  // same for negative frequencies
+  EXPECT_THROW(MHASignal::freq2bin(-0.000001f, 256, 44100), MHA_Error);
+}
+
+TEST(mha_signal_helper_functions, bin2freq) {
+  EXPECT_EQ(0.0f, MHASignal::bin2freq(0, 256, 44100));
+  EXPECT_EQ(22050.0f, MHASignal::bin2freq(128, 256, 44100));
+  // asking about FFT bins > fftlen/2 is probably an error
+  EXPECT_THROW(MHASignal::bin2freq(128.0001, 256, 44100), MHA_Error);
+  // same for negative bin indices
+  EXPECT_THROW(MHASignal::bin2freq(-0.000001f, 256, 44100), MHA_Error);
+}
+
 // Local Variables:
 // compile-command: "make -C .. unit-tests"
 // coding: utf-8-unix
