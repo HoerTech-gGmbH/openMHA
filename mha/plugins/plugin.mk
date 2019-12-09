@@ -89,16 +89,6 @@ dummy_lsl:
 endif
 endif
 
-ifeq "$(NEEDS_EIGEN)" "yes"
-ifneq "$(WITH_EIGEN)" "yes"
-# this plugin needs eigen3.
-# Do not compile if eigen3 not available.
-# instead, execute this dummy rule. as default target
-dummy_eigen:
-	@echo "not compiling" $(PLUGINS) "since eigen3 is not available"
-endif
-endif
-
 ifeq "$(NEEDS_OSC)" "yes"
 ifneq "$(WITH_OSC)" "yes"
 # this plugin needs osc.

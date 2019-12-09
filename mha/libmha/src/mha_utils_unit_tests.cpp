@@ -12,10 +12,10 @@
 //
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
-#include "mha.hh"
+
 #include "mha_utils.hh"
 #include <gtest/gtest.h>
-#include <cmath>
+
 using MHAUtils::is_multiple_of;
 
 TEST(is_multiple_of, int_zero_and_int_max){

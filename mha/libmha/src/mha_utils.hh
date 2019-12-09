@@ -20,8 +20,6 @@
 #include <string>
 #include <algorithm>
 #include <vector>
-#include <cmath>
-#include <complex>
 namespace MHAUtils {
   inline bool is_multiple_of(const unsigned big, const unsigned small) {
     if(small==0)
@@ -51,28 +49,6 @@ namespace MHAUtils {
     std::string::iterator end_pos = std::remove(str.begin(), str.end(), c);
     str.erase(end_pos, str.end());
     return str;
-  }
-
-  inline bool is_denormal(mha_real_t x)
-  {
-    if( (-std::numeric_limits<float>::max() <= x) && (x <= std::numeric_limits<float>::max() ) ){
-      if( (0 < x) && (x < std::numeric_limits<float>::min()) )
-        return true;
-      if( (0 > x) && (x > -std::numeric_limits<float>::min()) )
-        return true;
-      return false;
-    }
-    return true;
-  }
-
-  inline bool is_denormal(const mha_complex_t& x)
-  {
-    return is_denormal(x.re) || is_denormal(x.im);
-  }
-
-  inline bool is_denormal(const std::complex<float>& x)
-  {
-    return is_denormal(std::real(x)) || is_denormal(std::imag(x));
   }
 
   /// Get the offset of between dB(SPL) and dB(HL) for a given frequency

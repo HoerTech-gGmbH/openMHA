@@ -47,17 +47,11 @@ chklib(){
             --with-lsl)
                 WITH_LSL=yes
                 ;;
-            --with-eigen)
-                WITH_EIGEN=yes
-                ;;
             --with-jack=*)
                 WITH_JACK=`echo $arg | sed 's/--with-jack=//'`
                 ;;
             --with-lsl=*)
                 WITH_LSL=`echo $arg | sed 's/--with-lsl=//'`
-                ;;
-            --with-eigen=*)
-                WITH_EIGEN=`echo $arg | sed 's/--with-eigen=//'`
                 ;;
             --with-osc=*)
                 WITH_OSC=`echo $arg | sed 's/--with-osc=//'`
@@ -158,16 +152,6 @@ chklib(){
     else
         chkhdr lo/lo.h && chklib lo && (echo "WITH_OSC=yes");
     fi
-
-    if [ "x$WITH_EIGEN" = "xyes" ]; then
-        echo "WITH_EIGEN=yes";
-    elif [ "x$WITH_EIGEN" = "xno" ]; then
-        echo "WITH_EIGEN=no";
-    else
-        chkhdr eigen3/Eigen/Eigen && (echo "WITH_EIGEN=yes");
-    fi
-
-
 
     if [ "x$CXXSTANDARD" = "x" ]; then
         case "$GCC_VER"x in
