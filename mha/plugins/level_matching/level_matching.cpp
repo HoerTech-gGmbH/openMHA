@@ -226,14 +226,14 @@ MHAPLUGIN_PROC_CALLBACK(level_matching,level_matching::level_matching_t,spec,spe
  */
 MHAPLUGIN_DOCUMENTATION(level_matching_t,"level",
                         "This plugin implements automatic pairwaise matching of input levels. This algorithm can be used to"
-                        " e.g. compensate for microphone gain drift.\n"
+                        " e.g.\\ compensate for microphone gain drift.\n"
                         " Microphone gain matching relies on the assumption that the input signal on"
                         " both microphones has the same level. This assumption breaks"
                         " down if the mic distance is small compared to the sound wavelength."
                         " To exclude high frequencies from the gain matching, if used in the time domain the signal"
                         " is filtered by a lowpass filter before the mismatch is calculated."
                         " In the spectral domain the user is responsible for the restriction of the matching to sensible"
-                        " frequencies, e.g. by usage of a fft filterbank and careful selection of"
+                        " frequencies, e.g.\\ by usage of a fft filterbank and careful selection of"
                         " channels for the matching algorithm.\n"
                         " As gain drift usually happens on a time scale large compared to the block size the mismatch"
                         " is also lowpass filtered.\n"
