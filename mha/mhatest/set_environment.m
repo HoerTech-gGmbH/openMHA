@@ -24,6 +24,7 @@ build_dir_line_index = strmatch('BUILD_DIR',config_mk_lines);
 build_dir_assignment = strsplit(config_mk_lines{build_dir_line_index(end)},'=');
 build_dir = strtrim(build_dir_assignment{2});
 
+global plugins;
 plugins = find_all_plugins(git_dir, build_dir);
 
 global MHA_INSTALL_DIR;

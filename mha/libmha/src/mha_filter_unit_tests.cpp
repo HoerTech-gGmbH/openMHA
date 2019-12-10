@@ -107,3 +107,12 @@ TEST(make_friendly_number, complex_types){
   EXPECT_EQ(0,x.im);
   
 }
+
+TEST(fir_lp,ctor){
+  std::vector<float> expected={0.000708189, 0.00206211, 0.0034785, 0.00263068, -0.00392844, -0.0163139, -0.0270606, -0.0220697, 0.0115061, 0.0746584, 0.151125, 0.21276, 0.233843, 0.205538, 0.140899, 0.0670368, 0.00991681, -0.0181695, -0.0211416, -0.0120001, -0.00270404, 0.00171053, 0.00229722, 0};
+  auto actual=MHAFilter::fir_lp(4000, 6000 , 48000 , 24);
+  EXPECT_EQ(expected.size(),actual.size());
+  for(unsigned i=0U; i<actual.size();i++){
+    EXPECT_NEAR(expected[i],actual[i],1e-2);
+  }
+}

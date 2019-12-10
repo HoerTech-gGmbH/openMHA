@@ -350,7 +350,22 @@ namespace MHAFilter {
         \param fs     sample frequency
     */
     void butter_stop_ord1(double* A,double* B,double f1,double f2,double fs);
-  
+
+    /**
+
+        \brief Setup a nth order fir low pass filter.
+
+        This function calculates the filter coefficients of a nth order
+        fir low pass filter filter. Frequency arguments above the nyquist frequency
+        are accepted but the spectral response is truncated at the nyquist frequency
+        \returns      vector containing filter coefficients
+        \pre f_pass_ must be smaller or equal to f_stop_.
+        \param f_pass_     Upper passband frequency
+        \param f_stop-     Lower stopband frequency
+        \param fs_     sample frequency
+    */
+    std::vector<float> fir_lp(float f_pass_, float f_stop_, float fs_, unsigned order_);
+
     class adapt_filter_state_t {
     public:
         adapt_filter_state_t(int ntaps,int nchannels);

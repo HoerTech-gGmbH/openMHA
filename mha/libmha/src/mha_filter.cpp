@@ -20,7 +20,7 @@
 #include <limits>
 #include <valarray>
 #include <algorithm>
-
+#include <memory>
 using namespace MHAFilter;
 
 MHAFilter::filter_t::filter_t(unsigned int ch,
@@ -209,6 +209,30 @@ void MHAFilter::butter_stop_ord1(double* A,double* B,double f1,double f2,double 
     B[0] = d;
     B[1] = -(tmp_a + tmp_d) + (d-1.0)*A[1];
     B[2] = tmp_a*tmp_d - tmp_b*tmp_c + (d-1)*A[2];
+}
+
+std::vector<float> MHAFilter::fir_lp(float f_pass_, float f_stop_, float fs_,
+                                     unsigned order_) {
+  MHASignal::spectrum_t f(fs_ / 2 + 1, 1);
+  unsigned int k;
+  MHA_assert(f_stop_>=f_pass_);
+  MHA_assert(f_stop_<=fs_/2);
+  // pass band:
+  for (k = 0; k < f_pass_ && k<f.num_frames; k++) {
+    f[k] = mha_complex(1, 0);
+  }
+  // Hann ramp:
+  for (k = f_pass_; k < f_stop_ && k<f.num_frames; k++) {
+      f[k] = mha_complex(MHAWindow::hanning(0.5*(k - f_pass_) / (f_stop_ - f_pass_)),0);
+  }
+  // stop band:
+  for (k = f_stop_; k < f.num_frames; k++) {
+    f[k] = mha_complex(0, 0);
+  }
+  auto coeffs = std::unique_ptr<MHASignal::waveform_t>(MHAFilter::spec2fir(
+      &f, fs_, MHAWindow::fun_t(order_, MHAWindow::hamming, -1, 1, true, true),
+      false));
+  return coeffs->flatten();
 }
 
 MHAFilter::adapt_filter_t::adapt_filter_t(std::string help)

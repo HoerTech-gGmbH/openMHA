@@ -110,12 +110,22 @@ endif
 endif
 
 ifeq "$(NEEDS_CXX14)" "yes"
-ifeq "$(CXXSTANDARD)" "c++11"
+ifeq ($(CXXSTANDARD),$(findstring $(CXXSTANDARD),"gnu++98c++98gnu++03c++03gnu++0xc++0xgnu++11c++11"))
 # this plugin needs at least c++14.
 # Do not compile if c++14 not available.
 # instead, execute this dummy rule. as default target
 dummy_cxx14:
 	@echo "not compiling" $(PLUGINS) "since c++14 standard not available"
+endif
+endif
+
+ifeq "$(NEEDS_CXX17)" "yes"
+ifeq ($(CXXSTANDARD),$(findstring $(CXXSTANDARD),"gnu++98c++98gnu++03c++03gnu++0xc++0xgnu++11c++11gnu++1yc++1ygnu++14c++14"))
+# this plugin needs at least c++17.
+# Do not compile if c++17 not available.
+# instead, execute this dummy rule. as default target
+dummy_cxx17:
+	@echo "not compiling" $(PLUGINS) "since c++17 standard not available"
 endif
 endif
 
