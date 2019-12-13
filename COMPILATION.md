@@ -141,18 +141,29 @@ loaded.
 ### Prerequisites
 
 - msys2 installation with MinGW64 C++ compiler
+Get the installer directly from the msys2 homepage https://www.msys2.org/ (use msys2-x86_64.exe for Windows 64-bit)
 - Jack Audio Connection Kit (Use the 64-bit installer for windows) (http://jackaudio.org)
 
 ### Preparation
-
-- With the msys2 package manager pacman, install the following packages:
-mingw-w64-x86_64-libsndfile, mingw-w64-x86_64-portaudio, and git.
-- Copy the contents of the includes folder in the JACK directory into your mingw
+-Execute installer
+-Update base package using:
+pacman -Syu
+-close terminal when prompted
+-restart msys2 terminal from start menu and type:
+pacman -Su
+-Install git, g++, make for mingw64 using command:
+pacman -S msys/git mingw64/mingw-w64-x86_64-gcc msys/make tar mingw64/mingw-w64-x86_64-boost openbsd-netcat
+-Install openmha dependencies using command:
+pacman -S mingw-w64-x86_64-libsndfile mingw-w64-x86_64-portaudio mingw64/mingw-w64-x86_64-nsis
+- With the msys2 package manager pacman, install the following packages (using command "pacman -S"):
+mingw-w64-x86_64-libsndfile, mingw-w64-x86_64-portaudio, mingw-w64-x86_64-eigen3 and git.
+- Copy the contents of the includes folder in the JACK directory (c:\Progam Files(x86)\Jack\includes) into your mingw
 include directory (default is c:\msys64\mingw64\include).  There should now be a
 directory c:\msys64\mingw64\include\jack containing some files.
-- Copy libjack64.lib from the JACK installation to the lib directory of your mingw64
+- Copy libjack64.lib from the JACK installation (c:\Progam Files(x86)\Jack\lib) to the lib directory of your mingw64
 directory and rename it to libjack.a afterwards.  Windows may warn that the
 file may become unusable -- ignore this warning.
+NOTE: Above-mentioned Jack folder (c:\Program Files(x86)\Jack) is different from another folder jack1 (c:\jack1) which is created during installation of Jack Audio Kit.
 
 ### Compilation
 
