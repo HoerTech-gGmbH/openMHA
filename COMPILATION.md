@@ -23,11 +23,16 @@ or a Beaglebone Black running Debian Stretch.
   - GNU Octave with the signal package and default-jre
   - liblo-dev
   - liblsl
+  - libeigen3-dev
 
 Octave and default-jre are not essential for building or running openMHA.
 The build process uses Octave + Java to run some tests after
 building openMHA.  If Octave is not available, this test will fail,
 but the produced openMHA will still work.
+
+The optional libraries are needed to compile the openMHA plugins
+ac2lsl, ac2osc, osc2ac, and rohBeam.  When these libraries are not available,
+then openMHA will be compiled without these plugins.
 
 ### Compilation
 
@@ -89,9 +94,14 @@ The following packages should be installed via MacPorts:
   - octave-signal
   - liblo
   - liblsl
+  - eigen3
 
 The optional GUI (cf. openMHA_gui_manual.pdf) requires Java-enabled
 Octave in version >= 4.2.1.
+
+The optional libraries are needed to compile the openMHA plugins
+ac2lsl, ac2osc, osc2ac, and rohBeam.  When these libraries are not available,
+then openMHA will be compiled without these plugins.
 
 ### Compilation
 
@@ -146,7 +156,8 @@ loaded.
 ### Preparation
 
 - With the msys2 package manager pacman, install the following packages:
-mingw-w64-x86_64-libsndfile, mingw-w64-x86_64-portaudio, and git.
+mingw-w64-x86_64-libsndfile, mingw-w64-x86_64-portaudio, mingw-w64-x86_64-eigen3,
+and git.
 - Copy the contents of the includes folder in the JACK directory into your mingw
 include directory (default is c:\msys64\mingw64\include).  There should now be a
 directory c:\msys64\mingw64\include\jack containing some files.

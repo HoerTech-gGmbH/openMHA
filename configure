@@ -16,10 +16,10 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 chkhdr(){
-    echo "#include <$1> "| g++ -x c++ - -c -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+    echo "#include <$1> "| g++ -x c++ - -c $MACCXXFLAGS -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 chklib(){
-    echo "int main(){return 0;}"| g++ -x c++ - -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+    echo "int main(){return 0;}"| g++ -x c++ - $MACLDFLAGS -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 (
     PREFIX="./"
@@ -47,11 +47,17 @@ chklib(){
             --with-lsl)
                 WITH_LSL=yes
                 ;;
+            --with-eigen)
+                WITH_EIGEN=yes
+                ;;
             --with-jack=*)
                 WITH_JACK=`echo $arg | sed 's/--with-jack=//'`
                 ;;
             --with-lsl=*)
                 WITH_LSL=`echo $arg | sed 's/--with-lsl=//'`
+                ;;
+            --with-eigen=*)
+                WITH_EIGEN=`echo $arg | sed 's/--with-eigen=//'`
                 ;;
             --with-osc=*)
                 WITH_OSC=`echo $arg | sed 's/--with-osc=//'`
@@ -113,6 +119,7 @@ chklib(){
             echo WITH_JACK=yes
             echo LDLIBS+='-L/opt/local/lib'
             MACCXXFLAGS+=-I/opt/local/include
+            MACLDFLAGS+=-L/opt/local/include
     esac
     echo ARCH=$ARCH
     echo PREFIX=$PREFIX
@@ -151,6 +158,14 @@ chklib(){
         echo "WITH_OSC=no";
     else
         chkhdr lo/lo.h && chklib lo && (echo "WITH_OSC=yes");
+    fi
+
+    if [ "x$WITH_EIGEN" = "xyes" ]; then
+        echo "WITH_EIGEN=yes";
+    elif [ "x$WITH_EIGEN" = "xno" ]; then
+        echo "WITH_EIGEN=no";
+    else
+        chkhdr eigen3/Eigen/Eigen && (echo "WITH_EIGEN=yes");
     fi
 
     if [ "x$CXXSTANDARD" = "x" ]; then
