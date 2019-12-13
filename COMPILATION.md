@@ -145,15 +145,15 @@ Get the installer directly from the msys2 homepage https://www.msys2.org/ (use m
 - Jack Audio Connection Kit (Use the 64-bit installer for windows) (http://jackaudio.org)
 
 ### Preparation
--Execute installer
--Update base package using:
+- Execute installer
+- Update base package using:
 pacman -Syu
--close terminal when prompted
--restart msys2 terminal from start menu and type:
+- close terminal when prompted
+- restart msys2 terminal from start menu and type:
 pacman -Su
--Install git, g++, make for mingw64 using command:
+- Install git, g++, make for mingw64 using command:
 pacman -S msys/git mingw64/mingw-w64-x86_64-gcc msys/make tar mingw64/mingw-w64-x86_64-boost openbsd-netcat
--Install openmha dependencies using command:
+- Install openmha dependencies using command:
 pacman -S mingw-w64-x86_64-libsndfile mingw-w64-x86_64-portaudio mingw64/mingw-w64-x86_64-nsis
 - With the msys2 package manager pacman, install the following packages (using command "pacman -S"):
 mingw-w64-x86_64-libsndfile, mingw-w64-x86_64-portaudio, mingw-w64-x86_64-eigen3 and git.
