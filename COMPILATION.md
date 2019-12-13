@@ -140,8 +140,7 @@ loaded.
 
 ### Prerequisites
 
-- msys2 installation with MinGW64 C++ compiler
-Get the installer directly from the msys2 homepage https://www.msys2.org/ (use msys2-x86_64.exe for Windows 64-bit)
+- msys2 installation with MinGW64 C++ compiler : Get the installer directly from the msys2 homepage https://www.msys2.org/ (use msys2-x86_64.exe for Windows 64-bit)
 - Jack Audio Connection Kit (Use the 64-bit installer for windows) (http://jackaudio.org)
 
 ### Preparation
