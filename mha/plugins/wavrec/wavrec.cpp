@@ -204,7 +204,14 @@ MHAPLUGIN_CALLBACKS(wavrec,wavrec_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (wavrec,
  "data-export disk-files",
- "")
+ "Wave file recorder plugin. This plugin writes the current audio signal to a wave file in a thread-safe manner."
+ " A new wave file is opened every time the record variable is set to yes. The file is"
+ " closed on any of \"cmd=release\", \"cmd=quit\" or \"record=no\". Note that \"cmd=stop\" does not"
+ " close the wave file. After the the close command is given, it can take an unspecified, but usually small amount"
+ " amount of time until the file is actually closed and ready for further processing. \n"
+ " The name (and path) of the output file is chosen by the prefix configuration variable. By default the current"
+ " date and time are appended to the file name, this behaviour can be controlled by the \"use\\_date\" variable.\n"
+ "The \"fifolen\" and \"minwrite\" variables control the behaviour of the fifo buffer and should usually remain unchanged.")
 
 /*
  * Local Variables:
