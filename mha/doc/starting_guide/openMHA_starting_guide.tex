@@ -694,31 +694,60 @@ into the \textbf{Command Window} \\
 \item In order to start openMHA type {\ttfamily openmha = mha\_start;} 
 \item Read in configuration into mha by \\ {\ttfamily mha\_query(openmha,\textquotesingle{}\textquotesingle{},\textquotesingle{}read:dynamiccompression\_live.cfg\textquotesingle{});}
 \item \textbf{Start JACK Server} using \textbf{JACK Control}\\ (Setting: Sample Rate = 44100, Frames/Period = 64)
+
 \item In order to start the mha process type {\ttfamily mha\_set(openmha,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{});}
-\item In order to read out the current gaintable and relevant paramters type the following: \\
+
+
+\item The current gaintable {\ttfamily gtdata} and relevant parameters such as {\ttfamily gtmin} and {\ttfamily gtstep} (more information on these can be found under {\url{%
+          {http://www.openmha.org/docs/openMHA_plugins.pdf#subsection.2.1}}}
+\large) can be read out by: \\
+
 {\ttfamily gaintable = mha\_get(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtdata\textquotesingle{});}\\
 {\ttfamily gtmin = mha\_get(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtmin\textquotesingle{});}\\
 {\ttfamily gtstep = mha\_get(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtstep\textquotesingle{});}
+
+
+
+The variables {\ttfamily gtmin} (minimum input level) and {\ttfamily gtstep} (input level increment) expect vectors, but we have assigned scalar values to {\ttfamily gtmin} and {\ttfamily gtstep} previously. Scalar values will be interpreted as vectors of length 1 by the MHA when assigned to vector variables. The dc plugin allows vectors of length 1 for variables {\ttfamily gtmin} and {\ttfamily gtstep}, in this case the same value applies to every channel/band. It is also possible to have different {\ttfamily gtmin}/{\ttfamily gtstep} values for each channel/band by assigning a vector of values to these variables where the number of elements in the vector is equal to the number of channels/bands.
+
+\item You can design your own gaintable in Matlab, e.g. noise gate, compressive region, output limit \\
+  {\ttfamily gaintable = repmat([-50,30:-2:0,-4:-4:-32],18,1);} \\
+  with \\
+  {\ttfamily gtmin = zeros(1,size(gaintable,1));} \\
+  and \\
+  {\ttfamily gtstep = 4*ones(1,size(gaintable,1));} 
+  
+
+This would result in an input/output characteristic which is the same for every channel/band.
+
 \item Plot the I/O characteristics \\
-{\ttfamily level\_in = ((1:size(gaintable,2))-1) * gtstep + gtmin;}\\
+{\ttfamily level\_in = ((1:size(gaintable,2))-1) .* gtstep\textquotesingle{}+gtmin\textquotesingle{};}\\
 {\ttfamily level\_out = level\_in + gaintable;}
-\item In order to plot input and output level, type {\ttfamily figure, plot(level\_in,level\_out)}
-\item You can design your own gaintable in Matlab by using 
+
+\item In order to apply the gaintable type \\
+{\ttfamily mha\_set(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtdata\textquotesingle{},gaintable);}
+\item In order to plot input and output level in Matlab, type \\ {\ttfamily figure, plot(level\_in\textquotesingle{},level\_out\textquotesingle{})}
+
+\textcolor{orange}{Note: You can also use the mfile tool \textbf{dc\_plot\_io.m}}. For this type: 
+
+{\ttfamily figure, dc\_plot\_io(gtmin, gtstep,gaintable, level\_in);}
+
+
+\item You can design more gaintables in Matlab, e.g. by using 
   {\ttfamily gaintable\_new = [...]}
   \begin{itemize}
   \item e.g. Squash all input levels to the same output level, infinite compression:
     \\ \texttt{gaintable\_new = 65.*ones(18,1) - level\_in;}
-  \item e.g. noise gate, compressive region, output limit: \\
-    \texttt{gaintable\_new =repmat([-50,30:-2:0,-4:-4:-32],18,1);}
   \item e.g. compress high frequency band only: ...
   \end{itemize}
 \item In order to apply the new gaintable type \\
 {\ttfamily mha\_set(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtdata\textquotesingle{},gaintable\_new);}
+\item The fitting GUI can be started by typing {\ttfamily mhacontrol(openmha)}
 \item You can stop openMHA using {\ttfamily mha\_set(openmha,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}quit\textquotesingle{})}
-\item More complex gaintable example would be \\
-{\ttfamily openmha = mha\_start([],\{\},\{\textquotesingle{}?read:dynamiccompression\_live.cfg\textquotesingle{}\})}\\
-{\ttfamily mha\_set(openmha,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{})}
-\item Start fitting GUI by typing {\ttfamily mhacontrol(openmha)}
+%\item More complex gaintable example would be \\
+%{\ttfamily openmha = mha\_start([],\{\},\{\textquotesingle{}?read:dynamiccompression\_live.cfg\textquotesingle{}\})}\\
+%{\ttfamily mha\_set(openmha,\textquotesingle{}cmd\textquotesingle{},\textquotesingle{}start\textquotesingle{})}
+
 
 
 
@@ -814,10 +843,14 @@ Within the configuration file this is denoted by: \\
 \caption{Matlab: Coherence plotted as a function of frequency}
 \end{figure}
 
-The purpose of this example is to show that the plugin ac\_proc can be used to apply common signal processing operationd such as a gain to an originally non-audio signal such as an AC variable data stream.
-
-
+The purpose of this example is to show that the plugin ac\_proc can be used to apply common signal processing operations such as a gain to an originally non-audio signal such as an AC variable data stream.
 \end{enumerate}
+
+
+
+
+
+
 \end{document}
 
 %%% Local Variables: 

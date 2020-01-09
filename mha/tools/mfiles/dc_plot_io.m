@@ -2,7 +2,7 @@ function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
 % function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
 %
 % gtmin, gtstep, gtdata - configuration variable values for the dc plugin
-% input_levels          - 1xn row vector with test input levels in dB SPL
+% input_levels          - mxn input matrix with test input levels in dB SPL
 % output_levels         - mxn matrix of produced output levels for each of the
 %                         n input levels and each of the m bands/channels
 %
@@ -49,7 +49,7 @@ function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
   dsc.mha.dc.tau_decay = zeros(1,channels);
 
   % make sure we can get input and output levels in and out of mha
-  max_level = max(input_levels) + max(max(gtdata)) + 6;
+  max_level = max(max(input_levels)) + max(max(gtdata)) + 6;
   dsc.mha.calib_in.peaklevel = ones(1,channels) * max_level;
   dsc.mha.calib_out.peaklevel = ones(1,channels) * max_level;
 
@@ -60,13 +60,18 @@ function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
   output_levels = zeros(channels, 0);
     
   amplitudes = 10.^((input_levels-max_level)/20);
+  % Check if input is vector or matrix
+  if size(amplitudes,1) == 1
   mha_set(mha, 'io.input', repmat(amplitudes,channels,1));
+  else
+  mha_set(mha, 'io.input', amplitudes);
+  end
   outamps = mha_get(mha, 'io.output');
   output_levels = log10(outamps) * 20 + max_level;
 
   mha_set(mha,'cmd','quit');
 
-  plot(input_levels, output_levels);
+  plot(input_levels', output_levels');
   xlabel('input level / dB');
   ylabel('output level / dB');
 end
