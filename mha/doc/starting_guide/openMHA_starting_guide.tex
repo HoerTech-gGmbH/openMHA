@@ -254,6 +254,7 @@ A more detailed description can found under: \\
 \url{https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md}
 \end{itemize}
 
+
 \subsection{System-Specific Settings}
 
 \begin{itemize}
@@ -858,6 +859,105 @@ The purpose of this example is to show that the plugin ac\_proc can be used to a
 
 
 
+
+
+\newpage
+
+\section{Writing your own Configuration Script}
+\label{sec:own_config_script}
+
+This section will offer a guide on how to write your own openMHA script. For doing so some basic parameters need to be set. In this example we want to write an example script for using the \textit {sine} plugin. \\
+
+
+
+First it is necessary to fix the following parameters:
+
+\begin{enumerate}
+\item \textbf{Number of input channels} ({\ttfamily nchannels\_in})
+\item \textbf{Fragment size} ({\ttfamily fragsize})
+\item \textbf{Sampling rate in Hz} ({\ttfamily srate}) 
+
+For an input file with two channels and a sampling rate of 44.1 kHz. This could for example look like: \\
+
+\lstinputlisting[firstline=1,lastline=6,numbers=none]{./example_script.cfg}
+
+
+
+\item \textbf{Plugin(s):} Next we need to tell the MHA which plugin(s) to load with the {\ttfamily mhalib} variable. As mentioned in the beginning of the section the sine plugin will be used as an example: \\
+
+\lstinputlisting[firstline=7,lastline=8,numbers=none]{./example_script.cfg}
+
+\item \textbf{Configuration Variables:} Each plugin has \textit{configuration variables} which can be adjusted accordingly. For each plugin the configuration variables are listed in the \textit{plugin manual} 
+\\(\footnotesize{\url{%
+          {http://www.openmha.org/docs/openMHA_plugins.pdf#subsection.16.3}}}
+\normalsize for sine plugin). These variables can be adjusted according to your requirements, such as the frequency of the sine wave ({\ttfamily f}), the RMS level ({\ttfamily lev}) or if the input signal should be added to the sine wave or replaced completely ({\ttfamily mode}). An extract from the \textit{plugin manual} is shown below in Figure \ref{fig:config_variables_sine}. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.22]{config_variables_sine.png}
+\caption{Extract from \textit{Plugin Manual}: Configuration Variables of Sine plugin}
+\label{fig:config_variables_sine}
+\end{figure}
+
+Although the plugin is used by {\ttfamily mhalib = sine}, the variables of the plugin are changed by setting {\ttfamily mha.<variable\_name>~=~value}. This could for example look like:
+
+\lstinputlisting[firstline=9,lastline=17,numbers=none]{./example_script.cfg}
+
+Here the frequency was adjusted to 440 Hz and the RMS level of the sine tone was changed to 100 dB. The operating mode was to set to {\ttfamily mix}, such that the input is mixed with the sine signal (instead of being replaced). The variable {\ttfamily channels} was adjusted to [0]. This means that the sine plugin is only operating on the first channel. In order to operate on both channels {\ttfamily mha.channels~=~[0 1]} can be used.  
+           
+
+\item \textbf{Audio Back-End:} openMHA supports different audio back-ends, such as sound drivers, JACK audio servers, sound files or networks. This can be adjusted by choosing the so called IO plugin library ({\ttfamily iolib}). : \\ \\For static audio files: 
+{e.g. \ttfamily iolib = MHAIOFile}\\
+For live JACK signals: 
+{\ttfamily iolib = MHAIOJack}\\
+In this case we want to work with a static audio file such that we need to choose: \\
+
+\lstinputlisting[firstline=19,lastline=20,numbers=none]{./example_script.cfg}
+
+\item \textbf{Input} ({\ttfamily io.in}) \\ \\For static audio files: 
+{\ttfamily io.in = name\_of\_file.wav}\\
+For live JACK signals: 
+{\ttfamily io.con\_in = [system:capture\_1 system:capture\_2]} \\
+(for two input channels)
+
+\lstinputlisting[firstline=21,lastline=24,numbers=none]{./example_script.cfg}
+
+\textcolor{red}{\textbf{Note: In this case the input file needs to be in the same directory as the .cfg file itself. If this is not the case the absolute or relative (to the .cfg file) path can be used, e.g.}}
+
+\begin{itemize}
+\item {\ttfamily ./../Folder/1speaker\_diffNoise\_2ch.wav} (\textit{relative path})
+\item {\ttfamily /home/UserName/Folder/1speaker\_diffNoise\_2ch.wav} (\textit{absolute path})
+\end{itemize} 
+
+\newpage
+
+\item \textbf{Output} ({\ttfamily io.out}) \\ \\For static audio files: 
+{e.g. \ttfamily io.out = name\_of\_file\_out.wav}\\
+For live JACK signals: 
+{\ttfamily io.con\_out = [system:playback\_1 system:playback\_2]}\\
+(for two output channels)
+
+\lstinputlisting[firstline=25,lastline=26,numbers=none]{./example_script.cfg}
+
+\end{enumerate}
+
+\textit{How to run your script:}
+
+\begin{enumerate}
+\item Start openMHA in the \textbf{same directory} as your .cfg file
+\item $\rightarrow${\ttfamily ?read:your\_script.cfg}
+
+
+%with the corresponding file directory of gain.cfg. 
+\item Start the openMHA signal processing by:
+
+$\rightarrow$ {\ttfamily cmd=start}
+
+\item In order to exit openMHA type:
+
+$\rightarrow$ {\ttfamily cmd=quit} 
+\\
+\end{enumerate}
 
 \end{document}
 

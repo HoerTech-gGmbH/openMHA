@@ -7,4 +7,5 @@
 *.ilg
 *.toc
 plug_*
+*.wav
 *.gz
