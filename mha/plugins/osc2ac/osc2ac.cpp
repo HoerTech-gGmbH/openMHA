@@ -1,5 +1,5 @@
 // This file is part of the HörTech Master Hearing Aid (MHA)
-// Copyright © 2012 2013 2014 2015 2018 2019 HörTech gGmbH
+// Copyright © 2012 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -12,12 +12,11 @@
 //
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
-
+#include <algorithm>
+#include <memory>
 #include <stdio.h>
 #include <lo/lo.h>
 #include "mha_plugin.hh"
-
-#define DEBUG(x) std::cerr << __FILE__ << ":" << __LINE__ << " " << #x << "=" << x << std::endl
 
 /** Class for converting messages received at a single osc address to a single
     AC variable. OSC variables are received asynchronously in a network thread
@@ -97,15 +96,13 @@ int osc_variable_t::handler(const char *path, const char *types,
                             lo_arg **argv,int argc, lo_message msg,
                             void *user_data)
 {
-    return ((osc_variable_t*)user_data)->handler(types,argv,argc);
+    return static_cast<osc_variable_t*>(user_data)->handler(types,argv,argc);
 }
 
 int osc_variable_t::handler(const char *types, lo_arg **argv,int argc)
 {
-    //DEBUG(types);
-    //DEBUG(argc);
     bool valid_fmt(false);
-    if ((argc>=0) && (argc == (int)(size(osc_data)))) {
+    if ((argc>=0) && (argc == static_cast<int>(size(osc_data)) ) ) {
         valid_fmt = true;
         for(int k=0;k<argc;k++)
             if( types[k] != 'f' )
@@ -114,7 +111,6 @@ int osc_variable_t::handler(const char *types, lo_arg **argv,int argc)
             for(int k=0;k<argc;k++)
                 osc_data.buf[k] = argv[k]->f;
     }
-    //DEBUG(valid_fmt);
     return valid_fmt;
 }
 
@@ -130,31 +126,30 @@ public:
     void ac_insert();
     static void error_h(int num, const char *msg, const char *path);
 private:
-    std::vector<osc_variable_t*> pVars;
+    std::vector<std::unique_ptr<osc_variable_t>> pVars;
     lo_server_thread lost;
     bool is_running;
 };
 
 void osc_server_t::sync_osc2ac()
 {
-    for(unsigned int k=0;k<pVars.size();k++)
-        pVars[k]->sync_osc2ac();
+    for(auto& pVar : pVars){
+        pVar->sync_osc2ac();
+    }
 }
 
 void osc_server_t::ac_insert()
 {
-    for(unsigned int k=0;k<pVars.size();k++)
-        pVars[k]->ac_insert();
+    for(auto& pVar : pVars){
+        pVar->ac_insert();
+    }
 }
 
 
 void osc_server_t::error_h(int num, const char *msg, const char *path)
 {
-    char cmsg[8192];
-    cmsg[8191] = '\0';
-    snprintf(cmsg,8191,"liblo server error %d in path %s: %s\n", num, path, msg);
-    DEBUG(cmsg);
-};
+    mha_debug("liblo server error %d in path %s: %s\n",num,path,msg);
+}
 
 void osc_server_t::server_stop()
 {
@@ -174,8 +169,8 @@ osc_server_t::osc_server_t(const std::string& multicastgroup, const std::string&
     : is_running(false)
 {
     if( multicastgroup.size() )
-        lost = lo_server_thread_new_multicast( multicastgroup.c_str(), 
-                                               serverport.c_str(), 
+        lost = lo_server_thread_new_multicast( multicastgroup.c_str(),
+                                               serverport.c_str(),
                                                error_h );
     else
         lost = lo_server_thread_new( serverport.c_str(), error_h );
@@ -185,17 +180,13 @@ osc_server_t::osc_server_t(const std::string& multicastgroup, const std::string&
 
 void osc_server_t::insert_variable(const std::string& name, unsigned int size, algo_comm_t hAC)
 {
-    osc_variable_t* v(new osc_variable_t(name, size, hAC, lost));
-    pVars.push_back(v);
+    pVars.push_back(std::make_unique<osc_variable_t>(name, size, hAC, lost));
 }
 
 osc_server_t::~osc_server_t()
 {
     server_stop();
-    for(unsigned int k=0;k<pVars.size();k++)
-        delete pVars[k];
     lo_server_thread_free(lost);
-        
 }
 
 class osc2ac_t : public MHAPlugin::plugin_t<int>
@@ -214,7 +205,7 @@ private:
     MHAParser::vstring_t vars;
     MHAParser::vint_t size;
     MHAEvents::patchbay_t<osc2ac_t> patchbay;
-    osc_server_t* srv;
+    std::unique_ptr<osc_server_t> srv;
 };
 
 void osc2ac_t::setlock(bool b)
@@ -241,7 +232,7 @@ osc2ac_t::osc2ac_t(algo_comm_t iac,const char* chain, const char* algo)
            "Each entry here corresponds to the entry in vars with the same index\n"
            "and determines the length of the float vector that will be allocated\n"
            "to receive the OSC messages with the corresponding address.","[1]","[1,]"),
-      srv(NULL)
+      srv(nullptr)
 {
     insert_member(host);
     insert_member(port);
@@ -253,7 +244,7 @@ void osc2ac_t::prepare(mhaconfig_t& cf)
 {
     setlock(true);
     try{
-        srv = new osc_server_t(host.data,port.data);
+        srv = std::make_unique<osc_server_t>(host.data,port.data);
         while( vars.data.size() > size.data.size() )
             size.data.push_back(1);
         for(unsigned int k=0;k<vars.data.size();k++)
@@ -262,9 +253,7 @@ void osc2ac_t::prepare(mhaconfig_t& cf)
         srv->ac_insert();
     }
     catch(...){
-        if( srv )
-            delete srv;
-        srv = NULL;
+        srv.reset(nullptr);
         setlock(false);
         throw;
     }
@@ -272,8 +261,7 @@ void osc2ac_t::prepare(mhaconfig_t& cf)
 
 void osc2ac_t::release()
 {
-    delete srv;
-    srv = NULL;
+    srv.reset(nullptr);
     setlock(false);
 }
 
