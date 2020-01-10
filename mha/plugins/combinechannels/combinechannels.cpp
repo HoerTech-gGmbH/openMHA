@@ -167,12 +167,15 @@ MHAPLUGIN_PROC_CALLBACK(combinechannels,combc_if_t,spec,spec)
 MHAPLUGIN_DOCUMENTATION\
 (combinechannels,
  "data-flow audio-channels filterbank",
- "Several filter channels can be combined into one or more output"
- " channels by summing the input channels. This plugin is intended as a"
+ "Several filterbank bands can be combined into one or more output"
+ " channels by summing-up the input channels. This plugin is intended as a"
  " filter resynthesis of linear-phase filter banks.\n\nThe input signal"
- " is expected to have a non-interleaved channel order, i.e., first all"
- " bands of first output channel, then all bands of second channel, etc.\n\n"
- )
+ " is by default expected to have a non-interleaved channel order, i.e., first all"
+ " bands of first output channel, then all bands of second channel, etc. This behaviour"
+ " can be controlled by the \"interleaved\" configuration variable.\n"
+ "It is also possible to apply independent channel-wise and element-wise gains from AC variables"
+ " to the signal before summation. This can be done by setting the configuration variables"
+ " \"element\\_gain\\_name\" and \"channel\\_gain\\_name\" variables.")
 
 // Local Variables:
 // compile-command: "make"
