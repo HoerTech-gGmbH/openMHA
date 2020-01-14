@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 HörTech gGmbH
-// Copyright © 2011 2012 2013 2014 2016 2017 2018 2019 HörTech gGmbH
+// Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 2011 HörTech gGmbH
+// Copyright © 2012 2013 2014 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -103,15 +103,15 @@ void MHAFilter::filter_t::filter(mha_wave_t* dest,
 {
     if( dest->num_channels != channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "mismatching number of channels (dest:%d filter:%d)",
+                        "mismatching number of channels (dest:%u filter:%u)",
                         dest->num_channels,channels);
     if( dest->num_channels != src->num_channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "mismatching number of channels (dest:%d src:%d)",
+                        "mismatching number of channels (dest:%u src:%u)",
                         dest->num_channels,src->num_channels);
     if( dest->num_frames != src->num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "mismatching number of frames (dest:%d src:%d)",
+                        "mismatching number of frames (dest:%u src:%u)",
                         dest->num_frames,src->num_frames);
     filter(dest->buf,src->buf,dest->num_frames,dest->num_channels,1,0,dest->num_channels);
 }
@@ -134,7 +134,7 @@ void MHAFilter::filter_t::filter(mha_real_t* dest,
     // validate channel count:
     if( channel_end > channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "channels out of range (dest:%d-%d filter:%d)",
+                        "channels out of range (dest:%u-%u filter:%u)",
                         channel_begin,channel_end,channels);
     unsigned int ch, fr, nfr = dframes, n, idx;
     // direct form II, one delay line for each channel
@@ -301,23 +301,23 @@ void MHAFilter::adapt_filter_state_t::filter(mha_wave_t y,mha_wave_t e,mha_wave_
     unsigned int nframes = x.num_frames;
     if( y.num_frames != nframes )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Target signal y has mismatching length (y:%d input:%d).",
+                        "Target signal y has mismatching length (y:%u input:%u).",
                         y.num_frames,nframes);
     if( d.num_frames != nframes )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Desired signal d has mismatching length (d:%d input:%d).",
+                        "Desired signal d has mismatching length (d:%u input:%u).",
                         d.num_frames,nframes);
     if( (int)(y.num_channels) != nchannels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Target signal y has mismatching channel number (y:%d adapt. filter:%d).",
+                        "Target signal y has mismatching channel number (y:%u adapt. filter:%d).",
                         y.num_channels,nchannels);
     if( (int)(x.num_channels) != nchannels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Input signal x has mismatching channel number (x:%d adapt. filter:%d).",
+                        "Input signal x has mismatching channel number (x:%u adapt. filter:%d).",
                         x.num_channels,nchannels);
     if( (int)(d.num_channels) != nchannels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Desired signal d has mismatching channel number (d:%d adapt. filter:%d).",
+                        "Desired signal d has mismatching channel number (d:%u adapt. filter:%d).",
                         d.num_channels,nchannels);
     unsigned int ch, kf, kh, idx, fidx;
     mha_real_t err;
@@ -542,8 +542,8 @@ MHAFilter::fftfilter_t::fftfilter_t(unsigned int fragsize_,
 {
     if( fftlen < fragsize )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The FFT length (%d) is less than "
-                        "the fragment size (%d).",
+                        "The FFT length (%u) is less than "
+                        "the fragment size (%u).",
                         fftlen, fragsize );
     fft = mha_fft_new(fftlen);
 }
@@ -619,7 +619,7 @@ MHAFilter::o1_ar_filter_t::o1_ar_filter_t(unsigned int channels,mha_real_t fs_,s
 void MHAFilter::o1_ar_filter_t::set_tau_attack(unsigned int ch,mha_real_t tau)
 {
     if( ch >= num_channels )
-        throw MHA_Error(__FILE__,__LINE__,"The filter channel is out of range (got %d, %d channels).",
+        throw MHA_Error(__FILE__,__LINE__,"The filter channel is out of range (got %u, %u channels).",
                         ch,num_channels);
     MHAFilter::o1_lp_coeffs(tau,fs,c1_a[ch],c2_a[ch]);
 }
@@ -627,7 +627,7 @@ void MHAFilter::o1_ar_filter_t::set_tau_attack(unsigned int ch,mha_real_t tau)
 void MHAFilter::o1_ar_filter_t::set_tau_release(unsigned int ch,mha_real_t tau)
 {
     if( ch >= num_channels )
-        throw MHA_Error(__FILE__,__LINE__,"The filter channel is out of range (got %d, %d channels).",
+        throw MHA_Error(__FILE__,__LINE__,"The filter channel is out of range (got %u, %u channels).",
                         ch,num_channels);
     MHAFilter::o1_lp_coeffs(tau,fs,c1_r[ch],c2_r[ch]);
 }
@@ -657,7 +657,7 @@ MHAFilter::smoothspec_t::smoothspec_t(unsigned int fftlen_,
     if( minphase_ )
         minphase = new MHASignal::minphase_t(fftlen,nchannels);
     if( fftlen < window.num_frames )
-        throw MHA_Error(__FILE__,__LINE__,"Invalid window length %d (longer than FFT length %d).",
+        throw MHA_Error(__FILE__,__LINE__,"Invalid window length %u (longer than FFT length %u).",
                         window.num_frames,fftlen);
 }
 
@@ -702,9 +702,11 @@ void MHAFilter::smoothspec_t::spec2fir(const mha_spec_t& spec,mha_wave_t& fir)
 {
     if( fir.num_frames < window.num_frames )
         throw MHA_Error(__FILE__,__LINE__,"Provided FIR variable too short (got"
-                        " %d, expected %d).",fir.num_frames,window.num_frames);
+                        " %u, expected %u).",fir.num_frames,window.num_frames);
     if( fir.num_channels != nchannels )
-        throw MHA_Error(__FILE__,__LINE__,"Mismatching number of channels in FIR variable (got %d, expected %d).",fir.num_channels,nchannels);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Mismatching number of channels in FIR variable (got %u, expected %u).",
+                        fir.num_channels,nchannels);
     internal_fir(spec);
     tmp_wave *= 1.0f/tmp_wave.num_frames;
     unsigned int k, ch;
@@ -754,8 +756,8 @@ MHAFilter::fftfilterbank_t::fftfilterbank_t(unsigned int fragsize_,
 {
     if( fftlen < fragsize )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The FFT length (%d) is less than "
-                        "the fragment size (%d).",
+                        "The FFT length (%u) is less than "
+                        "the fragment size (%u).",
                         fftlen, fragsize );
     fft = mha_fft_new(fftlen);
 }
@@ -1012,7 +1014,9 @@ MHAFilter::resampling_filter_t::resampling_filter_t(unsigned int fftlen, unsigne
 unsigned int MHAFilter::resampling_filter_t::fragsize_validator(unsigned int fftlen, unsigned int irslen)
 {
     if( fftlen < irslen )
-        throw MHA_Error(__FILE__,__LINE__,"The FFT length cannot be less than the filter length (FFT length: %d, Filter length: %d),",fftlen,irslen);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The FFT length cannot be less than the filter length (FFT length: %u, Filter length: %u)",
+                        fftlen,irslen);
     return fftlen-irslen+1;
 }
 

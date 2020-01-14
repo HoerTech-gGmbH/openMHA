@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 2018 2019 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -73,7 +73,7 @@ chklib(){
                 echo '  --arch=<arch>: the target arch'
                 echo '  --with-lsl=[yes|no]: override auto detection of LSL'
                 echo '  --with-osc=[yes|no]: override auto detection of OSC'
-                echo '  --cxxstandard=[c++11|c++14|c++17]: override auto detection of c++ standard'
+                echo '  --cxxstandard=[c++14|c++17]: override auto detection of c++ standard'
                 echo 'all invalid options are silently ignored'
                 exit 0
                 ;;
@@ -114,11 +114,10 @@ chklib(){
             echo PLATFORM=Darwin
             echo DYNAMIC_LIB_EXT=".dylib"
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
-            echo 'CXXFLAGS+=-Wno-error=unused-command-line-argument'
             echo TOOLSET=clang
             echo WITH_JACK=yes
             echo LDLIBS+='-L/opt/local/lib'
-            MACCXXFLAGS+=-I/opt/local/include
+            MACCXXFLAGS+="-I/opt/local/include -Wno-error=unused-command-line-argument"
             MACLDFLAGS+=-L/opt/local/include
     esac
     echo ARCH=$ARCH
@@ -170,9 +169,6 @@ chklib(){
 
     if [ "x$CXXSTANDARD" = "x" ]; then
         case "$GCC_VER"x in
-            -4*)
-                CXXSTANDARD=c++11
-                ;;
             -7*|-8*|-9*)
                 CXXSTANDARD=c++17
                 ;;
@@ -185,10 +181,9 @@ chklib(){
 
 
     case "$GCC_VER"x in
-        -4*)
-            ;;
         -7*|-8*|-9*)
-            echo "CXXFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches";
+            echo "CXXFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches"\
+                 " -Wformat-signedness";
             echo "CFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches";
             ;;
         *)
@@ -213,7 +208,7 @@ chklib(){
     fi
 
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
-    echo 'CXXFLAGS+=-Wall -Wnon-virtual-dtor -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
+    echo 'CXXFLAGS+=-Wall -Wnon-virtual-dtor -Wformat -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     if [[ $(type -P octave) ]] ; then
         echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval"\

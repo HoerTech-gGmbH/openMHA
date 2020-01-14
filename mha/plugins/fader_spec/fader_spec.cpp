@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2008 2009 2010 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2008 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -41,7 +41,7 @@ spec_fader_t::spec_fader_t(unsigned int ch,mha_real_t _fr,
         nch = ng.data.size();
     if( ng.data.size() != nch )
         throw MHA_Error(__FILE__,__LINE__,
-                        "mismatching size of gains vector and channel number (%d gains, %d channels)",
+                        "mismatching size of gains vector and channel number (%zu gains, %u channels)",
                         ng.data.size(),nch);
     gains = new mha_real_t[nch];
     for(unsigned int k=0;k<nch;k++)

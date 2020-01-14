@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2010 2012 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2006 2010 2012 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -139,11 +139,11 @@ route::process_t::process_t(algo_comm_t ac,
 {
     if( r_out.size() != cf_out.channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Expected %d entries in output route variable, got %d.",
+                        "Expected %u entries in output route variable, got %zu.",
                         cf_out.channels,r_out.size());
     if( r_ac.size() != cf_ac.channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Expected %d entries in AC route variable, got %d.",
+                        "Expected %u entries in AC route variable, got %zu.",
                         cf_ac.channels,r_ac.size());
     wout.select_source(r_out,cf_in.channels);
     sout.select_source(r_out,cf_in.channels);

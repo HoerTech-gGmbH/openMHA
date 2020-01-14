@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2009 2013 2016 2017 2018 HörTech gGmbH
+// Copyright © 2009 2013 2016 2017 2018 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -58,7 +58,9 @@ AuditoryProfile::fmap_t AuditoryProfile::parser_t::fmap_t::get_fmap() const
 void AuditoryProfile::parser_t::fmap_t::validate()
 {
     if( value.data.size() != f.data.size() )
-        throw MHA_Error(__FILE__,__LINE__,"Mismatching size of %s (%d) and frequency vector (%d). Please consider setting frequency vector first.",name_.c_str(),value.data.size(),f.data.size());
+        throw MHA_Error(__FILE__,__LINE__,"Mismatching size of %s (%zu) and frequency vector (%zu)."
+                        " Please consider setting frequency vector first.",
+                        name_.c_str(),value.data.size(),f.data.size());
 }
 
 AuditoryProfile::parser_t::ear_t::ear_t()

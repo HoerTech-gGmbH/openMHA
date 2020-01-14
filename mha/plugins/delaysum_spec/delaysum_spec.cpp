@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2010 2013 2014 2015 2016 2017 2018 2019 HörTech gGmbH
+// Copyright © 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -45,12 +46,12 @@ namespace delaysum_spec {
   {
     if( groupdelay.size()!= nChannels )  {
       throw MHA_Error(__FILE__,__LINE__,
-                      "Invalid channel number %d (%d channels configured).",
+                      "Invalid channel number %zu (%u channels configured).",
                       groupdelay.size(),nChannels);};
 
     if( gain.size()!= nChannels )  {
       throw MHA_Error(__FILE__,__LINE__,
-                      "Invalid channel number %d (%d channels configured).",
+                      "Invalid channel number %zu (%u channels configured).",
                       gain.size(),nChannels);};
     float df=fs/nFFT;
     for (unsigned int ch = 0; ch<nChannels; ch++)

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2013 2014 2015 HörTech gGmbH
-// Copyright © 2016 2017 2018 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -44,11 +44,12 @@ combc_t::combc_t(algo_comm_t ac,mhaconfig_t cfg_input,mhaconfig_t cfg_output,std
       element_gain_name_(element_gain_name)
 {
     if( cfg_output.channels * nbands != cfg_input.channels )
-        throw MHA_Error(__FILE__,__LINE__,"Invalid channel settings:\n%d bands, %d output channels, %d input channels",nbands,cfg_output.channels,cfg_input.channels);
+        throw MHA_Error(__FILE__,__LINE__,"Invalid channel settings:\n%u bands, %u output channels, %u input channels",
+                        nbands,cfg_output.channels,cfg_input.channels);
     if( channel_gains_.size() ){
         if( channel_gains_.size() != cfg_input.channels )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Gain vector contains %d entries, expected empty vector or %d entries.",
+                            "Gain vector contains %zu entries, expected empty vector or %u entries.",
                             channel_gains_.size(),cfg_input.channels);
     }else{
         channel_gains_ = std::vector<mha_real_t>(cfg_input.channels,1.0f);

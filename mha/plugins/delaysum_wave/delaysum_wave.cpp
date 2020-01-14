@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2017 2018 2019 HörTech gGmbH
+// Copyright © 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -82,11 +82,11 @@ namespace delaysum{
     {
         if( weights.size() != nch )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid number of weights %u (should equal the "
+                            "Invalid number of weights %zu (should equal the "
                             "number of input channels).",weights.size());
         if( delays_.size() != nch )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid number of delays %u (should equal the "
+                            "Invalid number of delays %zu (should equal the "
                             "number of input channels).",delays_.size());
     }
 

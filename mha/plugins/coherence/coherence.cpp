@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2013 2014 2015 HörTech gGmbH
-// Copyright © 2016 2017 2018 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -140,7 +140,7 @@ cohflt_t::cohflt_t(vars_t& v,
 {
     if( channels != 2 )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Invalid number of channels %d (two channel input expected).",channels);
+                        "Invalid number of channels %u (two channel input expected).",channels);
     if( v.tau_unit.data.get_index()==1 ){
         // tau measured in periods:
         std::vector<float> f_hz(v.f.get_f_hz());
@@ -156,7 +156,7 @@ cohflt_t::cohflt_t(vars_t& v,
         staticgain[k] = pow(10.0,0.05*staticgain[k]);
     }
     if( v.mapping.data.size() != 2 )
-        throw MHA_Error(__FILE__,__LINE__,"The mapping vector requires exact two entries (got %d).",v.mapping.data.size());
+        throw MHA_Error(__FILE__,__LINE__,"The mapping vector requires exact two entries (got %zu).",v.mapping.data.size());
     if( v.mapping.data[1] <= v.mapping.data[0] )
         throw MHA_Error(__FILE__,__LINE__,"Entries of mapping vector must be monotonically increasing (%g,%g)",
                         v.mapping.data[0],v.mapping.data[1]);

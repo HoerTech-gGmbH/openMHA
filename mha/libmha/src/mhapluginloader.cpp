@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2011 2012 2013 2014 2016 2017 2018 HörTech gGmbH
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -126,7 +126,7 @@ void PluginLoader::mhapluginloader_t::test_version()
     unsigned int v_structs = (v & 0x000000ff);
     if((v_major != MHA_VERSION_MAJOR) || (v_minor != MHA_VERSION_MINOR))
         throw MHA_Error(__FILE__, __LINE__,
-                        "version conflict: MHA is %d.%drc%d, DLL is %d.%drc%d (%s)",
+                        "version conflict: MHA is %d.%drc%d, DLL is %u.%urc%u (%s)",
                         MHA_VERSION_MAJOR, MHA_VERSION_MINOR, MHA_VERSION_RELEASE,
                         v_major, v_minor, v_release, name.c_str());
     mha_test_struct_size(v_structs);
@@ -288,22 +288,29 @@ const char* PluginLoader::mhastrdomain(mha_domain_t d)
 void PluginLoader::mhaconfig_compare(const mhaconfig_t& req, const mhaconfig_t& avail,const std::string& pref)
 {
     if(req.channels != avail.channels)
-        throw MHA_Error(__FILE__, __LINE__,"%s: %d channels required, %d available.",pref.c_str(), req.channels, avail.channels);
+        throw MHA_Error(__FILE__, __LINE__,"%s: %u channels required, %u available.",pref.c_str(),
+                        req.channels, avail.channels);
     if(req.domain != avail.domain)
-        throw MHA_Error(__FILE__, __LINE__,"%s: domain %s required, %s available.",pref.c_str(), PluginLoader::mhastrdomain(req.domain), PluginLoader::mhastrdomain(avail.domain));
+        throw MHA_Error(__FILE__, __LINE__,"%s: domain %s required, %s available.",pref.c_str(),
+                        PluginLoader::mhastrdomain(req.domain), PluginLoader::mhastrdomain(avail.domain));
     if(req.fragsize != avail.fragsize)
-        throw MHA_Error(__FILE__, __LINE__,"%s: a fragsize of %d samples required, %d available.",pref.c_str(), req.fragsize, avail.fragsize);
+        throw MHA_Error(__FILE__, __LINE__,"%s: a fragsize of %u samples required, %u available.",
+                        pref.c_str(), req.fragsize, avail.fragsize);
     if(req.srate != avail.srate)
-        throw MHA_Error(__FILE__, __LINE__,"%s: a sample rate of %g Hz required, %g Hz available.",pref.c_str(), req.srate, avail.srate);
+        throw MHA_Error(__FILE__, __LINE__,"%s: a sample rate of %g Hz required, %g Hz available.",
+                        pref.c_str(), req.srate, avail.srate);
     if( req.domain == MHA_SPECTRUM ){
         if(req.fftlen != avail.fftlen)
-            throw MHA_Error(__FILE__, __LINE__,"%s: a FFT length of %d samples required, %d available.",pref.c_str(), req.fftlen, avail.fftlen);
+            throw MHA_Error(__FILE__, __LINE__,"%s: a FFT length of %u samples required, %u available.",
+                            pref.c_str(), req.fftlen, avail.fftlen);
         if(req.wndlen != avail.wndlen)
-            throw MHA_Error(__FILE__, __LINE__,"%s: a window length of %d samples required, %d available.",pref.c_str(), req.wndlen, avail.wndlen);
+            throw MHA_Error(__FILE__, __LINE__,"%s: a window length of %u samples required, %u available.",
+                            pref.c_str(), req.wndlen, avail.wndlen);
     }
 }
 
-MHAParser::mhapluginloader_t::mhapluginloader_t(MHAParser::parser_t& parent,algo_comm_t ac, const std::string& plugname_name, const std::string& prefix)
+MHAParser::mhapluginloader_t::mhapluginloader_t(MHAParser::parser_t& parent,const algo_comm_t& ac,
+                                                const std::string& plugname_name, const std::string& prefix)
     : plug(NULL),
       parent_(parent),
       plugname("Plugin name",""),

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2010 2011 2012 2013 2014 2015 2016 2018 2019 HörTech gGmbH
+// Copyright © 2010 2011 2012 2013 2014 2015 2016 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -148,7 +148,7 @@ wavwriter_t::wavwriter_t(bool active,const mhaconfig_t& cf,unsigned int fifosize
       data(new float[fifosize])
 {
     if(minw_ >= fifosize )
-        throw MHA_Error(__FILE__,__LINE__,"minwrite must be less then fifosize (minwrite: %d, fifosize: %d)",minw_,fifosize);
+        throw MHA_Error(__FILE__,__LINE__,"minwrite must be less then fifosize (minwrite: %u, fifosize: %u)",minw_,fifosize);
     if( (cf_.channels == 0) || (cf_.srate==0) )
         act_ = false;
     if( act_ ){

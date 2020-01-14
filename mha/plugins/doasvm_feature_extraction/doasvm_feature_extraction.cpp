@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2016 2018 HörTech gGmbH
+// Copyright © 2014 2015 2016 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -166,7 +166,7 @@ void doasvm_feature_extraction::prepare(mhaconfig_t & signal_info)
     //good idea: restrict input type and dimension
     if (signal_info.channels != 2)
         throw MHA_Error(__FILE__, __LINE__,
-                        "This plugin must have 2 input channels: (%d found)\n"
+                        "This plugin must have 2 input channels: (%u found)\n"
                         "[Left, Right].", signal_info.channels);
 
     if (signal_info.domain != MHA_WAVEFORM)

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -39,11 +39,14 @@ overlapadd_t::overlapadd_t(mhaconfig_t spar_in,
       n_pad2(n_zero-n_pad1)
 {
     if( spar_in.fragsize != spar_out.fragsize )
-        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change fragment size from %d to %d.",spar_in.fragsize,spar_out.fragsize);
+        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change fragment size from %u to %u.",
+                        spar_in.fragsize,spar_out.fragsize);
     if( spar_in.wndlen != spar_out.wndlen )
-        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change window length from %d to %d.",spar_in.wndlen,spar_out.wndlen);
+        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change window length from %u to %u.",
+                        spar_in.wndlen,spar_out.wndlen);
     if( spar_in.fftlen != spar_out.fftlen )
-        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change FFT length from %d to %d.",spar_in.fftlen,spar_out.fftlen);
+        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change FFT length from %u to %u.",
+                        spar_in.fftlen,spar_out.fftlen);
 
     if (wexp != 1.0f && wexp != 0.0f && spar_in.fftlen != spar_in.wndlen)
         throw MHA_Error(__FILE__,__LINE__,
@@ -203,16 +206,16 @@ void overlapadd_if_t::prepare(mhaconfig_t& t)
         if (t.wndlen==t.fragsize or
             !MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize))
             throw MHA_Error(__FILE__,__LINE__,
-                            "The ratio between the hop size (\"fragsize\", %d) "
-                            "and the window length (%d) must be a power of two.",
+                            "The ratio between the hop size (\"fragsize\", %u) "
+                            "and the window length (%u) must be a power of two.",
                             t.fragsize, t.wndlen);
     if( t.fragsize > t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
-                        "overlapadd: The hop size (\"fragsize\", %d) is greater than the window length (%d).",
+                        "overlapadd: The hop size (\"fragsize\", %u) is greater than the window length (%u).",
                         t.fragsize, t.wndlen);
     if( t.fftlen < t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
-                        "overlapadd: Invalid FFT length %d (less than window length %d).",
+                        "overlapadd: Invalid FFT length %u (less than window length %u).",
                         t.fftlen, t.wndlen );
     cf_in = tftype = t;
     t.domain = MHA_SPECTRUM;

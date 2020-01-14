@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2017 2018 HörTech gGmbH
+// Copyright © 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -62,7 +62,7 @@ prediction_error_config::prediction_error_config(algo_comm_t &ac, const mhaconfi
     if( (pred_err->gains.data.size() != channels) && (pred_err->gains.data.size() != 1) )
         throw MHA_Error(__FILE__,__LINE__,
                         "The number of entries in the gain vector must be"
-                        " either %d (one per channel) or 1 (same gains for all channels)", channels);
+                        " either %u (one per channel) or 1 (same gains for all channels)", channels);
 
     if( pred_err->gains.data.size() == 1 ){
 
@@ -128,8 +128,8 @@ mha_wave_t *prediction_error_config::process(mha_wave_t *s_Y, mha_real_t rho, mh
 
     if ( s_LPC.num_channels != channels )
         {
-            throw MHA_Error(__FILE__,__LINE__,"The number of input channels %d doesn't match"
-                            " the number of channels %d in name_d:%s",
+            throw MHA_Error(__FILE__,__LINE__,"The number of input channels %u doesn't match"
+                            " the number of channels %u in name_d:%s",
                             channels, s_LPC.num_channels, name_lpc_.c_str());
         }
 
@@ -326,12 +326,12 @@ void prediction_error::prepare(mhaconfig_t & signal_info)
     //good idea: restrict input type and dimension
     if (!signal_info.channels)
         throw MHA_Error(__FILE__, __LINE__,
-                        "This plugin must have at least one input channel: (%d found)\n"
+                        "This plugin must have at least one input channel: (%u found)\n"
                         , signal_info.channels);
 
     if (!signal_info.fragsize)
         throw MHA_Error(__FILE__, __LINE__,
-                        "Fragment size should be at least one: (%d found)\n"
+                        "Fragment size should be at least one: (%u found)\n"
                         , signal_info.fragsize);
 
     if (signal_info.domain != MHA_WAVEFORM)

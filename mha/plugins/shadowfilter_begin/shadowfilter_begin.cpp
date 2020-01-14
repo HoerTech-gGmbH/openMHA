@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -43,11 +43,11 @@ mha_spec_t* cfg_t::process(mha_spec_t* s)
 {
     if( s->num_channels != in_spec_copy.num_channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "shadowfilter_begin: Mismatching channel count (got %d, expected %d).",
+                        "shadowfilter_begin: Mismatching channel count (got %u, expected %u).",
                         s->num_channels, in_spec_copy.num_channels );
     if( s->num_frames != in_spec_copy.num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "shadowfilter_begin: Mismatching frame count (got %d, expected %d).",
+                        "shadowfilter_begin: Mismatching frame count (got %u, expected %u).",
                         s->num_frames, in_spec_copy.num_frames );
     unsigned int kfr, kch;
     in_spec_copy.copy(*s);
@@ -97,7 +97,7 @@ void shadowfilter_begin_t::prepare(mhaconfig_t& tf)
             throw MHA_ErrorMsg("shadowfilter_begin: Only spectral processing is suported.");
         if( (int)tf.channels != nch.data * ntracks.data )
             throw MHA_Error(__FILE__,__LINE__,
-                            "shadowfilter_begin: %d input channels are configured, but %d input channels received.",
+                            "shadowfilter_begin: %d input channels are configured, but %u input channels received.",
                             nch.data * ntracks.data, tf.channels);
         tf.channels = nch.data;
         tftype = tf;

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2008 2009 2010 2011 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2008 2009 2010 2011 2013 2014 2015 2017 2018 2019 HörTech gGmbH
+// Copyright © 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -143,7 +144,7 @@ fshift_hilbert::hilbert_shifter_t::hilbert_shifter_t(unsigned int fftlen,
         smsp = new MHAFilter::smoothspec_t(fftlen,channels,MHAWindow::fun_t(maxirslen,&MHAWindow::hanning,0,1),true);
         break;
     default:
-        throw MHA_Error(__FILE__,__LINE__,"Invalid phase mode %d",phasemode);
+        throw MHA_Error(__FILE__,__LINE__,"Invalid phase mode %u",phasemode);
     }
     if( smsp ){
         smsp->smoothspec( mixw_shift );

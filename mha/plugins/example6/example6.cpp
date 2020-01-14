@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2010 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -124,7 +124,7 @@ cfg_t::cfg_t(unsigned int ichannel,
 {
     if( channel >= numchannels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Invalid channel number %d (only %d channels configured).",
+                        "Invalid channel number %u (only %u channels configured).",
                         channel,numchannels);
 }
 

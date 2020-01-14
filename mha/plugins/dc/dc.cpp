@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2011 2014 2015 HörTech gGmbH
-// Copyright © 2016 2017 2018 2019 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -221,30 +221,30 @@ namespace dc {
 #undef DUPVEC
         if( v.gtdata.data.size() != s )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid gaintable size (found %d, expected %d).",
+                            "Invalid gaintable size (found %zu, expected %u).",
                             v.gtdata.data.size(),s);
         if( v.gtmin.data.size() != s )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid gaintable minimum vector size (found %d, expected %d).",
+                            "Invalid gaintable minimum vector size (found %zu, expected %u).",
                             v.gtmin.data.size(),s);
         if( v.gtstep.data.size() != s )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid gaintable stepsize vector size (found %d, expected %d).",
+                            "Invalid gaintable stepsize vector size (found %zu, expected %u).",
                             v.gtstep.data.size(),s);
         if( (domain == MHA_WAVEFORM) && (v.taurmslevel.data.size() != s) )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid rms level time constant vector size (found %d, expected %d).",
+                            "Invalid rms level time constant vector size (found %zu, expected %u).",
                             v.taurmslevel.data.size(),s);
         if( v.tauattack.data.size() != s )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid attack time constant vector size (found %d, expected %d).",
+                            "Invalid attack time constant vector size (found %zu, expected %u).",
                             v.tauattack.data.size(),s);
         if( v.taudecay.data.size() != s )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid decay time constant vector size (found %d, expected %d).",
+                            "Invalid decay time constant vector size (found %zu, expected %u).",
                             v.taudecay.data.size(),s);
         if( v.offset.data.size() != s and v.offset.data.size() )
-            throw MHA_Error(__FILE__,__LINE__,"Invalid level offset vector size (found %zu, expected %zu or 0).",
+            throw MHA_Error(__FILE__,__LINE__,"Invalid level offset vector size (found %zu, expected %u or 0).",
                             v.offset.data.size(),s);
     }
 
@@ -301,7 +301,7 @@ namespace dc {
     {
         if( nbands * naudiochannels != nch )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Mismatching channel configuration (%d bands, %d input channels, %d audio channels)",
+                            "Mismatching channel configuration (%u bands, %u input channels, %u audio channels)",
                             nbands,nch,naudiochannels);
         unsigned int k,klev;
         gt.resize(nch);
@@ -365,7 +365,7 @@ namespace dc {
         unsigned int k, ch, kfb, idx, ch_idx = 0;
         if( s->num_channels != gt.size() )
             throw MHA_Error(__FILE__,__LINE__,
-                            "The audio channel number changed from %d to %d.",
+                            "The audio channel number changed from %zu to %u.",
                             gt.size(), s->num_channels);
         for(k=0;k<s->num_frames;k++){
             for(kfb=0;kfb<nbands;kfb++){
@@ -396,7 +396,7 @@ namespace dc {
         unsigned int k, ch, kfb, ch_idx;
         if( s->num_channels != gt.size() )
             throw MHA_Error(__FILE__,__LINE__,
-                            "The audio channel number changed from %d to %d.",
+                            "The audio channel number changed from %zu to %u.",
                             gt.size(), s->num_channels);
         for(kfb=0;kfb<nbands;kfb++){
             for(ch=0;ch<naudiochannels;ch++){

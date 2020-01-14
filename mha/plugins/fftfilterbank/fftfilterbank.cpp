@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2011 2013 2014 2015 2016 HörTech gGmbH
-// Copyright © 2017 2018 2019 HörTech gGmbH
+// Copyright © 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -138,7 +138,8 @@ void fftfb_interface_t::update_cfg()
         if( NewConfig->nbands() != nbands ){
             unsigned int newnbands(NewConfig->nbands());
             delete NewConfig;
-            throw MHA_Error(__FILE__,__LINE__,"Filterbank size cannot change at runtime from %d to %d bands.",nbands,newnbands);
+            throw MHA_Error(__FILE__,__LINE__,"Filterbank size cannot change at runtime from %u to %u bands.",
+                            nbands,newnbands);
         }
         push_config(NewConfig);
     }

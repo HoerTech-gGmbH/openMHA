@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2008 2009 2010 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2008 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -44,9 +44,11 @@ level_adapt_t::level_adapt_t(mhaconfig_t cf,mha_real_t adapt_len,std::vector<flo
       l_old(l_old_)
 {
     if( l_new.size() != cf.channels )
-        throw MHA_Error(__FILE__,__LINE__,"Invalid number of entries in new level vector (expected %d, got %d).",cf.channels,l_new.size());
+        throw MHA_Error(__FILE__,__LINE__,"Invalid number of entries in new level vector (expected %u, got %zu).",
+                        cf.channels,l_new.size());
     if( l_old.size() != cf.channels )
-        throw MHA_Error(__FILE__,__LINE__,"Invalid number of entries in previous level vector (expected %d, got %d).",cf.channels,l_old.size());
+        throw MHA_Error(__FILE__,__LINE__,"Invalid number of entries in previous level vector (expected %u, got %zu).",
+                        cf.channels,l_old.size());
 }
 
 void level_adapt_t::update_frame()

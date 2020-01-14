@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2007 2008 2009 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
+// Copyright © 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +26,7 @@ void test_fail(const std::vector<float>& v, unsigned int s, const std::string& n
 {
     if( (v.size() != s) && (v.size() != 1))
         throw MHA_Error(__FILE__,__LINE__,
-                        "Invalid %s vector size (found %d, expected %d).",
+                        "Invalid %s vector size (found %zu, expected %u).",
                         name.c_str(),v.size(),s);
 }
 
@@ -38,7 +39,7 @@ std::vector<float> force_resize(const std::vector<float>& v, unsigned int s, con
                 retv.push_back(v[0]);
         }else
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid %s vector size (found %d, expected %d).",
+                            "Invalid %s vector size (found %zu, expected %u).",
                             name.c_str(),retv.size(),s);
     }
     return retv;

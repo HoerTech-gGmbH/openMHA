@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2013 2014 2016 HörTech gGmbH
-// Copyright © 2017 HörTech gGmbH
+// Copyright © 2017 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -555,7 +555,7 @@ int MHAJack::client_t::jack_proc_cb(jack_nframes_t n)
         }
         if( s_in->num_frames != n )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Cannot handle JACK buffer size changes (size changed from %d to %d).",
+                            "Cannot handle JACK buffer size changes (size changed from %u to %u).",
                             s_in->num_frames,n);
         for( kch=0;kch<nchannels_in;kch++ )
             inch[kch]->read(s_in,kch);
@@ -575,11 +575,11 @@ int MHAJack::client_t::jack_proc_cb(jack_nframes_t n)
         }
         if( s_out->num_frames != n )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Processing library returned invalid fragment size (expected %d, got %d).",
+                            "Processing library returned invalid fragment size (expected %u, got %u).",
                             n,s_out->num_frames);
         if( s_out->num_channels != nchannels_out )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Processing library returned invalid number of channels (expected %d, got %d).",
+                            "Processing library returned invalid number of channels (expected %u, got %u).",
                             nchannels_out,s_out->num_channels);
         // copy back to port:
         for( kch=0;kch<nchannels_out;kch++ )

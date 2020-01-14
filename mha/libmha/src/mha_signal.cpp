@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
-// Copyright © 2013 2016 2017 2018 2019 HörTech gGmbH
+// Copyright © 2013 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -71,14 +71,16 @@ using namespace MHASignal;
 
 #define ASSERT_EQUAL_DIM(a,b) {                                         \
         if( !equal_dim( a, b ) )                                        \
-            throw MHA_Error(__FILE__,__LINE__,"Dimension check failed: '%s' is %d x %d (frames x channels), but '%s' is %d x %d.", \
+            throw MHA_Error(__FILE__,__LINE__,                          \
+                            "Dimension check failed: '%s' is %u x %u (frames x channels), but '%s' is %u x %u.", \
                             #a,(a).num_frames,(a).num_channels,         \
                             #b,(b).num_frames,(b).num_channels);        \
     }
 
 #define ASSERT_EQUAL_DIM_PTR(a,b) {                                     \
         if( !equal_dim( *a, *b ) )                                      \
-            throw MHA_Error(__FILE__,__LINE__,"Dimension check failed: '%s' is %d x %d (frames x channels), but '%s' is %d x %d.", \
+            throw MHA_Error(__FILE__,__LINE__,                          \
+                            "Dimension check failed: '%s' is %u x %u (frames x channels), but '%s' is %u x %u.", \
                             #a,a->num_frames,a->num_channels,           \
                             #b,b->num_frames,b->num_channels);          \
     }
@@ -213,7 +215,7 @@ void waveform_t::copy(const std::vector<mha_real_t>& v)
         for(unsigned int k=0;k<v.size();k++)
             buf[k] = v[k];
     else
-        throw MHA_Error(__FILE__,__LINE__,"Mismatching size in copy: src has %d entries, target is %dx%d.",
+        throw MHA_Error(__FILE__,__LINE__,"Mismatching size in copy: src has %zu entries, target is %ux%u.",
                         v.size(),num_frames,num_channels);
 }
 
@@ -578,16 +580,16 @@ void waveform_t::copy_from_at( unsigned int to_pos, unsigned int len,
     if( to_pos + len > num_frames )
         throw MHA_Error( __FILE__, __LINE__,
                          "destination too small "
-                         "(to_pos:%d, len:%d, num_frames:%d)",
+                         "(to_pos:%u, len:%u, num_frames:%u)",
                          to_pos, len, num_frames );
     if( from_pos + len > src.num_frames )
         throw MHA_Error( __FILE__, __LINE__,
                          "source too small "
-                         "(from_pos:%d, len:%d, num_frames:%d, src.num_frames:%d)",
+                         "(from_pos:%u, len:%u, num_frames:%u, src.num_frames:%u)",
                          from_pos, len, num_frames, src.num_frames );
     if( num_channels != src.num_channels )
         throw MHA_Error( __FILE__, __LINE__,
-                         "channel number mismatch (dest:%d src:%d)",
+                         "channel number mismatch (dest:%u src:%u)",
                          num_channels, src.num_channels );
     memmove( &(buf[to_pos*num_channels]), 
              &(src.buf[from_pos*num_channels]), 
@@ -600,7 +602,7 @@ void waveform_t::scale_frame( const unsigned int &frame,
 {
     CHECK_VAR( buf );
     if( frame > num_frames )
-        throw MHA_Error( __FILE__, __LINE__, "frame (%d) > num_frames (%d)",
+        throw MHA_Error( __FILE__, __LINE__, "frame (%u) > num_frames (%u)",
                          frame, num_frames );
     for( unsigned int ch = 0; ch < num_channels; ch++ )
         buf[num_channels * frame + ch] *= val;
@@ -990,11 +992,11 @@ mha_wave_t* MHASignal::doublebuffer_t::outer_process(mha_wave_t* outer_in)
 {
     if( outer_in->num_frames > outer_out.num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Doublebuffer: Input size (%d frames) exceeded the maximal input size (%d).",
+                        "Doublebuffer: Input size (%u frames) exceeded the maximum input size (%u).",
                         outer_in->num_frames, outer_out.num_frames);
     if( outer_in->num_channels != inner_in.num_channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Doublebuffer: Input has %d channels, but expected %d.",
+                        "Doublebuffer: Input has %u channels, but expected %u.",
                         outer_in->num_channels, inner_in.num_channels);
     this_outer_out.num_frames = outer_in->num_frames;
     for(k_outer=0;k_outer<outer_in->num_frames;k_outer++){
@@ -1039,7 +1041,7 @@ MHASignal::fft_t::fft_t( const unsigned int &n )
       buf_out( NULL )
 {
     if( n < 2 )
-        throw MHA_Error( __FILE__, __LINE__, "fft length is to small (%d < 2)", n );
+        throw MHA_Error( __FILE__, __LINE__, "fft length is too small (%u < 2)", n );
     fftw_plan_wave2spec = rfftw_create_plan( nfft, FFTW_REAL_TO_COMPLEX, FFTW_ESTIMATE );
     fftw_plan_spec2wave = rfftw_create_plan( nfft, FFTW_COMPLEX_TO_REAL, FFTW_ESTIMATE );
     fftw_plan_fft = fftw_create_plan( nfft, FFTW_FORWARD, FFTW_ESTIMATE );
@@ -1072,11 +1074,12 @@ void MHASignal::fft_t::sort_fftw2spec( fftw_real * s_fftw, mha_spec_t * s_spec, 
         throw MHA_ErrorMsg( "MHA and FFTW use different precision" );
     if( s_spec->num_frames < n_re ){
         throw MHA_Error( __FILE__, __LINE__,
-                         "Input spectrum contains only %d bins, but %d real parts are available.", s_spec->num_frames, n_re );
+                         "Input spectrum contains only %u bins, but %u real parts are available.",
+                         s_spec->num_frames, n_re );
     }
     if( s_spec->num_frames < n_im + 1 ){
         throw MHA_Error( __FILE__, __LINE__,
-                         "Input spectrum contains only %d bins, but %d imaginary parts are available.",
+                         "Input spectrum contains only %u bins, but %u imaginary parts are available.",
                          s_spec->num_frames, n_im );
     }
     unsigned int k;
@@ -1098,10 +1101,11 @@ void MHASignal::fft_t::sort_spec2fftw( fftw_real * s_fftw, const mha_spec_t * s_
         throw MHA_ErrorMsg( "MHA and FFTW use different precision" );
     if( s_spec->num_frames < n_re )
         throw MHA_Error( __FILE__, __LINE__,
-                         "Input spectrum contains only %d bins, but %d real parts are available.", s_spec->num_frames, n_re );
+                         "Input spectrum contains only %u bins, but %u real parts are available.",
+                         s_spec->num_frames, n_re );
     if( s_spec->num_frames < n_im + 1 )
         throw MHA_Error( __FILE__, __LINE__,
-                         "Input spectrum contains only %d bins, but %d imaginary parts are available.",
+                         "Input spectrum contains only %u bins, but %u imaginary parts are available.",
                          s_spec->num_frames, n_im );
     unsigned int k;
     for( k = 0; k < n_re; k++ )
@@ -1116,15 +1120,15 @@ void MHASignal::fft_t::forward( mha_spec_t* sIn, mha_spec_t* sOut )
     CHECK_VAR( sOut );
     if( sIn->num_frames != nfft )
         throw MHA_Error( __FILE__,__LINE__,
-                         "fft: The input spectrum does not contain fft-len bins (sIn: %d, nFFT: %d).",
+                         "fft: The input spectrum does not contain fftlen bins (sIn: %u, nFFT: %u).",
                          sIn->num_frames, nfft );
     if( sOut->num_frames != nfft )
         throw MHA_Error( __FILE__,__LINE__,
-                         "fft: The output spectrum does not contain fft-len bins (sOut: %d, nFFT: %d).",
+                         "fft: The output spectrum does not contain fftlen bins (sOut: %u, nFFT: %u).",
                          sOut->num_frames, nfft );
     if( sIn->num_channels != sOut->num_channels )
         throw MHA_Error( __FILE__, __LINE__, 
-                         "fft: Mismatching number of channels in input and output (input: %d, output: %d).",
+                         "fft: Mismatching number of channels in input and output (input: %u, output: %u).",
                          sIn->num_channels, sOut->num_channels );
     fftw(fftw_plan_fft,sIn->num_channels,
          (fftw_complex*)(sIn->buf),1,sIn->num_frames,
@@ -1138,15 +1142,15 @@ void MHASignal::fft_t::backward( mha_spec_t* sIn, mha_spec_t* sOut )
     CHECK_VAR( sOut );
     if( sIn->num_frames != nfft )
         throw MHA_Error( __FILE__,__LINE__,
-                         "fft: The input spectrum does not contain fft-len bins (sIn: %d, nFFT: %d).",
+                         "fft: The input spectrum does not contain fftlen bins (sIn: %u, nFFT: %u).",
                          sIn->num_frames, nfft );
     if( sOut->num_frames != nfft )
         throw MHA_Error( __FILE__,__LINE__,
-                         "fft: The output spectrum does not contain fft-len bins (sOut: %d, nFFT: %d).",
+                         "fft: The output spectrum does not contain fftlen bins (sOut: %u, nFFT: %u).",
                          sOut->num_frames, nfft );
     if( sIn->num_channels != sOut->num_channels )
         throw MHA_Error( __FILE__, __LINE__, 
-                         "fft: Mismatching number of channels in input and output (input: %d, output: %d).",
+                         "fft: Mismatching number of channels in input and output (input: %u, output: %u).",
                          sIn->num_channels, sOut->num_channels );
     fftw(fftw_plan_ifft,sIn->num_channels,
          (fftw_complex*)(sIn->buf),1,sIn->num_frames,
@@ -1160,7 +1164,8 @@ void MHASignal::fft_t::wave2spec( const mha_wave_t * wave, mha_spec_t * spec,
     CHECK_VAR( spec );
     if( wave->num_channels != spec->num_channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "fft: Mismatching channel number: waveform has %d, spectrum has %d.",wave->num_channels, spec->num_channels );
+                        "fft: Mismatching channel number: waveform has %u, spectrum has %u.",
+                        wave->num_channels, spec->num_channels );
 
     unsigned int k, ch, max_frames(std::min(nfft,wave->num_frames));
     for( ch = 0; ch < wave->num_channels; ch++ ) {
@@ -1184,7 +1189,7 @@ void MHASignal::fft_t::spec2wave( const mha_spec_t * spec, mha_wave_t * wave )
                          " channels, wave has %u channels",
                          spec->num_channels, wave->num_channels);
     if( wave->num_frames != nfft )
-        throw MHA_Error( __FILE__, __LINE__, "waveform has invalid length (%d, nfft:%d)", wave->num_frames, nfft );
+        throw MHA_Error( __FILE__, __LINE__, "waveform has invalid length (%u, nfft:%u)", wave->num_frames, nfft );
     unsigned int ch, k;
     for( ch = 0; ch < wave->num_channels; ch++ ) {
         sort_spec2fftw( buf_in, spec, ch );
@@ -1207,12 +1212,13 @@ void MHASignal::fft_t::spec2wave( const mha_spec_t * spec, mha_wave_t * wave,
         throw MHA_Error(__FILE__,__LINE__,
                         "spec2wave(0x%p,0x%p,%u): channel number mismatch"
                         " (spec has %u channels, wave has %u channels)",
-                        spec, wave, offset, 
+                        spec, wave, offset,
                         spec->num_channels, wave->num_channels);
     if( offset > nfft )
         throw MHA_ErrorMsg( "offset has to be smaller than or equal to the fft length" );
     if( wave->num_frames > nfft - offset )
-        throw MHA_Error( __FILE__, __LINE__, "waveform has invalid length (%d, nfft:%d, offset:%u)", wave->num_frames, nfft, offset );
+        throw MHA_Error( __FILE__, __LINE__, "waveform has invalid length (%u, nfft:%u, offset:%u)",
+                         wave->num_frames, nfft, offset );
     unsigned int ch, k;
     for( ch = 0; ch < wave->num_channels; ch++ ) {
         sort_spec2fftw( buf_in, spec, ch );
@@ -1230,7 +1236,7 @@ void MHASignal::fft_t::wave2spec_scale( const mha_wave_t * wave, mha_spec_t * sp
     CHECK_VAR( spec );
     if( wave->num_channels != spec->num_channels )
         throw MHA_Error(__FILE__,__LINE__,
-            "fft: Mismatching channel number: waveform has %d, spectrum has %d.",wave->num_channels, spec->num_channels );
+            "fft: Mismatching channel number: waveform has %u, spectrum has %u.",wave->num_channels, spec->num_channels );
     unsigned int k, ch, max_frames(std::min(nfft,wave->num_frames));
     for( ch = 0; ch < wave->num_channels; ch++ ) {
         for( k = 0; k < max_frames; ++k )
@@ -1253,7 +1259,7 @@ void MHASignal::fft_t::spec2wave_scale( const mha_spec_t * spec, mha_wave_t * wa
                          " channels, wave has %u channels",
                          spec->num_channels, wave->num_channels);
     if( wave->num_frames != nfft )
-        throw MHA_Error( __FILE__, __LINE__, "waveform has invalid length (%d, nfft:%d)", wave->num_frames, nfft );
+        throw MHA_Error( __FILE__, __LINE__, "waveform has invalid length (%u, nfft:%u)", wave->num_frames, nfft );
     unsigned int ch, k;
     for( ch = 0; ch < wave->num_channels; ch++ ) {
         sort_spec2fftw( buf_in, spec, ch );
@@ -1269,15 +1275,15 @@ void MHASignal::fft_t::forward_scale( mha_spec_t* sIn, mha_spec_t* sOut )
     CHECK_VAR( sOut );
     if( sIn->num_frames != nfft )
         throw MHA_Error( __FILE__,__LINE__,
-                         "fft: The input spectrum does not contain fft-len bins (sIn: %d, nFFT: %d).",
+                         "fft: The input spectrum does not contain fftlen bins (sIn: %u, nFFT: %u).",
                          sIn->num_frames, nfft );
     if( sOut->num_frames != nfft )
         throw MHA_Error( __FILE__,__LINE__,
-                         "fft: The output spectrum does not contain fft-len bins (sOut: %d, nFFT: %d).",
+                         "fft: The output spectrum does not contain fftlen bins (sOut: %u, nFFT: %u).",
                          sOut->num_frames, nfft );
     if( sIn->num_channels != sOut->num_channels )
         throw MHA_Error( __FILE__, __LINE__,
-                         "fft: Mismatching number of channels in input and output (input: %d, output: %d).",
+                         "fft: Mismatching number of channels in input and output (input: %u, output: %u).",
                          sIn->num_channels, sOut->num_channels );
     fftw(fftw_plan_fft,sIn->num_channels,
          (fftw_complex*)(sIn->buf),1,sIn->num_frames,
@@ -1291,15 +1297,15 @@ void MHASignal::fft_t::backward_scale( mha_spec_t* sIn, mha_spec_t* sOut )
     CHECK_VAR( sOut );
     if( sIn->num_frames != nfft )
         throw MHA_Error( __FILE__,__LINE__,
-                         "fft: The input spectrum does not contain fft-len bins (sIn: %d, nFFT: %d).",
+                         "fft: The input spectrum does not contain fftlen bins (sIn: %u, nFFT: %u).",
                          sIn->num_frames, nfft );
     if( sOut->num_frames != nfft )
         throw MHA_Error( __FILE__,__LINE__,
-                         "fft: The output spectrum does not contain fft-len bins (sOut: %d, nFFT: %d).",
+                         "fft: The output spectrum does not contain fftlen bins (sOut: %u, nFFT: %u).",
                          sOut->num_frames, nfft );
     if( sIn->num_channels != sOut->num_channels )
         throw MHA_Error( __FILE__, __LINE__,
-                         "fft: Mismatching number of channels in input and output (input: %d, output: %d).",
+                         "fft: Mismatching number of channels in input and output (input: %u, output: %u).",
                          sIn->num_channels, sOut->num_channels );
     fftw(fftw_plan_ifft,sIn->num_channels,
          (fftw_complex*)(sIn->buf),1,sIn->num_frames,
@@ -1459,11 +1465,17 @@ void MHASignal::hilbert_fftw_t::hilbert(const mha_wave_t* s_in,mha_wave_t* s_out
     if( !s_out )
         throw MHA_ErrorMsg("hilbert: Invalid output signal pointer (NULL).");
     if( s_in->num_frames != n )
-        throw MHA_Error(__FILE__,__LINE__,"hilbert: Invalid input signal dimension (s_in->num_frames: %d, n: %d).",s_in->num_frames, n);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "hilbert: Invalid input signal dimension (s_in->num_frames: %u, n: %u).",
+                        s_in->num_frames, n);
     if( s_out->num_frames != n )
-        throw MHA_Error(__FILE__,__LINE__,"hilbert: Invalid output signal dimension (s_out->num_frames: %d, n: %d).",s_out->num_frames, n);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "hilbert: Invalid output signal dimension (s_out->num_frames: %u, n: %u).",
+                        s_out->num_frames, n);
     if( s_in->num_channels != s_out->num_channels )
-        throw MHA_Error(__FILE__,__LINE__,"hilbert: Input and output signal need same number of channels (in: %d, out: %d).",s_in->num_channels, s_out->num_channels);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "hilbert: Input and output signal need same number of channels (in: %u, out: %u).",
+                        s_in->num_channels, s_out->num_channels);
     unsigned int ch, k;
     for( ch=0;ch<s_in->num_channels;ch++){
         for(k=0;k<n;k++)
@@ -1659,7 +1671,7 @@ bool MHASignal::uint_vector_t::operator==(const uint_vector_t& src) const
 uint_vector_t& MHASignal::uint_vector_t::operator=(const uint_vector_t& src)
 {
     if( src.get_length() != length )
-        throw MHA_Error(__FILE__,__LINE__,"Size mismatch (expeczed %d, got %d).",
+        throw MHA_Error(__FILE__,__LINE__,"Size mismatch (expeczed %u, got %u).",
                         length, src.get_length());
     for( unsigned int k=0;k<length;k++ )
         data[k] = src[k];
@@ -1684,7 +1696,7 @@ unsigned int MHASignal::matrix_t::get_index(const MHASignal::uint_vector_t& inde
 {
     if( index.get_length() != get_length() )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Dimension mismatch: size has %d, index has %d dimensions.",
+                        "Dimension mismatch: size has %u, index has %u dimensions.",
                         get_length(), index.get_length() );
     unsigned int idx = index[index.get_length()-1];
     for( unsigned int k=index.get_length()-1; k>0; k-- )
@@ -1717,13 +1729,15 @@ MHASignal::matrix_t::matrix_t(const mha_spec_t& spec)
 }
 
 MHASignal::matrix_t::matrix_t(const MHASignal::uint_vector_t& size,bool b_is_complex)
-    : MHASignal::uint_vector_t(size),complex_ofs(b_is_complex+1),nelements(get_nelements()),rdata(new mha_real_t[mha_min_1(get_nreals())])
+    : MHASignal::uint_vector_t(size),complex_ofs(b_is_complex+1),nelements(get_nelements()),
+      rdata(new mha_real_t[mha_min_1(get_nreals())])
 {
     memset(rdata,0,get_nreals()*sizeof(mha_real_t));
 }
 
 MHASignal::matrix_t::matrix_t(const MHASignal::matrix_t& src)
-    : MHASignal::uint_vector_t(src),complex_ofs(src.iscomplex()+1),nelements(get_nelements()),rdata(new mha_real_t[mha_min_1(get_nreals())])
+    : MHASignal::uint_vector_t(src),complex_ofs(src.iscomplex()+1),nelements(get_nelements()),
+      rdata(new mha_real_t[mha_min_1(get_nreals())])
 {
     memmove(rdata,src.rdata,get_nreals()*sizeof(mha_real_t));
 }
@@ -1753,14 +1767,14 @@ bool MHASignal::matrix_t::is_same_size(const MHASignal::matrix_t& src)
 MHASignal::matrix_t& MHASignal::matrix_t::operator=(const comm_var_t& src)
 {
     if( dimension() != 2 )
-        throw MHA_Error(__FILE__,__LINE__,"Expected dimension of 2, got %d.",dimension());
+        throw MHA_Error(__FILE__,__LINE__,"Expected dimension of 2, got %u.",dimension());
     if( size(0) != src.stride )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Size of first dimension mismatches: expected %d, found %d.",
+                        "Size of first dimension mismatches: expected %u, found %u.",
                         size(0),src.stride);
     if( size(1) != src.num_entries / src.stride )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Size of second dimension mismatches: expected %d, found %d.",
+                        "Size of second dimension mismatches: expected %u, found %u.",
                         size(1), src.num_entries / src.stride );
     unsigned int k0, k1;
     switch( src.data_type ){
@@ -1793,7 +1807,7 @@ MHASignal::matrix_t& MHASignal::matrix_t::operator=(const comm_var_t& src)
         break;
     default:
         throw MHA_Error(__FILE__,__LINE__,
-                        "Unsupported AC data format (%d).",
+                        "Unsupported AC data format (%u).",
                         src.data_type);
     }
     return *this;
@@ -1804,7 +1818,7 @@ comm_var_t MHASignal::matrix_t::get_comm_var()
     comm_var_t retv;
     memset(&retv,0,sizeof(retv));
     if( dimension() != 2 )
-        throw MHA_Error(__FILE__,__LINE__,"Expected dimension of 2, got %d.",dimension());
+        throw MHA_Error(__FILE__,__LINE__,"Expected dimension of 2, got %u.",dimension());
     retv.stride = size(0);
     retv.num_entries = size(0)*size(1);
     if( iscomplex() ){
@@ -1830,7 +1844,7 @@ MHASignal::uint_vector_t::uint_vector_t(const uint8_t* buf,unsigned int len)
     buf += sizeof(uint32_t);
     len += sizeof(uint32_t);
     if( len < sizeof(uint32_t)*length )
-        throw MHA_Error(__FILE__,__LINE__,"The provided data does not hold %d values.",length);
+        throw MHA_Error(__FILE__,__LINE__,"The provided data does not hold %u values.",length);
     data = new unsigned int[mha_min_1(length)];
     for(unsigned int k=0;k<length;k++)
         data[k] = ((uint32_t*)buf)[k];
@@ -1877,7 +1891,8 @@ unsigned int MHASignal::matrix_t::write(uint8_t* buf,unsigned int len) const
 }
 
 MHASignal::matrix_t::matrix_t(const uint8_t* buf,unsigned int len)
-    : MHASignal::uint_vector_t(buf+strlen(MHA_ID_MATRIX),std::max(len,(unsigned int)strlen(MHA_ID_MATRIX))-strlen(MHA_ID_MATRIX))
+    : MHASignal::uint_vector_t(buf+strlen(MHA_ID_MATRIX),
+                               std::max(len,(unsigned int)strlen(MHA_ID_MATRIX))-strlen(MHA_ID_MATRIX))
 {
     if( len < strlen(MHA_ID_MATRIX)+MHASignal::uint_vector_t::numbytes()+sizeof(complex_ofs)+sizeof(nelements))
         throw MHA_Error(__FILE__,__LINE__,"The provided data length is to short.");
@@ -1892,7 +1907,7 @@ MHASignal::matrix_t::matrix_t(const uint8_t* buf,unsigned int len)
     buf += sizeof(nelements);
     len += sizeof(nelements);
     if( len < sizeof(uint32_t)*get_nreals() )
-        throw MHA_Error(__FILE__,__LINE__,"The provided data does not hold %d values.",get_nreals());
+        throw MHA_Error(__FILE__,__LINE__,"The provided data does not hold %u values.",get_nreals());
     rdata = new mha_real_t[mha_min_1(get_nreals())];
     for(unsigned int k=0;k<get_nreals();k++)
         rdata[k] = ((mha_real_t*)buf)[k];
@@ -2145,7 +2160,8 @@ MHASignal::schroeder_t::schroeder_t(unsigned int len,
     unsigned int kmax = std::min(nbins,(unsigned int)(fmax*nbins));
     if( kmax <= kmin )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Invalid frequency range. fmin (%g, bin %d) must be below fmax (%g, bin %d). Try to increase resolution.",
+                        "Invalid frequency range."
+                        " fmin (%g, bin %u) must be below fmax (%g, bin %u). Try to increase resolution.",
                         fmin,kmin,fmax,kmax);
     MHASignal::waveform_t phase(nbins,1);
     mha_fft_t fft = mha_fft_new(len);
@@ -2234,7 +2250,9 @@ mha_wave_t& operator^=(mha_wave_t& self,const mha_real_t& arg)
 mha_wave_t range(mha_wave_t s,unsigned int k0,unsigned int len)
 {
     if( len+k0 > s.num_frames )
-        throw MHA_Error(__FILE__,__LINE__,"The input waveform is not long enough (length: %d, required %d output samples at position %d).",s.num_frames,len,k0);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The input waveform is not long enough (length: %u, required %u output samples at position %u).",
+                        s.num_frames,len,k0);
     mha_wave_t retv = s;
     retv.num_frames = len;
     retv.buf = &(s.buf[k0*s.num_channels]);
@@ -2252,7 +2270,8 @@ mha_wave_t range(mha_wave_t s,unsigned int k0,unsigned int len)
 mha_spec_t channels(mha_spec_t s,unsigned int ch_start,unsigned int nch)
 {
     if( s.num_channels < ch_start+nch )
-        throw MHA_Error(__FILE__,__LINE__,"Not enough channels (source has %d, requested %d channels starting at %d).",s.num_channels,nch,ch_start);
+        throw MHA_Error(__FILE__,__LINE__,"Not enough channels (source has %u, requested %u channels starting at %u).",
+                        s.num_channels,nch,ch_start);
     mha_spec_t retv;
     retv.num_frames = s.num_frames;
     retv.num_channels = nch;
@@ -2263,7 +2282,8 @@ mha_spec_t channels(mha_spec_t s,unsigned int ch_start,unsigned int nch)
 void assign(mha_wave_t self,const mha_wave_t& val)
 {
     if( !equal_dim( self, val ) )
-        throw MHA_Error(__FILE__,__LINE__,"Mismatching size for assignment (self: %dx%d, val: %dx%d)",self.num_frames,self.num_channels,val.num_frames,val.num_channels);
+        throw MHA_Error(__FILE__,__LINE__,"Mismatching size for assignment (self: %ux%u, val: %ux%u)",
+                        self.num_frames,self.num_channels,val.num_frames,val.num_channels);
     unsigned int k_max = size(self);
     for(unsigned int k=0;k<k_max;k++)
         self.buf[k] = val.buf[k];
@@ -2272,7 +2292,8 @@ void assign(mha_wave_t self,const mha_wave_t& val)
 void assign(mha_spec_t self,const mha_spec_t& val)
 {
     if( !equal_dim( self, val ) )
-        throw MHA_Error(__FILE__,__LINE__,"Mismatching size for assignment (self: %dx%d, val: %dx%d)",self.num_frames,self.num_channels,val.num_frames,val.num_channels);
+        throw MHA_Error(__FILE__,__LINE__,"Mismatching size for assignment (self: %ux%u, val: %ux%u)",
+                        self.num_frames,self.num_channels,val.num_frames,val.num_channels);
     unsigned int k_max = size(self);
     for(unsigned int k=0;k<k_max;k++)
         self.buf[k] = val.buf[k];
@@ -2371,7 +2392,9 @@ std::vector<float> MHASignal::async_rmslevel_t::peaklevel() const
 void MHASignal::async_rmslevel_t::process(mha_wave_t* s)
 {
     if( s->num_channels != num_channels )
-        throw MHA_Error(__FILE__,__LINE__,"Invalid channel count (level meter has %d channels, input has %d).",num_channels,s->num_channels);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Invalid channel count (level meter has %u channels, input has %u).",
+                        num_channels,s->num_channels);
     unsigned int k, ch;
     if( num_frames > s->num_frames ){
         for(k=0;k<s->num_frames;k++){

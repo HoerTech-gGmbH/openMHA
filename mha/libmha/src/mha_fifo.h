@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2008 2009 2010 2011 2013 2016 2017 2018 HörTech gGmbH
+// Copyright © 2006 2008 2009 2010 2011 2013 2016 2017 2018 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -765,7 +765,7 @@ template <class T>
 mha_fifo_t<T>& mha_fifo_t<T>::operator=(const mha_fifo_t<T>& src)
 {
     if( src.max_fill_count != max_fill_count )
-        throw MHA_Error(__FILE__,__LINE__,"Expected same size (this %d, src %d)",max_fill_count,src.max_fill_count);
+        throw MHA_Error(__FILE__,__LINE__,"Expected same size (this %u, src %u)",max_fill_count,src.max_fill_count);
     for (unsigned i = 0; i <= max_fill_count; ++i) {
         buf[i] = src.buf[i];
     }

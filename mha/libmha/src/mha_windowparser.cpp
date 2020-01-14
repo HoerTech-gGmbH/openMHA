@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2007 2013 2016 2017 2018 HörTech gGmbH
+// Copyright © 2007 2013 2016 2017 2018 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ MHAWindow::base_t::base_t(const MHAWindow::base_t& src)
     : MHASignal::waveform_t(src.num_frames,1)
 {
     if( src.num_channels != 1 )
-        throw MHA_Error(__FILE__,__LINE__,"Invalid window base (%d channels).",src.num_channels);
+        throw MHA_Error(__FILE__,__LINE__,"Invalid window base (%u channels).",src.num_channels);
     for( unsigned int k=0;k<num_frames;k++)
         buf[k] = src[k];
 }
@@ -33,7 +33,7 @@ void MHAWindow::base_t::operator()(mha_wave_t& s) const
 {
     if( s.num_frames != num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Window function (overloaded): invalid number of frames (got %d, expected %d).",
+                        "Window function (overloaded): invalid number of frames (got %u, expected %u).",
                         s.num_frames,num_frames);
     unsigned int k;
     for(unsigned int ch=0;ch<s.num_channels;ch++)
@@ -45,7 +45,7 @@ void MHAWindow::base_t::operator()(mha_wave_t* s) const
 {
     if( s->num_frames != num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Window function (overloaded): invalid number of frames (got %d, expected %d).",
+                        "Window function (overloaded): invalid number of frames (got %u, expected %u).",
                         s->num_frames,num_frames);
     unsigned int k;
     for(unsigned int ch=0;ch<s->num_channels;ch++)
@@ -56,7 +56,8 @@ void MHAWindow::base_t::operator()(mha_wave_t* s) const
 void MHAWindow::base_t::ramp_begin(mha_wave_t& s) const
 {
     if( s.num_frames < num_frames )
-        throw MHA_Error(__FILE__,__LINE__,"Cannot apply ramp to a signal which is shorter than the ramp (%d<%d)",s.num_frames, num_frames);
+        throw MHA_Error(__FILE__,__LINE__,"Cannot apply ramp to a signal which is shorter than the ramp (%u<%u)",
+                        s.num_frames, num_frames);
     unsigned int k;
     for(unsigned int ch=0;ch<s.num_channels;ch++)
         for(k=0;k<num_frames;k++)
@@ -66,7 +67,8 @@ void MHAWindow::base_t::ramp_begin(mha_wave_t& s) const
 void MHAWindow::base_t::ramp_end(mha_wave_t& s) const
 {
     if( s.num_frames < num_frames )
-        throw MHA_Error(__FILE__,__LINE__,"Cannot apply ramp to a signal which is shorter than the ramp (%d<%d)",s.num_frames, num_frames);
+        throw MHA_Error(__FILE__,__LINE__,"Cannot apply ramp to a signal which is shorter than the ramp (%u<%u)",
+                        s.num_frames, num_frames);
     unsigned int k;
     unsigned int k0 = s.num_frames-num_frames;
     for(unsigned int ch=0;ch<s.num_channels;ch++)

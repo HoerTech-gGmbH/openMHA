@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -90,8 +90,8 @@ struct gtfb_analyzer_cfg_t {
     {
         if (coeff.size() != norm_phase.size())
             throw MHA_Error(__FILE__,__LINE__,
-                            "Number (%u) of coefficients differs from number "\
-                            "(%u) of normalization/phase-correction factors",
+                            "Number (%zu) of coefficients differs from number "\
+                            "(%zu) of normalization/phase-correction factors",
                             coeff.size(), norm_phase.size());
         s_out.num_channels = ch * coeff.size() * 2;
         s_out.num_frames = frames;

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2008 2009 2010 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -58,14 +58,18 @@ smoothspec_wrap_t::smoothspec_wrap_t(mhaconfig_t spar_in,
 {
     if( spar_in.channels != spar_out.channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Smoothing of gains can only be used if number of input channels matches the number of output channels (currently %d input channels and %d output channels).",
+                        "Smoothing of gains can only be used if number of input channels matches the number of output"
+                        " channels (currently %u input channels and %u output channels).",
                         spar_in.channels,spar_out.channels);
     if( spar_in.fragsize != spar_out.fragsize )
-        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change fragment size from %d to %d.",spar_in.fragsize,spar_out.fragsize);
+        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change fragment size from %u to %u.",
+                        spar_in.fragsize,spar_out.fragsize);
     if( spar_in.wndlen != spar_out.wndlen )
-        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change window lengt from %d to %d.",spar_in.wndlen,spar_out.wndlen);
+        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change window lengt from %u to %u.",
+                        spar_in.wndlen,spar_out.wndlen);
     if( spar_in.fftlen != spar_out.fftlen )
-        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change FFT length from %d to %d.",spar_in.fftlen,spar_out.fftlen);
+        throw MHA_Error(__FILE__,__LINE__,"overlap add sub-plugins are not allowed to change FFT length from %u to %u.",
+                        spar_in.fftlen,spar_out.fftlen);
 }
 
 mha_spec_t* smoothspec_wrap_t::proc_1(mha_spec_t* s)

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2008 2009 2011 2012 2013 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -261,7 +262,7 @@ std::set<Wakeup_Event *> Event_Watcher::wait()
         else {
             throw MHA_Error(__FILE__, __LINE__,
                             "Unexpected return value of WaitForMultipleObjects"
-                            ": %u", wfmo_retval);
+                            ": %lu", wfmo_retval);
         }
     }
 #else
@@ -795,7 +796,7 @@ MHA_TCP::Connection::Connection(SOCKET _fd)
                         "Cannot create TCP Connection "
                         "with invalid file descriptor "
 #ifdef _WIN32
-                        "%u",
+                        "%llu",
 #else
                         "%d",
 #endif
@@ -846,7 +847,7 @@ std::string Connection::sysread(unsigned bytes)
         throw MHA_Error(__FILE__,__LINE__,
                         "Reading %u bytes from socket "
 #ifdef _WIN32
-                        "%u"
+                        "%llu"
 #else
                         "%d"
 #endif
@@ -869,7 +870,7 @@ std::string Connection::syswrite(const std::string & data)
         throw MHA_Error(__FILE__,__LINE__,
                         "Writing %u bytes to socket "
 #ifdef _WIN32
-                        "%u"
+                        "%llu"
 #else
                         "%d"
 #endif
@@ -1004,7 +1005,7 @@ Thread::Thread(Thread::thr_f func, void * arg)
     err = pthread_attr_init(&thread_attr);
     if (err)
         throw MHA_Error(__FILE__,__LINE__,
-                        "pthread_attr_init failed: ",
+                        "pthread_attr_init failed: %s",
                         STRERROR(err).c_str());
     err = pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
     if (err)

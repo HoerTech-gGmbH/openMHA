@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
+// Copyright © 2005 2006 2010 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -65,11 +65,11 @@ mha_wave_t* ac2wave_t::process(mha_wave_t* s)
     w = MHA_AC::get_var_waveform(ac,name);
     if( w.num_frames != frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Mismatching signal dimension (ac: %d frames, expected %d).",
+                        "Mismatching signal dimension (ac: %u frames, expected %u).",
                         w.num_frames,frames);
     if( w.num_channels != channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Mismatching signal dimension (ac: %d channels, expected %d).",
+                        "Mismatching signal dimension (ac: %u channels, expected %u).",
                         w.num_channels,channels);
     mha_wave_t* s_in_delayed;
     mha_wave_t* s_ac_delayed;

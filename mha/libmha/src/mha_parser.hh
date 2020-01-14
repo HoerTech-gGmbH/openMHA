@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 2011 HörTech gGmbH
-// Copyright © 2012 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2012 2013 2014 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@
 #include <map>
 #include "mha.hh"
 #include "mha_events.h"
+#include <typeinfo>
 
 // A buffer of this size is allocated for every hierarchy level of
 // every parser request.  As hierarchy levels are traveled through,

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2007 2008 2009 2012 2013 2016 2017 2018 2019 HörTech gGmbH
+// Copyright © 2007 2008 2009 2012 2013 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -175,7 +175,8 @@ namespace MHAParser {
      */
     class mhapluginloader_t {
     public:
-        mhapluginloader_t(MHAParser::parser_t& parent,algo_comm_t ac, const std::string& plugname_name = "plugin_name", const std::string& prefix = "");
+        mhapluginloader_t(MHAParser::parser_t& parent,const algo_comm_t& ac,
+                          const std::string& plugname_name = "plugin_name", const std::string& prefix = "");
         ~mhapluginloader_t();
         void prepare(mhaconfig_t& cf);
         void release();

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2010 2012 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2005 2006 2010 2012 2013 2014 2015 2017 2018 2019 HörTech gGmbH
+// Copyright © 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -74,7 +75,7 @@ void matmix_t::prepare(mhaconfig_t& tf)
     ci = mixer.data[0].size();
     if( tf.channels != ci )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Matrixmixer: The mixer matrix has %d inputs, but the plugin received %d.",
+                        "Matrixmixer: The mixer matrix has %u inputs, but the plugin received %u.",
                         ci,tf.channels);
     tf.channels = co;
     tftype = tf;
@@ -98,11 +99,11 @@ mha_wave_t* cfg_t::process(mha_wave_t* s)
     unsigned int ki,ko,kfr;
     if( s->num_frames != wout.num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "matrixmixer: Invalid input fragment size (%d, expected %d).",
+                        "matrixmixer: Invalid input fragment size (%u, expected %u).",
                         s->num_frames,wout.num_frames);
     if( s->num_channels != m.num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "matrixmixer: Invalid input channel count (%d, expected %d).",
+                        "matrixmixer: Invalid input channel count (%u, expected %u).",
                         s->num_channels,m.num_frames);
     clear(wout);
     for(ko=0; ko<m.num_channels; ko++)
@@ -119,11 +120,11 @@ mha_spec_t* cfg_t::process(mha_spec_t* s)
     unsigned int ki,ko,kfr;
     if( s->num_frames != sout.num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "matrixmixer: Invalid input fragment size (%d, expected %d).",
+                        "matrixmixer: Invalid input fragment size (%u, expected %u).",
                         s->num_frames,wout.num_frames);
     if( s->num_channels != m.num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "matrixmixer: Invalid input channel count (%d, expected %d).",
+                        "matrixmixer: Invalid input channel count (%u, expected %u).",
                         s->num_channels,m.num_frames);
     clear(sout);
     for(ko=0; ko<m.num_channels; ko++)
@@ -149,13 +150,13 @@ cfg_t::cfg_t(std::vector<std::vector<float> > imixer,
     unsigned int ki, ko;
     if( co != imixer.size() ){
         throw MHA_Error(__FILE__,__LINE__,
-                        "Mismatching number of input channels (co:%d, m:%d).",
+                        "Mismatching number of input channels (co:%u, m:%zu).",
                         co,imixer.size());
     }
     for(ko = 0; ko < co; ko++)
         if( imixer[ko].size() != ci ){
             throw MHA_Error(__FILE__,__LINE__,
-                            "Mismatching number of input channels (ci:%d, m[%d]:%d).",
+                            "Mismatching number of input channels (ci:%u, m[%u]:%zu).",
                             ci,ko,imixer[ko].size());
         }
     for(ko=0;ko<co;ko++)

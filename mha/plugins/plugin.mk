@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
+# Copyright © 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -106,16 +106,6 @@ ifneq "$(WITH_LIBSERIAL)" "yes"
 # instead, execute this dummy rule. as default target
 dummy_libserial:
 	@echo "not compiling" $(PLUGINS) "since libserial is not available"
-endif
-endif
-
-ifeq "$(NEEDS_CXX14)" "yes"
-ifeq ($(CXXSTANDARD),$(findstring $(CXXSTANDARD),"gnu++98c++98gnu++03c++03gnu++0xc++0xgnu++11c++11"))
-# this plugin needs at least c++14.
-# Do not compile if c++14 not available.
-# instead, execute this dummy rule. as default target
-dummy_cxx14:
-	@echo "not compiling" $(PLUGINS) "since c++14 standard not available"
 endif
 endif
 

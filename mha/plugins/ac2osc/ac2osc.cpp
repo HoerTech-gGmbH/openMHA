@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2011 2012 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2011 2012 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -189,7 +189,7 @@ void ac2osc_t::update_mode()
         b_record = false;
         break;
     default:
-        throw MHA_Error(__FILE__,__LINE__,"Unhandled mode %d.",mode.data.get_index());
+        throw MHA_Error(__FILE__,__LINE__,"Unhandled mode %zu.",mode.data.get_index());
     };
 }
 

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -29,9 +29,6 @@
 #define COMPILER_ID_VERSION COMPILER_ID_VERSION_HELPER1(COMPILER_ID_MAJOR, \
                                                         COMPILER_ID_MINOR, \
                                                         COMPILER_ID_PATCH)
-#if __cplusplus == 201103L
-# define COMPILER_ID_STANDARD "c++11"
-#endif
 #if __cplusplus == 201402L
 # define COMPILER_ID_STANDARD "c++14"
 #endif
@@ -39,7 +36,7 @@
 # define COMPILER_ID_STANDARD "c++17"
 #endif
 #ifndef COMPILER_ID_STANDARD
-# error "unrecognized value of predefined macro __cplusplus"
+# error "unsupported value of predefined macro __cplusplus"
 #endif
 
 // The compiler id will be sth like "gcc-8.2.0-c++14" or "clang-6.0.0-c++17"

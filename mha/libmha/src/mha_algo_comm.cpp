@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2013 2016 HörTech gGmbH
-// Copyright © 2017 2018 2019 HörTech gGmbH
+// Copyright © 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -593,7 +593,9 @@ mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)
     if( err )
         throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
     if( (var.stride == 0) || (var.stride > var.num_entries) )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%d).",n.c_str(),var.stride);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The variable \"%s\" has invalid stride settings (%u).",
+                        n.c_str(),var.stride);
     if( var.num_entries == 0 )
         throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" contains no data.",n.c_str());
     mha_spec_t s;
@@ -601,7 +603,9 @@ mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)
     s.num_frames = var.stride;
     s.num_channels = var.num_entries / var.stride;
     if( s.num_channels * s.num_frames != var.num_entries )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%d): Not an integer fraction of entries.",n.c_str(),var.stride);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The variable \"%s\" has invalid stride settings (%u): Not an integer fraction of entries.",
+                        n.c_str(),var.stride);
     if( var.data_type != MHA_AC_MHACOMPLEX )
         throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid data type.",n.c_str());
     s.buf = (mha_complex_t*)var.data;
@@ -615,7 +619,7 @@ mha_wave_t MHA_AC::get_var_waveform(algo_comm_t ac,const std::string& n)
     if( err )
         throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
     if( (var.stride == 0) || (var.stride > var.num_entries) )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%d).",n.c_str(),var.stride);
+        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%u).",n.c_str(),var.stride);
     if( var.num_entries == 0 )
         throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" contains no data.",n.c_str());
     mha_wave_t s;
@@ -623,7 +627,9 @@ mha_wave_t MHA_AC::get_var_waveform(algo_comm_t ac,const std::string& n)
     s.num_channels = var.stride;
     s.num_frames = var.num_entries / var.stride;
     if( s.num_channels * s.num_frames != var.num_entries )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%d): Not an integer fraction of entries.",n.c_str(),var.stride);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The variable \"%s\" has invalid stride settings (%u): Not an integer fraction of entries.",
+                        n.c_str(),var.stride);
     if( var.data_type == MHA_AC_MHAREAL ){
         s.buf = (mha_real_t*)var.data;
         return s;
@@ -659,7 +665,7 @@ std::vector<float> MHA_AC::get_var_vfloat(algo_comm_t ac,const std::string& name
     if (cv.data_type != MHA_AC_MHAREAL) {
         throw MHA_Error(__FILE__,__LINE__,
                         "Algorithm communication variable %s has unexpected"
-                        " data type %d", name.c_str(), cv.data_type);
+                        " data type %u", name.c_str(), cv.data_type);
     }
     std::vector<float> vfloat;
     vfloat.resize(cv.num_entries);
@@ -871,7 +877,7 @@ void MHA_AC::ac2matrix_helper_t::getvar()
         break;
     default:
         throw MHA_Error(__FILE__,__LINE__,
-                        "Unsupported AC data format (%d).",
+                        "Unsupported AC data format (%u).",
                         acvar.data_type);
     }
 }
@@ -932,7 +938,7 @@ MHA_AC::acspace2matrix_t& MHA_AC::acspace2matrix_t::operator=(const MHA_AC::acsp
 {
     if( src.len != len )
         throw MHA_Error(__FILE__,__LINE__,
-                        "left value has %d entries, right value has %d.",
+                        "left value has %u entries, right value has %u.",
                         len,src.len);
     for(unsigned int k=0;k<len;k++)
         *data[k] = *(src.data[k]);

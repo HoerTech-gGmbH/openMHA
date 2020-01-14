@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2008 2009 2013 2014 2016 2017 HörTech gGmbH
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,19 @@
 
 class MHA_Error : public std::exception {
 public:
-    MHA_Error(const char* file,int line,const char* fmt,...);
+    MHA_Error(const char* file,int line,const char* fmt,...)
+        __attribute__        // Let compiler check format strings
+        ((__format__(
+#ifdef _WIN32 // MinGW needs format gnu_printf to accept %zu for size_t
+                     gnu_printf,
+#else         // All other platforms accept %zu with format printf
+                     printf,
+#endif 
+                             // invisible "this" is 1st parameter
+                     4,      // format sting is in 4th parameter
+                     5       // ... starts at 5th parameter
+                     )
+          ));
     MHA_Error(const MHA_Error&);
     MHA_Error& operator=(const MHA_Error&);
     ~MHA_Error() throw ();

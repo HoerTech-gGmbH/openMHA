@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -58,7 +58,7 @@ mha_spec_t* cfg_t::process(mha_spec_t* s)
         throw MHA_ErrorMsg("Mismatching signal dimension.");
     if( nch_out != (int)s->num_channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Error in shadowfilter_end: The input has %d channels but was configured to have %d.",
+                        "Error in shadowfilter_end: The input has %u channels but was configured to have %d.",
                         s->num_channels,nch_out);
     if( nch_out > (int)in_spec.num_channels )
         throw MHA_ErrorMsg("More input channels than output channels.");

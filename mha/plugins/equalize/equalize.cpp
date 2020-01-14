@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2009 2010 2013 2014 2015 2016 HörTech gGmbH
-// Copyright © 2018 2019 HörTech gGmbH
+// Copyright © 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -105,12 +105,12 @@ namespace equalize {
       throw MHA_ErrorMsg("Invalid number of channels.");
     if( (int)ifgains.size() != nchannels )
       throw MHA_Error(__FILE__,__LINE__,
-                      "The gain matrix needs %zu channels, found %zu.",
+                      "The gain matrix needs %d channels, found %zu.",
                       nchannels,ifgains.size());
     for(ch=0;ch<nchannels;ch++){
       if( (int)ifgains[ch].size() != num_bins )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The gain matrix needs %zu entries per channel, found %zu.",
+                        "The gain matrix needs %d entries per channel, found %zu.",
                         num_bins,ifgains[ch].size());
     }
     fftgains = new float[num_bins*nchannels];

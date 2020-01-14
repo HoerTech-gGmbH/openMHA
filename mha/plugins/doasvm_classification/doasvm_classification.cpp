@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2016 2018 HörTech gGmbH
+// Copyright © 2014 2015 2016 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -137,7 +137,7 @@ void doasvm_classification::prepare(mhaconfig_t & signal_info)
 
     if( signal_info.channels != 2 )
         throw MHA_Error(__FILE__, __LINE__,
-                        "This input signal must have exactly 2 channels, not %d.",
+                        "This input signal must have exactly 2 channels, not %u.",
                         signal_info.channels);
 
     /* make sure that a valid runtime configuration exists: */

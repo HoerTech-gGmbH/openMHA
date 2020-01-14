@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2009 2010 2011 2014 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -307,7 +308,8 @@ calibrator_runtime_layer_t::calibrator_runtime_layer_t(bool is_input,
     unsigned int k, ch;
     if( (vars.peaklevel.data.size() != tf.channels) && (vars.peaklevel.data.size() != 1) )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The number of entries in the peaklevel vector must be either %d (one per channel) or 1 (same peaklevel for all channels)", tf.channels);
+                        "The number of entries in the peaklevel vector must be either %u (one per channel) or 1"
+                        " (same peaklevel for all channels)", tf.channels);
     if( vars.peaklevel.data.size() == 1 ){
         for(k=0;k<tf.fragsize;k++)
             for(ch=0;ch<tf.channels;ch++)
@@ -334,7 +336,9 @@ calibrator_runtime_layer_t::calibrator_runtime_layer_t(bool is_input,
                     fir_c(k,ch) = vars.fir.data[0][k];
         }else{
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid dimension of filter coefficients (%d rows), expected either %d (one row for each channel) or 1 (same coefficients for all channels).",vars.fir.data.size(),tf.channels);
+                            "Invalid dimension of filter coefficients (%zu rows), expected either %u"
+                            " (one row for each channel) or 1 (same coefficients for all channels).",
+                            vars.fir.data.size(),tf.channels);
         }
         fir.update_coeffs(&fir_c);
     }
@@ -366,7 +370,8 @@ private:
 
 void calibrator_t::update_tau_level()
 {
-    rmslevelmeter::push_config(new MHASignal::async_rmslevel_t(std::max(1u,(unsigned int)(tftype.srate*vars.tau_level.data)),tftype.channels));
+    rmslevelmeter::push_config(new MHASignal::async_rmslevel_t(std::max(1u,(unsigned int)(tftype.srate*vars.tau_level.data)),
+                                                               tftype.channels));
 }
 
 void calibrator_t::read_levels()

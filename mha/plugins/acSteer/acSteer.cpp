@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -34,7 +34,8 @@ acSteer_config::acSteer_config(algo_comm_t &ac, const mhaconfig_t in_cfg, acStee
 {
     if ( nsteerchan != nrefmic * nchan * nangle)
         throw MHA_Error(__FILE__, __LINE__,
-                        "Steering vectors have %d channels, should have a %d (num. of reference microphones) multiple of %d (context channels).\n",
+                        "Steering vectors have %u channels, should have a %u (num. of reference microphones)"
+                        " multiple of %u (context channels).\n",
                         nsteerchan, nrefmic, nchan);
 
     //read in the file where the steering vectors are saved

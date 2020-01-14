@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2007 2009 2010 2013 2014 2015 2018 2019 HörTech gGmbH
+// Copyright © 2007 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -168,7 +168,7 @@ namespace mconv {
         if (irs.data.size() != inch.data.size()
             || irs.data.size() != outch.data.size())
             throw MHA_Error(__FILE__, __LINE__,
-                            "Sizes of irs (%d), inch (%d), and outch (%d) do not match",
+                            "Sizes of irs (%zu), inch (%zu), and outch (%zu) do not match",
                             irs.data.size(), inch.data.size(), outch.data.size());
 
         MHAFilter::transfer_function_t tf;

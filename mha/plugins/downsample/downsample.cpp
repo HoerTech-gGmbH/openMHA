@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2008 2010 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2005 2008 2010 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -42,7 +42,7 @@ void ds_t::prepare(mhaconfig_t& cf)
     unsigned int new_fragsize = cf.fragsize / ratio.data;
     if( new_fragsize * ratio.data != cf.fragsize )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The fragment size (%d) is not divisible by %d.",
+                        "The fragment size (%u) is not divisible by %d.",
                         cf.fragsize,ratio.data);
     push_config(new MHASignal::waveform_t(new_fragsize,cf.channels));
     cf.fragsize = new_fragsize;
@@ -60,11 +60,11 @@ mha_wave_t* ds_t::process(mha_wave_t* s)
     poll_config();
     if( cfg->num_channels != s->num_channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "downsample: Got %d channels, expected %d.",
+                        "downsample: Got %u channels, expected %u.",
                         s->num_channels, cfg->num_channels);
     if( cfg->num_frames * ratio.data != s->num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "downsample: Got %d frames, expected %d.",
+                        "downsample: Got %u frames, expected %u.",
                         s->num_frames, cfg->num_frames * ratio.data );
     antialias.filter(s,s);
     unsigned int ch, fr;

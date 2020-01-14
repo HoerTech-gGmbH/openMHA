@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -77,7 +78,7 @@ void analysepath_t::rt_process(mha_wave_t* outer_input)
 
     if( outer_input->num_channels != inner_input.num_channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "got %d input channels, expected %d.",
+                        "got %u input channels, expected %u.",
                         outer_input->num_channels, inner_input.num_channels);
     if( wave_fifo.get_available_space() >= size(outer_input) )
         wave_fifo.write(outer_input->buf,size(outer_input));
@@ -157,7 +158,7 @@ analysepath_t::analysepath_t(unsigned int nchannels_in,
       outer_ac_copy(acspace_template),
       outer_ac(iouter_ac),
       inner_out_domain(iinner_out_domain),
-      inner_error("",0,""),
+      inner_error("", 0, "(uninitialized MHA_Error object used for temporary storage of exceptions in plugin analysispath)"),
       has_inner_error(false),
       flag_terminate_inner_thread(false),
       input_to_process(0)
@@ -171,7 +172,7 @@ analysepath_t::analysepath_t(unsigned int nchannels_in,
     }
 
     if(fifo_len_blocks < 1)
-        throw MHA_Error(__FILE__,__LINE__,"FIFO length to short (%d)",fifo_len_blocks);
+        throw MHA_Error(__FILE__,__LINE__,"FIFO length to short (%u)",fifo_len_blocks);
 
     // Initialize the mutex
     pthread_mutex_init(&ProcessMutex, NULL);
@@ -301,7 +302,9 @@ analysispath_if_t::~analysispath_if_t()
 void analysispath_if_t::prepare(mhaconfig_t& conf)
 {
     if( fragsize.data < (int)conf.fragsize )
-        throw MHA_Error(__FILE__,__LINE__,"Inner fragment size must be at least the same as outer fragment size (inner: %d, outer: %d)",fragsize.data, conf.fragsize);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Inner fragment size must be at least the same as outer fragment size (inner: %d, outer: %u)",
+                        fragsize.data, conf.fragsize);
     if( !plug )
         throw MHA_ErrorMsg("No plugin was loaded.");
     if( conf.domain != MHA_WAVEFORM )

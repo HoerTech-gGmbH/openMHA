@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2010 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2018 2019  HörTech gGmbH
+// Copyright © 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -34,7 +34,8 @@ scaler_t::scaler_t(const unsigned int& channels,
 {
     if( (gains.data.size() != channels) && (gains.data.size() != 1) )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The number of entries in the gain vector must be either %d (one per channel) or 1 (same gains for all channels)", channels);
+                        "The number of entries in the gain vector must be either %u"
+                        " (one per channel) or 1 (same gains for all channels)", channels);
     if( gains.data.size() == 1 ){
         for(unsigned int ch=0;ch<num_channels;ch++)
             value(0,ch) = pow(10.0,0.05*gains.data[0]);

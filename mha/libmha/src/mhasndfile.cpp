@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2007 2012 2013 2016 2017 2018 HörTech gGmbH
+// Copyright © 2006 2007 2012 2013 2016 2017 2018 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -65,14 +65,18 @@ unsigned int validator_channels(std::vector<int> channel_map, unsigned int chann
         return channels;
     for( unsigned int k=0;k<channel_map.size();k++)
         if( unsigned(channel_map[k]) >= channels )
-            throw MHA_Error(__FILE__,__LINE__,"Invalid channel number in channel map (entry %u/%u, value %d, channels %u)",k+1,unsigned(channel_map.size()),channel_map[k],channels);
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Invalid channel number in channel map (entry %u/%zu, value %d, channels %u)",
+                            k+1,channel_map.size(),channel_map[k],channels);
     return channel_map.size();
 }
 
 unsigned int validator_length(unsigned int maxlen, unsigned int frames, unsigned int startpos)
 {
     if( startpos >= frames )
-        throw MHA_Error(__FILE__,__LINE__,"The starting position is larger then the sound file length (startpos %d, length %d).",startpos,frames);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The starting position is larger then the sound file length (startpos %u, length %u).",
+                        startpos,frames);
     return std::min(frames-startpos,maxlen);
 }
 

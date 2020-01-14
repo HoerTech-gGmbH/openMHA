@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2008 2009 2013 2014 2015 2016 2017 HörTech gGmbH
+// Copyright © 2005 2006 2008 2009 2013 2014 2015 2016 2017 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -151,11 +151,11 @@ void io_parser_t::process_frame()
         return;
     if( input.data.size() != nchannels_in )
         throw MHA_Error(__FILE__,__LINE__,
-                        "MHAIOParser: The input variable has %d channels, expected %d.",
+                        "MHAIOParser: The input variable has %zu channels, expected %u.",
                         input.data.size(), nchannels_in );
     if( input.data[0].size() != fragsize )
         throw MHA_Error(__FILE__,__LINE__,
-                        "MHAIOParser: The input fragsize is %d, expected %d.",
+                        "MHAIOParser: The input fragsize is %zu, expected %u.",
                         input.data[0].size(), fragsize );
     started();
     unsigned int ch, fr;

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -435,7 +435,7 @@ void ac2lsl::cfg_t::create_or_replace_var(const std::string& name, const comm_va
         break;
     default:
         throw MHA_Error(__FILE__,__LINE__,
-                        "Unknown data type: \"%i\"",v.data_type);
+                        "Unknown data type: \"%u\"",v.data_type);
     }
 }
 

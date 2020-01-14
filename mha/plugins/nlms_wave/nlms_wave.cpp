@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2008 2010 2012 2013 2014 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2008 2010 2012 2013 2014 2015 2016 2017 2018 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -193,13 +193,13 @@ mha_wave_t* rt_nlms_t::process(mha_wave_t* sUflt, mha_real_t rho, mha_real_t c, 
     //check that AC adaptation variables have same channels as input
     if ( s_U.num_channels != channels )
     {
-        throw MHA_Error(__FILE__,__LINE__,"Number of input channels %d doesn't match input channels %d in name_u:%s",
+        throw MHA_Error(__FILE__,__LINE__,"Number of input channels %u doesn't match input channels %u in name_u:%s",
                         channels, s_U.num_channels, name_u_.c_str());
     }
 
     if ( s_D.num_channels != channels )
     {
-        throw MHA_Error(__FILE__,__LINE__,"Number of input channels %d doesn't match input channels %d in name_d:%s",
+        throw MHA_Error(__FILE__,__LINE__,"Number of input channels %u doesn't match input channels %u in name_d:%s",
                         channels, s_U.num_channels, name_d_.c_str());
     }
 

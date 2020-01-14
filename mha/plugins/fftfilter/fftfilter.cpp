@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2013 2014 2015 2018 2019 HörTech gGmbH
+// Copyright © 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -61,20 +62,20 @@ namespace fftfilter {
                             "No channels defined.");
         if( fragsize > fftlen )
             throw MHA_Error(__FILE__,__LINE__,
-                            "The fragment size (%d) should not be greater than the FFT length (%d).",
+                            "The fragment size (%u) should not be greater than the FFT length (%u).",
                             fragsize, fftlen);
         if( (irs.data.size() != 1) && (irs.data.size() != channels) )
             throw MHA_Error(__FILE__,__LINE__,
                             "Please provide either one impulse response"
-                            " (used for all channels) or %d impulse responses (one for each channel)",channels);
+                            " (used for all channels) or %u impulse responses (one for each channel)",channels);
         unsigned int ch;
         for(ch=0;ch<irs.data.size();ch++){
             if( !irs.data[ch].size() )
                 throw MHA_Error(__FILE__,__LINE__,
-                                "Empty impulse response in channel %d.",ch);
+                                "Empty impulse response in channel %u.",ch);
             if( irs.data[ch].size()-1 > fftlen-fragsize )
                 throw MHA_Error(__FILE__,__LINE__,
-                                "The impulse response in channel %d is too"
+                                "The impulse response in channel %u is too"
                                 " long.\nPlease increase the FFT length to avoid circular aliasing.",ch);
         }
         return irs_length( irs );

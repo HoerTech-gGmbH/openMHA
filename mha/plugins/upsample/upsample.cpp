@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2008 2010 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2005 2008 2010 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -56,11 +56,11 @@ mha_wave_t* us_t::process(mha_wave_t* s)
     poll_config();
     if( cfg->num_channels != s->num_channels )
         throw MHA_Error(__FILE__,__LINE__,
-                        "upsample: Got %d channels, expected %d.",
+                        "upsample: Got %u channels, expected %u.",
                         s->num_channels, cfg->num_channels);
     if( cfg->num_frames / ratio.data != s->num_frames )
         throw MHA_Error(__FILE__,__LINE__,
-                        "upsample: Got %d frames, expected %d.",
+                        "upsample: Got %u frames, expected %u.",
                         s->num_frames, cfg->num_frames / ratio.data );
     unsigned int ch, fr;
     clear(cfg);

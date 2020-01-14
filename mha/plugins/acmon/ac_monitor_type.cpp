@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2009 2013 2014 2017 2018 HörTech gGmbH
+// Copyright © 2009 2013 2014 2017 2018 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -85,7 +85,7 @@ void acmon::ac_monitor_t::getvar(algo_comm_t ac)
     if( use_mat ){
         if( (stride == 0) || (stride > ndim) )
             throw MHA_Error(__FILE__,__LINE__,
-                            "The variable \"%s\" has invalid stride settings (%d).",
+                            "The variable \"%s\" has invalid stride settings (%u).",
                             name.c_str(),stride);
         mon_mat.data.resize(ndim/stride);
         mon_mat_complex.data.resize(ndim/stride);

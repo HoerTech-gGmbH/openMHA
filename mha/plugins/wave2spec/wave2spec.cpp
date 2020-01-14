@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2014 2015 2018 HörTech gGmbH
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ void wave2spec_t::calc_pre_wnd(MHASignal::waveform_t& dest,const MHASignal::wave
     if( dest.num_frames != npad1 + nwnd + npad2 )
         throw MHA_ErrorMsg("destination has wrong length");
     if( src.num_frames != nwnd )
-        throw MHA_Error(__FILE__,__LINE__,"Source has wrong length: %d (window length is %d)",src.num_frames,nwnd);
+        throw MHA_Error(__FILE__,__LINE__,"Source has wrong length: %u (window length is %u)",src.num_frames,nwnd);
     if( dest.num_channels != src.num_channels )
         throw MHA_ErrorMsg("channel count mismatch");
     unsigned int k;
@@ -80,8 +80,8 @@ mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)
 {
     if( nwndshift > nwnd )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The window shift (%d) is greater than the window size (%d).",
-                        __FILE__,__LINE__,nwndshift,nwnd);
+                        "The window shift (%u) is greater than the window size (%u).",
+                        nwndshift,nwnd);
     in_buf.copy_from_at(in_buf.num_frames - nwndshift,nwndshift,*wave_in,0);
     calc_pre_wnd(calc_in,in_buf);
     in_buf.copy_from_at(0,in_buf.num_frames-nwndshift,in_buf,nwndshift);
@@ -130,16 +130,16 @@ void wave2spec_if_t::prepare(mhaconfig_t& t)
         if (t.wndlen==t.fragsize ||
             !MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize))
             throw MHA_Error(__FILE__,__LINE__,
-                            "The ratio between the hop size (\"fragsize\", %d) "
-                            "and the window length (%d) must be a power of two.",
+                            "The ratio between the hop size (\"fragsize\", %u) "
+                            "and the window length (%u) must be a power of two.",
                             t.fragsize, t.wndlen);
     if( t.fragsize > t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
-                        "wave2spec: The fragment size (%d) is greater than the window size (%d).",
+                        "wave2spec: The fragment size (%u) is greater than the window size (%u).",
                         t.fragsize, t.wndlen);
     if( t.fftlen < t.wndlen )
         throw MHA_Error(__FILE__,__LINE__,
-                        "wave2spec: Invalid FFT length %d (less than window length %d).",
+                        "wave2spec: Invalid FFT length %u (less than window length %u).",
                         t.fftlen, t.wndlen );
     tftype = t;
     update();

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2015 2016 2018 2019 HörTech gGmbH
+// Copyright © 2015 2016 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -237,7 +237,9 @@ void acPooling_wave::prepare(mhaconfig_t & signal_info)
 
     if (pooling_wndlen.data * signal_info.srate / 1000 < signal_info.fragsize * 2)
         throw MHA_Error (__FILE__, __LINE__,
-                         "Pooling window size in samples (%i) is not allowed to be smaller than the twice of the fragsize (%i).", pooling_wndlen.data * signal_info.srate / 1000, signal_info.fragsize * 2);
+                         "Pooling window size in samples (%f) is not allowed to be smaller "
+                         "than the twice of the fragsize (%u).",
+                         pooling_wndlen.data * signal_info.srate / 1000, signal_info.fragsize * 2);
     
     if (prob_bias.data.size() != static_cast<unsigned int>(numsamples.data))
         throw MHA_Error(__FILE__, __LINE__,

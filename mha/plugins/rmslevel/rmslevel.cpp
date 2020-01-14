@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2013 2014 2015 2017 HörTech gGmbH
-// Copyright © 2018 2019 HörTech gGmbH
+// Copyright © 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -187,7 +187,7 @@ namespace rmslevel {
                     MHASignal::pa22dbspl(std::max(MHASignal::colored_intensity(*s,ch,fftlen,freq_offsets.data()),2e-10f));
             }
             else {
-                throw MHA_Error(__FILE__,__LINE__,"Bug: Unknown unit for dB: ", unit);
+                throw MHA_Error(__FILE__,__LINE__,"Bug: Unknown unit for dB\nUse dB(SPL) or dB(HL)");
             }
         }
         for(auto& mon: monitors){
