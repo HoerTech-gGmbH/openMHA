@@ -638,7 +638,7 @@ namespace rohBeam {
                               if( input_cfg().srate != sndfile.samplerate )
                                 {
                                   throw MHA_Error(__FILE__,__LINE__,
-                                                  "Sample rate in sampled HRIR (%f) does not match MHA sample rate (%f).",
+                                                  "Sample rate in sampled HRIR (%d) does not match MHA sample rate (%f).",
                                                   sndfile.samplerate,input_cfg().srate);
                                 }
 
@@ -927,7 +927,7 @@ namespace rohBeam {
     for(unsigned int f=0;f<nfreq;f++)
       for(unsigned int c=0;c<nchan;c++){
         if( is_denormal((*beamW)(f,c)) )
-          throw MHA_Error(__FILE__,__LINE__,"Beam weights contain denormals (bin %d, channel %d).",
+          throw MHA_Error(__FILE__,__LINE__,"Beam weights contain denormals (bin %u, channel %u).",
                           f,c);
       }
     return beamW;
