@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,6 +20,8 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <cmath>
+#include <complex>
 namespace MHAUtils {
   inline bool is_multiple_of(const unsigned big, const unsigned small) {
     if(small==0)
@@ -49,6 +51,39 @@ namespace MHAUtils {
     std::string::iterator end_pos = std::remove(str.begin(), str.end(), c);
     str.erase(end_pos, str.end());
     return str;
+  }
+
+  /// Get the normal-ness of a mha_real_t. Returns true iff
+  /// x is not equal to zero and the absolute value of x is smaller
+  /// than the minimum positive normalized value of mha_real_t.
+  /// @param x A mha_real_t floating point number
+  /// @returns True if x is denormal, false otherwise
+  inline bool is_denormal(mha_real_t x)
+  {
+    if( x != 0 and std::abs(x)<std::numeric_limits<mha_real_t>::min())
+      return true;
+    else
+      return false;
+  }
+
+
+  /// Get the normal-ness of a complex number. Overload for mha_complex_t.
+  /// Returns true iff one or both of real and imaginary part are denormal
+  /// @param x [in] A mha_complex_t number
+  /// @returns True if at least one component of x is denormal, false otherwise
+  inline bool is_denormal(const mha_complex_t& x)
+  {
+    return is_denormal(x.re) || is_denormal(x.im);
+  }
+
+
+  /// Get the normal-ness of a complex number. Overload for std::complex
+  /// Returns true iff one or both of real and imaginary part are denormal.
+  /// @param x [in] A mha_complex_t number
+  /// @returns True if at least one component of x is denormal, false otherwise
+  inline bool is_denormal(const std::complex<mha_real_t>& x)
+  {
+    return is_denormal(std::real(x)) || is_denormal(std::imag(x));
   }
 
   /// Get the offset of between dB(SPL) and dB(HL) for a given frequency

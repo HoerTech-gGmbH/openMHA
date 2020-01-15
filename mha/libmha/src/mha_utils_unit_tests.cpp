@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -12,10 +12,10 @@
 //
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
-
+#include "mha.hh"
 #include "mha_utils.hh"
 #include <gtest/gtest.h>
-
+#include <cmath>
 using MHAUtils::is_multiple_of;
 
 TEST(is_multiple_of, int_zero_and_int_max){
@@ -81,6 +81,44 @@ TEST(spl2hl,spl2hl){
   EXPECT_NEAR(spl2hl(16000),-40.2,1e-4);
   EXPECT_NEAR(spl2hl(18000),-62.0,1e-4);
   EXPECT_THROW(spl2hl(-1), MHA_Error);
+}
+
+using MHAUtils::is_denormal;
+TEST(is_denormal,real){
+  EXPECT_FALSE(is_denormal(1));
+  EXPECT_FALSE(is_denormal(0));
+
+  EXPECT_FALSE(is_denormal(std::numeric_limits<mha_real_t>::min()));
+  EXPECT_FALSE(-is_denormal(std::numeric_limits<mha_real_t>::min()));
+
+  EXPECT_FALSE(-is_denormal(std::numeric_limits<mha_real_t>::infinity()));
+  EXPECT_FALSE(-is_denormal(std::numeric_limits<mha_real_t>::infinity()));
+
+  EXPECT_FALSE(is_denormal(std::numeric_limits<mha_real_t>::quiet_NaN()));
+  EXPECT_FALSE(is_denormal(-std::numeric_limits<mha_real_t>::quiet_NaN()));
+
+  EXPECT_TRUE(is_denormal(std::numeric_limits<mha_real_t>::denorm_min()));
+  EXPECT_TRUE(-is_denormal(std::numeric_limits<mha_real_t>::denorm_min()));
+}
+
+TEST(is_denormal,complex){
+  mha_real_t not_a_denormal_number=1;
+  mha_real_t a_denormal_number=std::numeric_limits<mha_real_t>::denorm_min();
+  mha_complex_t x;
+  x.im=not_a_denormal_number;
+  x.re=not_a_denormal_number;
+  EXPECT_FALSE(is_denormal(x));
+
+  x.im=a_denormal_number;
+  EXPECT_TRUE(is_denormal(x));
+
+  x.im=not_a_denormal_number;
+  x.re=a_denormal_number;
+  EXPECT_TRUE(is_denormal(x));
+
+  x.im=a_denormal_number;
+  EXPECT_TRUE(is_denormal(x));
+
 }
 
 // Local Variables:
