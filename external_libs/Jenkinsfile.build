@@ -96,6 +96,10 @@ pipeline {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {depndcy_build_steps("bionic && armv7 && mhadev")}
                 }
+                stage(                         "focal && armv7 && mhadev") {
+                    agent {label               "focal && armv7 && mhadev"}
+                    steps {depndcy_build_steps("focal && armv7 && mhadev")}
+                }
                 stage(                         "windows && x86_64 && mhadev") {
                     agent {label               "windows && x86_64 && mhadev"}
                     steps {depndcy_build_steps("windows && x86_64 && mhadev")}
@@ -125,6 +129,8 @@ pipeline {
                 unstash "x86_64_xenial"
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "armv7_bionic"
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "armv7_focal"
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_windows"
                 sh ("tar xzf installation.tgz && rm *.tgz")
