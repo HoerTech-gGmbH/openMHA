@@ -137,10 +137,6 @@ pipeline {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
                 }
-                stage(                         "focal && armv7 && mhadev") {
-                    agent {label               "focal && armv7 && mhadev"}
-                    steps {openmha_build_steps("focal && armv7 && mhadev")}
-                }
                 stage(                         "windows && x86_64 && mhadev") {
                     agent {label               "windows && x86_64 && mhadev"}
                     steps {openmha_build_steps("windows && x86_64 && mhadev")}
