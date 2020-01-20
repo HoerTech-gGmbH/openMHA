@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2018 2019 HörTech gGmbH
+// Copyright © 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -84,25 +84,17 @@ pipeline {
                     agent {label               "bionic && x86_64 && mhadev"}
                     steps {depndcy_build_steps("bionic && x86_64 && mhadev")}
                 }
+                stage(                         "focal && x86_64 && mhadev") {
+                    agent {label               "focal && x86_64 && mhadev"}
+                    steps {depndcy_build_steps("focal && x86_64 && mhadev")}
+                }
                 stage(                         "xenial && x86_64 && mhadev") {
                     agent {label               "xenial && x86_64 && mhadev"}
                     steps {depndcy_build_steps("xenial && x86_64 && mhadev")}
                 }
-                stage(                         "bionic && i686 && mhadev") {
-                    agent {label               "bionic && i686 && mhadev"}
-                    steps {depndcy_build_steps("bionic && i686 && mhadev")}
-                }
-                stage(                         "xenial && i686 && mhadev") {
-                    agent {label               "xenial && i686 && mhadev"}
-                    steps {depndcy_build_steps("xenial && i686 && mhadev")}
-                }
                 stage(                         "bionic && armv7 && mhadev") {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {depndcy_build_steps("bionic && armv7 && mhadev")}
-                }
-                stage(                         "xenial && armv7 && mhadev") {
-                    agent {label               "xenial && armv7 && mhadev"}
-                    steps {depndcy_build_steps("xenial && armv7 && mhadev")}
                 }
                 stage(                         "windows && x86_64 && mhadev") {
                     agent {label               "windows && x86_64 && mhadev"}
@@ -128,15 +120,11 @@ pipeline {
 
                 // unpack compiled results from all platforms
                 sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "x86_64_focal"
+                sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_xenial"
                 sh ("tar xzf installation.tgz && rm *.tgz")
-                unstash "i686_bionic"
-                sh ("tar xzf installation.tgz && rm *.tgz")
-                unstash "i686_xenial"
-                sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "armv7_bionic"
-                sh ("tar xzf installation.tgz && rm *.tgz")
-                unstash "armv7_xenial"
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_windows"
                 sh ("tar xzf installation.tgz && rm *.tgz")

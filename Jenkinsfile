@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2018 2019 HörTech gGmbH
+// Copyright © 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -125,25 +125,17 @@ pipeline {
                     agent {label               "bionic && x86_64 && mhadoc"}
                     steps {openmha_build_steps("bionic && x86_64 && mhadoc")}
                 }
+                stage(                         "focal && x86_64 && mhadev") {
+                    agent {label               "focal && x86_64 && mhadev"}
+                    steps {openmha_build_steps("focal && x86_64 && mhadev")}
+                }
                 stage(                         "xenial && x86_64 && mhadev") {
                     agent {label               "xenial && x86_64 && mhadev"}
                     steps {openmha_build_steps("xenial && x86_64 && mhadev")}
                 }
-                stage(                         "bionic && i686 && mhadev") {
-                    agent {label               "bionic && i686 && mhadev"}
-                    steps {openmha_build_steps("bionic && i686 && mhadev")}
-                }
-                stage(                         "xenial && i686 && mhadev") {
-                    agent {label               "xenial && i686 && mhadev"}
-                    steps {openmha_build_steps("xenial && i686 && mhadev")}
-                }
                 stage(                         "bionic && armv7 && mhadev") {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
-                }
-                stage(                         "xenial && armv7 && mhadev") {
-                    agent {label               "xenial && armv7 && mhadev"}
-                    steps {openmha_build_steps("xenial && armv7 && mhadev")}
                 }
                 stage(                         "windows && x86_64 && mhadev") {
                     agent {label               "windows && x86_64 && mhadev"}
@@ -162,11 +154,9 @@ pipeline {
             steps {
                 // receive all deb packages from openmha build
                 unstash "x86_64_bionic"
+                unstash "x86_64_focal"
                 unstash "x86_64_xenial"
                 unstash "armv7_bionic"
-                unstash "armv7_xenial"
-                unstash "i686_bionic"
-                unstash "i686_xenial"
 
                 // Copies the new debs to the stash of existing debs,
                 sh "make storage"
