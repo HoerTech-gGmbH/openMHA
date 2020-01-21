@@ -137,10 +137,10 @@ pipeline {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
                 }
-                stage(                         "buster && armv7 && mhadev") {
-                    agent {label               "buster && armv7 && mhadev"}
-                    steps {openmha_build_steps("buster && armv7 && mhadev")}
-                }
+//                stage(                         "buster && armv7 && mhadev") {
+//                    agent {label               "buster && armv7 && mhadev"}
+//                    steps {openmha_build_steps("buster && armv7 && mhadev")}
+//                }
                 stage(                         "windows && x86_64 && mhadev") {
                     agent {label               "windows && x86_64 && mhadev"}
                     steps {openmha_build_steps("windows && x86_64 && mhadev")}
@@ -161,7 +161,7 @@ pipeline {
                 unstash "x86_64_focal"
                 unstash "x86_64_xenial"
                 unstash "armv7_bionic"
-                unstash "armv7_buster"
+//                unstash "armv7_buster"
 
                 // Copies the new debs to the stash of existing debs,
                 sh "make storage"
