@@ -146,6 +146,10 @@ pipeline {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
                 }
+                stage(                         "buster && armv7 && mhadev") {
+                    agent {label               "buster && armv7 && mhadev"}
+                    steps {openmha_build_steps("buster && armv7 && mhadev")}
+                }
                 stage(                         "windows && x86_64 && mhadev") {
                     agent {label               "windows && x86_64 && mhadev"}
                     steps {openmha_build_steps("windows && x86_64 && mhadev")}
