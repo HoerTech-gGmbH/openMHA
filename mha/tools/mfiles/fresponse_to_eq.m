@@ -1,5 +1,5 @@
 function [peak,eq] = fresponse_to_eq(fresponse,srate,fftlen,print_result)
-% function fresponse_to_eq(fresponse)
+% function [peak,eq] = fresponse_to_eq(fresponse,srate,fftlen,print_result)
 % computes peak level and equalizer settings from fresponse
 % INPUT:
 % fresponse: struct with fields "Frequencies", "dBFSfor80dB",
