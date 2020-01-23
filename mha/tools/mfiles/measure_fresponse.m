@@ -1,10 +1,16 @@
-function [fresponse] = measure_fresponse(jack_port, sampling_rate)
-% function measure_fresponse(jack_port, sampling_rate)
-% jack_port:     Name of the sound card's output port where the sound output hardware is connected
+function [fresponse] = measure_fresponse(jack_port, sampling_rate, mha)
+% function measure_fresponse(jack_port, sampling_rate [,mha])
+% jack_port:     Name of the sound card's output port where the sound output
+%                hardware is connected
 % sampling_rate: sampling rate of sound card in Hz
+% mha:           Optional: struct with host and port of a remote
+%                unconfigured mha instance.  *If not given* then a local mha
+%                instance will be created on the computer that executes this
+%                mfile.  This function will load the sine plugin and the Jack io
+%                library and start the mha processing to produce test tones.
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2018 HörTech gGmbH
+% Copyright © 2018 2019 HörTech gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -32,12 +38,13 @@ function [fresponse] = measure_fresponse(jack_port, sampling_rate)
 
   % sampling rate is required for filter creation
   fresponse.sampling_rate = sampling_rate;
-  
-  % Start a suitable MHA for producing test tones
 
-  mha = mha_start;
+  if nargin < 3
+    mha = mha_start;
+  end
+
   s.nchannels_in = 1;
-  s.fragsize=64;
+  s.fragsize=3072; % least common multiple of 1024 and 24
   s.srate = sampling_rate;
   s.mhalib = 'transducers';
   s.mha.calib_out.peaklevel = [0];
@@ -52,7 +59,7 @@ function [fresponse] = measure_fresponse(jack_port, sampling_rate)
   % measure levels
   for fi = 1:length(fresponse.Frequencies)
     f = fresponse.Frequencies(fi);
-    printf("Starting measurements at %d Hz\n", f);
+    fprintf('Starting measurements at %d Hz\n', f);
     mha_set(mha, 'mha.sine.lev', -100);
     mha_set(mha, 'mha.sine.f', f);
     level = -51;
@@ -60,16 +67,15 @@ function [fresponse] = measure_fresponse(jack_port, sampling_rate)
     while change
       level = level + change;
       if (level > -3)
-        display("Warning: Cannot produce sinusoids > -3dB re FS RMS, limiting to -3dB")
+        display('Warning: Cannot produce sinusoids > -3dB re FS RMS, limiting to -3dB')
         level = -3;
       end
       mha_set(mha, 'mha.sine.lev', level);
       change = input(sprintf('\n\nProducing sinusoid with %dHz at %f dB re FS\nWe try to achieve 80 dB coupler level.\nwhat change in dB is required? ', f, level));
     end
     fresponse.dBFSfor80dB(fi) = level;
-    printf("Noting that we need %f dBFS at %d Hz to produce 80 dB coupler level.\n", level, f);
+    fprintf('Noting that we need %f dBFS at %d Hz to produce 80 dB coupler level.\n', level, f);
   end
 
   mha_set(mha,'cmd','quit');
 end
-

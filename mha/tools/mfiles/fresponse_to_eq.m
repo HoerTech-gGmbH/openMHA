@@ -36,11 +36,11 @@ function [peak,eq] = fresponse_to_eq(fresponse,srate,fftlen,print_result)
   eq = 10.^(eq/20);
   if ~exist('print_result','var')
     print_result=false;
-  endif
+  end
   if print_result
-     printf("The following values can be configured into the transducers plugin for the audio output channel where this output hardware is connected:\n");
-     printf("calib_out.peaklevel = [... %f ...]\n", peak);
-     printf("equalize.gains=[...;[");
-     printf("%.2f ",eq);
-     printf("]; ...]\n");
-  endif
+     fprintf('The following values can be configured into the transducers plugin for the audio output channel where this output hardware is connected:\n');
+     fprintf('calib_out.peaklevel = [... %f ...]\n', peak);
+     fprintf('equalize.gains=[...;[');
+     fprintf('%.2f ',eq);
+     fprintf(']; ...]\n');
+  end
