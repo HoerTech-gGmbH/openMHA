@@ -107,7 +107,11 @@ void io_file_t::release()
 void io_file_t::prepare(int nch_in,int nch_out)
 {
     sf_in = NULL;
+    if( filename_input.data.size() == 0 )
+        throw MHA_Error(__FILE__,__LINE__,"Input filename not provided.");
     sf_out = NULL;
+    if( filename_output.data.size() == 0)
+        throw MHA_Error(__FILE__,__LINE__,"Output filename not provided.");
     s_in = NULL;
     s_file_in = NULL;
     total_read = 0;
@@ -116,6 +120,7 @@ void io_file_t::prepare(int nch_in,int nch_out)
         nchannels_out = nch_out;
         sf_in = sf_open( filename_input.data.c_str(), SFM_READ, &sfinf_in );
         nchannels_file_in = sfinf_in.channels;
+
         if( !sf_in )
             throw MHA_Error(__FILE__,__LINE__,"Unable to open \"%s\" for reading.",filename_input.data.c_str());
         if( strict_channel_match.data && (sfinf_in.channels != nchannels_in) )
@@ -140,6 +145,7 @@ void io_file_t::prepare(int nch_in,int nch_out)
         }
 
         sf_out = sf_open( filename_output.data.c_str(), SFM_WRITE, &sfinf_out );
+
         if( !sf_out )
             throw MHA_Error(__FILE__,__LINE__,"Unable to open \"%s\" for writing.",filename_output.data.c_str());
         sf_command(sf_out, SFC_SET_CLIPPING, NULL, SF_TRUE);
