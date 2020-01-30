@@ -1,0 +1,36 @@
+---
+layout: post
+title:  "openMHA 4.11.0 available"
+date:   2019-12-03 08:00:00
+category: software
+tags: [release, 4.11.0]
+---
+
+__openMHA 4.11.0__ was released in conjunction with a [special session on open source audio processing tools](/meeting/2019/06/20/open-tools-at-ASA-San-Diego.html) at the 178th ASA meeting in San Diego.
+
+#### ASA demo configuration
+An SD-card image that contains the software configuration (openMHA and GUI) that was presented at the hands-on session in San Diego is available with the latest release of the [MAHALIA](http://mahalia.openmha.org/) operating system for Beaglebone Black single-board computers.
+
+#### Further updates
+
+As always various updates, extensions, and bugfixes are included in the release, e.g.: 
+
+
+### Plugins
+- New: equalize
+- adm: adjustable adaptation rate, better denormal handling
+- rmslevel: Add dB(SPL) -> dB(HL) conversion option
+- mconv: impulse response modifiable during processing
+
+### Tools and documentation
+- mhagui_addsndfile
+- Matlab/Octave script tool to translate frequency response to equalizer configuration
+- Improved documentation for several plugins
+- Updated starting guide
+
+### Misc
+- Implement dropout recovery in MHAIOalsa
+- Windows installer sets PATH automatically
+- Improved macOS installer 
+
+
