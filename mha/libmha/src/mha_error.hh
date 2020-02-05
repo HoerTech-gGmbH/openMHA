@@ -39,8 +39,8 @@ public:
                      printf,
 #endif 
                              // invisible "this" is 1st parameter
-                     4,      // format sting is in 4th parameter
-                     5       // ... starts at 5th parameter
+                     4,      // format string is in 4th parameter
+                     5       // varargs "..." starts at 5th parameter
                      )
           ));
     MHA_Error(const MHA_Error&);
@@ -85,8 +85,18 @@ private:
    \ingroup mhaerror
    \brief Print an info message (stderr on Linux, OutputDebugString in Windows).
  */
-void mha_debug(const char *fmt,...);
-
+void mha_debug(const char *fmt,...)
+    __attribute__        // Let compiler check format strings
+    ((__format__(
+#ifdef _WIN32 // MinGW needs format gnu_printf to accept %zu for size_t
+                     gnu_printf,
+#else         // All other platforms accept %zu with format printf
+                     printf,
+#endif 
+                     1,      // format string is in 1st parameter
+                     2       // varargs "..." starts at 2nd parameter
+                     )
+          ));
 #endif
 
 namespace mha_error_helpers {
