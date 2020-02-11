@@ -14,10 +14,13 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 pipeline {
-    agent any
+    // Cannot execute on Docker nodes because it calls git pull/push in
+    // a shell skript. Restrict to Jenkins master where it executes fine.
+    agent {label "jenkinsmaster"}
     stages {
         stage("update-external_libs-branch-if-necessary") {
             steps {
+                // This shell skript uses command line git push and pull.
                 sh("external_libs/update_branch_if_needed.sh")
             }
         }
