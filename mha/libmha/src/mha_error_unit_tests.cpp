@@ -15,6 +15,7 @@
 
 #include "mha_error.hh"
 #include <gtest/gtest.h>
+#include <cstdint>
 
 TEST(MHA_Error, helper_function_digits_computes_correct_number_of_decimal_digits)
 {
@@ -50,7 +51,8 @@ TEST(MHA_Error, format_string_conversions) {
     EXPECT_STREQ("() x", MHA_Error("",0,"%c",c).get_msg());
 
     // convert a c string with %s
-    // ...
+    char array[] = "hello";
+    EXPECT_STREQ("() hello", MHA_Error("",0,"%s",array).get_msg());
     
     // convert a short unsigned integer with %hu
     unsigned short us = 65535;
@@ -61,18 +63,25 @@ TEST(MHA_Error, format_string_conversions) {
     EXPECT_STREQ("() -1", MHA_Error("",0,"%hd",s).get_msg());
 
     // convert an unsigned int with %u
-    // ...
+    unsigned ui = 0;
+    EXPECT_STREQ("() 0", MHA_Error("",0,"%u",ui).get_msg());
 
     // convert a signed int with %d and %i
-    // ...
+    int i = -1;
+    EXPECT_STREQ("() -1", MHA_Error("",0,"%d",i).get_msg());
+    EXPECT_STREQ("() -1", MHA_Error("",0,"%i",i).get_msg());
 
     // convert a size_t and a std::vector<int>::size_type with %zu
     // Make our assumption that size_t equals std::vector<int>::size_type
     // explicit with a static assert
-    // ...
+    static_assert(std::is_same<size_t, std::vector<int>::size_type>::value, "Type size_t and standard library size_type\n"
+                                                                             "are not equivalent");
+    const size_t size = 10;
+    const std::vector<int>::size_type size_vector = 10;
+    EXPECT_STREQ("() 10", MHA_Error("",0,"%zu",size).get_msg());
+    EXPECT_STREQ("() 10", MHA_Error("",0,"%zu",size_vector).get_msg());
 
     // convert pointers with %p. Pointer values are unpredictable.
-    char array[] = "hello";
     char * hello = array;
     char * ello = hello+1;
     EXPECT_STREQ("ello", ello);
@@ -97,10 +106,29 @@ TEST(MHA_Error, format_string_conversions) {
     }
     
     // convert a float and a double with %g for values <<1, >>1, and ~1
-    // ...
+    //Values <<1
+    float f = 1.1e-20f;
+    double d = 1.1e-40;
+    EXPECT_STREQ("() 1.1e-20", MHA_Error("",0,"%g",f).get_msg());
+    EXPECT_STREQ("() 1.1e-40", MHA_Error("",0,"%g",d).get_msg());
+
+    //Values >>1
+    f = 1.1e20f;
+    d = 1.1e40;
+    EXPECT_STREQ("() 1.1e+20", MHA_Error("",0,"%g",f).get_msg());
+    EXPECT_STREQ("() 1.1e+40", MHA_Error("",0,"%g",d).get_msg());
+
+    //Values ~1
+    f = 99.9e-2f;
+    d = 99.9e-2;
+    EXPECT_STREQ("() 0.999", MHA_Error("",0,"%g",f).get_msg());
+    EXPECT_STREQ("() 0.999", MHA_Error("",0,"%g",d).get_msg());
 
     // convert a float and a double with %f
-    // ...
+    f = 1.0f;
+    d = 1.0;
+    EXPECT_STREQ("() 1.000000", MHA_Error("",0,"%f",f).get_msg());
+    EXPECT_STREQ("() 1.000000", MHA_Error("",0,"%f",d).get_msg());
 }
 
 /*
