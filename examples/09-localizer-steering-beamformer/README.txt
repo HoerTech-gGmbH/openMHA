@@ -1,25 +1,28 @@
 This directory contains an openMHA setup which estimates the direction of
-arrival of sounds captured with 4 hearing aid microphones, and
-which then controls a beamformer algorithm to steer to the most likely
-direction of a localized (coherent) sound source.
+arrival of sounds captured with 4 hearing aid microphones, and which then
+controls a beamformer algorithm to steer to the most likely direction of a
+localized (coherent) sound source.  It utilizes an implementation of a
+localization algorithm based on GCC-PHAT (see [0] and [1] and the
+configuration files for details).
 
-In addition to the signal processing, a browser-based visualization
-of the direction-of-arrival estimation can be started.
-
-Please refer to file README_visualization.md to learn more about
-the visualization procedure, and how to install the necessary
-dependencies.
-
-You can start the signal processing together with visualization by invoking
-the shell skript
+You can start the signal processing by invoking the shell script
 
 start_demo_live_binauralSteerBF.sh
 
-Please also refer to the comments in this shell skript to learn how to prepare
+Please also refer to the comments in this shell script to learn how to prepare
 the Jack server for this example.
 
+[0] C. Knapp and G. C. Carter, “The generalized correlation method for
+estimation of time delay,” IEEE Transactions on Acoustics, Speech and Signal
+Processing, vol. 24, no. 4, pp. 320–327, Aug. 1976.
+
+[1] H. Kayser and J. Anemüller, “A discriminative learning approach to
+probabilistic acoustic source localization,” In: International Workshop on
+Acoustic Echo and Noise Control (IWAENC 2014), pp. 100 -- 104, Antibes,
+France, 2014
+
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 HörTech gGmbH
+# Copyright © 2018 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by

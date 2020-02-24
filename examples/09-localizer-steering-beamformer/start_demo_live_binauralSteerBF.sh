@@ -1,6 +1,6 @@
 #!/bin/bash -i
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 HörTech gGmbH
+# Copyright © 2018 2019 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -30,22 +30,10 @@
 # io.con_in = [<front-left> <front-right> <rear-left> <rear-right>]
 # io.con_out = [<left> <right>]
 qjackctl -s &
-sleep 2
+jack_wait -w  # wait for JACK to be available
 
 # Start openMHA in xterm
 # Read configuration file containing the whole setup
 (
-        xterm -e 'mha ?read:Jack_live_resampling_doasvm_4Chan_16K_pool_acSteerMVDR_binaural.cfg;sleep 20' &
-
-)
-
-# Start visualisation assuming that the visualisation framework has been setup
-# as described in README_visualization.md
-(
-    sleep 2
-    conda activate doasvm_demo
-    set -x
-    cd ./visualisation_web/
-
-    python mha_server.py -b firefox pseudo3d --classification-id svm --pooling-id pool --pool-path mha.doachain.doasvm_mon.pool
+    xterm -e 'mha ?read:Jack_live_resampling_doasvm_4Chan_16K_pool_acSteerMVDR_binaural.cfg;sleep 20' &
 )
