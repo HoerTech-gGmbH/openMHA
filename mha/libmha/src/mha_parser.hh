@@ -279,6 +279,7 @@ namespace MHAParser {
         std::string query_val(const std::string&);
         std::string query_listids(const std::string&);
         void set_id_string(const std::string&);
+        bool has_entry(const std::string&);
     private:
         entry_map_t entries;
         /** identification string */

@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <sstream>
 #include <ctype.h>
+#include <algorithm>
 #include "mha_parser.hh"
 #include "mha_error.hh"
 #include "mha_defs.h"
@@ -941,6 +942,11 @@ std::string MHAParser::all_dump( base_t * p, const std::string & pref )
 std::string MHAParser::parser_t::query_dump( const std::string & s )
 {
     return all_dump( this, "" );
+}
+
+bool MHAParser::parser_t::has_entry(const std::string& s) {
+    return std::find_if(entries.begin(),entries.end(),
+                        [&s](const entry_t & i){return i.name==s;})!=entries.end();
 }
 
 std::string MHAParser::parser_t::op_subparse( expression_t & x )

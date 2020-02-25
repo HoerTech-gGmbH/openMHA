@@ -95,7 +95,7 @@ namespace MHAUtils {
   /// @throw MHA_Error if f<0
   mha_real_t spl2hl(mha_real_t f);
 
-} // MHAUtils
+}// MHAUtils
 
 #endif // __MHA_UTILS_HH__
 
