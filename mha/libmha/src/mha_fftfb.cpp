@@ -45,7 +45,7 @@
   distance to neighbour bands. The filter shapes can be rectangular,
   sawtooth or hanning windows, on different frequency scales (linear
   scale, bark scale, logarithmic scale). With rectangular shapes, the
-  filter edges are on the average between two center frequencies,
+  filter edges are on the mean frequency between two center frequencies,
   calculated on the given scale. To reach symmetric filters, the center
   frequencies must have equal distances on the given scale. See
   \ref filtershapefun and \ref freqscalefun for details.
@@ -208,11 +208,40 @@ namespace MHAOvlFilter {
 
 }
 
+/** Transform the test frequency into the relative position on the filter
+ * flank of the given frequency band.
+ * @param f Test frequency in units corresponding to the chosen frequency scale
+ * @param b Descriptor of a single filter bank band: E.g. contains center
+ *          frequencies of this and the two adjacent bands, and the
+ *          crossover ("edge") frequencies of this band.
+ * @param plateau For non-rectangular filter shapes, specifies what
+ *                frequency portion of the band around its center frequency
+ *                should have no attenuation applied.
+ * @pre 0 <= plateau <= 1
+ * @return The position of frequency f on the filter flank as follows:
+ *         A returned position of 0 means that f is equal to the band's
+ *         center frequency, or should be treated the same as the center
+ *         frequency (i.e. is within the band's plateau).  A returned
+ *         position of -1 means that f is <= the lowest frequency
+ *         of the filter flank (or is an even lower frequency). A returned
+ *         value of -0.5 means that f is equal to the lower edge frequency.
+ *         Positive returned values have equivalent meanings for the high
+ *         half of the filter flank.
+ */
 mha_real_t filtershapefun(mha_real_t f,
                           MHAOvlFilter::band_descriptor_t b,
                           mha_real_t plateau)
 {
     // lower cut-off frequency:
+    // If we have a plateau width of 0, then the lower cut-off frequency
+    // coincides with the center frequency of the lower frequency adjacent band,
+    // i.e. the filter flank would extend from that band's center frequency to
+    // this band's center frequency.
+    // If we have a plateau of width 1, then the filter flank would
+    // be narrowed to just the edge frequency, and we would effectively have
+    // a rectangular filter shape regardless of the selected filter shape.
+    // Plateau widths between 0 and 1 would see an increasingly narrower filter
+    // flank.
     mha_real_t f_co_l = (1-plateau)*b.cf_l + plateau*b.ef_l;
     // upper cut-off frequency:
     mha_real_t f_co_h = (1-plateau)*b.cf_h + plateau*b.ef_h;
@@ -487,6 +516,16 @@ void MHAOvlFilter::fspacing_t::ef2bands(std::vector<mha_real_t> vef)
     unsigned int k;
     for(k=0;k<bands.size();k++){
         bands[k].ef_l = symmetry_scale(vef[k]);
+        if    (vef[k] == 0 &&
+               bands[k].ef_l == -std::numeric_limits<mha_real_t>::infinity()) {
+            throw MHA_ErrorMsg("In edge frequency mode, an edge frequency "
+                               "of 0 Hz translates to -Inf on the "
+                               "logarithmic scales, which prevents "
+                               "reasonable filter shape computation.  "
+                               "Choose either non-zero edge frequencies, "
+                               "or a non-logarithmic frequency scale, or "
+                               "center frequency mode for the filterbank.");
+        }
         bands[k].ef_h = symmetry_scale(vef[k+1]);
         bands[k].cf = 0.5*(bands[k].ef_l + bands[k].ef_h);
         bands[k].low_side_flat = false;
