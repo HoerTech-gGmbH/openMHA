@@ -19,6 +19,7 @@ lib
 
 # Auto-generated pdf documents
 openMHA_*.pdf
+pdf-*.zip
 
 # Editor backup and lock files
 *~

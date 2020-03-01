@@ -38,10 +38,14 @@ and need write access to store output.
 Algorithm developers interested in implementing their own plugins should also
 install the development package __libopenmha-dev__.
 
-For updating openMHA when a new release is available run
+For updating openMHA when a new release is available, execute:
+
 ```
-sudo apt-get install --only-upgrade openmha
+sudo apt-get update
+sudo apt-get install openmha
 ```
+
+This will upgrade all installed openmha packages to their latest version.
 
 ## II. macOS installer
 
