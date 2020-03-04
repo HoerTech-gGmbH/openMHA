@@ -17,6 +17,7 @@ function [cfg,csBase] = mha_findid( mhah, csIds )
   if nargin < 1
     mhah = struct('host','localhost','port',33337);
   end
+  cfg = struct;
   csBase = mha_listid(mhah);
   if nargin < 2
     csIds = csBase(:,2)';
@@ -24,14 +25,17 @@ function [cfg,csBase] = mha_findid( mhah, csIds )
   if ischar(csIds)
     csIds = {csIds};
   end
-  if isempty(csIds) 
-    csIds = {}; % else matlab 2012 and later would iterate over empty array
-  end
-  csIds = unique(csIds);
-  cfg = struct;
-  for cId=csIds
-    idx = strmatch(cId{:},csBase(:,2)','exact');
-    if length(idx) == 1
-      cfg.(csBase{idx(1),2}) = csBase{idx(1),1};
+  if ~isempty(csIds) 
+  % In matlab 2012 or later, empty csIds can have dimensions like 0 rows times 1
+  % column. Iterating over columns of empty csIds is undesired.
+  % Prevented by the above "if".
+
+    csIds = unique(csIds);
+
+    for cId=csIds
+      idx = strmatch(cId{:},csBase(:,2)','exact');
+      if length(idx) == 1
+        cfg.(csBase{idx(1),2}) = csBase{idx(1),1};
+      end
     end
   end
