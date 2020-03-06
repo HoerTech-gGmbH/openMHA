@@ -75,7 +75,8 @@ Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
 The installer installs openMHA example setups and some tools. We recommend to
 copy the examples folder to a writable location inside your user directory.
 
-You can find the examples folder in the `examples sub-directory` of
-the installation directory (e.g. `C:\Program Files\openMHA`). The sub-directories
-`mfiles` contains Matlab / Octave files for interacting with openMHA and
-documentation is found in `doc`.
+After installation, you can find the examples in folder
+`C:\Program Files\openMHA\examples`.  Folder
+`C:\Program Files\openMHA\mfiles` contains Matlab / Octave files for
+interacting with openMHA.  Folder `C:\Program Files\openMHA\doc` contains
+documentation.
