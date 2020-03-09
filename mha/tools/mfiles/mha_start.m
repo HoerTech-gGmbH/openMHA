@@ -80,10 +80,25 @@ function h = mha_start( port, pre_binary, post_binary )
     remove_octave_directories_from_windows_path()
   end
   
-  % octave 4.0.0 did not translate cellstrings correctly to Java string arrays.
   octave_version = ver('Octave');
+  % octave 4.0.0 did not translate cellstrings correctly to Java string arrays.
   if( isoctave() && strcmp(octave_version.Version,'4.0.0') )
     mhaProcess = javaruntime.exec(strjoin(command,' ')); % workaround
+  % octave 5.2.0 with openjdk11 raised a meaningless error after runtime.exec
+  elseif (isoctave() && strcmp(octave_version.Version,'5.2.0'))
+    try
+      mhaProcess = javaruntime.exec(command);
+    catch exception
+      if strcmp(exception.message, ...
+                ['[java] java.lang.OutOfMemoryError: unable to create ', ...
+                 'native thread: possibly out of memory or ', ...
+                 'process/resource limits reached'])
+        disp(['expected exception for this octave version, ', ...
+              'does not affect functionality'])
+      else
+        rethrow(exception);
+      end
+    end
   else
     mhaProcess = javaruntime.exec(command);
   end
