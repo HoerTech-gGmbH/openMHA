@@ -7,15 +7,20 @@ Linux (__I.__), Windows (__II.__), and macOS (__III.__) operating systems.
 
 First, add the openMHA package repository to your system:
 
+In Ubuntu 20.04:
+
+    wget -O- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de focal universe'
+
 In Ubuntu 18.04:
 
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7D6CDF547DA4ABD
-    sudo apt-add-repository 'deb http://apt.hoertech.de bionic universe'
+    wget -O- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de bionic universe'
 
 In Ubuntu 16.04:
 
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7D6CDF547DA4ABD
-    sudo apt-add-repository 'deb http://apt.hoertech.de xenial universe'
+    wget -O- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de xenial universe'
     sudo apt update
 
 Install openMHA and some openMHA usage examples:

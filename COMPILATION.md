@@ -10,7 +10,7 @@ This guide describes how to compile openMHA from sources for developers.
 
 ### Prerequisites
 64-bit version of Ubuntu 18.04 or later,
-or a Beaglebone Black running Debian Stretch.
+or a Beaglebone Black running Debian Buster.
 
 ... with the following software packages installed:
 - g++
@@ -24,11 +24,6 @@ or a Beaglebone Black running Debian Stretch.
   - liblo-dev
   - liblsl
   - libeigen3-dev
-
-Octave and default-jre are not essential for building or running openMHA.
-The build process uses Octave + Java to run some tests after
-building openMHA.  If Octave is not available, this test will fail,
-but the produced openMHA will still work.
 
 The optional libraries are needed to compile the openMHA plugins
 ac2lsl, ac2osc, osc2ac, and rohBeam.  When these libraries are not available,
