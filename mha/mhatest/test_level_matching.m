@@ -18,7 +18,7 @@
 %
 
 function test_level_matching
-  if ! has_plugin("level_matching")
+  if ~has_plugin('level_matching')
     warning('Plugin level_matching not found. Skipping tests');
     return
   end
@@ -40,8 +40,8 @@ function test_level_matching_spec
   outwav = 'OUT.wav';
 
   %% White noise input
-  signal_length=1; # in s
-  srate=44100; # in Hz
+  signal_length=1; % in s
+  srate=44100; % in Hz
   t=(0:signal_length*srate-1)/srate;
   x=zeros(1,numel(t));
   y=zeros(1,numel(t));

@@ -22,15 +22,15 @@ function result = has_plugin(plug_name)
   result=false;
   global plugins;
   if (isempty(plugins))
-    error("has_plugin: Can not find plugin list.")
-  endif
+    error('has_plugin: Can not find plugin list.')
+  end
   for idx=1:numel(plugins)
     [~,name,~]=fileparts(cell2mat(plugins(idx)));
     if strcmp(name,plug_name)==1
       result=true;
-    endif
-  endfor
-endfunction
+    end
+  end
+end
 % Local Variables:
 % mode: octave
 % coding: utf-8-unix
