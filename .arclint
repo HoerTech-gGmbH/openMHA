@@ -24,7 +24,7 @@
                 "5": "disabled",
                 "6": "disabled",
                 "3": "advice",
-                "2": "advice"
+                "2": "disabled"
             },
             "include":[
                 "(Makefile$)",
