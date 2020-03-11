@@ -44,9 +44,7 @@
 namespace MHASignal {
 
     /**
-       \ingroup mhasignal
        \brief Apply a function to each element of a mha_wave_t.
-       
        \param s Pointer to a mha_wave_t structure
        \param fun Function to be applied (one argument)
     */
@@ -57,17 +55,34 @@ namespace MHASignal {
     }
 
     /**
-       \ingroup mhasignal
        \brief Conversion from linear scale to dB (no SPL reference)
-       \param x Linear input.
+       \param x Linear input
+       \param eps minimum linear value (if x < eps --> convert eps instead), eps < 0 not allowed
+       \return NaN if x < 0 (log not defined for negative)
+       \throw MHA_Error if eps < 0
     */
-    inline mha_real_t lin2db(mha_real_t x)
+    inline mha_real_t lin2db(mha_real_t x, mha_real_t eps)
     {
-        return 20.0f*log10f(x);
+        if (eps < 0)
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Minimum linear value eps < 0 is not allowed!");
+        if (x < 0)
+            return std::numeric_limits<float>::quiet_NaN(); //log not defined for negative
+        else
+            return 20.0f * log10f(std::max(x,eps));
     }
 
     /**
-       \ingroup mhasignal
+       \brief Conversion from linear scale to dB (no SPL reference)
+       \param x Linear input.
+       \return NaN if x < 0 (log not defined for negative)
+    */
+    inline mha_real_t lin2db(mha_real_t x)
+    {
+        return lin2db(x, 0);
+    }
+
+    /**
        \brief Conversion from dB scale to linear (no SPL reference)
        \param x dB input.
     */
@@ -77,29 +92,52 @@ namespace MHASignal {
     }
 
     /**
-       \ingroup mhasignal
+       \brief conversion from squared values to dB (no SPL reference)
+       \param x squared value input
+       \param eps minimum squared value (if x < eps --> convert eps instead), eps < 0 not allowed
+       \return NaN if x < 0 (log not defined for negative)
+       \throw MHA_Error if eps < 0
+    */
+    inline mha_real_t sq2db(mha_real_t x, mha_real_t eps = 0.0f)
+    {
+        if (eps < 0)
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Minimum squared value eps < 0 is not allowed!");
+        if (x < 0)
+            return std::numeric_limits<float>::quiet_NaN(); //log not defined for negative
+        else
+            return 10.0f * log10f(std::max(x,eps));
+    }
+
+    /**
+       \brief conversion from dB to squared values (no SPL reference)
+       \param x dB input
+    */
+    inline mha_real_t db2sq(mha_real_t x)
+    {
+        return powf(10.0f, 0.1f * x);
+    }
+
+
+    /**
        \brief Conversion from linear Pascal scale to dB SPL
-       \param x Linear input.
+       \param x Linear input
+       \param eps minimum pascal value (if x < eps --> convert eps instead), eps < 0 not allowed
+       \return NaN if x < 0 (log not defined for negative)
+       \throw MHA_Error if eps < 0
     */
-    inline mha_real_t pa2dbspl(mha_real_t x)
+    inline mha_real_t pa2dbspl(mha_real_t x, mha_real_t eps = 0.0f)
     {
-        return 20.0f*log10f(50000.0f*std::max(1e-10f,x));
-    }
-    
-    /**
-       \ingroup mhasignal
-       \brief Conversion from squared Pascal scale to dB SPL
-       \param x squared pascal input
-       \param eps minimum squared-pascal value
-    */
-    inline mha_real_t pa22dbspl(mha_real_t x, mha_real_t eps = 1e-20f)
-    {
-        return 10.0f*log10f(2500000000.0f*std::max(eps,x));
+        if (eps < 0)
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Minimum pascal value eps < 0 is not allowed!");
+        if (x < 0)
+            return std::numeric_limits<float>::quiet_NaN(); //log not defined for negative
+        else
+            return 20.0f * log10f(5e+4f * std::max(x,eps));
     }
 
-
     /**
-       \ingroup mhasignal
        \brief Conversion from dB SPL to linear Pascal scale
        \param x Linear input.
     */
@@ -108,9 +146,34 @@ namespace MHASignal {
         return db2lin(x)*2e-5f;
     }
 
+    /**
+       \brief Conversion from squared Pascal scale to dB SPL
+       \param x squared pascal input
+       \param eps minimum squared-pascal value (if x < eps --> convert eps instead), eps < 0 not allowed
+       \return NaN if x < 0 (log not defined for negative)
+       \throw MHA_Error if eps < 0
+    */
+    inline mha_real_t pa22dbspl(mha_real_t x, mha_real_t eps = 0.0f)
+    {
+        if (eps < 0)
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Minimum squared pascal value eps < 0 is not allowed!");
+        if (x < 0)
+            return std::numeric_limits<float>::quiet_NaN(); //log not defined for negative
+        else
+            return 10.0f * log10f(25e+8f * std::max(x,eps));
+    }
 
     /**
-       \ingroup mhasignal
+       \brief conversion from dB SPL to squared Pascal scale
+       \param x dB SPL input
+    */
+     inline mha_real_t dbspl2pa2(mha_real_t x)
+    {
+        return db2sq(x) * 400e-12f;
+    }
+
+    /**
        \brief conversion from samples to seconds
        \param n     number of samples
        \param srate sampling rate / Hz
@@ -121,7 +184,6 @@ namespace MHASignal {
     }
 
     /**
-       \ingroup mhasignal
        \brief conversion from seconds to samples
        \param sec   time in seconds
        \param srate sampling rate / Hz

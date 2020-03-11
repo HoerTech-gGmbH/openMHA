@@ -609,6 +609,113 @@ TEST(blockprocessing_polyphase_resampling_t, test_48k_16k_64_20_roundtrip)
   ASSERT_NEAR(0.0f, zero, 0.017);
 }
 
+TEST(mha_signal_helper_functions,for_each) {
+  unsigned sig_len{5U};
+  unsigned nchan{2U};
+  MHASignal::waveform_t test_sig(sig_len,nchan);
+  for (unsigned frame = 0U; frame < sig_len; ++frame) {
+    for (unsigned chan = 0U; chan < nchan; ++chan) {
+      test_sig.value(frame,chan) = frame + chan;
+    }
+  }
+  MHASignal::for_each(&test_sig,MHASignal::lin2db);
+    EXPECT_EQ(-std::numeric_limits<float>::infinity(), test_sig.value(0,0));
+    EXPECT_EQ(0.0f,test_sig.value(1,0));
+    EXPECT_FLOAT_EQ(6.0205999f,test_sig.value(2,0));
+    EXPECT_FLOAT_EQ(9.5424251f,test_sig.value(2,1));
+}
+
+TEST(mha_signal_helper_functions,lin2db) {
+  EXPECT_EQ(0.0f, MHASignal::lin2db(1));
+  EXPECT_EQ(20.0f, MHASignal::lin2db(10));
+  EXPECT_EQ(-20.0f, MHASignal::lin2db(0.1f));
+  EXPECT_EQ(-std::numeric_limits<float>::infinity(), MHASignal::lin2db(0));
+  EXPECT_TRUE(std::isnan(MHASignal::lin2db(-1)));
+  EXPECT_EQ(0.0f, MHASignal::lin2db(0.5f,1));
+  EXPECT_NEAR(345.33f, MHASignal::lin2db(MHASignal::db2lin(345.33f)),0.001f);
+  EXPECT_THROW(MHASignal::lin2db(42,-1),MHA_Error);
+}
+
+TEST(mha_signal_helper_functions,db2lin) {
+  EXPECT_EQ(1.0f, MHASignal::db2lin(0));
+  EXPECT_EQ(10.0f, MHASignal::db2lin(20));
+  EXPECT_EQ(0.1f, MHASignal::db2lin(-20));
+  EXPECT_EQ(0.0f, MHASignal::db2lin(-std::numeric_limits<float>::infinity()));
+  EXPECT_NEAR(123.45f, MHASignal::db2lin(MHASignal::lin2db(123.45f)),0.001f);
+}
+
+TEST(mha_signal_helper_functions,sq2db) {
+  EXPECT_EQ(0.0f, MHASignal::sq2db(1));
+  EXPECT_EQ(10.0f, MHASignal::sq2db(10));
+  EXPECT_EQ(-10.0f, MHASignal::sq2db(0.1f));
+  EXPECT_EQ(-std::numeric_limits<float>::infinity(), MHASignal::sq2db(0));
+  EXPECT_TRUE(std::isnan(MHASignal::sq2db(-1)));
+  EXPECT_EQ(0.0f, MHASignal::sq2db(0.5f,1));
+  EXPECT_NEAR(324.78f, MHASignal::sq2db(MHASignal::db2sq(324.78f)),0.001f);
+  EXPECT_THROW(MHASignal::sq2db(42,-1),MHA_Error);
+}
+
+TEST(mha_signal_helper_functions,db2sq) {
+  EXPECT_EQ(1.0f, MHASignal::db2sq(0));
+  EXPECT_EQ(10.0f, MHASignal::db2sq(10));
+  EXPECT_EQ(0.1f, MHASignal::db2sq(-10));
+  EXPECT_EQ(0.0f, MHASignal::db2sq(-std::numeric_limits<float>::infinity()));
+  EXPECT_NEAR(543.21f, MHASignal::db2sq(MHASignal::sq2db(543.21f)),0.001f);
+}
+
+TEST(mha_signal_helper_functions,pa2dbspl) {
+  EXPECT_EQ(0.0f, MHASignal::pa2dbspl(20e-6));
+  EXPECT_EQ(93.979400f, MHASignal::pa2dbspl(1)); //1Pa = 93.9794000867204f
+  EXPECT_EQ(-std::numeric_limits<float>::infinity(),MHASignal::pa2dbspl(0));
+  EXPECT_EQ(-106.02060f, MHASignal::pa2dbspl(0,1e-10f));
+  EXPECT_TRUE(std::isnan(MHASignal::pa2dbspl(-1)));
+  EXPECT_EQ(93.979400f, MHASignal::pa2dbspl(20e-6,1));
+  EXPECT_NEAR(181.34f, MHASignal::pa2dbspl(MHASignal::dbspl2pa(181.34f)),0.001f);
+  EXPECT_THROW(MHASignal::pa2dbspl(42,-1),MHA_Error);
+}
+
+TEST(mha_signal_helper_functions,dbspl2pa) {
+  EXPECT_EQ(2e-5f, MHASignal::dbspl2pa(0));
+  EXPECT_EQ(2e-4f, MHASignal::dbspl2pa(20));
+  EXPECT_EQ(2e-6f, MHASignal::dbspl2pa(-20));
+  EXPECT_EQ(0.0f, MHASignal::dbspl2pa(-std::numeric_limits<float>::infinity()));
+  EXPECT_NEAR(1.0f, MHASignal::dbspl2pa(MHASignal::pa2dbspl(1)),0.01f);
+}
+
+TEST(mha_signal_helper_functions,pa22dbspl) {
+  EXPECT_EQ(0.0f, MHASignal::pa22dbspl(pow(20e-6,2)));
+  EXPECT_EQ(93.979400f, MHASignal::pa22dbspl(1));
+  EXPECT_EQ(-std::numeric_limits<float>::infinity(),MHASignal::pa22dbspl(0));
+  EXPECT_EQ(-106.0206f, MHASignal::pa22dbspl(0,1e-20f));
+  EXPECT_TRUE(std::isnan(MHASignal::pa22dbspl(-1)));
+  EXPECT_EQ(93.979400f, MHASignal::pa22dbspl(20e-6,1));
+  EXPECT_NEAR(112.32f, MHASignal::pa22dbspl(MHASignal::dbspl2pa2(112.32f)),0.001f);
+  EXPECT_THROW(MHASignal::pa22dbspl(42,-1),MHA_Error);
+}
+
+TEST(mha_signal_helper_functions,dbspl2pa2) {
+  EXPECT_EQ(400e-12f, MHASignal::dbspl2pa2(0));
+  EXPECT_EQ(400e-11f, MHASignal::dbspl2pa2(10));
+  EXPECT_EQ(400e-13f, MHASignal::dbspl2pa2(-10));
+  EXPECT_EQ(0.0f, MHASignal::dbspl2pa2(-std::numeric_limits<float>::infinity()));
+  EXPECT_NEAR(1.254f,MHASignal::dbspl2pa2(MHASignal::pa22dbspl(1.254f)),0.0001f);
+}
+
+TEST(mha_signal_helper_functions,smp2sec) {
+  EXPECT_EQ(0.0f, MHASignal::smp2sec(0,1000));
+  EXPECT_EQ(1.0f, MHASignal::smp2sec(1000,1000));
+  EXPECT_EQ(-1.0f, MHASignal::smp2sec(-1000,1000));
+  EXPECT_TRUE(std::isnan(MHASignal::smp2sec(0,0)));
+  EXPECT_EQ(2345,MHASignal::smp2sec(MHASignal::sec2smp(2345,1000),1000));
+}
+
+TEST(mha_signal_helper_functions,sec2smp) {
+  EXPECT_EQ(0.0f, MHASignal::sec2smp(0,1000));
+  EXPECT_EQ(1000.0f, MHASignal::sec2smp(1,1000));
+  EXPECT_EQ(-1000.0f, MHASignal::sec2smp(-1,1000));
+  EXPECT_EQ(6578,MHASignal::sec2smp(MHASignal::smp2sec(6578,2311),2311));
+}
+
 TEST(mha_signal_helper_functions, freq2bin) {
   EXPECT_EQ(0.0f, MHASignal::freq2bin(0, 256, 44100));
   EXPECT_EQ(128.0f, MHASignal::freq2bin(22050, 256, 44100));
