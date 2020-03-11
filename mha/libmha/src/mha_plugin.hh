@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2011 2012 2013 HörTech gGmbH
-// Copyright © 2014 2015 2016 2017 2018 2019 HörTech gGmbH
+// Copyright © 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -744,7 +744,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 #define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)                       \
   MHAPLUGIN_DOCUMENTATION_PREFIX(MHA_STATIC_ ## plugname ## _,cat,doc)
 
-#else // MHA_STATIC_PLUGINS
+#else // MHA_STATIC_PLUGINS  		 		
 
 #define MHAPLUGIN_PROC_CALLBACK(plugname,classname,indom,outdom)        \
   MHAPLUGIN_PROC_CALLBACK_PREFIX(MHA_DYNAMIC_,classname,indom,outdom)
@@ -755,7 +755,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 #define MHAPLUGIN_DOCUMENTATION(plugname,cat,doc)                       \
   MHAPLUGIN_DOCUMENTATION_PREFIX(MHA_DYNAMIC_,cat,doc)
 
-#endif // MHA_STATIC_PLUGINS
+#endif // MHA_STATIC_PLUGINS   		  		
 
 #endif
 

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2009 2010 2012 2013 2014 2015 2018 2019 HörTech gGmbH
+// Copyright © 2005 2006 2007 2009 2010 2012 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -284,15 +285,19 @@ void db_if_t::prepare(mhaconfig_t& conf)
 {
     if( conf.domain != MHA_WAVEFORM )
         throw MHA_ErrorMsg("Doublebuffer: Only waveform data can be processed.");
+    // remember the outer fragsize:
     unsigned int outer_fragsize = conf.fragsize;
     unsigned int inner_fragsize = fragsize.data;
     unsigned int input_channels = conf.channels;
     conf.fragsize = inner_fragsize;
+    // sugest configuration to inner plugin, query requirements:
     plugloader.prepare(conf);
     if( conf.domain != MHA_WAVEFORM )
         throw MHA_ErrorMsg("Doublebuffer: Only waveform data can be processed.");
+    // only fixed input/output fragsizes are allowed:
     if( inner_fragsize != conf.fragsize )
         throw MHA_ErrorMsg("Doublebuffer: Plugin modified the fragment size.");
+    // update the configuration, create an instance of the double buffer:
     push_config(new dbasync_t(input_channels,
                               conf.channels,
                               outer_fragsize,
