@@ -174,6 +174,15 @@ CFLAGS += -I../../libmha/src
 LDFLAGS += -L../../libmha/$(BUILD_DIR)
 LDLIBS += -l$(MHATOOLBOX_NAME)
 
+# Library-dependent plugin artifact rule specific modifications of compiler
+# and linker flags need to have their own if statements because they must
+# come after the include ../../../rules.mk block and the dummy targets must come
+# before it.
+
+ifeq "$(NEEDS_LSL)" "yes"
+$(PLUGIN_ARTIFACTS): LDLIBS += -llsl
+endif
+
 
 # Local Variables:
 # coding: utf-8-unix

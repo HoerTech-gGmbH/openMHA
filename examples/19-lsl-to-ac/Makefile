@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 HörTech gGmbH
+# Copyright © 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -12,9 +12,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License,
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+# This Makefile serves only as example. The user is responsible that the lsl headers and lib can be found.
+
 include ../../config.mk
-receive_lsl: receive_lsl.cpp
-	$(CXX) receive_lsl.cpp -std=$(CXXSTANDARD) -g -o receive_lsl -llsl
+receive_lsl: send_lsl.cpp
+	$(CXX) send_lsl.cpp -std=$(CXXSTANDARD) -g -o send_lsl -llsl
 # Local Variables:
 # compile-command: "make"
 # End:
