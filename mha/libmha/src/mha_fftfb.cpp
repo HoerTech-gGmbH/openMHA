@@ -461,13 +461,22 @@ MHAOvlFilter::fftfb_t::fftfb_t(MHAOvlFilter::fftfb_vars_t& par, unsigned int nff
      samplingrate(fs)
 {
     unsigned int ch, fr;
-    mha_real_t f;
     if(num_channels){
-        for(fr = 0; fr < num_frames; fr++){
-            f = symmetry_scale((mha_real_t) fr *fs / (mha_real_t) mha_min_1(nfft));
-            for(ch = 0; ch < num_channels; ch++) {
-                value(fr, ch) =
-                    shape(filtershapefun(f, bands[ch], par.plateau.data));
+        for(ch = 0; ch < num_channels; ch++) {// ch iterates over frequency-bands
+            bool flag_allzero{true};
+            for(fr = 0; fr < num_frames; fr++){// fr iterates over stft-bins
+                mha_real_t f{symmetry_scale((mha_real_t) fr *fs /
+                                            (mha_real_t) mha_min_1(nfft))};
+                value(fr, ch) = shape(filtershapefun(f, bands[ch], par.plateau.data));
+                if(value(fr,ch) != 0)
+                    flag_allzero = false;
+            }
+            if(flag_allzero && !par.flag_allow_empty_bands.data){
+                throw MHA_Error(__FILE__, __LINE__,
+                          "The current fftfilterbank settings cause the STFT-bin-specific "
+                          "gain factors that shape frequency band %u to be all zeros!\n"
+                          "Set the variable 'flag_allow_empty_bands' to 'yes' if you want "
+                          "to allow this behaviour.", ch);
             }
         }
         if( par.normalize.data ){
@@ -498,7 +507,6 @@ MHAOvlFilter::fftfb_t::fftfb_t(MHAOvlFilter::fftfb_vars_t& par, unsigned int nff
         par.shapes.data.push_back(svw);
     }
 }
-
 //**************************************************************
 //
 // Frequency spacing
@@ -672,6 +680,7 @@ MHAOvlFilter::fftfb_vars_t::fftfb_vars_t(MHAParser::parser_t & p)
        normalize("normalize broadband output amplitude","no"),
        fail_on_nonmonotonic("Fail if frequency entries are non-monotonic (otherwise sort)","yes"),
        fail_on_unique_bins("Fail if center frequencies share the same FFT bin.","yes"),
+       flag_allow_empty_bands("Set true to allow bands where all STFT-bin-gains equal zero.","no"),
        cf("final center frequencies in Hz"),
        ef("final edge frequencies in Hz"),
        cLTASS("Bandwidth level correction for LTASS noise in dB"),
@@ -695,6 +704,7 @@ MHAOvlFilter::fftfb_vars_t::fftfb_vars_t(MHAParser::parser_t & p)
     p.insert_member(normalize);
     p.insert_member(fail_on_nonmonotonic);
     p.insert_member(fail_on_unique_bins);
+    p.insert_member(flag_allow_empty_bands);
     // monitors:
     p.insert_member(cf);
     p.insert_member(ef);
@@ -740,6 +750,7 @@ void MHAOvlFilter::fftfb_t::apply_gains(mha_spec_t * s_out, const mha_spec_t * s
         }
     }
 }
+
 
 void MHAOvlFilter::fftfb_t::get_fbpower(mha_wave_t * fbpow, const mha_spec_t * s_in)
 {
