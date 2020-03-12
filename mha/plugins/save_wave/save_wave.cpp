@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +26,7 @@ public:
     mha_wave_t* process(mha_wave_t* s)
     {
         cfg->copy(*s);
+        cfg->insert();
         return s;
     };
     void prepare(mhaconfig_t& tf)

@@ -193,6 +193,7 @@ namespace rmslevel {
         for(auto& mon: monitors){
             mon.second->store();
         }
+        insert();
         return s;
     }
 

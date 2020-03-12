@@ -221,12 +221,27 @@ initialisation time to the constructor of each plugin
 class \ref MHAPlugin::plugin_t "constructor".  This handle
 contains a reference handle, \ref algo_comm_t::handle, and a number of
 function pointers, \ref algo_comm_t::insert_var etc.. An algorithm
-communication variable is an object of type \ref comm_var_t.
+communication variable is accessed through objects of type \ref comm_var_t.
 
-For AC variables of numeric types, \mha Plugins for conversion into
-parsable monitor variables, acmon, and storage into Matlab or
-text files, acsave, are available.
+For \mha users, \mha provides generic plugins to inspect and store
+AC variables of numeric types:
+ - plugin acmon mirrors AC variables of numeric types in readonly configuration
+   variables (called monitors),
+ - plugin acsave stores AC variables into Matlab or text files.
+Plugin developers may also want to use these plugins to inspect any AC
+variables published by their own plugins during testing.
 
+As a developer of \mha plugin(s), please observe the following best practices
+in plugins using AC variables:
+  -# Plugins publishing AC variables:
+     - insert all variables during prepare()
+     - re-insert all variables during each process()
+     - memory used for storing AC variable values is allocated and owned
+       by the publishing plugin and needs to remain valid until the next
+       call to process() or release() of the same plugin.
+  -# Plugins consuming AC variable published by other plugins:
+     - poll required variables (and check validity) again during each
+       process() before accessing their values.
 */
 
 #define AC_SUCCESS 0

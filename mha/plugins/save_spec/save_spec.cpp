@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -26,12 +26,17 @@ public:
     {
         poll_config();
         cfg->copy(*s);
+        cfg->insert();
         return s;
     };
     void prepare(mhaconfig_t& tf)
     {
         if( tf.domain != MHA_SPECTRUM )
             throw MHA_ErrorMsg("save_spec: Only spectral processing is supported.");
+
+        // Last argument (true) triggers insertion of spectrum into AC space.
+        // This is only permitted because we are in prepare().  Do not copy this
+        // scheme into the configuration update() callback in other plugins.
         push_config(new MHA_AC::spectrum_t(ac,basename,tf.fftlen/2+1,tf.channels,true));
     }
 private:
