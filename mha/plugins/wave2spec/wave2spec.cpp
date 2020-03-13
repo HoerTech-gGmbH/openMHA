@@ -50,7 +50,8 @@ wave2spec_t::wave2spec_t(unsigned int nfft,
       window(window_),
       calc_in(nfft,nch),
       in_buf(nwnd,nch),
-      spec_in(nfft/2+1,nch)
+      spec_in(nfft/2+1,nch),
+      ac_wndshape_name(algo + "_wnd")
 {
     const float rms_of_window = sqrtf(window.sumsqr() / nwnd);
     const float zeropadding_compensation = sqrtf(float(nfft) / nwnd);
@@ -62,12 +63,20 @@ wave2spec_t::wave2spec_t(unsigned int nfft,
                         "The wave2spec:%s analysis window storage should have"
                         " only 1 channel, has %u",
                         algo.c_str(), window.num_channels);
+}
+
+void wave2spec_t::publish_ac_variables()
+{
+    // insert spectrum with name <configured_name>
+    this->MHA_AC::spectrum_t::insert(); // would throw in case of error
+
+    // insert window shape with name <configured_name>_wnd
     comm_var_t cv = {MHA_AC_MHAREAL, window.num_frames, 1U, window.buf};
-    int err = ac.insert_var(ac.handle,(algo + "_wnd").c_str(), cv);
-    if (err)
+    int err = ac.insert_var(ac.handle,ac_wndshape_name.c_str(), cv);
+    if (err) // insert_var returns non-zero error code in case of error
         throw MHA_Error(__FILE__,__LINE__,
                         "Unable to insert wave2spec window into AC space as '%s':\n%s",
-                        (algo + "_wnd").c_str(), ac.get_error(err));
+                        ac_wndshape_name.c_str(), ac.get_error(err));
 }
 
 wave2spec_t::~wave2spec_t()
@@ -87,6 +96,7 @@ mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)
     in_buf.copy_from_at(0,in_buf.num_frames-nwndshift,in_buf,nwndshift);
     mha_fft_wave2spec( ft, &calc_in, &spec_in );
     copy(spec_in);
+    publish_ac_variables(); // AC vars must be updated in every process callback
     return &spec_in;
 }
 
@@ -112,6 +122,7 @@ wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const s
     window_config.insert_items(this);
     insert_item("strict_window_ratio", &strict_window_ratio);
     insert_item("return_wave",&return_wave);
+    insert_member(zeropadding);
     patchbay.connect(&wndpos.writeaccess,this,&wave2spec_if_t::update);
     patchbay.connect(&window_config.updated,this,&wave2spec_if_t::update);
 }
@@ -144,7 +155,10 @@ void wave2spec_if_t::prepare(mhaconfig_t& t)
     tftype = t;
     update();
     poll_config();
-    cfg->insert();
+    cfg->publish_ac_variables();
+    zeropadding.data.resize(2);
+    zeropadding.data[0] = cfg->get_zeropadding(false);
+    zeropadding.data[1] = cfg->get_zeropadding(true);
 }
 
 void wave2spec_if_t::update()
