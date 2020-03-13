@@ -7,10 +7,14 @@ configuration files for details).
 
 You can start the signal processing by invoking the shell script
 
-start_demo_live_binauralSteerBF.sh
+    start_demo_live_binauralSteerBF.sh
 
 Please also refer to the comments in this shell script to learn how to prepare
 the Jack server for this example.
+
+If you wish to visualize the algorithm output, a separate tool is available at
+[2]. (*Note*: this was part of openMHA from versions 4.9.0 to 4.11.0, in the
+visualisation_web/ subdirectory.)
 
 [0] C. Knapp and G. C. Carter, “The generalized correlation method for
 estimation of time delay,” IEEE Transactions on Acoustics, Speech and Signal
@@ -20,6 +24,8 @@ Processing, vol. 24, no. 4, pp. 320–327, Aug. 1976.
 probabilistic acoustic source localization,” In: International Workshop on
 Acoustic Echo and Noise Control (IWAENC 2014), pp. 100 -- 104, Antibes,
 France, 2014
+
+[2] https://github.com/HoerTech-gGmbH/doasvm-visualizer
 
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2018 2020 HörTech gGmbH
