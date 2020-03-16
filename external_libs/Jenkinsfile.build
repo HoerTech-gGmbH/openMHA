@@ -126,8 +126,6 @@ pipeline {
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "armv7_bionic"
                 sh ("tar xzf installation.tgz && rm *.tgz")
-                unstash "armv7_buster"
-                sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_windows"
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_mac"
