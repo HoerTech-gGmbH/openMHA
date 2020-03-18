@@ -46,11 +46,8 @@ double mha_j0(double x) {
   return boost::math::cyl_bessel_j(0,x);
 }
 #else
-#define SKIP_ROHBEAM 1//We can not compile this plugin
-#warning "Skipping rohBeam"
+#error "Skipping rohBeam as no implementation of cyl_bessel_j is available!"
 #endif
-
-#ifndef SKIP_ROHBEAM
 
 #include "mha_plugin.hh"
 #include "mha_utils.hh"
@@ -1301,4 +1298,3 @@ MHAPLUGIN_DOCUMENTATION(rohBeam,
                         "arbitrary HRTF and loading it via the \"sampled\" option for the propogation vector.\n\n"
                         "b. Null directions for the MVDR recipe."
                         )
-#endif // SKIP_ROHBEAM
