@@ -21,6 +21,37 @@
  * PhD thesis from Thomas Rohdenburg
  */
 
+
+//In C++17, the spherical bessel function is in namespace std.
+// Before C++17, the spherical bessel function was in namespace std::tr1
+// libc++, clang's std implementation does not have the bessel fcts at all
+#if __cplusplus >= 201703L and !defined(__clang__)// We are using C++17 are not using clang
+#include <cmath>
+double mha_j0(double x){
+  return std::cyl_bessel_j(0,x);
+}
+#elif defined(__clang__)  // Clang has the POSIX implementation of the bessel function
+#include <cmath>
+double mha_j0(double x){
+return j0(x);
+}
+#elif __has_include(<tr1/cmath>) // We are on an older not-clang compiler and can use the tr1 headers
+#include <tr1/cmath>
+double mha_j0(double x){
+  return std::tr1::cyl_bessel_j(0,x);
+}
+#elif __has_include(<boost/math/special_functions/bessel.hpp>) // Use boot as last resort
+#include <boost/math/special_functions/bessel.hpp>
+double mha_j0(double x) {
+  return boost::math::cyl_bessel_j(0,x);
+}
+#else
+#define SKIP_ROHBEAM 1//We can not compile this plugin
+#warning "Skipping rohBeam"
+#endif
+
+#ifndef SKIP_ROHBEAM
+
 #include "mha_plugin.hh"
 #include "mha_utils.hh"
 #include "mhasndfile.h"
@@ -28,6 +59,7 @@
 #include <eigen3/Eigen/Dense>
 #include <cmath>
 #include <memory>
+
 using namespace Eigen;
 
 using MHAUtils::is_denormal;
@@ -1057,7 +1089,7 @@ namespace rohBeam {
 
         //implementation with Bessel functions of first kind
         float arg = w * (intermic_distance_cm.data[i][k]/100.0f) / CONST_C;
-        m(i,k) = std::sph_bessel(0, arg);
+        m(i,k) = mha_j0(arg);
         if( is_denormal(m(i,k) ) )
           throw MHA_Error(__FILE__,__LINE__,
                           "Denormals in diff2D noise model (%d,%d,w=%g,arg=%g).",
@@ -1269,3 +1301,4 @@ MHAPLUGIN_DOCUMENTATION(rohBeam,
                         "arbitrary HRTF and loading it via the \"sampled\" option for the propogation vector.\n\n"
                         "b. Null directions for the MVDR recipe."
                         )
+#endif // SKIP_ROHBEAM
