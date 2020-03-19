@@ -119,6 +119,7 @@ chklib(){
             echo LDLIBS+='-L/opt/local/lib'
             MACCXXFLAGS+="-I/opt/local/include -Wno-error=unused-command-line-argument"
             MACLDFLAGS+=-L/opt/local/include
+            CXXSTANDARD=c++17
     esac
     echo ARCH=$ARCH
     echo PREFIX=$PREFIX
