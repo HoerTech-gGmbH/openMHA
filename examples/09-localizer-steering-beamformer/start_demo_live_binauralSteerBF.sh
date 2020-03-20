@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/usr/bin/env bash
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2018 2019 2020 HörTech gGmbH
 #

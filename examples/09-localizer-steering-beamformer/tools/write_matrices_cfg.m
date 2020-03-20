@@ -35,18 +35,9 @@ function write_matrices_cfg(varargin)
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 p = inputParser();
-
-% Handle a silly incompatibility: Octave returns the manipulated object, while
-% MATLAB changes it in-place.  How stupid.
-if exist('OCTAVE_VERSION', 'builtin')
-    p = p.addOptional('in_file', 'localisation_matlab/modelData', @ischar);
-    p = p.addOptional('out_file', 'matrices.cfg', @ischar);
-    p = p.parse(varargin{:});
-else
-    p.addOptional('in_file', 'localisation_matlab/modelData', @ischar);
-    p.addOptional('out_file', 'matrices.cfg', @ischar);
-    p.parse(varargin{:});
-end
+p.addOptional('in_file', 'localisation_matlab/modelData', @ischar);
+p.addOptional('out_file', 'matrices.cfg', @ischar);
+p.parse(varargin{:});
 
 data = load(p.Results.in_file);
 
