@@ -111,7 +111,7 @@ mha/libmha: external_libs
 mha/frameworks: mha/libmha
 mha/plugins: mha/libmha mha/frameworks
 mha/mhatest: mha/plugins mha/frameworks
-mha/doc: config.mk
+mha/doc: mha/plugins
 
 # Debian package management by Jenkins:
 # New Debian Packages are stored in our storage for debian repositories.
