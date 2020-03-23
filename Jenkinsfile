@@ -157,13 +157,34 @@ pipeline {
                 unstash "x86_64_focal"
                 unstash "x86_64_xenial"
                 unstash "armv7_bionic"
-//                unstash "armv7_buster"
 
                 // Copies the new debs to the stash of existing debs,
                 sh "make storage"
                 build job:         "/hoertech-aptly/$BRANCH_NAME",
                       quietPeriod: 300,
                       wait:        false
+            }
+        }
+        stage("push updates in development branch to github when build successful") {
+
+            // This stage is only executed if all prevous stages were successful
+            when { branch 'development' } // and only for branch development
+
+            steps {
+                // Make sure we have a git checkout
+                checkout scm
+
+                // Make sure branch development is not shallow in this clone
+                sh "git fetch --unshallow || true"
+
+                // Generate some status output
+                sh "git status && git remote -v"
+
+                // Make sure we are on branch development
+                sh "git checkout development"
+
+                // push branch development to github
+                sh "git push git@github.com:HoerTech-gGmbH/openMHA.git development"
             }
         }
     }
