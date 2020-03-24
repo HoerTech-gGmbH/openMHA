@@ -178,12 +178,12 @@ pipeline {
                 sh "git fetch --unshallow || true"
 
                 // Generate some status output
-                sh "git status && git remote -v"
+                sh "git status && git remote -v && git branch -a"
 
-                // Make sure we are on branch development
-                sh "git checkout development"
+                // We are in detached head mode. Create a temporary branch here
+                sh "git switch --create temporary-branch-name-for-jenkins"
 
-                // push branch development to github
+                // push this state here to branch development to github
                 sh "git push git@github.com:HoerTech-gGmbH/openMHA.git development"
             }
         }
