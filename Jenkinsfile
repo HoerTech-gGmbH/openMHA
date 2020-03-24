@@ -181,10 +181,10 @@ pipeline {
                 sh "git status && git remote -v && git branch -a"
 
                 // We are in detached head mode. Create a temporary branch here
-                sh "git switch --create temporary-branch-name-for-jenkins"
+                sh "git switch --force-create temporary-branch-name-for-jenkins"
 
                 // push this state here to branch development to github
-                sh "git push git@github.com:HoerTech-gGmbH/openMHA.git development"
+                sh "git push git@github.com:HoerTech-gGmbH/openMHA.git temporary-branch-name-for-jenkins:development"
             }
         }
     }
