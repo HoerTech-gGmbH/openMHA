@@ -15,12 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License,
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-# Temporarily fail building under Jenkins to test previous commit dbbe2a83
-if echo "$JENKINS_URL" | grep -q 8080
-then
-    exit 1
-fi
-
 chkhdr(){
     echo "#include <$1> "| g++ -x c++ - -c $MACCXXFLAGS -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
