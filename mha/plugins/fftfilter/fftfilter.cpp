@@ -214,7 +214,15 @@ MHAPLUGIN_DOCUMENTATION(fftfilter,"filter","The 'fftfilter' plugin implements a 
                         " and set to the minimum required FFT length to perform the overlap-save operation"
                         " (see documentation of configuration variable \\texttt{fftlen}). If this is not a power of two"
                         ", the computation may be inefficient, and it should be considered to increase it to the next"
-                        " power of two larger than the required minimum.")
+                        " power of two larger than the required minimum."
+                        "\n\n"
+                        "The 'fftfilter' plugin does not introduce additional"
+                        " delay.  Regardless of fragsize, length of impulse"
+                        " response, or fft length, the computed output of"
+                        " plugin 'fftfilter' is the same as if the output"
+                        " had been computed by performing the convolution"
+                        " on the same signal blocks in the time domain,"
+                        " except for numerical errors.")
 
 // Local Variables:
 // compile-command: "make"

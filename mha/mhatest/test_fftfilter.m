@@ -39,6 +39,7 @@ function test_fftfilter
   snd_in(:,2) = snd_in(:,1) * 0.2;
   audiowrite(inwav,snd_in,dsc.srate,'BitsPerSample',32);
 
+  % Default impulse response is a single 1, i.e. the filter is identity
   mha = mha_start();
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   mha_set(mha,'',dsc);
@@ -47,10 +48,16 @@ function test_fftfilter
   snd_out=audioread(outwav);
   assert_difference_below(snd_in, snd_out, 10^(-150/20) );
 
+  % This is a test with a long impulse response and a long fragsize
+  % The impulse response is still identity, because it starts with a 1 and
+  % all other impulse response samples are zero.
   mha_set(mha,'mha.irs',[1 zeros(1,399)]);
   mha_set(mha,'cmd','start');
   mha_set(mha,'cmd','release');
   snd_out=audioread(outwav);
+  % In addition to testing for identical values, the following comparison
+  % proves that fftfilter does not introduce additional delay on top of
+  % the delay introduced by the impulse response itself (which here is none).
   assert_difference_below(snd_in, snd_out, 10^(-150/20) );
 
   irs = repeatable_rand( 1, 200, 1 );
