@@ -180,7 +180,7 @@ LDLIBS += -l$(MHATOOLBOX_NAME)
 # before it.
 
 ifeq "$(NEEDS_LSL)" "yes"
-$(PLUGIN_ARTIFACTS): LDLIBS += -llsl
+$(PLUGIN_AND_TEST_ARTIFACTS): LDLIBS += -llsl
 endif
 
 

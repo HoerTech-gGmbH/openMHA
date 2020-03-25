@@ -17,8 +17,8 @@ NEEDS_OSC = yes
 
 include ../plugin.mk
 
-$(PLUGIN_ARTIFACTS): LDFLAGS += -L../../../external_libs/$(PLATFORM_CC)/lib
-$(PLUGIN_ARTIFACTS): LDLIBS += -llo
+$(PLUGIN_AND_TEST_ARTIFACTS): LDFLAGS += -L../../../external_libs/$(PLATFORM_CC)/lib
+$(PLUGIN_AND_TEST_ARTIFACTS): LDLIBS += -llo
 
 # Local Variables:
 # compile-command: "make"
