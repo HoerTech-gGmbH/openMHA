@@ -241,7 +241,8 @@ int fw_t::process(mha_wave_t* s_in,mha_wave_t** s_out)
     catch( MHA_Error& e ){
         proc_error_string.data = Getmsg(e);
 
-        printf("MHA Error: %s\n", proc_error_string.data.c_str());
+        fprintf(stderr, "MHA Error: %s\n", proc_error_string.data.c_str());
+        fflush(stderr);
 
         std::size_t found = proc_error_string.data.find("Fatal error");
         std::ofstream logfile;

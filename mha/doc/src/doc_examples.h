@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2007 2009 2013 2017 2018 2019 HörTech gGmbH
+// Copyright © 2005 2007 2009 2013 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -610,7 +610,7 @@ Starting program: {openMHA_directory}/bin/mha ?read:debugexample6.cfg
 [Thread debugging using libthread_db enabled]
 Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
 The Open Master Hearing Aid (openMHA) server
-Copyright (c) 2005-2019 HoerTech gGmbH, D-26129 Oldenburg, Germany
+Copyright (c) 2005-2020 HoerTech gGmbH, D-26129 Oldenburg, Germany
 
 This program comes with ABSOLUTELY NO WARRANTY; for details see file COPYING.
 This is free software, and you are welcome to redistribute it 

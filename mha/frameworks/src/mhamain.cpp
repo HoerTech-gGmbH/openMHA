@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2011 2012 2013 HörTech gGmbH
-// Copyright © 2014 2016 2017 2018 2019 HörTech gGmbH
+// Copyright © 2014 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -333,7 +333,7 @@ std::string mhaserver_t::on_received_line(const std::string& cmd)
 
 #define GREETING_TEXT \
 "The Open Master Hearing Aid (openMHA) server version " MHA_RELEASE_VERSION_STRING "\n"\
-"Copyright (c) 2005-2019 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
+"Copyright (c) 2005-2020 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
 "\n\n"\
 "This program comes with ABSOLUTELY NO WARRANTY; "\
 "for details see file COPYING.\n"\
@@ -436,8 +436,10 @@ extern "C" int mhamain(int argc, char* argv[])
                 break;
             };
         }
-        if(!b_quiet)
+        if(!b_quiet) {
             printf(GREETING_TEXT);
+            fflush(stdout);
+        }
         else{
             close(1);
             close(2);

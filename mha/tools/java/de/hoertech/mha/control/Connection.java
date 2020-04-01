@@ -193,7 +193,7 @@ public class Connection implements Parser {
           .getOutputStream());
       inFromServer = new BufferedReader(new InputStreamReader(
           mhaServerSocket.getInputStream()));
-    } else {
+    } else if (mhaServerSocket != null) {
       try {
         mhaServerSocket.close();
       } catch (IOException e) {}
