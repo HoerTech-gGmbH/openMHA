@@ -3,25 +3,30 @@ function [r,state] = mhactl_java(handle, eval, query)
 % Array of existing connections that may be reused for the current query.
 % A connection is identified by the triple host, portname, timeout
 persistent connections;
+persistent last_mhactl_java_invocation;
+
+if isempty(last_mhactl_java_invocation)
+  last_mhactl_java_invocation = now();
+end
 
 if isequal(handle, 'retire_connections')
   retire_connections(connections(2,:));
-  r=[];state=[];return
+  r=[];state=[];connections={};return
 end
 
+if (now() - last_mhactl_java_invocation) * 24 * 3600 > 1.2
+  retire_connections(connections(2,:));
+  connections={};
+end
+
+last_mhactl_java_invocation = now();
+  
 if ~isequal(eval, 'eval')
   error('second parameter to mhactl_java has to be string ''eval''.')
 end
 
 if isempty(connections)
   connections = {};
-  if exist('OCTAVE_VERSION','builtin') > 0
-				% Octave does not exit properly if one of the
-				% SwitchOffDelay timeout threads
-				% is still running. So exit all threads when
-				% octave exits.
-    atexit('mhactl_java_retire_connections');
-  end
 end
 
 % add field default values if fields not present
@@ -48,7 +53,7 @@ for c = 1:size(connections,2)
 end
 if isempty(connection) % No matching existing connection, create new
     connection = javaObject('de.hoertech.mha.control.Connection',...
-			    handle.host, handle.port, 1.2);
+                            handle.host, handle.port);
   connections = [connections, {handle; connection}];
   connection.setTimeout(handle.timeout * 1000);
 end
@@ -88,5 +93,5 @@ function eq = structequal(s1, s2, fields)
 
 function retire_connections(connections)
   for c = connections
-    c{1}.retire();
+    c{1}.connect(false);
   end
