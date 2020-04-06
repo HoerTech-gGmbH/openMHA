@@ -177,12 +177,12 @@ MHAPLUGIN_CALLBACKS(smoothgains_bridge,smoothgains_bridge::overlapadd_if_t,spec,
 MHAPLUGIN_DOCUMENTATION\
 (smoothgains_bridge,
  "level-modification filter data-flow overlap-add",
- "The overlap-add framework allows filter lengths of the zero padding length.\n"
+ "The overlap-add framework allows finite impulse response filter lengths up to the zero padding length.\n"
  "Longer filters will result in artifacts caused by circular aliasing.\n"
  "Artifacts can be reduced by either applying Hanning ramps to the zero-padded"
  " blocks after filtering,\n"
  "or by shortening the impulse response of the filter,"
- " and thus implicitely reducing the frequency resolution.\n"
+ " thereby implicitely reducing the frequency resolution.\n"
  "This plugin reduces the filter length to match exactly the"
  " zero-padding length.\n"
  "It can either keep the phase (mode=linear\\_phase),"
@@ -197,6 +197,11 @@ MHAPLUGIN_DOCUMENTATION\
  " an asymmetric window position (wnd.pos=0) is needed.\n"
  "Using minimal phase filters will destroy the phase,"
  " but reduces the algorithmic delay.\n"
+ "Using a minimal phase can lead to undesired interference between"
+ " subsequent overlapping synthesized frames, also introducing"
+ " unwanted sound artifacts.  It should only be used if the filter"
+ " applied in the STFT domain does not change or only changes very"
+ " slowly.\n"
  )
 
 // Local Variables:
