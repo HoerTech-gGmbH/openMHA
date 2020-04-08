@@ -1,6 +1,6 @@
 Section: contrib/sound
-Suggests: qjackctl
 Maintainer: openMHA Packaging Team <packaging@openmha.org>
-Description: HoerTech openMHA
-  Open community platform for hearing aid algorithm research - example files.
+Description: HoerTech openMHA example files and reference algorithms
+  openMHA is an open community platform for hearing aid algorithm research.
+  This package contains example files and reference algorithms.
 Homepage: http://www.openmha.org/

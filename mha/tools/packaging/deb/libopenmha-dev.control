@@ -1,6 +1,7 @@
 Section: contrib/sound
-Suggests: qjackctl
 Maintainer: openMHA Packaging Team <packaging@openmha.org>
 Description: HoerTech openMHA library development files
-  Open community platform for hearing aid algorithm research.
+  openMHA is an open community platform for hearing aid algorithm research.
+  This package contains the header files required for building custom
+  openMHA algorithm plugins.
 Homepage: http://www.openmha.org/

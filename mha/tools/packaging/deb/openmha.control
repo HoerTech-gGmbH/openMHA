@@ -2,5 +2,5 @@ Section: contrib/sound
 Suggests: qjackctl
 Maintainer: openMHA Packaging Team <packaging@openmha.org>
 Description: HoerTech openMHA
-  Open community platform for hearing aid algorithm research.
+  openMHA is an open community platform for hearing aid algorithm research.
 Homepage: http://www.openmha.org/
