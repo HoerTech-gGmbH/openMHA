@@ -71,9 +71,26 @@ CURRENTPATH=$(shell pwd)
 DEBARCH = $(shell dpkg-architecture --query DEB_BUILD_ARCH)
 # FIXME: allow to specify architecture per package to enable architecture "all"
 
-# List of all debian packages in their final location to be packaged by this
-# Makefile
-ALL_DEBS=$(patsubst %.csv,hoertech/$(CODENAME)/%_$(FULLVERSIONGCC)_$(DEBARCH).deb,$(ALL_CSV))
+# List of all debian control files
+ALL_CONTROL_FILES=$(patsubst %.csv,%.control,$(ALL_CSV))
+
+# List of only those debian control files that contain
+# Architecture: all
+# i.e. the same deb file works on all architectures
+NOARCH_CONTROL_FILES=$(shell grep 'no architecture-specific files' *.control | cut -d: -f1)
+
+# List of only those debian control files that do *NOT* contain
+# Architecture: all
+# i.e. the deb file works only on one architecture
+NATIVE_CONTROL_FILES=$(filter-out $(NOARCH_CONTROL_FILES), $(ALL_CONTROL_FILES))
+
+# List of all architecture-specific debian packages in their final location
+# to be packaged by this Makefile
+NATIVE_DEBS=$(patsubst %.control,hoertech/$(CODENAME)/%_$(FULLVERSIONGCC)_$(DEBARCH).deb,$(NATIVE_CONTROL_FILES))
+
+# List of all architecture independent debian packages in their final location
+# to be packaged by this Makefile
+NOARCH_DEBS=$(patsubst %.control,hoertech/$(CODENAME)/%_$(FULLVERSIONALL)_all.deb,$(NOARCH_CONTROL_FILES))
 
 # Pre-dependency to ensure before packaging starts.  Here that openMHA is
 # compiled.  Main openMHA Makefile ensures this itself and invokes target pack.
@@ -81,7 +98,10 @@ build:
 	(cd $(REPO) && make all)
 
 # Main openMHA Makefile invokes target pack after openMHA has been compiled.
-pack: $(ALL_DEBS)
+pack: pack-all pack-native
+
+pack-all: $(NOARCH_DEBS)
+pack-native: $(NATIVE_DEBS)
 
 # Target clean cannot be invoked in parallel with target pack, needs to be
 # called separately and be allowed to finish BEFORE pack is called if clean
@@ -102,7 +122,11 @@ clean:
 	@echo FULLVERSIONGCC='$(FULLVERSIONGCC)'
 	@echo CURRENTPATH='$(CURRENTPATH)'
 	@echo DEBARCH='$(DEBARCH)'
-	@echo ALL_DEBS='$(ALL_DEBS)'
+	@echo ALL_CONTROL_FILES='$(ALL_CONTROL_FILES)'
+	@echo NOARCH_CONTROL_FILES='$(NOARCH_CONTROL_FILES)'
+	@echo NATIVE_CONTROL_FILES='$(NATIVE_CONTROL_FILES)'
+	@echo NOARCH_DEBS='$(NOARCH_DEBS)'
+	@echo NATIVE_DEBS='$(NATIVE_DEBS)'
 
 # Rule for creating output directories
 hoertech/$(CODENAME)/.directory:
@@ -114,3 +138,14 @@ hoertech/$(CODENAME)/.directory:
 hoertech/$(CODENAME)/%_$(FULLVERSIONGCC)_$(DEBARCH).deb: hoertech/$(CODENAME)/.directory %.csv %.control %.dep
 	cd $(REPO) && BUILD_DIR=$(BUILD_DIR) mhamakedeb $(CURRENTPATH)/$*.csv $(FULLVERSIONGCC)
 	mv $(REPO)/$(notdir $@) hoertech/$(CODENAME)/
+
+# A copy of the cross-platform packages will be left in $(REPO) to enable
+# sharing of these packages through Jenkins
+hoertech/$(CODENAME)/%_$(FULLVERSIONALL)_all.deb: hoertech/$(CODENAME)/.directory $(REPO)/%_$(FULLVERSIONALL)_all.deb
+	ln $(REPO)/$(notdir $@) hoertech/$(CODENAME)/
+$(REPO)/%_$(FULLVERSIONALL)_all.deb: %.csv %.control %.dep
+	cd $(REPO) && mhamakedeb $(CURRENTPATH)/$*.csv $(FULLVERSIONALL) all
+
+# Do not delete the intermediate deb files in the base directory
+.PRECIOUS:
+.SECONDARY:

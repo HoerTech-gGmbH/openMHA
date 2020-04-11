@@ -80,6 +80,13 @@ def openmha_build_steps(stage_name) {
     stash name: "docs", includes: '*.pdf'
     bash ("echo stashed docs on $system $arch at \$(date -R)")
     archiveArtifacts 'pdf-*.zip'
+
+    // The docker slave that builds the docs also builds the architecture
+    // independent debian packages
+    bash ("make -j ${cpus + additional_cpus_for_docs} deb")
+    stash name: "debs", includes: '*.deb'
+    bash ("echo stashed debs on $system $arch at \$(date -R)")
+    archiveArtifacts '*.deb'
   }
 
   // Build executables, plugins, execute tests
@@ -97,7 +104,21 @@ def openmha_build_steps(stage_name) {
   }
 
   if (linux) {
-    bash ("make -j $cpus deb")
+    if (!docs) {
+      // Retrieve the architecture-independent debs, wait until they are ready.
+      wait_time = 1
+      attempt = 0
+      retry(45){
+        sleep(wait_time)
+        wait_time = 15
+        attempt = attempt + 1
+        bash ("echo unstash debs attempt $attempt on $system $arch at \$(date -R)")
+        unstash "debs"
+        bash ("touch *.deb")
+      }
+
+      bash ("make -j $cpus deb")
+    }
     // Store debian packages
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
     archiveArtifacts 'mha/tools/packaging/deb/hoertech/*/*.deb'
