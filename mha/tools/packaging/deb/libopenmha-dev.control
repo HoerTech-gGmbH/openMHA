@@ -1,7 +1,8 @@
+Architecture: all
 Section: contrib/sound
 Maintainer: openMHA Packaging Team <packaging@openmha.org>
 Description: HoerTech openMHA library development files
   openMHA is an open community platform for hearing aid algorithm research.
   This package contains the header files required for building custom
-  openMHA algorithm plugins and no architecture-specific files.
+  openMHA algorithm plugins.
 Homepage: http://www.openmha.org/

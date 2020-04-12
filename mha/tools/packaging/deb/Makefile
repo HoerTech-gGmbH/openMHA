@@ -77,7 +77,7 @@ ALL_CONTROL_FILES=$(patsubst %.csv,%.control,$(ALL_CSV))
 # List of only those debian control files that contain
 # Architecture: all
 # i.e. the same deb file works on all architectures
-NOARCH_CONTROL_FILES=$(shell grep 'no architecture-specific files' *.control | cut -d: -f1)
+NOARCH_CONTROL_FILES=$(shell grep 'Architecture: all' *.control | cut -d: -f1)
 
 # List of only those debian control files that do *NOT* contain
 # Architecture: all

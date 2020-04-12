@@ -1,7 +1,7 @@
+Architecture: all
 Section: contrib/sound
 Maintainer: openMHA Packaging Team <packaging@openmha.org>
 Description: HoerTech openMHA example files and reference algorithms
   openMHA is an open community platform for hearing aid algorithm research.
-  This package contains example files and reference algorithms and
-  no architecture-specific files.
+  This package contains example files and reference algorithms.
 Homepage: http://www.openmha.org/
