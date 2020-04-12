@@ -60,6 +60,7 @@ MHAVERSION = $(shell \
 # FULLVERSIONALL is the MHA version plus git age plus git hash plus any
 # modification indicator but without the compiler version.
 FULLVERSIONALL=$(MHAVERSION)-$(PACKAGEVER)-$(COMMITHASH)$(GITMODIFIED)
+export FULLVERSIONALL
 
 # FULLVERSIONGCC is FULLVERSIONALL plus the compiler version
 FULLVERSIONGCC=$(FULLVERSIONALL)-gcc$(GCC_VER)
