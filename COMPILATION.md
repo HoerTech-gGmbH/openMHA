@@ -118,10 +118,10 @@ make install
 You can set the make variable PREFIX to point to the desired installation
 location.  The default installation location is ".", the current directory.
 
-You should then add the openMHA installation directory to the system search path
-for libraries:
+You should then add the openMHA library installation directory to the openMHA search
+path for libraries:
 ```
-export DYLD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$DYLD_LIBRARY_PATH
+export MHA_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib
 ```
 as well as to the search path for executables:
 ```

@@ -58,15 +58,36 @@ doc: mha/doc
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
+
+ifeq "$(PLATFORM)" "Darwin"
 install: all
 	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
 	@mkdir -p  $(DESTDIR)$(PREFIX)/lib
-	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \;
-	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \;
+	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) \
+        -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \; \
+        -execdir install_name_tool -change $(GIT_DIR)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
+                                           $(DESTDIR)$(PREFIX)/lib/libopenmha$(DYNAMIC_LIB_EXT) \
+                                           $(DESTDIR)$(PREFIX)/lib/{} \; \
+        -execdir install_name_tool -id $(DESTDIR)$(PREFIX)/lib/{} \
+                                       $(DESTDIR)$(PREFIX)/lib/{} \;
+	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name ".*" ! -name unit-test-runner \
+        -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \; \
+        -execdir install_name_tool -change $(GIT_DIR)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
+                                           $(DESTDIR)$(PREFIX)/lib/libopenmha$(DYNAMIC_LIB_EXT) \
+                                           $(DESTDIR)$(PREFIX)/bin/{} \;
 	@cp mha/tools/thismha.sh $(DESTDIR)$(PREFIX)/bin/.
+else
+install: all
+	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
+	@mkdir -p  $(DESTDIR)$(PREFIX)/lib
+	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) \
+        -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \;
+	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name ".*" ! -name unit-test-runner \
+        -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \;
+	@cp mha/tools/thismha.sh $(DESTDIR)$(PREFIX)/bin/.
+endif
 
 uninstall:
-
 	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(DESTDIR)$(PREFIX)/lib/{} \;)
 	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(DESTDIR)$(PREFIX)/bin/{} \;)
 	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh

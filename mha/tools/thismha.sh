@@ -36,7 +36,6 @@ drop_from_path()
 if [ -n "${MHASYS}" ] ; then
    old_mhasys=${MHASYS}
 fi
-
 SOURCE=${BASH_ARGV[0]}
 if [ "x$SOURCE" = "x" ]; then
     SOURCE=${(%):-%N} # for zsh
@@ -63,24 +62,27 @@ if [ -n "${old_mhasys}" ] ; then
       drop_from_path "$PATH" "${old_mhasys}/bin"
       PATH=$newpath
    fi
-   if [ -n "${LD_LIBRARY_PATH}" ]; then
-      drop_from_path "$LD_LIBRARY_PATH" "${old_mhasys}/lib"
-      LD_LIBRARY_PATH=$newpath
+   if [ "$(uname)" != "Darwin" ]; then
+       if [ -n "${LD_LIBRARY_PATH}" ]; then
+           drop_from_path "$LD_LIBRARY_PATH" "${old_mhasys}/lib"
+           LD_LIBRARY_PATH=$newpath
+       fi
    fi
 fi
 
-export MHA_LIBRARY_PATH="$MHASYS/lib;$MHASYS/bin;$MHA_LIBRARY_PATH"
+export MHA_LIBRARY_PATH="$MHASYS/lib;$MHASYS/bin;"
 
 if [ -z "${PATH}" ]; then
     PATH=${MHASYS}/bin; export PATH
 else
    PATH=${MHASYS}/bin:$PATH; export PATH
 fi
-
-if [ -z "${LD_LIBRARY_PATH}" ]; then
-   LD_LIBRARY_PATH=${MHASYS}/lib; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
-else
-   LD_LIBRARY_PATH=${MHASYS}/lib:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
+if [ "$(uname)" != "Darwin" ]; then
+    if [ -z "${LD_LIBRARY_PATH}" ]; then
+        LD_LIBRARY_PATH=${MHASYS}/lib; export LD_LIBRARY_PATH
+    else
+        LD_LIBRARY_PATH=${MHASYS}/lib:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
+    fi
 fi
 
 unset old_mhasys

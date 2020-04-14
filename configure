@@ -22,7 +22,7 @@ chklib(){
     echo "int main(){return 0;}"| g++ -x c++ - $MACLDFLAGS -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 (
-    PREFIX="./"
+    PREFIX=$(pwd)
     DEBUG="-g"
     for arg in "$@"; do
         case "$arg" in
