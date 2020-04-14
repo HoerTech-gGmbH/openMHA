@@ -12,7 +12,12 @@ TITLE=openMHA
 REVERSE_DOMAIN=org.openmha
 
 all: pkg
-pkg: build
+# pkg is a target within luggage.make and depends on payload.
+# payload is the target where luggage does the final file arrangement before
+# packaging the installer. Our build target copies all exes and libs into a
+# tmp directory and fixes the library install names and search paths, so we
+# it needs to be run before that.
+payload: build
 
 #Targets to execute before packing
 PAYLOAD= \
