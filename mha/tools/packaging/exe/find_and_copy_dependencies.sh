@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 HörTech gGmbH
+# Copyright © 2018 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,6 @@
 
 # Copy all binaries into the destination folder
 mkdir -p bin
-cp ../../../../lib/* bin/.
 cp ../../../../bin/* bin/.
 rm bin/thismha.sh
 # Walk the dependency tree, exclude all files that are already present in ./bin and files in windows/system

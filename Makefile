@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 2018 2019 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -58,7 +58,6 @@ doc: mha/doc
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
-
 ifeq "$(PLATFORM)" "Darwin"
 install: all
 	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
@@ -76,6 +75,22 @@ install: all
                                            $(DESTDIR)$(PREFIX)/lib/libopenmha$(DYNAMIC_LIB_EXT) \
                                            $(DESTDIR)$(PREFIX)/bin/{} \;
 	@cp mha/tools/thismha.sh $(DESTDIR)$(PREFIX)/bin/.
+uninstall:
+	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(DESTDIR)$(PREFIX)/lib/{} \;)
+	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(DESTDIR)$(PREFIX)/bin/{} \;)
+	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
+else ifeq "$(PLATFORM)" "MinGW"
+install: all
+	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
+	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) \
+        -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \;
+	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name "unit-test-runner*" \
+        -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \;
+	@cp mha/tools/thismha.sh $(DESTDIR)$(PREFIX)/bin/.
+uninstall:
+	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(DESTDIR)$(PREFIX)/bin/{} \;)
+	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(DESTDIR)$(PREFIX)/bin/{} \;)
+	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
 else
 install: all
 	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
@@ -85,12 +100,11 @@ install: all
 	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name ".*" ! -name unit-test-runner \
         -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \;
 	@cp mha/tools/thismha.sh $(DESTDIR)$(PREFIX)/bin/.
-endif
-
 uninstall:
 	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(DESTDIR)$(PREFIX)/lib/{} \;)
 	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(DESTDIR)$(PREFIX)/bin/{} \;)
 	@rm -f $(DESTDIR)$(PREFIX)/bin/mha.sh
+endif
 
 
 googletest:

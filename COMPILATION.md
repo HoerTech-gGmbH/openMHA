@@ -171,10 +171,6 @@ cd openMHA
 ```
 
 The compilation may take a while.
-You then need to copy the openMHA libraries into the openMHA bin directory:
-```
-mv lib/* bin/
-```
 
 To start openMHA, you need to start a MinGW64 bash shell and navigate to the
 openMHA/bin directory, then type ./mha.exe.
