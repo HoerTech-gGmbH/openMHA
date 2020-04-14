@@ -65,14 +65,14 @@ install: all
 	@mkdir -p  $(DESTDIR)$(PREFIX)/lib
 	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) \
         -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \; \
-        -execdir install_name_tool -change $(GIT_DIR)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
+        -execdir install_name_tool -change $(shell pwd)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
                                            $(DESTDIR)$(PREFIX)/lib/libopenmha$(DYNAMIC_LIB_EXT) \
                                            $(DESTDIR)$(PREFIX)/lib/{} \; \
         -execdir install_name_tool -id $(DESTDIR)$(PREFIX)/lib/{} \
                                        $(DESTDIR)$(PREFIX)/lib/{} \;
 	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name ".*" ! -name unit-test-runner \
         -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \; \
-        -execdir install_name_tool -change $(GIT_DIR)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
+        -execdir install_name_tool -change $(shell pwd)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
                                            $(DESTDIR)$(PREFIX)/lib/libopenmha$(DYNAMIC_LIB_EXT) \
                                            $(DESTDIR)$(PREFIX)/bin/{} \;
 	@cp mha/tools/thismha.sh $(DESTDIR)$(PREFIX)/bin/.
