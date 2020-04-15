@@ -89,6 +89,8 @@ def openmha_build_steps(stage_name) {
     // The docker slave that builds the docs also builds the architecture
     // independent debian packages
     bash ("make -j ${cpus + additional_cpus_for_docs} deb")
+    // update timestamps of deb packages, and workaround for old diffs
+    bash ("touch *.deb")
     stash name: "debs", includes: '*.deb'
     bash ("echo stashed debs on $system $arch at \$(date -R)")
     archiveArtifacts '*.deb'
@@ -119,6 +121,7 @@ def openmha_build_steps(stage_name) {
         attempt = attempt + 1
         bash ("echo unstash debs attempt $attempt on $system $arch at \$(date -R)")
         unstash "debs"
+	// update timestamps of debs, to make them newer than late containers
         bash ("touch *.deb")
       }
 
