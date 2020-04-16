@@ -9,17 +9,17 @@ First, add the openMHA package repository to your system:
 
 In Ubuntu 20.04:
 
-    wget -O- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
     sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de focal universe'
 
 In Ubuntu 18.04:
 
-    wget -O- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
     sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de bionic universe'
 
 In Ubuntu 16.04:
 
-    wget -O- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
     sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de xenial universe'
     sudo apt update
 

@@ -27,13 +27,13 @@ separate apt repository.  Please be aware that
 
 In Ubuntu 20.04:
 
-    wget -O- https://aptdev.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    wget -qO- https://aptdev.hoertech.de/openmha-packaging.pub | sudo apt-key add -
     sudo apt-add-repository 'deb [arch=amd64] http://aptdev.hoertech.de focal universe'
     sudo apt-get install openmha openmha-examples
 
 In Ubuntu 18.04:
 
-    wget -O- https://aptdev.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    wget -qO- https://aptdev.hoertech.de/openmha-packaging.pub | sudo apt-key add -
     sudo apt-add-repository 'deb [arch=amd64] http://aptdev.hoertech.de bionic universe'
     sudo apt-get install openmha openmha-examples
 
