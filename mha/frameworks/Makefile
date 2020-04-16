@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +15,15 @@
 
 include ../../config.mk
 include ../../magic.mk
+
+ifeq "x${BRANCH_NAME}" "xmaster" # If we are in a Jenkins build of branch master
+ifeq "x" "x$(findstring modified,$(GITCOMMITHASH))" # and if git is unmodified,
+# then this is is a relase build, do not output a non-release warning.
+CXXFLAGS += -DNORELEASE_WARNING='""'
+# and also add git commit hash to version output for a relase build
+CXXFLAGS += $(GITCOMMITHASHCFLAGS) -DVERSION_EXTENSION='" (" GITCOMMITHASH ")"'
+endif
+endif
 
 TARGETS = mha analysemhaplugin generatemhaplugindoc
 
