@@ -13,157 +13,48 @@
 // You should have received a copy of the GNU Affero General Public License,
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
- * Implements the binaural beamforming algorithm described in
- * Development and Objective Perceptual Quality
- * Assessment of Monaural and Binaural Noise
- * Reduction Schemes for Hearing Aids,
- * PhD thesis from Thomas Rohdenburg
- */
-
-
-//In C++17, the spherical bessel function is in namespace std.
-// Before C++17, the spherical bessel function was in namespace std::tr1
-// libc++, clang's std implementation does not have the bessel fcts at all
-#if __cplusplus >= 201703L and !defined(__clang__)// We are using C++17 are not using clang
-#include <cmath>
-double mha_j0(double x){
-  return std::cyl_bessel_j(0,x);
-}
-#elif defined(__clang__)  // Clang has the POSIX implementation of the bessel function
-#include <cmath>
-double mha_j0(double x){
-return j0(x);
-}
-#elif __has_include(<tr1/cmath>) // We are on an older not-clang compiler and can use the tr1 headers
-#include <tr1/cmath>
-double mha_j0(double x){
-  return std::tr1::cyl_bessel_j(0,x);
-}
-#elif __has_include(<boost/math/special_functions/bessel.hpp>) // Use boot as last resort
-#include <boost/math/special_functions/bessel.hpp>
-double mha_j0(double x) {
-  return boost::math::cyl_bessel_j(0,x);
-}
-#else
-#error "Skipping rohBeam as no implementation of cyl_bessel_j is available!"
-#endif
-
-#include "mha_plugin.hh"
+#include "rohBeam.hh"
 #include "mha_utils.hh"
-#include "mhasndfile.h"
-#define NDEBUG //supposed to speed up Eigen
-#include <eigen3/Eigen/Dense>
-#include <cmath>
-#include <memory>
-
 using namespace Eigen;
 
 using MHAUtils::is_denormal;
 
+
+  //In C++17, the spherical bessel function is in namespace std.
+  // Before C++17, the spherical bessel function was in namespace std::tr1
+  // libc++, clang's std implementation does not have the bessel fcts at all
+#if __cplusplus >= 201703L and !defined(__clang__)// We are using C++17 are not using clang
+#include <cmath>
+double rohBeam::j0(double x){
+    return std::cyl_bessel_j(0,x);
+  }
+#elif defined(__clang__)  // Clang has the POSIX implementation of the bessel function
+#include <cmath>
+double rohBeam::j0(double x){
+    return ::j0(x);
+  }
+#elif __has_include(<tr1/cmath>) // We are on an older not-clang compiler and can use the tr1 headers
+#include <tr1/cmath>
+double rohBeam::j0(double x){
+    return std::tr1::cyl_bessel_j(0,x);
+  }
+#elif __has_include(<boost/math/special_functions/bessel.hpp>) // Use boot as last resort
+#include <boost/math/special_functions/bessel.hpp>
+double rohBeam::j0(double x) {
+    return boost::math::cyl_bessel_j(0,x);
+  }
+#else
+#error "No implementation of cyl_bessel_j is available!"
+#endif
+
+
 namespace rohBeam {
 
-  //a constant for the speed of sound m/s at 10C in air
-  //constexpr float CONST_C   337.31f
-  //speed of sound as used in Rohdenburg reference implementation
-  constexpr float CONST_C = 343.0115f;
-  constexpr int refL = 0;
-  constexpr int refR = 3;
-  auto scalarify=[](auto t){return t(0);};
-  struct configOptions {
-    bool enable_adaptive_beam;
-    int binaural_type_index;
-    float alpha_postfilter;
-    float alpha_blocking_XkXi;
-    float alpha_blocking_XkY;
-  };
-
-  class rohConfig {
-  public:
-    rohConfig(const mhaconfig_t in_cfg,const mhaconfig_t out_cfg,
-              std::unique_ptr<MatrixXcf> headModel_,
-              std::unique_ptr<MHASignal::matrix_t> beamW_,
-              std::unique_ptr<MHASignal::matrix_t> delayComp_,
-              const configOptions& options);
-
-    //this one copies state from previous
-    rohConfig(rohConfig *lastConfig,
-              const mhaconfig_t,const mhaconfig_t out_cfg,
-              std::unique_ptr<MatrixXcf> headModel_,
-              std::unique_ptr<MHASignal::matrix_t> beamW_,
-              std::unique_ptr<MHASignal::matrix_t> delayComp_,
-              const configOptions& options);
-
-    ~rohConfig();
-    rohConfig(const rohConfig&)=delete;
-    rohConfig& operator=(const rohConfig&)=delete;
-    mha_spec_t* process(mha_spec_t*);
-    void init_dynamic();
-
-  private:
-
-    void phasereconstruction(MHASignal::spectrum_t*);
-    void postfilter(mha_spec_t *,MHASignal::spectrum_t*);
-    void copyfixedbfoutput(MHASignal::spectrum_t*);
-    int nfreq;
-    int nchan_block;
-
-    mhaconfig_t in_cfg;
-    mhaconfig_t out_cfg;
-    bool enable_adaptive_beam;
-    int binaural_type_index;
-
-
-    //the prop vector
-    std::unique_ptr<MatrixXcf> headModel;
-
-    // the beamforming matrix in MHA complex form
-    std::unique_ptr<MHASignal::matrix_t> beamW;
-    std::unique_ptr<MHASignal::matrix_t> delayComp;
-
-    //
-    MHASignal::spectrum_t *beam1; //output of beamforming1, Y_f
-    MHASignal::spectrum_t *beamA; //output of adaptive beamforming, Y_a
-    MHASignal::spectrum_t *blockSpec; //blocked spectrum, X'
-    MHASignal::spectrum_t *outSpec;
-
-    float alpha_postfilter;
-    float alpha_blocking_XkXi;
-    float alpha_blocking_XkY;
-
-    /* Eigen matrices for recursive estimation of the noise characteristics
-     * of blocking and fixed beamforming residual output */
-    std::vector<MatrixXcf> corrXpXp;
-    std::vector<VectorXcf> corrXpYf;
-
-    //power spectral densities for binaural postfilter
-    VectorXf corrZZ;
-    VectorXf corrLL;
-    VectorXf corrRR;
-
-    //all below is volatile and not important
-
-    //buffer to allocate (in construction) for matrix decomposition
-    //use a householder QR decomposition,
-    //which seems to be fastest (from Eigen docs) w/o special matrix structure
-    HouseholderQR<MatrixXcf> hhCorrXpXp;
-
-    VectorXcf nextXpYf;
-    VectorXcf blockXp;
-
-    VectorXcf freqResp;
-    ArrayXf magResp;
-
-    float minLim;
-    float maxLim;
-  };
-
-
   rohConfig::rohConfig(const mhaconfig_t in_cfg,const mhaconfig_t out_cfg,
-            std::unique_ptr<MatrixXcf> headModel_,
-            std::unique_ptr<MHASignal::matrix_t> beamW_,
-            std::unique_ptr<MHASignal::matrix_t> delayComp_,
-            const configOptions& options):
+                       std::unique_ptr<MatrixXcf> headModel_,
+                       std::unique_ptr<MHASignal::matrix_t> beamW_,
+                       std::unique_ptr<MHASignal::matrix_t> delayComp_,
+                       const configOptions& options):
     nfreq( in_cfg.fftlen/2+1 ),
     nchan_block( in_cfg.channels-1 ),
     in_cfg( in_cfg ),
@@ -195,10 +86,10 @@ namespace rohBeam {
   /* This is a constructor that copies most non-volatile/non-throwaway state.
      It is intended for smooth changes in configuration variables like speaker angle. */
   rohConfig::rohConfig(rohConfig *lastConfig, const mhaconfig_t in_cfg,const mhaconfig_t out_cfg,
-              std::unique_ptr<MatrixXcf> headModel_,
-              std::unique_ptr<MHASignal::matrix_t> beamW_,
-              std::unique_ptr<MHASignal::matrix_t> delayComp_,
-              const configOptions& options):
+                       std::unique_ptr<MatrixXcf> headModel_,
+                       std::unique_ptr<MHASignal::matrix_t> beamW_,
+                       std::unique_ptr<MHASignal::matrix_t> delayComp_,
+                       const configOptions& options):
     nfreq( in_cfg.fftlen/2+1 ),
     nchan_block( in_cfg.channels-1 ),
     in_cfg( in_cfg ),
@@ -387,7 +278,7 @@ namespace rohBeam {
 
 
 
-  void rohBeam::rohConfig::copyfixedbfoutput(MHASignal::spectrum_t* prevSpecPost){
+  void rohConfig::copyfixedbfoutput(MHASignal::spectrum_t* prevSpecPost){
     //copy the fixed bf output
     for (unsigned int f=0; f<outSpec->num_frames; f++) {
       for (unsigned int c=0; c<out_cfg.channels; c++) {
@@ -396,7 +287,7 @@ namespace rohBeam {
     }
   }
 
-  void rohBeam::rohConfig::phasereconstruction(MHASignal::spectrum_t* prevSpecPost) {
+  void rohConfig::phasereconstruction(MHASignal::spectrum_t* prevSpecPost) {
     mha_complex_t headModelL, headModelR;
     for (int f=0; f<nfreq; f++) {
       ::set( headModelL, (*headModel)(f,refL) );
@@ -408,99 +299,33 @@ namespace rohBeam {
 
   void rohConfig::postfilter(mha_spec_t *inSpec,MHASignal::spectrum_t *prevSpecPost){
 
-      for (int f=0; f<nfreq; f++) {
-        corrZZ(f) = alpha_postfilter * corrZZ(f) + (1 - alpha_postfilter) * abs2( prevSpecPost->value(f,0) );
+    for (int f=0; f<nfreq; f++) {
+      corrZZ(f) = alpha_postfilter * corrZZ(f) + (1 - alpha_postfilter) * abs2( prevSpecPost->value(f,0) );
+    }
+
+    //for the moment use hardcoded reference channels
+    //estimate the power spectral densities of filtered, left, and right
+
+    for (int f=0; f<nfreq; f++) {
+      corrLL(f) = alpha_postfilter * corrLL(f) + (1 - alpha_postfilter) * abs2( value(inSpec,f,refL) );
+      corrRR(f) = alpha_postfilter * corrRR(f) + (1 - alpha_postfilter) * abs2( value(inSpec,f,refR) );
+    }
+
+    //estimate the coefficients and apply them directly
+    for (int f=0; f<nfreq; f++) {
+      float propPowL = abs( (*headModel)(f,refL) );
+      propPowL = propPowL * propPowL;
+      float propPowR = abs( (*headModel)(f,refR) );
+      propPowR = propPowR * propPowR;
+      float H = ( propPowL + propPowR ) * corrZZ(f) / ( corrLL(f) + corrRR(f) );
+
+      if ( is_denormal(H) ) { //try to catch bad filter, not working
+        H = 0;
       }
-
-      //for the moment use hardcoded reference channels
-      //estimate the power spectral densities of filtered, left, and right
-
-      for (int f=0; f<nfreq; f++) {
-        corrLL(f) = alpha_postfilter * corrLL(f) + (1 - alpha_postfilter) * abs2( value(inSpec,f,refL) );
-        corrRR(f) = alpha_postfilter * corrRR(f) + (1 - alpha_postfilter) * abs2( value(inSpec,f,refR) );
-      }
-
-      //estimate the coefficients and apply them directly
-      for (int f=0; f<nfreq; f++) {
-        float propPowL = abs( (*headModel)(f,refL) );
-        propPowL = propPowL * propPowL;
-        float propPowR = abs( (*headModel)(f,refR) );
-        propPowR = propPowR * propPowR;
-        float H = ( propPowL + propPowR ) * corrZZ(f) / ( corrLL(f) + corrRR(f) );
-
-        if ( is_denormal(H) ) { //try to catch bad filter, not working
-          H = 0;
-        }
-        outSpec->value(f,0) = value(inSpec,f,refL) * H;
-        outSpec->value(f,1) = value(inSpec,f,refR) * H;
-      }
+      outSpec->value(f,0) = value(inSpec,f,refL) * H;
+      outSpec->value(f,1) = value(inSpec,f,refR) * H;
+    }
   }
-
-
-
-  class rohBeam : public MHAPlugin::plugin_t<rohConfig> {
-
-  public:
-    rohBeam(algo_comm_t & ac,const std::string & chain_name,
-            const std::string & algo_name);
-    ~rohBeam();
-    mha_spec_t* process(mha_spec_t*);
-    void prepare(mhaconfig_t&);
-    void release(void) {/* Do nothing in release */}
-
-  private:
-    void update_cfg();
-
-    float compute_head_model_T(float);
-    float compute_head_model_alpha(float);
-    MatrixXcf * compute_head_model_mat(float src_az_degrees);
-    MHASignal::matrix_t * compute_delaycomp_vec(MatrixXcf *headModel);
-    std::vector<MatrixXcf> * noise_integrate_hrtf();
-    VectorXcf solve_MVDR(VectorXcf propVec, MatrixXcf noiseM);
-
-    const MatrixXf compute_uncorr(float w);
-    const MatrixXf compute_diff2D(float);
-    const MatrixXf compute_diff3D(float);
-
-    MHASignal::matrix_t * compute_beamW(MatrixXcf*);
-    float compute_wng(VectorXcf freqRes, VectorXcf propVec);
-    void export_beam_design( const MHASignal::matrix_t & beamW,const MatrixXcf &headModel );
-
-    typedef const MatrixXf (rohBeam::*noiseFuncPtr) (float);
-    noiseFuncPtr get_noise_model_func(void);
-
-    MHAParser::kw_t prop_type;
-    MHAParser::string_t sampled_hrir_path;
-
-    MHAParser::float_t source_azimuth_degrees;
-    MHAParser::vfloat_t mic_azimuth_degrees_vec;
-    MHAParser::float_t head_model_sphere_radius_cm;
-    MHAParser::mfloat_t intermic_distance_cm;
-    MHAParser::kw_t noise_field_model;
-    MHAParser::bool_t enable_adaptive_beam;
-    MHAParser::kw_t binaural_type;
-
-    MHAParser::float_t diag_loading_mu;
-    MHAParser::bool_t enable_export;
-    MHAParser::bool_t enable_wng_optimization;
-    MHAParser::float_t tau_postfilter_ms;
-    MHAParser::float_t tau_blocking_XkXi_ms;
-    MHAParser::float_t tau_blocking_XkY_ms;
-
-    /* patch bay for connecting configuration parser
-       events with local member functions: */
-    MHAEvents::patchbay_t<rohBeam> patchbay;
-
-    bool prepared;
-
-    //for exporting beamforming design
-    MHA_AC::spectrum_t * beamExport;
-    MHA_AC::waveform_t * noiseModelExport; //change to spectrum if we need complex PSD
-    MHA_AC::spectrum_t * propExport;
-
-    void on_model_param_valuechanged();
-
-  };
 
   /** Constructs the beamforming plugin. */
   rohBeam::rohBeam(algo_comm_t & ac,
@@ -640,67 +465,67 @@ namespace rohBeam {
   void rohBeam::update_cfg() {
 
     std::unique_ptr<MatrixXcf> headModel =[&](){
-                            MatrixXcf* headModel=nullptr;
+                                            MatrixXcf* headModel=nullptr;
 
-                            if ( prop_type.isval("hm1") ) {
-                              headModel = compute_head_model_mat( source_azimuth_degrees.data );
-                            } else if ( prop_type.isval("sampled") ) {
+                                            if ( prop_type.isval("hm1") ) {
+                                              headModel = compute_head_model_mat( source_azimuth_degrees.data );
+                                            } else if ( prop_type.isval("sampled") ) {
 
-                              int nfreq = input_cfg().fftlen/2+1;
+                                              int nfreq = input_cfg().fftlen/2+1;
 
-                              //load only fftlen frames of the hrir
-                              MHASndFile::sf_wave_t sndfile(sampled_hrir_path.data, 0, input_cfg().fftlen);
+                                              //load only fftlen frames of the hrir
+                                              MHASndFile::sf_wave_t sndfile(sampled_hrir_path.data, 0, input_cfg().fftlen);
 
-                              if ( input_cfg().channels != sndfile.num_channels )
-                                {
-                                  throw MHA_Error(__FILE__, __LINE__,
-                                                  "Number of channels in sampled HRIR (%u) does not match number"
-                                                  " of input channels (%u).",
-                                                  sndfile.num_channels, input_cfg().channels);
-                                }
-                              if( input_cfg().fftlen != sndfile.num_frames )
-                                {
-                                  throw MHA_Error(__FILE__,__LINE__,
-                                                  "Number of frames in sampled HRIR (%u) does not match fft length (%u).",
-                                                  sndfile.num_frames,input_cfg().fftlen);
-                                }
-                              if( input_cfg().srate != sndfile.samplerate )
-                                {
-                                  throw MHA_Error(__FILE__,__LINE__,
-                                                  "Sample rate in sampled HRIR (%d) does not match MHA sample rate (%f).",
-                                                  sndfile.samplerate,input_cfg().srate);
-                                }
+                                              if ( input_cfg().channels != sndfile.num_channels )
+                                                {
+                                                  throw MHA_Error(__FILE__, __LINE__,
+                                                                  "Number of channels in sampled HRIR (%u) does not match number"
+                                                                  " of input channels (%u).",
+                                                                  sndfile.num_channels, input_cfg().channels);
+                                                }
+                                              if( input_cfg().fftlen != sndfile.num_frames )
+                                                {
+                                                  throw MHA_Error(__FILE__,__LINE__,
+                                                                  "Number of frames in sampled HRIR (%u) does not match fft length (%u).",
+                                                                  sndfile.num_frames,input_cfg().fftlen);
+                                                }
+                                              if( input_cfg().srate != sndfile.samplerate )
+                                                {
+                                                  throw MHA_Error(__FILE__,__LINE__,
+                                                                  "Sample rate in sampled HRIR (%d) does not match MHA sample rate (%f).",
+                                                                  sndfile.samplerate,input_cfg().srate);
+                                                }
 
-                              unsigned int nchan = sndfile.num_channels;
+                                              unsigned int nchan = sndfile.num_channels;
 
-                              //get an fft handle, allocate a buffer, and transform into HRTF
-                              mha_fft_t fft = mha_fft_new(input_cfg().fftlen);
-                              MHASignal::spectrum_t spec(nfreq,nchan);
-                              mha_fft_wave2spec(fft, &sndfile, &spec, true);
-                              // normalize spectrum to rms level, to avoid numerical problems:
-                              mha_real_t hrir_level(0.0);
-                              for( unsigned int k=0;k<nchan;k++)
-                                hrir_level += rmslevel(spec,k,input_cfg().fftlen);
-                              spec *= (mha_real_t)nchan/hrir_level;
+                                              //get an fft handle, allocate a buffer, and transform into HRTF
+                                              mha_fft_t fft = mha_fft_new(input_cfg().fftlen);
+                                              MHASignal::spectrum_t spec(nfreq,nchan);
+                                              mha_fft_wave2spec(fft, &sndfile, &spec, true);
+                                              // normalize spectrum to rms level, to avoid numerical problems:
+                                              mha_real_t hrir_level(0.0);
+                                              for( unsigned int k=0;k<nchan;k++)
+                                                hrir_level += rmslevel(spec,k,input_cfg().fftlen);
+                                              spec *= (mha_real_t)nchan/hrir_level;
 
-                              //copy to the Eigen type
-                              headModel = new MatrixXcf(nfreq, nchan);
-                              for (int f=0; f<nfreq; f++) {
-                                for (unsigned int c=0; c<nchan; c++) {
-                                  (*headModel)(f,c) = stdcomplex( spec.value(f,c) );
-                                }
-                              }
+                                              //copy to the Eigen type
+                                              headModel = new MatrixXcf(nfreq, nchan);
+                                              for (int f=0; f<nfreq; f++) {
+                                                for (unsigned int c=0; c<nchan; c++) {
+                                                  (*headModel)(f,c) = stdcomplex( spec.value(f,c) );
+                                                }
+                                              }
 
-                            }
-                            // check head model for denormals:
-                            for(int kr=0;kr<headModel->rows();kr++)
-                              for(int kc=0;kc<headModel->cols();kc++)
-                                if( is_denormal((*headModel)(kr,kc)) )
-                                  throw MHA_Error(__FILE__,__LINE__,"headModel contains denormals at (%d,%d).",
-                                                  kr,kc);
+                                            }
+                                            // check head model for denormals:
+                                            for(int kr=0;kr<headModel->rows();kr++)
+                                              for(int kc=0;kc<headModel->cols();kc++)
+                                                if( is_denormal((*headModel)(kr,kc)) )
+                                                  throw MHA_Error(__FILE__,__LINE__,"headModel contains denormals at (%d,%d).",
+                                                                  kr,kc);
 
-                            return std::unique_ptr<MatrixXcf>(headModel);
-                          }();
+                                            return std::unique_ptr<MatrixXcf>(headModel);
+                                          }();
 
     auto delayC=std::unique_ptr<MHASignal::matrix_t>(compute_delaycomp_vec( headModel.get() ));
     //whether to do wng optimization is built into compute_beamW
@@ -730,7 +555,7 @@ namespace rohBeam {
                               alpha_postfilter,
                               alpha_blocking_XkXi,
                               alpha_blocking_XkY };
-    
+
     if ( lastConfig == nullptr ) {
 
       //create a new configuration with an initial state
@@ -892,7 +717,7 @@ namespace rohBeam {
     //poll the latest noise_field_model from current configuration
     int noise_option = noise_field_model.data.get_index();
 
-    MHASignal::matrix_t * beamW = new MHASignal::matrix_t(nfreq, nchan);
+    std::unique_ptr<MHASignal::matrix_t> beamW(new MHASignal::matrix_t(nfreq, nchan));
 
     //function pointer for noise model
     noiseFuncPtr nModel = get_noise_model_func();
@@ -959,10 +784,10 @@ namespace rohBeam {
           throw MHA_Error(__FILE__,__LINE__,"Beam weights contain denormals (bin %u, channel %u).",
                           f,c);
       }
-    return beamW;
+    return beamW.release();
   }
 
-  
+
   //to make a one-line routine for computing wng
   float rohBeam::compute_wng(VectorXcf freqRes, VectorXcf propVec) {
     float wngNom = pow( abs(std::complex<float>(scalarify(freqRes.adjoint()*propVec))), 2 );
@@ -1076,7 +901,6 @@ namespace rohBeam {
   }
 
   const MatrixXf rohBeam::compute_diff2D(float w) {
-
     //allocate an eigen matrix
     int ch_in = input_cfg().channels;
     MatrixXf m( ch_in, ch_in );
@@ -1086,7 +910,7 @@ namespace rohBeam {
 
         //implementation with Bessel functions of first kind
         float arg = w * (intermic_distance_cm.data[i][k]/100.0f) / CONST_C;
-        m(i,k) = mha_j0(arg);
+        m(i,k) = /*rohBeam::*/j0(arg);
         if( is_denormal(m(i,k) ) )
           throw MHA_Error(__FILE__,__LINE__,
                           "Denormals in diff2D noise model (%d,%d,w=%g,arg=%g).",
