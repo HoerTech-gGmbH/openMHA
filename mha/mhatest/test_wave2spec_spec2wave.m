@@ -27,7 +27,7 @@ dsc.mha.algos = {'wave2spec','spec2wave'};
 % sinusoidals phase shifted between channels
 input_signal = reshape(sin([1:4000]/117),2,2000)/2 ...
     + repeatable_rand(2,2000,6) / 20;
-input_signal(1,:) *= -1;
+input_signal(1,:) = -1*input_signal(1,:);
 input_filename = 'test_wave2spec_spec2wave_input_signal.wav';
 output_filename = 'test_wave2spec_spec2wave_output_signal.wav';
 

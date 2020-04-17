@@ -58,7 +58,7 @@ function test_dc_mutable_timeconstants();
   mha_set(mha,'mha.mhachain.dc.tau_decay',[0.1 0.1]);
 
   % Test is successful when no error was raised when setting time constants
-end;
+end
 
 % Local Variables:;
 % mode: octave;

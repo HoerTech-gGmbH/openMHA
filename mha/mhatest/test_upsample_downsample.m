@@ -48,10 +48,10 @@ function [] = test_upsample_downsample
     phi = 1;
     [phi,e] = fminsearch(err, phi);
 
-    # Input and output have to be of the same size
+    % Input and output have to be of the same size
     assert_equal(size(in),size(out));
 
-    # expect difference between input and output of the order of -45dB
+    % expect difference between input and output of the order of -45dB
     assert_difference_below(0,sqrt(e),10^(-40/20));
 end
 

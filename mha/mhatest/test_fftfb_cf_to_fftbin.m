@@ -13,8 +13,6 @@ function test_fftfb_cf_to_fftbin
 %
 % You should have received a copy of the GNU Affero General Public License, 
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
-
-  pkg load signal;
   
   sCfg = struct;
   sCfg.srate = 44100;
