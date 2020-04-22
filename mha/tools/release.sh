@@ -46,7 +46,7 @@ fi
 
 #Terminate when branch is not the development branch.
 BRANCH=$(git branch | grep '*' | cut -d" " -f2);
-if  [[ "$BRANCH" =~ "development" ]]; then
+if [[ "$BRANCH" != "development" ]]; then
     echo "Suspicious branch: $BRANCH. Expected: development"
     exit 1
 fi
