@@ -83,6 +83,10 @@ GTAGS
 #Node-red auto-backup files
 *.flow.backup
 
+# Running mhacontrol in pre-release tests creates these files in Matlab's CWD:
+mhacfg_localhost_33337_mha.mat
+mhagui_window_positions.mat
+
 # Local Variables:
 # coding: utf-8-unix
 # End:
