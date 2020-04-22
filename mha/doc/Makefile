@@ -83,8 +83,7 @@ mhadoc: images
 	doxygen mhaextern.cfg
 	cp -v hoertechlogo.png mhadoc/html/
 
-plugins:
-	$(MAKE) $(MHADISTS:=_plugins.pdf)
+plugins: $(MHADISTS:=_plugins.pdf)
 
 %_plugin.list: 
 	echo $(PLUGIN_NAMES) | sort > $@
