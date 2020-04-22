@@ -1,6 +1,6 @@
 #!/bin/bash -e
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 2019 HörTech gGmbH
+# Copyright © 2018 2019 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -44,18 +44,14 @@ if [[ "x$1" != "xopenMHA" ]]; then
     dry_run=true
 fi
 
-#Ask for user input when branch name is suggests neither a release branch
-#nor the development branch. Our workflow currently prescribes a squash merge
-#from development or a release branch in preparation for a release. If the branch
-#does not match either, we ask for a user override.
+#Terminate when branch is not the development branch.
 BRANCH=$(git branch | grep '*' | cut -d" " -f2);
-if  [[ "$BRANCH" =~ "*release*" ]] && [[ "$BRANCH" =~ "development" ]]; then
-    echo "Suspicious branch: $BRANCH is neither a development or release branch. Continue? [yes/no];"
-    ask_yes_no;
+if  [[ "$BRANCH" =~ "development" ]]; then
+    echo "Suspicious branch: $BRANCH. Expected: development"
+    exit 1
 fi
 
-#$BRANCH will be squash merged into master
-echo "Releasing from branch $BRANCH..."
+#master will be fast-forwarded to the state of branch development
 
 echo "Have you tested the live pre-release tests as described in"
 echo "https://dev.openmha.org/w/releaseprotocol/, 'Release procedure' step 3, and"
@@ -115,9 +111,9 @@ echo "Testing regeneration of documentation..."
 printf "Documentation generated correctly? [yes/no]"
 ask_yes_no;
 
-git checkout master && git pull && git merge --squash $BRANCH && git commit -m"Prepare Release $VER"
+git checkout master && git pull && git merge --ff-only $BRANCH && git commit --allow-empty -m"Prepare Release $VER"
 
-echo "Last command: git checkout master && git pull && git merge --squash $BRANCH && git commit -m\"Prepare Release $VER\""
+echo "Last command: git checkout master && git pull && git merge --ff-only $BRANCH && git commit --allow-empty -m\"Prepare Release $VER\""
 echo "Type yes when ready to proceed"
 ask_yes_no
 
@@ -132,18 +128,12 @@ fi
 
 git tag -a v$VER -m"Release $VER"
 
-if [[ "$BRANCH" == "development" ]]; then
-    echo "Merging master back into development..."
-    git checkout development
-    git merge master
-    echo "merged master back into development with git checkout development && git merge master."
-    echo "Type yes when ready to proceed"
-    ask_yes_no
-else
-    echo "NOT MERGING MASTER BACK INTO development because relese is from $BRANCH."
-    echo "Do your own merging as required."
-    echo ""
-fi
+echo "Merging master back into development..."
+git checkout development
+git merge master
+echo "merged master back into development with git checkout development && git merge master."
+echo "Type yes when ready to proceed"
+ask_yes_no
 
 echo "The new release should soon be built by Jenkins. When this finishes without"
 echo "errors, then "
