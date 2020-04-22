@@ -73,6 +73,12 @@ Section "Examples"
   File /r examples\*
 SectionEnd
 
+; Reference algorithms
+Section "Reference algorithms"
+  SetOutPath $INSTDIR\reference_algorithms
+  File /r reference_algorithms\*
+SectionEnd
+
 ; Manuals
 Section "Documentation"
   SetOutPath $INSTDIR\doc

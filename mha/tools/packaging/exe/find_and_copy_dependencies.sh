@@ -46,6 +46,9 @@ find ./mfiles -name ".*" -exec rm {} \;
 # Examples
 cp -r ../../../../examples examples
 find ./examples -name ".*" -exec rm {} \;
+# Reference algorithms
+cp -r ../../../../reference_algorithms reference_algorithms
+find ./reference_algorithms -name ".*" -exec rm {} \;
 # Documentation
 mkdir -p doc
 cp ../../../../*pdf doc/.

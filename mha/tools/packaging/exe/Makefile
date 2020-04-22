@@ -18,9 +18,9 @@
 exe:
 	./find_and_copy_dependencies.sh
 	makensis mha.nsi
-	rm -rf LICENSE bin mfiles examples doc
+	rm -rf LICENSE bin mfiles examples reference_algorithms doc
 clean:
-	rm -rf LICENSE bin mfiles examples doc tmp* *exe
+	rm -rf LICENSE bin mfiles examples reference_algorithms doc tmp* *exe
 
 # Local Variables:
 # compile-command: "make"
