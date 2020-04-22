@@ -26,9 +26,9 @@ PAYLOAD= \
 				mfiles \
         matfiles \
         examples \
+        reference_algorithms \
 				docfiles \
 				bundle-uninstall-openMHA
-
 
 #Basename of the resulting package. Set PACKAGE-VERSION on the command line
 UTIL=openMHA-installer
@@ -45,6 +45,10 @@ usr-local-lib: l_usr_local_lib
 examples: l_usr_local_share
 	@mkdir -p ${WORK_D}/usr/local/share/openmha/examples
 	@${CP} -r ${REPO}/examples/* ${WORK_D}/usr/local/share/openmha/examples/.
+
+reference_algorithms: l_usr_local_share
+	@mkdir -p ${WORK_D}/usr/local/share/openmha/reference_algorithms
+	@${CP} -r ${REPO}/reference_algorithms/* ${WORK_D}/usr/local/share/openmha/reference_algorithms/.
 
 mfiles: l_usr_local_lib
 	@mkdir -p ${WORK_D}/usr/local/lib/openmha/mfiles
