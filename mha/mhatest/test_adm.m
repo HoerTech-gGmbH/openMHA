@@ -39,9 +39,6 @@ function test_adm
   %% Sampling rate of this algorithm
   fsAlgo=mha_get(mha,'srate');
 
-  %% Prepare signal for first run
-  audiowrite(inwav,xAlgo,fsAlgo,'BitsPerSample',32);
-
   %% Run test
   mha_set(mha,'cmd','start');
   mha_set(mha,'cmd','release');
