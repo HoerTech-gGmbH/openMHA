@@ -196,7 +196,7 @@ STORAGE_DIR = /STORAGE/$(PROJECT)/$(BRANCH_NAME)/
 
 # How many days to keep debian packages in storage that are superceded by a
 # newer version
-RETENTION = 2
+RETENTION = 1
 
 storage: pruned-storage-$(BRANCH_NAME)
 
@@ -205,7 +205,7 @@ pruned-storage-%: updated-storage-%
 	@echo uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
 	@echo Begin pruning storage...
 	@echo nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
-	find $(STORAGE_DIR) -name "*.deb" -type f -mtime +$(RETENTION) -delete
+	find $(STORAGE_DIR) -name "*.deb" -type f -mtime +$(RETENTION) -delete -print
 	-rmdir $(STORAGE_DIR)/*   #  delete empty subdirs if there are any
 	@echo uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
 	@echo Storage pruning finished.
