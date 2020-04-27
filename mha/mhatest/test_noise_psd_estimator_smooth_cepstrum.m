@@ -16,7 +16,7 @@
 function test_noise_psd_estimator_smooth_cepstrum
 
   %% Clean up after we are finished
-  inwav = '../Audiofiles/subject1_ref_Breithaupt2008_SCNR_in.wav'
+  inwav = '../Audiofiles/subject1_ref_Breithaupt2008_SCNR_in.wav';
   outwav = 'OUT.wav';
   unittest_teardown(@delete, [outwav]);
   fclose(fopen(outwav, 'w'));
