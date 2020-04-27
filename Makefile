@@ -62,14 +62,14 @@ ifeq "$(PLATFORM)" "Darwin"
 install: all
 	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
 	@mkdir -p  $(DESTDIR)$(PREFIX)/lib
-	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) \
+	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) ! -name Info.plist \
         -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \; \
         -execdir install_name_tool -change $(shell pwd)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
                                            $(DESTDIR)$(PREFIX)/lib/libopenmha$(DYNAMIC_LIB_EXT) \
                                            $(DESTDIR)$(PREFIX)/lib/{} \; \
         -execdir install_name_tool -id $(DESTDIR)$(PREFIX)/lib/{} \
                                        $(DESTDIR)$(PREFIX)/lib/{} \;
-	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name ".*" ! -name unit-test-runner \
+	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name ".*" ! -name unit-test-runner ! -name Info.plist \
         -exec cp {} $(DESTDIR)$(PREFIX)/bin/ \; \
         -execdir install_name_tool -change $(shell pwd)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
                                            $(DESTDIR)$(PREFIX)/lib/libopenmha$(DYNAMIC_LIB_EXT) \
