@@ -131,6 +131,10 @@ void io_parser_t::start()
 void io_parser_t::stop()
 {
     b_fw_started = false;
+    // The below code does not cause a race condition as all process callbacks
+    // are also called from the configuration thread. This is a special case
+    // and can not be generalized to other io libraries.
+    stopped(0,0);
 }
 
 void io_parser_t::stopped(int proc_err,int io_err)
