@@ -1269,7 +1269,7 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
     }else if (nbr == -1){
         v = val; // empty string without brackets creates empty vector
     }else{
-        throw MHA_Error(__FILE__,__LINE__,"Invalid number of brackets (\"%s\", %d)",s.c_str(),nbr);
+        throw MHA_Error(__FILE__,__LINE__,"Invalid brackets (\"%s\", %d)",s.c_str(),nbr);
     }
 }
 
@@ -1278,9 +1278,6 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
     switch( MHAParser::StrCnv::num_brackets( s ) ){
     case -1 : // empty string, error
         throw MHA_Error(__FILE__,__LINE__,"Empty string \"%s\"",s.c_str());
-        break;
-    case 1 : // only one bracket, error
-        throw MHA_Error(__FILE__,__LINE__,"Bracket is missing (\"%s\")",s.c_str());
         break;
     case 0 : // no brackets, scalar
     case 2 : // both brackets, vector
@@ -1325,7 +1322,7 @@ template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, st
         break;
     }
     default :
-        throw MHA_Error(__FILE__,__LINE__,"Internal bug.");
+        throw MHA_Error(__FILE__,__LINE__,"Invalid brackets: %s",s.c_str());
     }
 }
 
@@ -1442,29 +1439,36 @@ void MHAParser::StrCnv::str2val( const std::string & s, bool & v )
 }
 
 /** 
-    \brief Return number of brackets at beginning and end of string.
-  
+    \brief Return number of brackets according to layer depth (vector:2, matrix:4, etc)
     \param s    String
-    \return Number of brackets, or -1 for empty string
+    \return Number of brackets, or -1 for empty string, or -2 for invalid brackets
 */
 int MHAParser::StrCnv::num_brackets(const std::string& s)
 {
+    int num_b{0};
     if( s.size() == 0 )
-        return -1;
-    int n = (s[0]=='[') + (s[s.size()-1]==']');
-    if( n == 2 ){
-        std::string cs(s);
-        cs.erase( 0, 1 );
-        if( cs.size() )
-            cs.erase( cs.size()-1, 1 );
-        MHAParser::trim(cs);
-        if( cs.size() && (cs[cs.size()-1]==';') )
-            cs.erase( cs.size()-1, 1 );
-        MHAParser::trim(cs);
-        if( cs.size() )
-            n += (cs[0]=='[') + (cs[cs.size()-1]==']');
+        num_b = -1;
+    else{
+        int num_open{0};
+        int num_close{0};
+        int max_open{0};
+        for (unsigned idx=0; idx<s.size(); ++idx){
+            num_open += s[idx] == '[';
+            num_close += s[idx] == ']';
+            if (num_close > num_open)
+                return -2;
+            // the idea is not to count the brackets per se but to
+            // get the number of bracket layers
+            // for example [foo] is a vector, [[bar]] is a matrix but
+            // [[foo][bar]] is still a matrix
+            max_open = std::max((num_open - num_close),max_open);
+        }
+        if (num_open != num_close)
+            num_b = -2;
+        else
+            num_b = max_open * 2;
     }
-    return n;
+    return num_b;
 }
 
 int MHAParser::StrCnv::bracket_balance(const std::string& s)
@@ -2888,9 +2892,6 @@ template<> void MHAParser::StrCnv::str2val<mha_real_t>( const std::string & s, s
         v = val;
         break;
     }
-    case 1 : // only one bracket, error
-        throw MHA_Error(__FILE__,__LINE__,"Bracket is missing (\"%s\")",s.c_str());
-        // no break; needed here, the break would be unreachable.
     case 2 : // both brackets, vector
     {
         std::string fv;
@@ -2918,7 +2919,7 @@ template<> void MHAParser::StrCnv::str2val<mha_real_t>( const std::string & s, s
         break;
     }
     default :
-        throw MHA_Error(__FILE__,__LINE__,"Invalid number of brackets: %s",s.c_str());
+        throw MHA_Error(__FILE__,__LINE__,"Invalid brackets: %s",s.c_str());
     }
 }
 

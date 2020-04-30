@@ -39,6 +39,20 @@ TEST(mha_parser, insert_2_subparsers_with_same_name_fails)
   }
 }
 
+TEST(mha_parser,num_brackets)
+{
+  EXPECT_EQ(-1,MHAParser::StrCnv::num_brackets(""));
+  EXPECT_EQ(-2,MHAParser::StrCnv::num_brackets("["));
+  EXPECT_EQ(-2,MHAParser::StrCnv::num_brackets("]"));
+  EXPECT_EQ(2,MHAParser::StrCnv::num_brackets("[]"));
+  EXPECT_EQ(2,MHAParser::StrCnv::num_brackets("[foo]"));
+  EXPECT_EQ(-2,MHAParser::StrCnv::num_brackets("]bar["));
+  EXPECT_EQ(4,MHAParser::StrCnv::num_brackets("[foo[bar]]"));
+  EXPECT_EQ(-2,MHAParser::StrCnv::num_brackets("[[[foo]]"));
+  EXPECT_EQ(-2,MHAParser::StrCnv::num_brackets("[[bar]]]"));
+  EXPECT_EQ(4,MHAParser::StrCnv::num_brackets("[[foo][bar]]"));
+}
+
 // Local Variables:
 // compile-command: "make -C .. unit-tests"
 // coding: utf-8-unix

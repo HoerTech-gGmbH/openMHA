@@ -80,6 +80,8 @@ namespace MHAParser {
         std::string val2str(const std::vector<std::string>&);///< \brief Convert to string
         std::string val2str(const std::vector<std::vector<float> >&);///< \brief Convert to string
         std::string val2str(const std::vector<std::vector<mha_complex_t> >&);///< \brief Convert to string
+
+        int num_brackets(const std::string& s); ///< \brief count number of brackets
     }
 
     //! Keyword list class.
