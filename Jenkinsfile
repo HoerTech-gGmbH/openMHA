@@ -146,6 +146,17 @@ def openmha_build_steps(stage_name) {
     // Store mac installer
     archiveArtifacts 'mha/tools/packaging/pkg/*.pkg'
   }
+
+  // Check reproducibility: No package should contain "modified" in its name
+  bash ('if find mha/tools/packaging | grep modified;' +
+        'then echo error: Some installation packages have \"modified\" as part'+
+        '          of their file name, which means that some git-controlled' +
+        '          files contained modifications when these installation' +
+        '          packages were created.  This should not happen because the' +
+        '          resulting installer packages are not reproducible.  Find' +
+        '          the cause and fix the error.;' +
+        '     exit 1;' +
+        'fi')
 }
 
 pipeline {
