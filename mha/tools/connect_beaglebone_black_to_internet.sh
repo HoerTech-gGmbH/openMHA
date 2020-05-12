@@ -1,6 +1,12 @@
 #!/bin/bash
 
 usb_interface=$(dmesg | grep from.usb0 | cut -d: -f2 | cut -d" " -f2 | tail -1)
+if test -z "$usb_interface"
+then if ip a | grep -q usb0:
+     then usb_interface=usb0
+     fi
+fi
+
 internet_interface=$(route | grep ^default | tr ' ' '\n' | tail -1)
 internet_ip=$(ifconfig $internet_interface | grep inet | awk '{print $2}' \
                 | head -1)
@@ -27,10 +33,19 @@ else
 [device-bbb]
 match-device=interface-name:en*u*
 managed=false
+[device-usb]
+match-device=interface-name:usb0*
+managed=false
+[device-enx]
+match-device=interface-name:enx*
+managed=false
 EOF
     echo File /etc/NetworkManager/conf.d/BBB.conf created.
     echo Restarting NetworkManager...
     sudo systemctl restart NetworkManager
+    echo Restarting NetworkManager may not be sufficient.  Reboot this PC if
+    echo this skript does not work properly. For now press ENTER to continue.
+    read
 fi
 
 echo Install net-tools for ifconfig and route, sshpass for ssh to beaglebone.
