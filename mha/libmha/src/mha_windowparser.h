@@ -157,6 +157,10 @@ namespace MHAParser {
         MHAWindow::base_t get_window(unsigned int len,float xmin,float xmax,bool minincluded,bool maxincluded) const;
         /// \brief Return currently selected window type.
         MHAParser::window_t::wtype_t get_type() const;
+        void setlock(bool b){
+            wtype.setlock(b);
+            user.setlock(b);
+        }
     private:
         MHAParser::kw_t wtype;
         MHAParser::vfloat_t user;

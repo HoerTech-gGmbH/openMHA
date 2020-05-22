@@ -121,6 +121,9 @@ public:
      * @param[in,out] t signal dimenstions, modified by prepare as determined by
      *                  the STFT configuration */
     void prepare(mhaconfig_t&t);
+    /** Unprepare signal processing
+     */
+    void release();
     /** processing callback used for domain transformation
      * @param wave_in latest block of audio signal (hop size samples per channel)
      * @param sout output spectrum pointer */
@@ -138,8 +141,6 @@ private:
      * @throw MHA_Error if the configuration change is not compatible with the
      *                  current input and FFT length constraints. */
     void update();
-    /** configuration variable event dispatcher */
-    MHAEvents::patchbay_t<wave2spec_if_t> patchbay;
     /** FFT length selector */
     MHAParser::int_t nfft;
     /** Window length selector */
@@ -152,11 +153,15 @@ private:
     MHAParser::bool_t strict_window_ratio;
     /** Switch to select return domain */
     MHAParser::bool_t return_wave;
-    /** configured name this plugin, used to name the AC variables */    
+    /** configured name this plugin, used to name the AC variables */
     std::string algo;
     MHAParser::vfloat_mon_t zeropadding = {
         "Zeropadding in samples before and after the analysis window"
     };
+    /** Lock/Unlock all configuration variables
+     * @param b Desired lock state
+     */
+    void setlock(bool b);
 };
 
 #endif // WAVE2SPEC_HH

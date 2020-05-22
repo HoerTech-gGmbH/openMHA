@@ -46,6 +46,12 @@ void windowselector_t::insert_items(MHAParser::parser_t* p)
     p->insert_item("userwnd",&userwnd);
 }
 
+void windowselector_t::setlock(bool b_) {
+    wndtype.setlock(b_);
+    wndexp.setlock(b_);
+    userwnd.setlock(b_);
+}
+
 void windowselector_t::update_parser()
 {
     invalidate_window_data();

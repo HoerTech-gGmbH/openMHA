@@ -51,6 +51,11 @@ public:
      *          E.g. the plugin wave2spec's interface class. */
     void insert_items(MHAParser::parser_t* p);
 
+    /** Lock/Unlock variables
+     * @param b_ Desired lock state
+     */
+    void setlock(bool b_);
+
     /** A collector event that fires when any of the window parameters managed
      * here is written to. */
     MHAEvents::emitter_t updated;

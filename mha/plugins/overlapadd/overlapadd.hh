@@ -68,13 +68,12 @@ private:
 class overlapadd_if_t : public MHAPlugin::plugin_t<overlapadd_t> {
 public:
     overlapadd_if_t(const algo_comm_t&,const std::string&,const std::string&);
-    ~overlapadd_if_t();
+    ~overlapadd_if_t()=default;
     void prepare(mhaconfig_t&);
     void release();
     mha_wave_t* process(mha_wave_t*);
 private:
     void update();
-    MHAEvents::patchbay_t<overlapadd_if_t> patchbay;
     /// \brief FFT length to be used, zero-padding is FFT length-wndlength
     MHAParser::int_t nfft;
     /// \brief Window length to be used (overlap is 1-fragsize/wndlength)
@@ -92,6 +91,18 @@ private:
     MHAParser::float_mon_t postscale;
     std::string algo;
     mhaconfig_t cf_in, cf_out;
+    /** Lock/Unlock all configuration variables
+     * @param b Desired lock state
+     */
+    void setlock(bool b){
+        nfft.setlock(b);
+        nwnd.setlock(b);
+        wndpos.setlock(b);
+        window.setlock(b);
+        wndexp.setlock(b);
+        zerowindow.setlock(b);
+        strict_window_ratio.setlock(b);
+    };
 };
 }
 #endif

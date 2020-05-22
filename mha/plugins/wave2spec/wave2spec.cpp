@@ -106,7 +106,8 @@ wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const s
         "Audio data is collected up to wndlen, then windowed by\n"
         "the given window function, zero padded up to fftlen\n"
         "(symmetric zero padding or asymmetric zero padding possible),\n"
-        "and fast-Fourier-transformed.",iac),
+        "and fast-Fourier-transformed.\n"
+        "The configuration variables are locked during processing.",iac),
       nfft("FFT lengths","512","[1,]"),
       nwnd("window length/samples","400","[1,]"),
       wndpos("window position\n(0 = beginning, 0.5 = symmetric zero padding, 1 = end)","0.5","[0,1]"),
@@ -123,42 +124,51 @@ wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const s
     insert_item("strict_window_ratio", &strict_window_ratio);
     insert_item("return_wave",&return_wave);
     insert_member(zeropadding);
-    patchbay.connect(&wndpos.writeaccess,this,&wave2spec_if_t::update);
-    patchbay.connect(&window_config.updated,this,&wave2spec_if_t::update);
 }
 
 void wave2spec_if_t::prepare(mhaconfig_t& t)
 {
-    if( t.domain != MHA_WAVEFORM )
-        throw MHA_ErrorMsg("wave2spec: waveform input is required.");
-    if( return_wave.data )
-        t.domain = MHA_WAVEFORM;
-    else
-        t.domain = MHA_SPECTRUM;
-    t.fftlen = nfft.data;
-    t.wndlen = nwnd.data;
-    if (strict_window_ratio.data)
-        if (t.wndlen==t.fragsize ||
-            !MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize))
+    try{
+        setlock(true);
+        if( t.domain != MHA_WAVEFORM )
+            throw MHA_ErrorMsg("wave2spec: waveform input is required.");
+        if( return_wave.data )
+            t.domain = MHA_WAVEFORM;
+        else
+            t.domain = MHA_SPECTRUM;
+        t.fftlen = nfft.data;
+        t.wndlen = nwnd.data;
+        if (strict_window_ratio.data)
+            if (t.wndlen==t.fragsize ||
+                !MHAUtils::is_multiple_of_by_power_of_two(t.wndlen,t.fragsize))
+                throw MHA_Error(__FILE__,__LINE__,
+                                "The ratio between the hop size (\"fragsize\", %u) "
+                                "and the window length (%u) must be a power of two.",
+                                t.fragsize, t.wndlen);
+        if( t.fragsize > t.wndlen )
             throw MHA_Error(__FILE__,__LINE__,
-                            "The ratio between the hop size (\"fragsize\", %u) "
-                            "and the window length (%u) must be a power of two.",
+                            "wave2spec: The fragment size (%u) is greater than the window size (%u).",
                             t.fragsize, t.wndlen);
-    if( t.fragsize > t.wndlen )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "wave2spec: The fragment size (%u) is greater than the window size (%u).",
-                        t.fragsize, t.wndlen);
-    if( t.fftlen < t.wndlen )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "wave2spec: Invalid FFT length %u (less than window length %u).",
-                        t.fftlen, t.wndlen );
-    tftype = t;
-    update();
-    poll_config();
-    cfg->publish_ac_variables();
-    zeropadding.data.resize(2);
-    zeropadding.data[0] = cfg->get_zeropadding(false);
-    zeropadding.data[1] = cfg->get_zeropadding(true);
+        if( t.fftlen < t.wndlen )
+            throw MHA_Error(__FILE__,__LINE__,
+                            "wave2spec: Invalid FFT length %u (less than window length %u).",
+                            t.fftlen, t.wndlen );
+        tftype = t;
+        update();
+        poll_config();
+        cfg->publish_ac_variables();
+        zeropadding.data.resize(2);
+        zeropadding.data[0] = cfg->get_zeropadding(false);
+        zeropadding.data[1] = cfg->get_zeropadding(true);
+    }
+    catch(MHA_Error& e){
+        setlock(false);
+    }
+}
+
+void wave2spec_if_t::release()
+{
+    setlock(false);
 }
 
 void wave2spec_if_t::update()
@@ -166,9 +176,8 @@ void wave2spec_if_t::update()
     if (is_prepared()) {
         if( (tftype.fftlen > 0) &&
             (tftype.wndlen > 0) &&
-            (tftype.fragsize > 0) && 
+            (tftype.fragsize > 0) &&
             (tftype.channels > 0) )  {
-            
             push_config(new wave2spec_t(tftype.fftlen,
                                         tftype.wndlen,
                                         tftype.fragsize,
@@ -186,15 +195,22 @@ void wave2spec_if_t::update()
 
 void wave2spec_if_t::process(mha_wave_t* wave_in,mha_spec_t** sout)
 {
-    poll_config();
     *sout = cfg->process(wave_in);
 }
 
 void wave2spec_if_t::process(mha_wave_t* wave_in,mha_wave_t** sout)
 {
-    poll_config();
     cfg->process(wave_in);
     *sout = wave_in;
+}
+
+void wave2spec_if_t::setlock(bool b) {
+    nfft.setlock(b);
+    nwnd.setlock(b);
+    wndpos.setlock(b);
+    strict_window_ratio.setlock(b);
+    return_wave.setlock(b);
+    window_config.setlock(b);
 }
 
 MHAPLUGIN_CALLBACKS(wave2spec,wave2spec_if_t,wave,spec)

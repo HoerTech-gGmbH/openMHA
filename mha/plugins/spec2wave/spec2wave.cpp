@@ -73,10 +73,11 @@ class spec2wave_if_t : public MHAPlugin::plugin_t<spec2wave_t> {
 public:
     spec2wave_if_t(const algo_comm_t&,const std::string&,const std::string&);
     void prepare(mhaconfig_t&);
+    void release();
     mha_wave_t* process(mha_spec_t*);
 private:
     void update();
-    MHAEvents::patchbay_t<spec2wave_if_t> patchbay;
+    void setlock(bool b);
     MHAParser::float_t ramplen;
     windowselector_t window_config;
 };
@@ -169,22 +170,30 @@ spec2wave_if_t::spec2wave_if_t(const algo_comm_t& iac,const std::string&,const s
 {
     insert_item("ramplen",&ramplen);
     window_config.insert_items(this);
-    patchbay.connect(&ramplen.writeaccess,this,&spec2wave_if_t::update);
-    patchbay.connect(&window_config.updated,this,&spec2wave_if_t::update);
 }
 
 void spec2wave_if_t::prepare(mhaconfig_t& t)
 {
+    try{
+        setlock(true);
     if( t.domain != MHA_SPECTRUM )
         throw MHA_ErrorMsg("spec2wave: Spectral input is required.");
     t.domain = MHA_WAVEFORM;
     tftype = t;
     update();
+    poll_config();
+    }
+    catch(MHA_Error& e){
+        setlock(false);
+    }
+}
+
+void spec2wave_if_t::release(){
+    setlock(false);
 }
 
 mha_wave_t* spec2wave_if_t::process(mha_spec_t* spec_in)
 {
-    poll_config();
     return cfg->process(spec_in);
 }
 
@@ -203,6 +212,10 @@ void spec2wave_if_t::update()
     }
 }
 
+void spec2wave_if_t::setlock(bool b){
+    window_config.setlock(b);
+    ramplen.setlock(b);
+}
 MHAPLUGIN_CALLBACKS(spec2wave,spec2wave_if_t,spec,wave)
 MHAPLUGIN_DOCUMENTATION\
 (spec2wave,
