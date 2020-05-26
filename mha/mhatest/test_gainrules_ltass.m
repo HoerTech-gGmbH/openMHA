@@ -3,16 +3,6 @@ function test_gainrules_ltass
   test_01();
   test_02();
 
-  disp('All tests passed!');
-
-
-
-
-
-
-
-
-
 function test_01
 % This test creates a first fit for the "slope" demo audiogramm with three
 % fitting rules and compares if the first fit is equal to the value obtained

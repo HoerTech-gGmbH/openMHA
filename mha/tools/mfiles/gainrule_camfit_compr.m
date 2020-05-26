@@ -21,7 +21,7 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
 % variable CAMFIT_MAXOUT before this function is called.
 
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2007 2009 2011 2013 2015 2017 2018 HörTech gGmbH
+% Copyright © 2007 2009 2011 2013 2015 2017 2018 2020 HörTech gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -45,27 +45,8 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
              53.7 53.0 52.0 48.7 48.1 46.8 45.6 44.5 44.3 43.7 43.4 41.3 40.7];
   LTASS_intensity = 10.^(LTASS_lev/10);
 
-  % Compute level for 65dB speech in dyncomp bands. For the lowest 3 and 
-  % the last (8th) band, this computation yields the same levels as detailed
-  % in Moore 1999 for his border frequencies, if a lower cutoff frequency below
-  % 63Hz and an upper cutoff frequency below 6300Hz is assumed.
-  % Moore seems to perform some creative intensity splitting for his bands 4 to
-  % 6, which will not be recreated here.
-  % Band 7 in Moore 1999 is probably erroneous (subtracted 0.5dB instead of 
-  % 5dB from LTASS_lev).
-  speech_level_65_in_dc_bands = zeros(size(sFitmodel.frequencies));
-  for band = 1:length(sFitmodel.frequencies)
-    f_range = sFitmodel.edge_frequencies(band:(band+1));
-    intensity_sum = 0;
-    for ltass_band = 1:length(LTASS_freq)
-        ltass_range = LTASS_edge_freq(ltass_band:(ltass_band+1));
-        intersection = range_intersection(f_range, ltass_range);
-        portion = diff(intersection) / diff(ltass_range);
-        intensity_sum = intensity_sum + LTASS_intensity(ltass_band) * portion;
-    end
-    speech_level_70_in_dc_band = 10*log10(intensity_sum);
-    speech_level_65_in_dc_bands(band) = speech_level_70_in_dc_band - 5;
-  end
+  speech_level_65_in_dc_bands = ...
+    LTASS_speech_level_in_frequency_bands(sFitmodel.edge_frequencies, 65);
 
   % minima in lowest level speech that needs to be understood is 38 dB below 
   % speech_level_65_in_dc_bands
