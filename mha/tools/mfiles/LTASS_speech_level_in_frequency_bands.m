@@ -43,23 +43,63 @@ function l = LTASS_speech_level_in_frequency_bands(edge_frequencies, targetlevel
              53.7 53.0 52.0 48.7 48.1 46.8 45.6 44.5 44.3 43.7 43.4 41.3 40.7];
   LTASS_intensity = 10.^(LTASS_lev/10);
 
-  % Compute narrow-band levels for LTASS-shaped broadband spectrum by summing
-  % up the intensities of the third-octave bands which are contained completely
-  % into the target band, plus partial intensities of the third-octave bands
-  % that overlap only partially with the target bands.
+  % The LTASS spectrum was published as SPL levels in third-octave frequency
+  % bands for a broadband level of 70 dB SPL.  Some hearing aid compression
+  % prescription rules (e.g. the compressive Cambridge rule by Moore, NAL-NL1,
+  % NAL-NL2) prescribe the gains to apply to the frequency band of the
+  % compressor depending on the broadband LTASS input level.  To use these
+  % prescription rules with MHA compressors, we need to compute the SPL
+  % that would be measured at the input of a (narrow) compressor band when
+  % an LTASS spectrum with a certain broad band level is received.
+  %
+  % Here, we compute the levels that would be measured at the input of the
+  % compressors frequency bands (hereafter named fitmodel frequency bands)
+  % for a broadband signal with level
+  %     /targetlevel/ dB SPL
+  % and an LTASS shaped spectrum.
+  %
+  % The third-octave bands defining the LTASS
+  % spectrum are named LTASS third-octave bands hereafter to differentiate
+  % them from the fitmodel frequency bands.  To compute the signal level of one
+  % fitmodel frequency band for an LTASS-shaped broadband spectrum of
+  %     /targetlevel/ dB SPL,
+  % we sum up the intensities of the LTASS third-octave bands which
+  % are contained completely in the target fitmodel frequency band,
+  % and add to that any partial intensities of the LTASS third-octave bands
+  % that overlap only partially with the target fitmodel frequency band.
+
   num_bands = length(edge_frequencies) - 1;
   if num_bands < 1
     error('At least two edge frequencies are required');
   end
+  % result vector: per-fitmodel-frequency-band entries will be computed as
+  % dB SPL and contain the partial SPL of a /targetlevel/ dB SPL LTASS signal
+  % that falls into that respective fitmodel frequency band.
   l = zeros(1, num_bands);
+
+  % Loop over all fitmodel frequency bands
   for band = 1:num_bands
+    % Isolate [lower upper] edge frequencies of current fitmodel frequency band
     f_range = edge_frequencies(band:(band+1));
+    % intensity_sum accumulates intensities from all LTASS third-octave bands
+    % that fall into the current fitmodel frequency band, completely or
+    % partially.
     intensity_sum = 0;
+    % Loop over all LTASS third-octave bands to find those overlapping with
+    % f_range, the edge frequencies of the target fitmodel frequency band
     for ltass_band = 1:length(LTASS_freq)
+        % Isolate [lower upper] edge frequencies of the LTASS third-octave band
         ltass_range = LTASS_edge_freq(ltass_band:(ltass_band+1));
+        % intersect both ranges
         intersection = range_intersection(f_range, ltass_range);
+        % Compute what part of the current LTASS third-octave band overlaps
+        % with the current fitmodel frequency band
         portion = diff(intersection) / diff(ltass_range);
+        % Add this part to the intensity sum for the current fitmodel
+        % frequency band
         intensity_sum = intensity_sum + LTASS_intensity(ltass_band) * portion;
     end
+    % Convert back from intensity to dB and adjust levels
+    % (published data used for summation is for 70 dB)
     l(band) = 10*log10(intensity_sum) + (targetlevel-70);
   end
