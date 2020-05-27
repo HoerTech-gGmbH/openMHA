@@ -146,7 +146,7 @@ loaded.
 ### Prerequisites
 
 - Get **msys2 installer** directly from the msys2 homepage https://www.msys2.org/ 
- - Installer required for 64-bit Windows would be named as msys2-x86_64-*releasedate*.exe *Release date is in the format of yyyymmdd*
+ - Installer required for 64-bit Windows would be named as msys2-x86_64-*releasedate*.exe. *Release date is in the format of yyyymmdd*
 - Get Jack Audio Connection Kit from http://jackaudio.org (Use the 64-bit installer for windows)
 - Execute both installers
 
@@ -162,8 +162,8 @@ directory and rename it to **libjack.a** afterwards. Windows may warn that the f
 
 ### Compilation
 
-Start a mingw64 bash shell from the Windows start menu.
-Clone openMHA from github, compile openMHA by typing in a terminal
+Start a MinGW-64 bash shell from the Windows start menu.
+Clone openMHA from github and compile openMHA by typing in the terminal:
 ```
 git clone https://github.com/HoerTech-gGmbH/openMHA
 cd openMHA
@@ -172,7 +172,7 @@ cd openMHA
 
 The compilation may take a while.
 
-To start openMHA, you need to start a MinGW64 bash shell and navigate to the
+To start openMHA, you need to start a MinGW-64 bash shell and navigate to the
 openMHA/bin directory, then type ./mha.exe.
 
 ## IV. Regeneration of the documentation on Linux:
