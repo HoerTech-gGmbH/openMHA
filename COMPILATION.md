@@ -146,14 +146,14 @@ loaded.
 ### Prerequisites
 
 - Get **msys2 installer** directly from the msys2 homepage https://www.msys2.org/ 
- - Installer required for 64-bit Windows would be named as msys2-x86_64-//releasedate//.exe //Release date is in the format of yyyymmdd//
+ - Installer required for 64-bit Windows would be named as msys2-x86_64-*releasedate*.exe *Release date is in the format of yyyymmdd*
 - Get Jack Audio Connection Kit from http://jackaudio.org (Use the 64-bit installer for windows)
 - Execute both installers
 
 ### Preparation
 - Run **MSYS2 MinGW 64-bit** from start menu (if it didn't open automatically after finishing installation). In the terminal, update base package using: `pacman -Syu`
-- close terminal when prompted
-- restart **MSYS2 MinGW 64-bit** terminal from start menu (again) and type:`pacman -Su`
+- Close terminal when prompted
+- Restart **MSYS2 MinGW 64-bit** terminal from start menu (again) and type:`pacman -Su`
 - Install openMHA build dependencies:
 `pacman -S msys/git mingw64/mingw-w64-x86_64-gcc msys/make tar mingw64/mingw-w64-x86_64-boost openbsd-netcat mingw-w64-x86_64-libsndfile mingw-w64-x86_64-portaudio mingw64/mingw-w64-x86_64-nsis mingw-w64-x86_64-eigen3`
 - Copy the contents of the includes folder in the JACK directory **(C:\Program Files (x86)\Jack\includes)** into your mingw include directory (default is **C:\msys64\mingw64\include**). There should now be a directory **(C:\msys64\mingw64\include\jack)** containing some files.
