@@ -151,7 +151,7 @@ loaded.
 - Execute both installers
 
 ### Preparation
-- Run **MSYS2 MinGW 64-bit** from start menu (if it didn't open automatically, after finishing the installation). In the terminal, update base package using: `pacman -Syu`
+- Run **MSYS2 MinGW 64-bit** from start menu (if it didn't open automatically after finishing installation). In the terminal, update base package using: `pacman -Syu`
 - Close terminal when prompted
 - Restart **MSYS2 MinGW 64-bit** terminal from start menu (again) and type:`pacman -Su`
 - Install openMHA build dependencies:
@@ -173,7 +173,7 @@ cd openMHA
 The compilation may take a while.
 
 To start openMHA, you need to start a MinGW-64 bash shell and navigate to the
-openMHA directory, then type ./mha.exe.
+openMHA/bin directory, then type ./mha.exe.
 
 ## IV. Regeneration of the documentation on Linux:
 
