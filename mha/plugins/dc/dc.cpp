@@ -278,12 +278,10 @@ mha_wave_t* dc_t::process(mha_wave_t* s)
                 ch_idx = kfb + nbands*ch;
                 idx = k*s->num_channels + ch_idx;
                 level_in = rmslevel(ch_idx, s->buf[idx]*s->buf[idx]);
-                level_in_db.value(kfb,ch) =
-                    decay(ch_idx,
-                          attack(ch_idx, MHASignal::pa22dbspl(level_in)));
-
+                level_in_db.value(kfb,ch) = MHASignal::pa22dbspl(level_in);
+                level_in_db_adjusted.value(kfb,ch)=decay(ch_idx,attack(ch_idx, MHASignal::pa22dbspl(level_in)));
                 if (bypass) continue;
-                gain = gt[ch_idx].interp( level_in_db.value(kfb,ch) + (offset.size() ? offset[ch_idx] : 0));
+                gain = gt[ch_idx].interp( level_in_db_adjusted.value(kfb,ch) + (offset.size() ? offset[ch_idx] : 0));
                 if(log_interp)
                     gain = MHASignal::db2lin(gain);
                 if( gain < 0 )
@@ -309,20 +307,16 @@ mha_spec_t* dc_t::process(mha_spec_t* s)
         for(ch=0;ch<naudiochannels;ch++){
             ch_idx = kfb + nbands*ch;
             level_in = MHASignal::colored_intensity(*s, ch_idx, fftlen, 0);
-            level_in_db.value(kfb,ch) =
-                decay(ch_idx,attack(ch_idx,MHASignal::pa22dbspl(level_in)));
+            level_in_db.value(kfb,ch) = MHASignal::pa22dbspl(level_in);
+            level_in_db_adjusted.value(kfb,ch)=decay(ch_idx,attack(ch_idx,MHASignal::pa22dbspl(level_in)));
         }
     }
-    level_in_db_adjusted.copy(level_in_db);
     // apply gains:
     if (bypass) return s;
     for(ch=0;ch<naudiochannels;ch++)
         for(kfb=0;kfb<nbands;kfb++){
             ch_idx = kfb + nbands*ch;
-            auto lvl_offset=offset.size() ? offset[ch_idx] : 0 ;
-            gain = std::min(gt[ch_idx].interp(level_in_db.value(kfb,ch) + lvl_offset),
-                            gt[ch_idx].interp(level_in_db_adjusted.value(kfb,ch)  +
-                                              lvl_offset));
+            gain = gt[ch_idx].interp(level_in_db_adjusted.value(kfb,ch) + (offset.size() ? offset[ch_idx] : 0));
             if (log_interp)
                 gain = MHASignal::db2lin(gain);
             if( gain < 0 )
@@ -373,7 +367,7 @@ dc_vars_t::dc_vars_t(MHAParser::parser_t& p)
       preset("Preset name of last fit",""),
       modified("Flag if configuration has been modified"),
       input_level("input level of last block / dB SPL"),
-      filtered_level("input level after time-constant filters / dB SPL"),
+      filtered_level("input level of last block after time-constant filters / dB SPL"),
       center_frequencies("nominal center frequencies of filterbank bands"),
       edge_frequencies("edge frequencies of filterbank bands"),
       band_weights("Weights of the individual frequency bands.\n"
