@@ -29,13 +29,14 @@ function test_01
 
   sGt_expected = load('test_gainrules_ltass_data.mat');
   sGt_actual = gainrule_CR2_NALRP(sAud, sFitmodel);
-  assert_equal(sGt_expected.sGt_cr2nalrp_01, sGt_actual);
+  assert_almost_equal_gaintable_structs(sGt_expected.sGt_cr2nalrp_01, sGt_actual,1e-12);
 
   sGt_actual = gainrule_CR3_NALRP(sAud, sFitmodel);
-  assert_equal(sGt_expected.sGt_cr3nalrp_01, sGt_actual);
+  assert_almost_equal_gaintable_structs(sGt_expected.sGt_cr3nalrp_01, sGt_actual,1e-12);
 
   sGt_actual = gainrule_camfit_compr(sAud, sFitmodel);
-  assert_equal(sGt_expected.sGt_camfit_compr_01, sGt_actual);
+  assert_almost(sGt_expected.sGt_camfit_compr_01.l,sGt_actual.l,1e-12);
+  assert_almost(sGt_expected.sGt_camfit_compr_01.r,sGt_actual.r,1e-12);
 
 function test_02
   sAud.id = 'htl1';
