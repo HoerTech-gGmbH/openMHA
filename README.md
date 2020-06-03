@@ -7,18 +7,21 @@ HörTech Open Master Hearing Aid (openMHA)
 The software contains the source code of the openMHA Toolbox library, of the
 openMHA framework and command line application, and of a selection of algorithm
 plugins forming a basic hearing aid processing chain featuring
-- calibration
-- bilateral adaptive differential microphones for noise suppression [1]
-- binaural coherence filter for feedback reduction and dereverberation [2]
-- multi-band dynamic range compressor for hearing loss compensation [3]
-- spatial filtering algorithms:
- - a delay-and-sum beamformer
- - a MVDR beamformer [4]
-- single-channel noise reduction [5]
-- resampling and filter plugins
-- STFT cyclic aliasing prevention
-- adaptive feedback cancellation [6]
-- probabilistic sound source localization [7]
+
+* calibration
+* bilateral adaptive differential microphones for noise suppression [1]
+* binaural coherence filter for feedback reduction and dereverberation [2]
+* multi-band dynamic range compressor for hearing loss compensation [3]
+* spatial filtering algorithms:
+	* a delay-and-sum beamformer
+	 * a MVDR beamformer [4]
+* single-channel noise reduction [5]
+* resampling and filter plugins
+* STFT cyclic aliasing prevention
+* adaptive feedback cancellation [6]
+* probabilistic sound source localization [7]
+
+See below for a list of available reference implementations.
 
 ## Citation in publications
 
@@ -59,7 +62,42 @@ http://www.openmha.org/docs/openMHA_starting_guide.pdf
 ### Windows
 * On Windows 7, the openMHA Windows installer openMHA-4.11.0-installer.exe may trigger a crash report from the operating system when it exits even though openMHA was successfully installed.
 
-## References for individual algorithms.
+## Reference algorithms
+
+A collection of openMHA configuration files that implement signal
+processing algorithms for hearing aids as they were used in the 
+following publications are available in the *reference_algorithms* directory:
+
+Baumgärtel, R. M., Krawczyk-Becker, M., Marquardt, D., Völker, C.,
+Hu, H., Herzke, T., Coleman, G., Adiloğlu, K., Ernst, S. M., Gerkmann, T., 
+Doclo, S., Kollmeier, B., Hohmann, V., & Dietz, M. (2015). Comparing 
+Binaural Pre-processing Strategies I: Instrumental Evaluation. Trends 
+in hearing, 19.
+https://doi.org/10.1177/2331216515617916
+
+and
+
+Hendrikse, M. M. E., Grimm, G., & Hohmann, V. (2020). Evaluation of
+the Influence of Head Movement on Hearing Aid Algorithm Performance
+Using Acoustic Simulations. Trends in Hearing, 24, 1–20. 
+https://doi.org/10.1177/2331216520916682
+
+A database that can be utilized to reproduce the signals used in the latter
+study is available under: https://doi.org/10.5281/zenodo.3621282.
+ 
+Available methods:
+
+* Single-channel noise reduction
+* Binaural coherence filter
+* Adaptive MVDR beamformer
+* Binaural beamformer
+* Bilateral adaptive differential microphones
+* Delay-and-subtract beamformer
+
+For references and more information see README.txt in the
+ *reference_algorithms* directory.
+
+## References for individual algorithms
 
 [1] Elko GW, Pong ATN. A Simple Adaptive First-order Differential
 Microphone. In: Proceedings of 1995 Workshop on Applications of Signal
