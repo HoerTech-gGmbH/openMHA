@@ -16,7 +16,7 @@
 # The readme recommends copying all plugins into one "bin" directory.
 bin
 lib
-
+include
 # Auto-generated pdf documents
 openMHA_*.pdf
 pdf-*.zip

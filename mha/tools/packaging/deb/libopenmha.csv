@@ -1,2 +1,3 @@
 "mha/libmha/${BUILD_DIR}/libopenmha.so","usr/lib/"
 COPYING,usr/share/doc/libopenmha
+config.mk,/usr/share/openmha/

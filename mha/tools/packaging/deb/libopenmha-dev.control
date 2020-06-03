@@ -6,3 +6,4 @@ Description: HoerTech openMHA library development files
   This package contains the header files required for building custom
   openMHA algorithm plugins.
 Homepage: http://www.openmha.org/
+Recommends: octave, octave-signal, default-jre, liblo-dev, libeigen3-dev, liblsl

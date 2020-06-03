@@ -18,6 +18,17 @@
 
 \brief A step-by-step tutorial on writing \mha plugins.
 
+Plugins are C++ code that is compiled and linked against the \mha library.
+The compiler needs be instructed on how to find the \mha headers and library
+and to link against the \mha library. There are two possible options: One
+can compile openMHA and then create a copy of an example plugin directory
+and customize from there. See COMPILATION.md for more information on how to
+compile \mha.
+
+On Ubuntu is is also possible to install the openmha-dev package and include
+config.mk into the user's Makefile. Example 21 provides an example plugin and
+Makefile for this scenario.
+
 \mha contains a small number of example plugins as C++ source code.
 They are meant to help developers in understanding the concepts 
 of \mha plugin programming starting from the simplest example 
