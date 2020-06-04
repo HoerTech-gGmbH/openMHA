@@ -1408,7 +1408,8 @@ static std::string parse_1_complex( const std::string & s, mha_complex_t & v )
     rest = rest.substr( rest.find_first_not_of( " \t" ) );
     if( rest[0] != 'i' )
         throw MHA_ErrorMsg( "missing 'i' after imaginary part" );
-    rest = rest.substr( rest.find_first_not_of( " \t", 1 ) );
+    if (rest.size() > 1)
+        rest = rest.substr( rest.find_first_not_of( " \t", 1 ) );
     if( rest[0] != ')' )
         throw MHA_ErrorMsg( "closing ')' missing in complex value" );
     return rest.substr( 1 );
