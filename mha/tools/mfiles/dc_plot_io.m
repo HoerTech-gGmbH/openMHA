@@ -1,8 +1,9 @@
-function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
+function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels, log_interp)
 % function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
 %
 % gtmin, gtstep, gtdata - configuration variable values for the dc plugin
 % input_levels          - mxn input matrix with test input levels in dB SPL
+% log_interp            - boolean if logarithmic interpolation should be used
 % output_levels         - mxn matrix of produced output levels for each of the
 %                         n input levels and each of the m bands/channels
 %
@@ -42,6 +43,7 @@ function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
   dsc.mha.dc.gtmin = gtmin;
   dsc.mha.dc.gtstep = gtstep;
   dsc.mha.dc.gtdata = gtdata;
+  dsc.mha.dc.log_interp = log_interp;
 
   % no level filtering for direct level control
   dsc.mha.dc.tau_attack = zeros(1,channels);
