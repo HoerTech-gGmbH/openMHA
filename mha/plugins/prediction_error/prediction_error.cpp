@@ -168,13 +168,17 @@ mha_wave_t *prediction_error_config::process(mha_wave_t *s_Y, mha_real_t rho, mh
         // Forward path
         for(ch = 0; ch < channels; ch++) {
 
-            // Remove the oldest sample of the delayed prewhitened output buffer from the power computation
-            // and from the prewhitened error
+            // Compute the power of the prewhitened output buffer without the oldest sample
             // The buffer will be shifted and this sample will be removed from the buffer to make place for the new sample
-            Pu[ch] -= UbufferPrew.value(0, ch) * UbufferPrew.value(0, ch); // index = 0 corresponds to the oldest sample
-
+            Pu[ch] = 0;
+            for(unsigned int i = 1; i < ntaps; i++) {
+                PSD_val = UbufferPrew.value(i, ch) * UbufferPrew.value( i, ch); // index = 0 corresponds to the oldest sample
+       
+            Pu[ch] += PSD_val;
+            }
+       
             // Compute the a priori prediction error
-            s_E.value(kf,ch) = value(s_Y, kf, ch) - F_Uflt.value(0, ch);
+            s_E.value(kf, ch) = value(s_Y, kf, ch) - F_Uflt.value(0, ch);
             smpl.buf[ch] = s_E.value(kf,ch);
         }
 
@@ -194,7 +198,6 @@ mha_wave_t *prediction_error_config::process(mha_wave_t *s_Y, mha_real_t rho, mh
         // Add the current output sample into the buffer for computing the a priori prediction error
         s_Wflt.write(*s_Usmpl);
 
-
         // Backward Path
         for(ch = 0; ch < channels; ch++) {
             // Prewhitening the delayed input and output signals using LPC
@@ -207,8 +210,8 @@ mha_wave_t *prediction_error_config::process(mha_wave_t *s_Y, mha_real_t rho, mh
             }
 
             // Updating the power of the prewhitened output signal
-            Pu[ch] += value(UPrew, 0, ch) * value(UPrew, 0, ch);
-
+            PSD_val = value(UPrew, 0, ch) * value(UPrew, 0, ch);
+            Pu[ch] += PSD_val;
 
             // Updating the prewhitened filtered output signal
             // by filtering the delayed prewhitened output signal with the last estimate of the feedback path
@@ -220,15 +223,13 @@ mha_wave_t *prediction_error_config::process(mha_wave_t *s_Y, mha_real_t rho, mh
 
             // Computing the prewhitened error signal
             value(EPrew, 0, ch) = value(YPrew, 0, ch) - value(UPrewW, 0, ch);
-
-
+             
             // err = rho * EPrew
             err = rho * value(EPrew, 0, ch);
 
             // err = err / (UbufferPrew' * uBufferPrew + epsilon)
             err /= (Pu[ch] + c);
-
-
+            
             // Initialize the filtered output signal to 0
             F_Uflt.value(0, ch) = 0;
 

@@ -49,6 +49,8 @@ private:
     int no_iter;
     int iter;
 
+    double PSD_val;
+    
     MHASignal::waveform_t  v_G;
 
     MHASignal::waveform_t s_U;
