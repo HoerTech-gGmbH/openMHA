@@ -35,6 +35,8 @@ and tools for GNU Octave/Matlab in `/usr/lib/openmha/mfiles`.
 We provide some examples for openMHA, after installing the openmha-examples
 package the examples can be found in `/usr/share/openmha/examples`.
 
+The reference algorithms can be found in `/usr/share/openmha/reference_algorithms`.
+
 NOTE: If you want to use the example files we recommend to make a copy in your
 home directory as they are located in a system-wide read-only directory. Some of
 the examples may require changes to work with the current audio hardware setup
@@ -68,9 +70,12 @@ The installer installs openMHA example setups and some tools. We recommend to
 copy the examples folder to a writable location inside your user directory.
 
 On macOS, you can find the examples folder in
-`/usr/local/share/openmha/examples/`. m-files for interacting with the openMHA
+`/usr/local/share/openmha/examples/` and the reference algorithms can be found in
+`/usr/local/share/openmha/reference_algorithms`. m-files for interacting with the openMHA
 from Matlab or Octave are installed in `/usr/local/lib/openmha/mfiles/`, and
 documentation can be found in `/usr/local/doc/openmha/`.
+
+
 
 ## III. Windows installer
 
@@ -81,7 +86,8 @@ The installer installs openMHA example setups and some tools. We recommend to
 copy the examples folder to a writable location inside your user directory.
 
 After installation, you can find the examples in folder
-`C:\Program Files\openMHA\examples`.  Folder
-`C:\Program Files\openMHA\mfiles` contains Matlab / Octave files for
+`C:\Program Files\openMHA\examples`. The reference algorithms are located in
+`C:\Program Files\openMHA\reference_algorithms`.
+The folder`C:\Program Files\openMHA\mfiles` contains Matlab / Octave files for
 interacting with openMHA.  Folder `C:\Program Files\openMHA\doc` contains
 documentation.
