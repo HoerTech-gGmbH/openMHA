@@ -1,4 +1,4 @@
-function test_gainrules_ltass
+function test_gainrules
 
   test_01();
   test_02();
@@ -27,7 +27,10 @@ function test_01
   sFitmodel.channels = 2;
   sFitmodel.side = 'lr';
 
-  sGt_expected = load('test_gainrules_ltass_data.mat');
+  sGt_expected = load('test_gainrules_data.mat');
+  sGt_actual = gainrule_NALRP(sAud, sFitmodel);
+  assert_equal(sGt_expected.sGt_nalrp_01, sGt_actual);
+
   sGt_actual = gainrule_CR2_NALRP(sAud, sFitmodel);
   assert_almost_equal_gaintable_structs(sGt_expected.sGt_cr2nalrp_01, sGt_actual,1e-12);
 
@@ -59,7 +62,10 @@ function test_02
   sFitmodel.channels = 2;
   sFitmodel.side = 'lr';
 
-  sGt_expected = load('test_gainrules_ltass_data.mat');
+  sGt_expected = load('test_gainrules_data.mat');
+  sGt_actual = gainrule_NALRP(sAud, sFitmodel);
+  assert_equal(sGt_expected.sGt_nalrp_02, sGt_actual);
+
   sGt_actual = gainrule_CR2_NALRP(sAud, sFitmodel);
   assert_almost_equal_gaintable_structs(sGt_expected.sGt_cr2nalrp_02, sGt_actual,1e-6);
 
