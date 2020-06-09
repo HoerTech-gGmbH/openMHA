@@ -1,4 +1,27 @@
 function [r,state] = mhactl_java(handle, eval, query)
+% [r,state] = mhactl_java(handle, eval, query)
+% Use java class to communicate with MHA over TCP.
+% Can manage several connections to different MHA instances in parallel.
+% handle: struct with fields host and port and optionally timeout in seconds.
+% eval:   String 'eval'. Historic reasons.
+% query:  Cell array of strings to send to MHA over TCP.
+% r:      Cell array of strings with responses.
+% state:  Vector of result codes: 0 for success, 1 for failure.
+%
+% This file is part of the HörTech Open Master Hearing Aid (openMHA)
+% Copyright © 2011 2013 2014 2017 2020 HörTech gGmbH
+
+% openMHA is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Affero General Public License as published by
+% the Free Software Foundation, version 3 of the License.
+%
+% openMHA is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License, version 3 for more details.
+%
+% You should have received a copy of the GNU Affero General Public License, 
+% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 % Array of existing connections that may be reused for the current query.
 % A connection is identified by the triple host, portname, timeout
@@ -52,10 +75,10 @@ for c = 1:size(connections,2)
   end
 end
 if isempty(connection) % No matching existing connection, create new
-    connection = javaObject('de.hoertech.mha.control.Connection',...
-                            handle.host, handle.port);
-  connections = [connections, {handle; connection}];
+  connection = javaObject('de.hoertech.mha.control.Connection');
   connection.setTimeout(handle.timeout * 1000);
+  connection.setAddress(handle.host, handle.port);
+  connections = [connections, {handle; connection}];
 end
 
 % Communicate

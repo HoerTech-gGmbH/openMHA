@@ -80,7 +80,7 @@ function [mha_handle, mha_process] = mha_start( port, pre_binary, post_binary )
       binary = 'mha';
     end
   end
-  mha_handle.timeout = 100;
+  mha_handle.timeout = 50;
   
   serverport = 0;
   backlog = 1;
