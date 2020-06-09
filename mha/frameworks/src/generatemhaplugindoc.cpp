@@ -406,15 +406,15 @@ static void print_plugin_references
 {
     const char * const emphasis[2] = {"\\textit","\\textbf"};
 
-    for (const std::string c : all_categories) {
+    for (const std::string& c : all_categories) {
         ofile << "\\" << category_macro << "{All plugins tagged '"
               << conv2latex(c) << "'}\n"
               << "\\label{mha-tag:" << c << "}\n"
               << "\\begin{itemize}\n";
         std::map<std::string, bool> plugins_main_or_additional;
-        for (const std::string p : main_category_plugins[c])
+        for (const std::string& p : main_category_plugins[c])
             plugins_main_or_additional[p] = true;
-        for (const std::string p : additional_category_plugins[c])
+        for (const std::string& p : additional_category_plugins[c])
             plugins_main_or_additional[p] = false;
         
         for (const std::pair<std::string,bool> p : plugins_main_or_additional)
