@@ -1,11 +1,11 @@
-function y = openmha_process( x, fs, sAlgo, sPar, sAlgoPath )
-% openmha_process - process sound with openMHA algorithm
+function y = mha_process_ref_algo( x, fs, sAlgo, sPar, sAlgoPath )
+% mha_process_ref_algo - process sound with openMHA algorithm
 %
 % Usage:
-% y = openmha_process( x, fs, sAlgo, sPar, sAlgoPath );
+% y = mha_process_ref_algo( x, fs, sAlgo, sPar, sAlgoPath );
 % or
-% algos = openmha_process()
-% algos = openmha_process('','','','',sAlgoPath)
+% algos = mha_process_ref_algo()
+% algos = mha_process_ref_algo('','','','',sAlgoPath)
 %
 % Input:
 % x: sound of hearing aid microphones with 6 channels (columns): front-left,
@@ -54,7 +54,7 @@ if nargin < 4
     sPar = '';
 end
 
-% Read sampliung rate and input channel selection from openMHA
+% Read sampling rate and input channel selection from openMHA
 % configuration files
 cfgfile = fopen(sConfig,'r');
 cfgtext=textscan(cfgfile,'%s','Delimiter','\n');
