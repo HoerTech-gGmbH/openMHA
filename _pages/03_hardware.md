@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Hardware & Tools
-permalink: /hardware&tools/
+title: Hardware
+permalink: /hardware/
 menu: main
 ---
 

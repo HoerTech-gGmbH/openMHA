@@ -38,16 +38,3 @@ git clone https://github.com/HoerTech-gGmbH/openMHA.git
 [macOS](https://github.com/HoerTech-gGmbH/openMHA/blob/master/COMPILATION.md#ii-compiling-from-source-on-macos)   
 
 [Windows](https://github.com/HoerTech-gGmbH/openMHA/blob/master/COMPILATION.md#iii-compilation-on-64-bit-windows-advanced)
-
-#### Documentation
-
-The following documentation is available:
-
-[Starting guide](/docs/openMHA_starting_guide.pdf)  
-[Application manual](/docs/openMHA_application_manual.pdf)  
-[Plugin documentation](/docs/openMHA_plugins.pdf)  
-[Plugin development guide](/docs/openMHA_developer_manual.pdf)  
-[Calibration instructions](/docs/openMHA_calibration_manual.pdf)  
-[Fitting GUI manual](/docs/openMHA_gui_manual.pdf)
-
-
