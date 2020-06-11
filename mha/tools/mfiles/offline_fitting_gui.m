@@ -6,7 +6,7 @@
 % figure.
 
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2019 HörTech gGmbH
+% Copyright © 2019 2020 HörTech gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -122,6 +122,21 @@ while get_new_peaklvl
   end
 end
 
+% Get output directory
+get_dir = true;
+while get_dir
+  outdir = uigetdir('.');
+  if ~ischar(outdir)
+    answer_outdir = questdlg('Do you want to abort the program?','Output Directory Error','Try Again','Abort','Abort');
+    switch answer_outdir
+      case 'Try Again'
+        continue;
+      case 'Abort'
+        error('Aborted by user.');
+    end
+  end
+  get_dir = false;
+end
 
 % Create mha configuration
 dsc.nchannels_in = num_channels;
@@ -151,7 +166,8 @@ dsc.mha.overlapadd.mhachain.combinechannels.outchannels = num_channels;
 dsc.io.in = soundfiles_src{1};
 dsc.io.out = '/dev/null';
 if ispc()
-  dsc.io.out = 'NUL';
+  [dummy1, filename] = fileparts(dsc.io.in);
+  dsc.io.out = fullfile(outdir, [filename, '.temp.wav']);
 end
 
 % Start the MHA doing all processing
@@ -181,21 +197,6 @@ while launch_gui
   launch_gui = false;
 end
 
-% Get output directory
-get_dir = true;
-while get_dir
-  outdir = uigetdir('.');
-  if ~ischar(outdir)
-    answer_outdir = questdlg('Do you want to abort the program?','Output Directory Error','Try Again','Abort','Abort');
-    switch answer_outdir
-      case 'Try Again'
-        continue;
-      case 'Abort'
-        error('Aborted by user.');
-    end
-  end
-  get_dir = false;
-end
 if ~exist([outdir,'/',clientid])
   mkdir([outdir,'/',clientid]);
 end
