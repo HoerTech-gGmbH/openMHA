@@ -2,7 +2,7 @@
 
 HörTech Open Master Hearing Aid (openMHA)
 
-## Content of the openMHA release 4.11.0 (2019-12-03)
+## Content of the openMHA release 4.12.0 (2020-06-11)
 
 The software contains the source code of the openMHA Toolbox library, of the
 openMHA framework and command line application, and of a selection of algorithm
@@ -60,7 +60,7 @@ http://www.openmha.org/docs/openMHA_starting_guide.pdf
 * The qjackctl version provided by the JackOSX distribution is rather old. The user must replace the default Server Path setting with the absolute path to jackdmp (default: /usr/local/bin/jackdmp) (May not be necessary any more, check for yourself).
 * On some Apple machines Jack needs to be run with root privileges to get real-time priority.
 ### Windows
-* On Windows 7, the openMHA Windows installer openMHA-4.11.0-installer.exe may trigger a crash report from the operating system when it exits even though openMHA was successfully installed.
+* On Windows 7, the openMHA Windows installer openMHA-4.12.0-installer.exe may trigger a crash report from the operating system when it exits even though openMHA was successfully installed.
 
 ## Reference algorithms
 
