@@ -23,7 +23,7 @@ function test_runexample01a()
   inwav = '1speaker_diffNoise_2ch.wav'; 
   outwav = '1speaker_diffNoise_2ch_OUT_a.wav';
   % we only check the expected levels of input and output sound files.
-  expected_levels = [-23.138  -21.963  -41.554  -41.119];
+  expected_levels = [-23.138  -21.963  -46.859  -46.373];
 
   % execute mha with the given config file in the example directory,
   % start processing, quit

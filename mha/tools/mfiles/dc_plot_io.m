@@ -1,5 +1,5 @@
 function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels, log_interp)
-% function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels)
+% function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels, log_interp)
 %
 % gtmin, gtstep, gtdata - configuration variable values for the dc plugin
 % input_levels          - mxn input matrix with test input levels in dB SPL
@@ -15,7 +15,7 @@ function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels, log_int
 % figure.
 
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2019 HörTech gGmbH
+% Copyright © 2019 2020 HörTech gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
