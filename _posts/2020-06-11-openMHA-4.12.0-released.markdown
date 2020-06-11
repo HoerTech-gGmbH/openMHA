@@ -1,0 +1,62 @@
+---
+layout: post
+title:  "2020 Release of openMHA available"
+date:   2020-06-11 08:00:00
+category: software
+tags: [release, 4.12.0]
+---
+
+__openMHA 4.12.0__ is the 2020 major release of the software platform featuring:
+
+### Reference algorithms
+
+* A collection of openMHA configuration files is available that implement signal processing algorithms for hearing aids together with a Matlab tool to process own data or to reproduce the results of published studies such as  
+ [Baumgärtel et al. (2015): _Comparing Binaural Pre-processing Strategies I: Instrumental Evaluation._](https://doi.org/10.1177/2331216515617916)  
+ [Hendrikse et al. (2020): _Evaluation of the Influence of Head Movement on Hearing Aid Algorithm Performance Using Acoustic Simulations._](https://doi.org/10.1177/2331216520916682)
+
+
+### Offline fitting tool
+
+* For processing a large number of audio files with hearing aid signal enhancement adapted to custom hearing losses a new GUI-based Matlab/Octave tool is provided which guides users through the selection of sound files, audiogram, and fitting rule.
+
+
+
+### Advanced system support
+
+* An up-to-date [MAHALIA](http://mahalia.openmha.org/) image for Beaglebone Black single-board computers containing the latest release of openMHA and additional enhancements of the low-level audio interface control via alsa is available.   
+
+
+### Extended documentation and tool set
+
+* Documentation
+	* Updated starting guide with information on 
+		* how to write a basic openMHA configuration 
+		* how to update openMHA
+	* Browsable html documentation of developer manual available online
+	* Improved compilation instructions for plugins with an example
+	* Updated installation and compilation instructions
+	* Improved plugin documentation, e.g. smoothgain_bridge, combinechannels, wavrec, fftfilter, wave2spec
+    * New example: split plugin
+	* Best practices for publishing and consuming AC variables
+
+* Tool set 
+	* NAL-RP based hearing aid fitting rule with variable compression ratios
+	* Support of sparser gain matrices in dynamic compressor through logarithmic interpolation option in dc
+	
+
+### More plugins
+
+* Windnoise detection and a basic removal mechanism
+* lsl2ac: receive data stream using the labstreaminglayer protocol in openMHA  
+* altconfig: allows pre-configuration of different processing modes 
+* Several plugins to provide reference implementations mentioned above
+    
+### Increased robustness
+* Extended system tests and unit tests
+* Example of unit test implementation available
+* Enhanced real-time runtime configuration updates
+
+### Community support
+
+* Early access to development versions of Linux builds
+* Development branch is available on Github
