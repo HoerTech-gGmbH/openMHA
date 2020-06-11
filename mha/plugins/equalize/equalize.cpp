@@ -53,7 +53,8 @@ namespace equalize {
   freqgains_t::freqgains_t(
                            const algo_comm_t& iac,const std::string&,const std::string&)
     : MHAPlugin::plugin_t<cfg_t>("Equalizer plugin applies configurable gains to all bins of the spectrum",iac),
-      fftgains("gains in FFT resolution (FFT length/2+1 entries required)","[[]]","[0,["),
+      fftgains("gains in FFT resolution (FFT length/2+1 entries required per row)\n"
+               " as linear factors, one row per audio channel","[[]]","[0,["),
       id("Access to the id feature of the equalize plugin.  Usually the"
          " equalize plugin exposes no plugin id.  This variable allows to set"
          " a plugin id.  If set to \"equalize\", then this plugin can be"
