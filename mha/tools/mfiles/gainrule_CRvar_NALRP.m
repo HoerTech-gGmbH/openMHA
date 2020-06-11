@@ -1,10 +1,6 @@
-function sGt = gainruleimpl_CRx_NALRP( sAud, sFitmodel, compression_ratio )
-% This fitting rule helper applies NAL-RP gains at 65 dB input level and applies
-% compression_ratio compression_ratio.  Wrappers for compression ratios 2 and 3
-% exist, more may be provided by yourself.
-%
-% Author: Giso Grimm 2013 2019
-%
+function sGt = gainrule_CRvar_NALRP(sAud,sFitmodel,compression_ratio)
+% Wrapper function for the gainrule NAL-RP with a variable compression rate
+
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2013 2019 2020 HörTech gGmbH
 %
@@ -17,8 +13,36 @@ function sGt = gainruleimpl_CRx_NALRP( sAud, sFitmodel, compression_ratio )
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Affero General Public License, version 3 for more details.
 %
-% You should have received a copy of the GNU Affero General Public License, 
+% You should have received a copy of the GNU Affero General Public License,
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+  if nargin < 3
+    get_ratio_input = true;
+    while get_ratio_input
+      answer_ratio = inputdlg('Please enter a compression ratio.', 'Compression Ratio');
+      if ~isempty(answer_ratio) && ~isnan(answer_ratio{1}) && isreal(answer_ratio{1}) && length(answer_ratio) == 1
+        if answer_ratio{1} >= 1 && answer_ratio{1} < 100
+          compression_ratio = answer_ratio{1};
+          get_ratio_input = false;
+        else
+          errordlg('The compression ratio must be between 1 and 100!');
+        end
+      end
+    end
+  end
+  if compression_ratio < 1 || compression_ratio >= 100
+    error('The compression ratio of gainrule_CRvar_NALRP must be between 1 and 100!');
+  end
+
+  sGt = gainruleimpl_CRx_NALRP(sAud,sFitmodel,compression_ratio);
+
+
+function sGt = gainruleimpl_CRx_NALRP( sAud, sFitmodel, compression_ratio )
+% This fitting rule helper applies NAL-RP gains at 65 dB input level and applies
+% compression_ratio compression_ratio.  Wrappers for compression ratios 2 and 3
+% exist, more may be provided by yourself.
+%
+% Author: Giso Grimm 2013 2019
 
   %% Configuration parameters:
   c_slope = 1/compression_ratio;

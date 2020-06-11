@@ -31,10 +31,12 @@ function test_01
   sGt_actual = gainrule_NALRP(sAud, sFitmodel);
   assert_equal(sGt_expected.sGt_nalrp_01, sGt_actual);
 
-  sGt_actual = gainrule_CR2_NALRP(sAud, sFitmodel);
+  compression_ratio = 2;
+  sGt_actual = gainrule_CRvar_NALRP(sAud, sFitmodel, compression_ratio);
   assert_almost_equal_gaintable_structs(sGt_expected.sGt_cr2nalrp_01, sGt_actual,1e-12);
 
-  sGt_actual = gainrule_CR3_NALRP(sAud, sFitmodel);
+  compression_ratio = 3;
+  sGt_actual = gainrule_CRvar_NALRP(sAud, sFitmodel, compression_ratio);
   assert_almost_equal_gaintable_structs(sGt_expected.sGt_cr3nalrp_01, sGt_actual,1e-12);
 
   sGt_actual = gainrule_camfit_compr(sAud, sFitmodel);
@@ -63,13 +65,16 @@ function test_02
   sFitmodel.side = 'lr';
 
   sGt_expected = load('test_gainrules_data.mat');
+
   sGt_actual = gainrule_NALRP(sAud, sFitmodel);
   assert_equal(sGt_expected.sGt_nalrp_02, sGt_actual);
 
-  sGt_actual = gainrule_CR2_NALRP(sAud, sFitmodel);
+  compression_ratio = 2;
+  sGt_actual = gainrule_CRvar_NALRP(sAud, sFitmodel, compression_ratio);
   assert_almost_equal_gaintable_structs(sGt_expected.sGt_cr2nalrp_02, sGt_actual,1e-6);
 
-  sGt_actual = gainrule_CR3_NALRP(sAud, sFitmodel);
+  compression_ratio = 3;
+  sGt_actual = gainrule_CRvar_NALRP(sAud, sFitmodel, compression_ratio);
   assert_almost_equal_gaintable_structs(sGt_expected.sGt_cr3nalrp_02, sGt_actual,1e-6);
 
   sGt_actual = gainrule_camfit_compr(sAud, sFitmodel);
