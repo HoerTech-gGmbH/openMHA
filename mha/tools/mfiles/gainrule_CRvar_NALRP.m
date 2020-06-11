@@ -20,9 +20,10 @@ function sGt = gainrule_CRvar_NALRP(sAud,sFitmodel,compression_ratio)
     get_ratio_input = true;
     while get_ratio_input
       answer_ratio = inputdlg('Please enter a compression ratio.', 'Compression Ratio');
-      if ~isempty(answer_ratio) && ~isnan(answer_ratio{1}) && isreal(answer_ratio{1}) && length(answer_ratio) == 1
-        if answer_ratio{1} >= 1 && answer_ratio{1} < 100
-          compression_ratio = answer_ratio{1};
+      answer_ratio = str2double(answer_ratio);
+      if length(answer_ratio) == 1 && ~isnan(answer_ratio) && isreal(answer_ratio)
+        if answer_ratio >= 1 && answer_ratio < 100
+          compression_ratio = answer_ratio;
           get_ratio_input = false;
         else
           errordlg('The compression ratio must be between 1 and 100!');
