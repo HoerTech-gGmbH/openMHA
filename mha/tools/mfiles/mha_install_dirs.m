@@ -39,10 +39,10 @@ end
 
 % If mfiles directory is not default assume folder strucutre of self-compiled local installation
 mfiles_dir_cur = fileparts(mfilename('fullpath'));
-if ~strcmp(openMHA_dir.mfiles,[mfiles_dir_cur '/'])
-    openMHA_dir.mfiles = fileparts(mfiles_dir_cur);
-    openMHA_dir.examples = fullfile(fileparts(mfiles_dir_cur),'..','..','..','examples');
-    openMHA_dir.reference_algorithms = fullfile(fileparts(mfiles_dir_cur),'..','..','..','reference_algorithms');
+if ~strcmp(openMHA_dir.mfiles, [mfiles_dir_cur filesep])
+    openMHA_dir.mfiles = mfiles_dir_cur;
+    openMHA_dir.examples = fullfile(mfiles_dir_cur,'..','..','..','examples');
+    openMHA_dir.reference_algorithms = fullfile(mfiles_dir_cur,'..','..','..','reference_algorithms');
 end
 
 if nargin < 1
