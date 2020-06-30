@@ -75,6 +75,9 @@ function test_mha_start_output_streams
              'Invalid or non-existing variable name']);
   actual_asyncerror = mha_get(mha, 'asyncerror');
   expected_stderr = sprintf('MHA Error: %s\n', expected_asyncerror);
+
+  % we need to give mha a chance to print the string to its stderr
+  pause(0.1);
   actual_stderr = stderr.get();
 
   assert_equal(expected_asyncerror, actual_asyncerror);
