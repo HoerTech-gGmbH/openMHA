@@ -49,7 +49,7 @@ function test_mha_start_output_streams
   stderr = javaObject('de.hoertech.mha.control.StreamGobbler', ...
                       process.getErrorStream(), true); % Store received text.
   % We have not caused an error yet
-  assert_all(isempty(stderr.get()));
+  assert_all(isempty(char(stderr.get())));
 
   % Configure MHA to encounter an error detected during signal processing.
   % This (normally asynchronous) error will not be reported by mha_set, but
@@ -63,7 +63,7 @@ function test_mha_start_output_streams
 
   % This will fail in the first processing block when plugin route realises that
   % AC variable 'AC' does not exist. Right now, everything is still fine:
-  assert_all(isempty(stderr.get()));
+  assert_all(isempty(char(stderr.get())));
   assert_all(isempty(mha_get(mha, 'asyncerror')));
 
   % Process first audio signal block
@@ -78,7 +78,7 @@ function test_mha_start_output_streams
   actual_stderr = stderr.get();
 
   assert_equal(expected_asyncerror, actual_asyncerror);
-  assert_equal(expected_stderr, actual_stderr);
+  assert_equal(expected_stderr, char(actual_stderr));
 
 % Local Variables:
 % mode: octave

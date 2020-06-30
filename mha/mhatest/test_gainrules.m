@@ -29,7 +29,7 @@ function test_01
 
   sGt_expected = load('test_gainrules_data.mat');
   sGt_actual = gainrule_NALRP(sAud, sFitmodel);
-  assert_equal(sGt_expected.sGt_nalrp_01, sGt_actual);
+  assert_almost_equal_gaintable_structs_noisegate(sGt_expected.sGt_nalrp_01, sGt_actual, 1e-12);
 
   compression_ratio = 2;
   sGt_actual = gainrule_CRvar_NALRP(sAud, sFitmodel, compression_ratio);
@@ -67,7 +67,7 @@ function test_02
   sGt_expected = load('test_gainrules_data.mat');
 
   sGt_actual = gainrule_NALRP(sAud, sFitmodel);
-  assert_equal(sGt_expected.sGt_nalrp_02, sGt_actual);
+  assert_almost_equal_gaintable_structs_noisegate(sGt_expected.sGt_nalrp_02, sGt_actual,1e-12);
 
   compression_ratio = 2;
   sGt_actual = gainrule_CRvar_NALRP(sAud, sFitmodel, compression_ratio);
@@ -89,5 +89,10 @@ function assert_almost_equal_gaintable_structs(sExpected,sActual,epsilon)
   assert_almost(sExpected.compression.r.l_kneepoint,sActual.compression.r.l_kneepoint,epsilon);
   assert_almost(sExpected.compression.r.c_slope,sActual.compression.r.c_slope,epsilon);
 
+  assert_almost(sExpected.l,sActual.l,epsilon);
+  assert_almost(sExpected.r,sActual.r,epsilon);
+
+function assert_almost_equal_gaintable_structs_noisegate(sExpected,sActual,epsilon)
+  assert_equal(sExpected.noisegate,sActual.noisegate);
   assert_almost(sExpected.l,sActual.l,epsilon);
   assert_almost(sExpected.r,sActual.r,epsilon);
