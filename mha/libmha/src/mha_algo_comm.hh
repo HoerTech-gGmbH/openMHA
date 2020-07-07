@@ -42,12 +42,14 @@ namespace MHAKernel {
         static int insert_var_int(void*,const char*,int*);
         static int insert_var_vfloat(void* handle,const char* name, std::vector<float>& ivar);
         static int insert_var_float(void*,const char*,float*);
+        static int insert_var_double(void*,const char*,double*);
         static int remove_var(void*,const char*);
         static int remove_ref(void*,void*);
         static int is_var(void*,const char*);
         static int get_var(void*,const char*,comm_var_t*);
         static int get_var_int(void*,const char*,int*);
         static int get_var_float(void*,const char*,float*);
+        static int get_var_double(void*,const char*,double*);
         static int get_entries(void*,char*,unsigned int);
         static const char* get_error(int);
         virtual

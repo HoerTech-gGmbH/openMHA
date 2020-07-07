@@ -27,7 +27,7 @@
 #include <string>
 #include <exception>
 #include <vector>
-
+#include <chrono>
 /** All types for the lsl2ac plugins live in this namespace. */
 namespace lsl2ac{
 enum class underrun_behavior { Zero=0, Copy, Abort};
@@ -47,6 +47,9 @@ public:
         stream(info_),
             buf(new mha_real_t[info_.channel_count()]),
             ac(ac_),
+            ts_name(info_.name()+"_ts"),
+            tc_name(info_.name()+"_tc"),
+            tic(std::chrono::steady_clock::now()),
             ub(ub_),
             name(name_)
             {
@@ -57,6 +60,11 @@ public:
                 cv.data_type=MHA_AC_FLOAT;
                 cv.data=buf.get();
                 ac.insert_var(ac.handle,info_.name().c_str(),cv);
+                ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
+                ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
+                // According to lsl doc the first call to time_correction takes several ms, subsequent
+                // calls are 'instant'. Calling it here to avoid blocking later.
+                tc=stream.time_correction();
             }
     catch (MHA_Error& e) {
         //The framework can handle MHA_Errors. Just re-throw
@@ -104,8 +112,18 @@ private:
     std::unique_ptr<mha_real_t[]> buf;
     /** Handle to AC space */
     const algo_comm_t& ac;
-    /** AC variable */
+    /** Timeseries AC variable */
     comm_var_t cv;
+    /** Current timestamp */
+    double ts;
+    /** Current time correction */
+    double tc;
+    /** Timestamp name */
+    std::string ts_name;
+    /** Time correction name */
+    std::string tc_name;
+    /** time point of last time correction pull */
+    std::chrono::time_point<std::chrono::steady_clock> tic;
     /** Should the variable be skipped in future process calls? Only true when error occured. */
     bool skip=false;
     /** Behavior on stream underrun */
@@ -114,12 +132,19 @@ private:
     const std::string name;
     void impl_receive_frame_zero(){
         try {
-            auto ts=stream.pull_sample(buf.get(),num_entries(),0.0f);
+            ts=stream.pull_sample(buf.get(),num_entries(),0.0f);
             if(ts==0.0){
                 for(size_t i=0;i<num_entries();i++)
                     buf[i]=0.0f;
             }
-            ac.insert_var(ac.handle,stream.info().name().c_str(),cv);
+            auto toc=std::chrono::steady_clock::now();
+            if(toc-tic>std::chrono::seconds(5)){
+                tc=stream.time_correction();
+                tic=toc;
+            }
+            ac.insert_var(ac.handle,name.c_str(),cv);
+            ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
+            ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
         }
         //If the stream is recoverable, lsl does not throw, instead tries to recover.
         // Handle any other exception as a permanent underrun
@@ -133,9 +158,21 @@ private:
 
     void impl_receive_frame_copy(){
         try {
-            //If no new samples are there, buf does not get touched
-            stream.pull_sample(buf.get(),num_entries(),0.0f);
+            double old_ts=ts;
+            //If no new samples are there, buf does not get touched...
+            ts=stream.pull_sample(buf.get(),num_entries(),0.0f);
+            //...but we need to reset ts to the old value
+            if(ts==0.0){
+                ts=old_ts;
+            }
+            auto toc=std::chrono::steady_clock::now();
+            if(toc-tic>std::chrono::seconds(5)){
+                tc=stream.time_correction();
+                tic=toc;
+            }
             ac.insert_var(ac.handle,name.c_str(),cv);
+            ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
+            ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
         }
         //If the stream is recoverable, lsl does not throw, instead tries to recover.
         // Handle any other exception as a permanent underrun
@@ -147,9 +184,19 @@ private:
     void impl_receive_frame_abort(){
         class UnderrunError{};
         try {
-            auto ts=stream.pull_sample(buf.get(),num_entries(),0.0f);
+            ts=stream.pull_sample(buf.get(),num_entries(),0.0f);
             if(ts==0.0){
                 throw UnderrunError();
+            }
+            else{
+                auto toc=std::chrono::steady_clock::now();
+                if(toc-tic>std::chrono::seconds(5)){
+                    tc=stream.time_correction();
+                    tic=toc;
+                }
+                ac.insert_var(ac.handle,name.c_str(),cv);
+                ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
+                ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
             }
         }
         catch(UnderrunError &e){

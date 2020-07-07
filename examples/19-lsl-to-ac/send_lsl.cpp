@@ -25,10 +25,11 @@ int main(int argc, char* argv[]) {
   // allocate buffer for data
   float sample[nchannels];
   // send data as long as there are consumers
+  auto start=std::chrono::system_clock::now();
   while(outlet.have_consumers()) {
     // Fill the buffer with random data
     for (int c=0;c<nchannels;c++) sample[c] = (rand()%100)/100.0f-0.5;
-    // send it
+    // send it, using lsl_local_clock as timestamp
     outlet.push_sample(sample);
     // sleep for 10 ms to limit rate to 100 Hz to get a similar frame rate as the receiving end
     // the real rate will be slightly below, as no compensation is done for simplicity reasons,

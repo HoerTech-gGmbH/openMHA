@@ -279,12 +279,14 @@ algo_comm_t algo_comm_default = {
     MHAKernel::algo_comm_class_t::insert_var,
     MHAKernel::algo_comm_class_t::insert_var_int,
     MHAKernel::algo_comm_class_t::insert_var_float,
+    MHAKernel::algo_comm_class_t::insert_var_double,
     MHAKernel::algo_comm_class_t::remove_var,
     MHAKernel::algo_comm_class_t::remove_ref,
     MHAKernel::algo_comm_class_t::is_var,
     MHAKernel::algo_comm_class_t::get_var,
     MHAKernel::algo_comm_class_t::get_var_int,
     MHAKernel::algo_comm_class_t::get_var_float,
+    MHAKernel::algo_comm_class_t::get_var_double,
     MHAKernel::algo_comm_class_t::get_entries,
     MHAKernel::algo_comm_class_t::get_error
 };
@@ -461,6 +463,26 @@ int MHAKernel::algo_comm_class_t::insert_var_float(void* handle,const char* name
     }
 }
 
+int MHAKernel::algo_comm_class_t::insert_var_double(void* handle,const char* name,double* ivar)
+{
+    try{
+        algo_comm_class_t* p = algo_comm_safe_cast(handle);
+        if(!p) 
+            return AC_INVALID_HANDLE;
+        comm_var_t var;
+        var.data_type = MHA_AC_DOUBLE;
+        var.num_entries = 1;
+        var.stride = 1;
+        var.data = ivar;
+        p->local_insert_var(name,var);
+        return AC_SUCCESS;
+    }
+    catch(MHA_Error& e){
+        (void)e;
+        return AC_INVALID_NAME;
+    }
+}
+
 int MHAKernel::algo_comm_class_t::insert_var_vfloat(void* handle,const char* name,std::vector<float>& ivar)
 {
     try{
@@ -579,6 +601,30 @@ int MHAKernel::algo_comm_class_t::get_var_float(void* handle,const char* name,fl
     }
 }
 
+int MHAKernel::algo_comm_class_t::get_var_double(void* handle,const char* name,double* ivar)
+{
+    try{
+        algo_comm_class_t* p = algo_comm_safe_cast(handle);
+        if (!p)
+            return AC_INVALID_HANDLE;
+        if (!p->local_is_var(name))
+            return AC_INVALID_NAME;
+        comm_var_t var;
+        if( !ivar )
+            return AC_INVALID_OUTPTR;
+        p->local_get_var(name,&var);
+        if( var.data_type != MHA_AC_DOUBLE )
+            return AC_TYPE_MISMATCH;
+        if( var.num_entries != 1 )
+            return AC_DIM_MISMATCH;
+        *ivar = *((double*)(var.data));
+        return AC_SUCCESS;
+    }
+    catch(MHA_Error&e){
+        (void)e;
+        return AC_INVALID_NAME;
+    }
+}
 
 int MHAKernel::algo_comm_class_t::get_entries(void* handle,char* ret,unsigned int len)
 {
