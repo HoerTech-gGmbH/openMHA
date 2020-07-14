@@ -507,6 +507,7 @@ MHAOvlFilter::fftfb_t::fftfb_t(MHAOvlFilter::fftfb_vars_t& par, unsigned int nff
         par.shapes.data.push_back(svw);
     }
 }
+
 //**************************************************************
 //
 // Frequency spacing
@@ -750,7 +751,6 @@ void MHAOvlFilter::fftfb_t::apply_gains(mha_spec_t * s_out, const mha_spec_t * s
         }
     }
 }
-
 
 void MHAOvlFilter::fftfb_t::get_fbpower(mha_wave_t * fbpow, const mha_spec_t * s_in)
 {

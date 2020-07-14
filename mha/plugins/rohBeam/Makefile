@@ -18,9 +18,12 @@ NEEDS_EIGEN = yes
 
 include ../plugin.mk
 
-# Eigen triggers Wduplicated-branches. As we can not realistically do anything about it, ignore it.
-# Apple clang-11.0.0 does not know Wduplicated-branches, so we need to turn off the warning about unknown warning options
-# -funsafe-math-optimizations (included in -ffast-math) in combination with -O3, is too aggressive for Eigen, turn it off
+# Eigen triggers Wduplicated-branches.  As we can not realistically do
+# anything about it, ignore it.  Apple clang-11.0.0 does not know
+# Wduplicated-branches, so we need to turn off the warning about
+# unknown warning options -funsafe-math-optimizations (included in
+# -ffast-math) in combination with -O3, is too aggressive for Eigen,
+# turn it off
 $(PLUGIN_AND_TEST_ARTIFACTS): CXXFLAGS += -Wno-unknown-warning-option    \
                                           -Wno-duplicated-branches       \
                                           -fno-unsafe-math-optimizations

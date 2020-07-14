@@ -327,7 +327,7 @@ template < class runtime_cfg_t > runtime_cfg_t* MHAPlugin::config_t < runtime_cf
     // making cfg_node_current atomic would worsen the performance of
     // poll_config() which is used much more often and time critical.
     cfg_node_t<runtime_cfg_t> *
-        res = cfg_root;
+        res = cfg_root.load();
     while( res && res->next ) {
         res = res->next;
     }
@@ -432,15 +432,15 @@ template < class runtime_cfg_t > void MHAPlugin::config_t < runtime_cfg_t >::cle
 
 template < class runtime_cfg_t > void MHAPlugin::config_t < runtime_cfg_t >::remove_all_cfg(  )
 {
-    if( !cfg_root )
+    if( !cfg_root.load() )
         return;
     while( auto next = cfg_root.load()->next.load() ) {
         cfg_node_t<runtime_cfg_t> * lcfg_root = cfg_root.load();
-        cfg_root = next;
+        cfg_root.store(next);
         delete lcfg_root;
     }
-    delete cfg_root;
-    cfg_root = nullptr;
+    delete cfg_root.load();
+    cfg_root.store(nullptr);
 }
 
 

@@ -119,6 +119,16 @@ dummy_libserial:
 endif
 endif
 
+ifeq "$(NEEDS_TORCH)" "yes"
+ifneq "$(WITH_TORCH)" "yes"
+# this plugin needs libtorch.
+# Do not compile if libtorch not available.
+# instead, execute this dummy rule. as default target
+dummy_libtorch:
+	@echo "not compiling" $(PLUGINS) "since libtorch is not available"
+endif
+endif
+
 ifeq "$(NEEDS_CXX17)" "yes"
 ifeq ($(CXXSTANDARD),$(findstring $(CXXSTANDARD),"gnu++98c++98gnu++03c++03gnu++0xc++0xgnu++11c++11gnu++1yc++1ygnu++14c++14"))
 # this plugin needs at least c++17.

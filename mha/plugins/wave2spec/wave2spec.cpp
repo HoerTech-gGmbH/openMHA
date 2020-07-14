@@ -178,6 +178,7 @@ void wave2spec_if_t::update()
             (tftype.wndlen > 0) &&
             (tftype.fragsize > 0) &&
             (tftype.channels > 0) )  {
+
             push_config(new wave2spec_t(tftype.fftlen,
                                         tftype.wndlen,
                                         tftype.fragsize,

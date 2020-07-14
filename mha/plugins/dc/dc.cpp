@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License,
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>
 #include <limits>
 #include <algorithm>
 #include "dc.hh"

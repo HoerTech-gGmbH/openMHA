@@ -1,4 +1,4 @@
-// This file is part of the HörTech Master Hearing Aid (MHA)
+// This file is part of the HörTech open Master Hearing Aid (openMHA)
 // Copyright © 2012 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
@@ -14,7 +14,6 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <memory>
-#include <stdio.h>
 #include <lo/lo.h>
 #include "mha_plugin.hh"
 

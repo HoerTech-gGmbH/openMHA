@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2009 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2005 2006 2007 2009 2013 2014 2016 2017 2018 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -50,7 +50,7 @@ typedef unsigned __int8 uint8_t;
 #define mha_msleep(milliseconds) Sleep(milliseconds)
 typedef HINSTANCE mha_libhandle_t;
 /// printf modifier to print integers of type size_t
-#define FMTsz "%u"
+#define FMTsz "%zu"
 #else
 /*
  *
