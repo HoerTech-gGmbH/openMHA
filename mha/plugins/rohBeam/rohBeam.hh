@@ -49,7 +49,6 @@ namespace rohBeam {
   constexpr float CONST_C = 343.0115f;
   constexpr int refL = 0;
   constexpr int refR = 3;
-  auto scalarify=[](auto t){return t(0);};
   struct configOptions {
     bool enable_adaptive_beam;
     int binaural_type_index;

@@ -50,6 +50,8 @@ double rohBeam::j0(double x) {
 
 namespace rohBeam {
 
+  auto scalarify=[](auto t){return t(0);};
+
   rohConfig::rohConfig(const mhaconfig_t in_cfg,const mhaconfig_t out_cfg,
                        std::unique_ptr<MatrixXcf> headModel_,
                        std::unique_ptr<MHASignal::matrix_t> beamW_,
