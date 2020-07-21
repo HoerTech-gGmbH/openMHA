@@ -21,6 +21,9 @@ chkhdr(){
 chklib(){
     echo "int main(){return 0;}"| g++ -x c++ - $MACLDFLAGS -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
+gccver(){
+    gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'
+}
 (
     PREFIX=$(pwd)
     DEBUG="-g"
@@ -97,7 +100,7 @@ chklib(){
             PLATFORM=linux
             echo PLATFORM=linux
             echo DYNAMIC_LIB_EXT=".so"
-            GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
+            GCC_VER=`gccver`
             echo GCC_VER=${GCC_VER}
             echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
             ;;
@@ -105,7 +108,7 @@ chklib(){
             PLATFORM=MinGW
             echo PLATFORM=MinGW
             echo DYNAMIC_LIB_EXT=".dll"
-            GCC_VER=`gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([2-4]\)\.\([0-9]*\)\.\([0-9]*\)/-\1.\2/' -e 's/\([5-9]\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'`
+            GCC_VER=`gccver`
             echo GCC_VER=${GCC_VER}
             echo BUILD_DIR=${ARCH}-${PLATFORM}-gcc${GCC_VER}
             ;;
@@ -170,7 +173,7 @@ chklib(){
 
     if [ "x$CXXSTANDARD" = "x" ]; then
         case "$GCC_VER"x in
-            -7*|-8*|-9*)
+            -7|-8|-9|-10)
                 CXXSTANDARD=c++17
                 ;;
             *)
@@ -182,7 +185,7 @@ chklib(){
 
 
     case "$GCC_VER"x in
-        -7*|-8*|-9*)
+        -7|-8|-9|-10)
             echo "CXXFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches"\
                  " -Wformat-signedness";
             echo "CFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches";
