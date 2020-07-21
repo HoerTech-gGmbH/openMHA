@@ -172,8 +172,20 @@ cd openMHA
 
 The compilation may take a while.
 
-To start openMHA, you need to start a MinGW-64 bash shell and navigate to the
-openMHA/bin directory, then type ./mha.exe.
+To start the self-compiled openMHA, you need to start a MinGW-64 bash
+shell and navigate to the openMHA/bin directory, then type
+./mha.exe. Not doing this often results in MHA not being able to find
+all necessary DLLs. This is also the reason why a normally started
+Octave session will not be able to connect to the MHA.  In order for
+Octave to connect to the MHA you have to start Octave from the
+MinGW-64 bash shell using a command line like
+**/c/Octave/Octave->>version<</mingw64/bin/octave-gui.exe --gui**.
+Additionally, Octave uses Java to connect to the MHA, refer to
+https://jdk.java.net/ for installing the Java openJDK for 64-bit
+Windows. Then, add the bin directory to the system PATH and create the
+JAVA_HOME environment variable to point to the parent directory of that bin
+directory.  With the JDK installed Octave might warn you upon
+installation that it is not able to find Java, ignore that.
 
 ## IV. Regeneration of the documentation on Linux:
 
