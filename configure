@@ -172,7 +172,7 @@ gccver(){
     fi
 
     if [ "x$CXXSTANDARD" = "x" ]; then
-        case "$GCC_VER"x in
+        case "$GCC_VER" in
             -7|-8|-9|-10)
                 CXXSTANDARD=c++17
                 ;;
@@ -184,7 +184,7 @@ gccver(){
     echo "CXXSTANDARD=$CXXSTANDARD";
 
 
-    case "$GCC_VER"x in
+    case "$GCC_VER" in
         -7|-8|-9|-10)
             echo "CXXFLAGS+=-Wmisleading-indentation  -Wlogical-op -Wduplicated-cond -Wduplicated-branches"\
                  " -Wformat-signedness";
