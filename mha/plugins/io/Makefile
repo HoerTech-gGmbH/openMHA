@@ -16,7 +16,10 @@
 include ../../../config.mk
 include ../../../magic.mk
 
-PLUGINS = MHAIOFile MHAIOParser MHAIOPortAudio MHAIOTCP 
+PLUGINS = MHAIOFile MHAIOParser MHAIOPortAudio MHAIOTCP
+ifneq "$(CXXSTANDARD)" "c++14"
+PLUGINS += MHAIOAsterisk
+endif
 
 ifeq "$(WITH_JACK)" "yes"
 PLUGINS += MHAIOJack MHAIOJackdb
@@ -48,9 +51,9 @@ $(BUILD_DIR)/MHAIOPortAudio$(PLUGIN_EXT): LDLIBS += -lportaudio
 
 $(BUILD_DIR)/MHAIOalsa$(PLUGIN_EXT): LDLIBS += -lasound
 
-$(BUILD_DIR)/MHAIOTCP$(PLUGIN_EXT): $(BUILD_DIR)/mha_tcp.o
+$(BUILD_DIR)/MHAIOTCP$(PLUGIN_EXT) $(BUILD_DIR)/MHAIOAsterisk$(PLUGIN_EXT): $(BUILD_DIR)/mha_tcp.o
 ifeq ($(PLATFORM),MinGW)
-$(BUILD_DIR)/MHAIOTCP$(PLUGIN_EXT): LDLIBS += -lws2_32
+$(BUILD_DIR)/MHAIOTCP$(PLUGIN_EXT) $(BUILD_DIR)/MHAIOAsterisk$(PLUGIN_EXT): LDLIBS += -lws2_32
 endif
 
 # Local Variables:
