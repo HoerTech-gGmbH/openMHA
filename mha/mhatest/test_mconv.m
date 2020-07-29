@@ -69,6 +69,7 @@ dsc.io.in = inwav;
 dsc.io.out = outwav;
 
 mha=mha_start;
+unittest_teardown(@mha_set,mha,'cmd','quit');
 
 mha_set(mha,'',dsc);
 mha_set(mha,'cmd','start');
