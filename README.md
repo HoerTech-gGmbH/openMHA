@@ -13,8 +13,8 @@ plugins forming a basic hearing aid processing chain featuring
 * binaural coherence filter for feedback reduction and dereverberation [2]
 * multi-band dynamic range compressor for hearing loss compensation [3]
 * spatial filtering algorithms:
-	* a delay-and-sum beamformer
-	 * a MVDR beamformer [4]
+    * a delay-and-sum beamformer
+    * a MVDR beamformer [4]
 * single-channel noise reduction [5]
 * resampling and filter plugins
 * STFT cyclic aliasing prevention
