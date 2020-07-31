@@ -169,11 +169,13 @@ namespace MHA_AC {
     */
     class int_t {
     public:
-        int_t(algo_comm_t,std::string,int=0);
+        int_t(algo_comm_t ac,std::string name,int val=0);
         ~int_t();
         int data; //!< Integer value variable
+        void insert();
     private:
         algo_comm_t ac;
+        std::string name;
     };
 
     /**
@@ -188,8 +190,10 @@ namespace MHA_AC {
         float_t(algo_comm_t,std::string,float=0); //!< Constructor
         ~float_t();
         float data; //!< Floating point value variable
+        void insert();
     private:
         algo_comm_t ac;
+        std::string name;
     };
 
     /**
@@ -203,9 +207,11 @@ namespace MHA_AC {
     public:
         double_t(algo_comm_t,std::string,double=0);
         ~double_t();
-        double data; //!< Floating point value variable
+        double data; //!< Floating point (double precision) value variable
+        void insert();
     private:
         algo_comm_t ac;
+        std::string name;
     };
 
     class stat_t : public MHASignal::stat_t {

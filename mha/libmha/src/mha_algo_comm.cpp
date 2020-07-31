@@ -801,14 +801,20 @@ MHA_AC::waveform_t::~waveform_t()
     ac.remove_ref(ac.handle,buf);
 }
 
-MHA_AC::int_t::int_t(algo_comm_t iac,std::string n,int v)
-    : data(v),
-      ac(iac)
+MHA_AC::int_t::int_t(algo_comm_t ac,std::string name,int val)
+    : data(val),
+      ac(ac),
+      name(name)
 {
-    if( int err = ac.insert_var_int(ac.handle,n.c_str(),&data) )
+    insert();
+}
+
+void MHA_AC::int_t::insert()
+{
+     if( int err = ac.insert_var_int(ac.handle,name.c_str(),&data) )
         throw MHA_Error(__FILE__,__LINE__,
                         "Not able to insert AC variable 'int %s':\n%s",
-                        n.c_str(),ac.get_error(err));
+                        name.c_str(),ac.get_error(err));
 }
 
 MHA_AC::int_t::~int_t()
@@ -816,24 +822,36 @@ MHA_AC::int_t::~int_t()
     ac.remove_ref(ac.handle,&data);
 }
 
-MHA_AC::float_t::float_t(algo_comm_t iac,std::string n,float v)
-    : data(v),
-      ac(iac)
+MHA_AC::float_t::float_t(algo_comm_t ac,std::string name,float val)
+    : data(val),
+      ac(ac),
+      name(name)
 {
-    if( int err = ac.insert_var_float(ac.handle,n.c_str(),&data) )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Not able to insert AC variable 'float %s':\n%s",
-                        n.c_str(),ac.get_error(err));
+    insert();
 }
 
+void MHA_AC::float_t::insert()
+{
+    if( int err = ac.insert_var_float(ac.handle,name.c_str(),&data) )
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Not able to insert AC variable 'float %s':\n%s",
+                        name.c_str(),ac.get_error(err));
+}
+    
 MHA_AC::float_t::~float_t()
 {
     ac.remove_ref(ac.handle,&data);
 }
 
-MHA_AC::double_t::double_t(algo_comm_t iac,std::string n,double v)
-    : data(v),
-      ac(iac)
+MHA_AC::double_t::double_t(algo_comm_t ac,std::string name,double val)
+    : data(val),
+      ac(ac),
+      name(name)
+{
+    insert();
+}
+
+void MHA_AC::double_t::insert()
 {
     comm_var_t acv;
     memset(&acv,0,sizeof(acv));
@@ -841,11 +859,11 @@ MHA_AC::double_t::double_t(algo_comm_t iac,std::string n,double v)
     acv.num_entries = 1;
     acv.stride = 0;
     acv.data = &data;
-    int err = ac.insert_var(ac.handle, n.c_str(), acv);
+    int err = ac.insert_var(ac.handle, name.c_str(), acv);
     if( err )
         throw MHA_Error(__FILE__,__LINE__,
                         "Not able to insert AC variable 'double %s':\n%s",
-                        n.c_str(),ac.get_error(err));
+                        name.c_str(),ac.get_error(err));
 }
 
 MHA_AC::double_t::~double_t()
