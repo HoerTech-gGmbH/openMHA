@@ -27,7 +27,8 @@ function test_mhactl_java_timeout
   end
   actual_timeout = toc(t0);
 
-  % We expect actual_timeout to be a little bit longer than mha.timeout.
-  % Both 0.5 constants together give the necessary leeway.
-  assert_difference_below(mha.timeout+0.5,actual_timeout,0.5);
+  % Actual_timeout will normally be a little bit longer than mha.timeout,
+  % but can also be a little bit shorter (Observation on Windows)
+  % Both approx. 0.5 constants together give the necessary leeway.
+  assert_difference_below(mha.timeout+0.4999,actual_timeout,0.5);
 end
