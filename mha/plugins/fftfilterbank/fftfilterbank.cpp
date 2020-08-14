@@ -111,6 +111,7 @@ void fftfb_interface_t::prepare(mhaconfig_t& tf)
         if( tf.domain == MHA_SPECTRUM )
             fftlen.data = tftype.fftlen;
         nchannels.data = tf.channels;
+        nchannels.insert();
         fftfb_plug_t* NewConfig = new fftfb_plug_t(static_cast<MHAOvlFilter::overlap_save_filterbank_t::vars_t&>(*this),tftype,ac,algo,return_imag.data);
         nbands = NewConfig->nbands();
         push_config(NewConfig);

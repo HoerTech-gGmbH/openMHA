@@ -55,6 +55,8 @@ mha_spec_t* cfg_t::process(mha_spec_t* s)
         for(kfr=0;kfr<out_spec.num_frames;kfr++)
             out_spec.buf[kfr + kch*out_spec.num_frames] = 
                 in_spec_copy.buf[kfr + kch*in_spec_copy.num_frames];
+    nch.insert();
+    ntracks.insert();    
     return &out_spec;
 }
 

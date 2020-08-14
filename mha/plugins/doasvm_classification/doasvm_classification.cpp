@@ -73,7 +73,7 @@ mha_wave_t *doasvm_classification_config::process(mha_wave_t *wave)
     }
 
     p_max.data = max_ind;
-
+    p_max.insert();
 
     //return current fragment
     return wave;

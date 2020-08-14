@@ -71,7 +71,7 @@ mha_wave_t *acTransform_wave_config::process(mha_wave_t *wave)
 
     }
 
-
+    rotated_i.insert();
     //return current fragment
     return wave;
 }
