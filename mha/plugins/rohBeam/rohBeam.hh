@@ -1,4 +1,4 @@
-// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// This file is part of the HörTech Master Hearing Aid (MHA)
 // Copyright © 2012 2013 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
@@ -10,7 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License, version 3 for more details.
 //
-// You should have received a copy of the GNU Affero General Public License,
+// You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
