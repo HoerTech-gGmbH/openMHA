@@ -118,23 +118,33 @@ namespace MHASignal {
         return powf(10.0f, 0.1f * x);
     }
 
-
     /**
        \brief Conversion from linear Pascal scale to dB SPL
        \param x Linear input
-       \param eps minimum pascal value (if x < eps --> convert eps instead), eps < 0 not allowed
-       \return NaN if x < 0 (log not defined for negative)
+       \param eps minimum pascal value (if x < eps --> convert eps instead),
+       \pre   eps >= 0
+       \return NaN if x < 0 (logarithm not defined for negative numbers)
        \throw MHA_Error if eps < 0
     */
-    inline mha_real_t pa2dbspl(mha_real_t x, mha_real_t eps = 0.0f)
+    inline mha_real_t pa2dbspl(mha_real_t x, mha_real_t eps)
     {
         if (eps < 0)
             throw MHA_Error(__FILE__,__LINE__,
                             "Minimum pascal value eps < 0 is not allowed!");
-        if (x < 0)
-            return std::numeric_limits<float>::quiet_NaN(); //log not defined for negative
+        if (x < 0) // log not defined for negative numbers
+            return std::numeric_limits<float>::quiet_NaN();
         else
             return 20.0f * log10f(5e+4f * std::max(x,eps));
+    }
+
+    /**
+       \brief Conversion from linear Pascal scale to dB SPL
+       \param x Linear input
+       \return NaN if x < 0 (log not defined for negative)
+    */
+    inline mha_real_t pa2dbspl(mha_real_t x)
+    {
+        return pa2dbspl(x,0.0f);
     }
 
     /**
