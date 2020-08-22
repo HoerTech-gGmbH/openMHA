@@ -837,7 +837,7 @@ void MHA_AC::float_t::insert()
                         "Not able to insert AC variable 'float %s':\n%s",
                         name.c_str(),ac.get_error(err));
 }
-    
+
 MHA_AC::float_t::~float_t()
 {
     ac.remove_ref(ac.handle,&data);
