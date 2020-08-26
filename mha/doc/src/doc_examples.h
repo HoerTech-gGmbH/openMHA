@@ -16,8 +16,6 @@
 /**
 \defgroup example_tut Writing \mha Plugins. A step-by-step tutorial 
 
-\brief A step-by-step tutorial on writing \mha plugins.
-
 Plugins are C++ code that is compiled and linked against the \mha library.
 The compiler needs be instructed on how to find the \mha headers and library
 and to link against the \mha library. There are two possible options: One
