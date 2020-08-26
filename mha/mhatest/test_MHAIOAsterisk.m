@@ -21,7 +21,7 @@ function test_MHAIOAsterisk
 
   if exist('/etc/issue.net','file') == 2
     f = fopen('/etc/issue.net');
-    contents = fread(f,inf,'unsigned char')';
+    contents = char(fread(f,inf,'unsigned char')');
     fclose(f);
     if (strncmp(contents,'Ubuntu 16.04',12))
       return % MHAIOAsterisk was not compiled for ubuntu 16.04
