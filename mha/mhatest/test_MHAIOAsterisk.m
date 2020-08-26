@@ -23,11 +23,11 @@ function test_MHAIOAsterisk
     f = fopen('/etc/issue.net');
     contents = fread(f,inf,'unsigned char')';
     fclose(f);
-    if (isequal(contents,sprintf('Ubuntu 16.04.6 LTS\n')))
-      return
+    if (strncmp(contents,'Ubuntu 16.04',12))
+      return % MHAIOAsterisk was not compiled for ubuntu 16.04
     end
   end
-  
+
   % create an MHA for this test
   mha = mha_start();
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
