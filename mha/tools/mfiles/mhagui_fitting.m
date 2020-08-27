@@ -63,8 +63,8 @@ function main( sClientID, sAud )
     gp = [770,max(300,50*length(csPlugs)+80)];
     libmhagui();
     fh = mhagui.figure(sprintf('MHA fitting tool for %s@%s, %s',...
-				   sClientID,mha_basic_cfg.mha.host,sAud.id),...
-			   'mhagui_fitting_plug_selector',gp);
+      sClientID,mha_basic_cfg.mha.host,sAud.id),...
+      'mhagui_fitting_plug_selector',gp);
     nch = [];
     for k=1:length(csPlugs)
       nch(k) = csPlugs{1}.fitmodel.channels;
@@ -655,7 +655,7 @@ function update_current_fit_gui
         [-10,vaudH(1),vaudH,vaudH(end),-10],...
         [0.7,0.75,0.7]);
         plot(vaudF,vaudH,audstyle,'MarkerSize',10);
-        plot(sTarget.f,sTarget.inlevel,'--');
+        plot(sTarget.f,sTarget.inlevel,'linestyle','--');
         for kl=1:length(sTarget.levels)
           plot(sTarget.f,sTarget.(ch).outlevel(kl,:),'-','linewidth',3,...
           'tag',['outgain_' ch '_tagetGain_' num2str(sTarget.levels(kl))]);

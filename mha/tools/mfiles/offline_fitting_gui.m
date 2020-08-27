@@ -130,7 +130,7 @@ while get_dir
     answer_outdir = questdlg('Do you want to abort the program?','Output Directory Error','Try Again','Abort','Abort');
     switch answer_outdir
       case 'Try Again'
-        continue;
+          continue;
       case 'Abort'
         error('Aborted by user.');
     end
