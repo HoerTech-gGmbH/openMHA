@@ -1,0 +1,22 @@
+# mahalia settings
+MAHALIA_LED="/sys/class/leds/beaglebone:green:heartbeat"
+
+# wifi settings
+# $SERIAL_NUMBER is replaced with the device serial number
+WIFI_SSID="Mahalia_\$SERIAL_NUMBER"
+
+# jack settings
+JACK_PRIORITY=90
+JACK_SOUNDCARD=hw:boneaudioext
+JACK_SAMPLERATE=16000
+JACK_BUFFER=24
+JACK_FRAMES=2
+JACK_OPTS=""
+
+# openMHA settings
+OPENMHA_INTERFACE="0.0.0.0"
+OPENMHA_PORT="33337"
+OPENMHA_OPTS="--daemon ?read:/etc/mahalia/generic-hearing-aid/index.cfg"
+
+HEADSET=non-amplified
+NOJACK=1

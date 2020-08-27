@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2011 2013 2015 HörTech gGmbH
-// Copyright © 2016 2017 2018 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -45,7 +45,7 @@
   distance to neighbour bands. The filter shapes can be rectangular,
   sawtooth or hanning windows, on different frequency scales (linear
   scale, bark scale, logarithmic scale). With rectangular shapes, the
-  filter edges are on the average between two center frequencies,
+  filter edges are on the mean frequency between two center frequencies,
   calculated on the given scale. To reach symmetric filters, the center
   frequencies must have equal distances on the given scale. See
   \ref filtershapefun and \ref freqscalefun for details.
@@ -208,11 +208,40 @@ namespace MHAOvlFilter {
 
 }
 
+/** Transform the test frequency into the relative position on the filter
+ * flank of the given frequency band.
+ * @param f Test frequency in units corresponding to the chosen frequency scale
+ * @param b Descriptor of a single filter bank band: E.g. contains center
+ *          frequencies of this and the two adjacent bands, and the
+ *          crossover ("edge") frequencies of this band.
+ * @param plateau For non-rectangular filter shapes, specifies what
+ *                frequency portion of the band around its center frequency
+ *                should have no attenuation applied.
+ * @pre 0 <= plateau <= 1
+ * @return The position of frequency f on the filter flank as follows:
+ *         A returned position of 0 means that f is equal to the band's
+ *         center frequency, or should be treated the same as the center
+ *         frequency (i.e. is within the band's plateau).  A returned
+ *         position of -1 means that f is <= the lowest frequency
+ *         of the filter flank (or is an even lower frequency). A returned
+ *         value of -0.5 means that f is equal to the lower edge frequency.
+ *         Positive returned values have equivalent meanings for the high
+ *         half of the filter flank.
+ */
 mha_real_t filtershapefun(mha_real_t f,
                           MHAOvlFilter::band_descriptor_t b,
                           mha_real_t plateau)
 {
     // lower cut-off frequency:
+    // If we have a plateau width of 0, then the lower cut-off frequency
+    // coincides with the center frequency of the lower frequency adjacent band,
+    // i.e. the filter flank would extend from that band's center frequency to
+    // this band's center frequency.
+    // If we have a plateau of width 1, then the filter flank would
+    // be narrowed to just the edge frequency, and we would effectively have
+    // a rectangular filter shape regardless of the selected filter shape.
+    // Plateau widths between 0 and 1 would see an increasingly narrower filter
+    // flank.
     mha_real_t f_co_l = (1-plateau)*b.cf_l + plateau*b.ef_l;
     // upper cut-off frequency:
     mha_real_t f_co_h = (1-plateau)*b.cf_h + plateau*b.ef_h;
@@ -432,13 +461,22 @@ MHAOvlFilter::fftfb_t::fftfb_t(MHAOvlFilter::fftfb_vars_t& par, unsigned int nff
      samplingrate(fs)
 {
     unsigned int ch, fr;
-    mha_real_t f;
     if(num_channels){
-        for(fr = 0; fr < num_frames; fr++){
-            f = symmetry_scale((mha_real_t) fr *fs / (mha_real_t) mha_min_1(nfft));
-            for(ch = 0; ch < num_channels; ch++) {
-                value(fr, ch) =
-                    shape(filtershapefun(f, bands[ch], par.plateau.data));
+        for(ch = 0; ch < num_channels; ch++) {// ch iterates over frequency-bands
+            bool flag_allzero{true};
+            for(fr = 0; fr < num_frames; fr++){// fr iterates over stft-bins
+                mha_real_t f{symmetry_scale((mha_real_t) fr *fs /
+                                            (mha_real_t) mha_min_1(nfft))};
+                value(fr, ch) = shape(filtershapefun(f, bands[ch], par.plateau.data));
+                if(value(fr,ch) != 0)
+                    flag_allzero = false;
+            }
+            if(flag_allzero && !par.flag_allow_empty_bands.data){
+                throw MHA_Error(__FILE__, __LINE__,
+                          "The current fftfilterbank settings cause the STFT-bin-specific "
+                          "gain factors that shape frequency band %u to be all zeros!\n"
+                          "Set the variable 'flag_allow_empty_bands' to 'yes' if you want "
+                          "to allow this behaviour.", ch);
             }
         }
         if( par.normalize.data ){
@@ -469,7 +507,6 @@ MHAOvlFilter::fftfb_t::fftfb_t(MHAOvlFilter::fftfb_vars_t& par, unsigned int nff
         par.shapes.data.push_back(svw);
     }
 }
-
 //**************************************************************
 //
 // Frequency spacing
@@ -487,6 +524,16 @@ void MHAOvlFilter::fspacing_t::ef2bands(std::vector<mha_real_t> vef)
     unsigned int k;
     for(k=0;k<bands.size();k++){
         bands[k].ef_l = symmetry_scale(vef[k]);
+        if    (vef[k] == 0 &&
+               bands[k].ef_l == -std::numeric_limits<mha_real_t>::infinity()) {
+            throw MHA_ErrorMsg("In edge frequency mode, an edge frequency "
+                               "of 0 Hz translates to -Inf on the "
+                               "logarithmic scales, which prevents "
+                               "reasonable filter shape computation.  "
+                               "Choose either non-zero edge frequencies, "
+                               "or a non-logarithmic frequency scale, or "
+                               "center frequency mode for the filterbank.");
+        }
         bands[k].ef_h = symmetry_scale(vef[k+1]);
         bands[k].cf = 0.5*(bands[k].ef_l + bands[k].ef_h);
         bands[k].low_side_flat = false;
@@ -543,7 +590,8 @@ void MHAOvlFilter::fspacing_t::fail_on_unique_fftbins()
     std::vector<mha_real_t> cf_hz = get_cf_hz();
     for(unsigned int k=1;k<fftbins.size();k++){
         if( fftbins[k] == fftbins[k-1] )
-            throw MHA_Error(__FILE__,__LINE__,"Band %d and %d share the same FFT bin %d (center frequencies: %g Hz and %g Hz).",
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Band %u and %u share the same FFT bin %u (center frequencies: %g Hz and %g Hz).",
                             k-1,k,fftbins[k],cf_hz[k-1],cf_hz[k]);
     }
 }
@@ -553,7 +601,8 @@ void MHAOvlFilter::fspacing_t::fail_on_nonmonotonic_cf()
     std::vector<mha_real_t> cfnative = get_cf_hz();
     for(unsigned int k=1;k<cfnative.size();k++){
         if( cfnative[k] <= cfnative[k-1] )
-            throw MHA_Error(__FILE__,__LINE__,"Non-monotonic center frequencies in band %d and %d: %g Hz and %g Hz.",
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Non-monotonic center frequencies in band %u and %u: %g Hz and %g Hz.",
                             k-1,k,cfnative[k-1],cfnative[k]);
     }
 }
@@ -610,7 +659,9 @@ MHAOvlFilter::fspacing_t::fspacing_t(const MHAOvlFilter::fftfb_vars_t& par, unsi
         cf2bands(vF);
     else{
         std::string model = par.ftype.data.get_value();
-        throw MHA_Error(__FILE__,__LINE__,"Programming error: Unsupported frequency spacing model \"%s\" (%d).",model.c_str(),par.ftype.data.get_index());
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Programming error: Unsupported frequency spacing model \"%s\" (%zu).",
+                        model.c_str(),par.ftype.data.get_index());
     }
     if( par.fail_on_nonmonotonic.data )
         fail_on_nonmonotonic_cf();
@@ -629,6 +680,7 @@ MHAOvlFilter::fftfb_vars_t::fftfb_vars_t(MHAParser::parser_t & p)
        normalize("normalize broadband output amplitude","no"),
        fail_on_nonmonotonic("Fail if frequency entries are non-monotonic (otherwise sort)","yes"),
        fail_on_unique_bins("Fail if center frequencies share the same FFT bin.","yes"),
+       flag_allow_empty_bands("Set true to allow bands where all STFT-bin-gains equal zero.","no"),
        cf("final center frequencies in Hz"),
        ef("final edge frequencies in Hz"),
        cLTASS("Bandwidth level correction for LTASS noise in dB"),
@@ -652,6 +704,7 @@ MHAOvlFilter::fftfb_vars_t::fftfb_vars_t(MHAParser::parser_t & p)
     p.insert_member(normalize);
     p.insert_member(fail_on_nonmonotonic);
     p.insert_member(fail_on_unique_bins);
+    p.insert_member(flag_allow_empty_bands);
     // monitors:
     p.insert_member(cf);
     p.insert_member(ef);
@@ -668,17 +721,17 @@ void MHAOvlFilter::fftfb_t::apply_gains(mha_spec_t * s_out, const mha_spec_t * s
     if(!gains)
         throw MHA_ErrorMsg("Invalid gain vector data.");
     if(s_in->num_frames != num_frames)
-        throw MHA_Error(__FILE__, __LINE__, "Input signal has %d bins, weights have %d.", s_in->num_frames, num_frames);
+        throw MHA_Error(__FILE__, __LINE__, "Input signal has %u bins, weights have %u.", s_in->num_frames, num_frames);
     if(s_out->num_frames != num_frames)
-        throw MHA_Error(__FILE__, __LINE__, "Output signal has %d bins, weights have %d.", s_out->num_frames, num_frames);
+        throw MHA_Error(__FILE__, __LINE__, "Output signal has %u bins, weights have %u.", s_out->num_frames, num_frames);
     if(s_in->num_channels != s_out->num_channels)
         throw MHA_Error(__FILE__, __LINE__,
-                        "Input signal has %d channels, output signal has %d.", s_in->num_channels, s_out->num_channels);
+                        "Input signal has %u channels, output signal has %u.", s_in->num_channels, s_out->num_channels);
     if(s_in->num_channels != gains->num_channels)
         throw MHA_Error(__FILE__, __LINE__,
-                        "Input signal has %d channels, gain vector has %d.", s_in->num_channels, gains->num_channels);
+                        "Input signal has %u channels, gain vector has %u.", s_in->num_channels, gains->num_channels);
     if(gains->num_frames != num_channels)
-        throw MHA_Error(__FILE__, __LINE__, "Gain vector has %d bands, filterbank has %d.", gains->num_frames, num_channels);
+        throw MHA_Error(__FILE__, __LINE__, "Gain vector has %u bands, filterbank has %u.", gains->num_frames, num_channels);
     unsigned int fr, ch, fb;
     mha_complex_t vIn, vOut;
     mha_real_t gain;
@@ -698,6 +751,7 @@ void MHAOvlFilter::fftfb_t::apply_gains(mha_spec_t * s_out, const mha_spec_t * s
     }
 }
 
+
 void MHAOvlFilter::fftfb_t::get_fbpower(mha_wave_t * fbpow, const mha_spec_t * s_in)
 {
     if(!fbpow)
@@ -707,24 +761,31 @@ void MHAOvlFilter::fftfb_t::get_fbpower(mha_wave_t * fbpow, const mha_spec_t * s
         throw MHA_ErrorMsg("Invalid input signal data.");
 
     if(fbpow->num_frames != num_channels)
-        throw MHA_Error(__FILE__, __LINE__, "The filterbank power vector has %d entries (bands), but the filterbank has %d bands.",
+        throw MHA_Error(__FILE__, __LINE__,
+                        "The filterbank power vector has %u entries (bands), but the filterbank has %u bands.",
                         fbpow->num_frames, num_channels);
     if(s_in->num_channels != fbpow->num_channels)
-        throw MHA_Error(__FILE__, __LINE__, "The input signal has %d channels, but the filterbank power vector has %d.",
+        throw MHA_Error(__FILE__, __LINE__,
+                        "The input signal has %u channels, but the filterbank power vector has %u.",
                         s_in->num_channels, fbpow->num_channels);
     if(s_in->num_frames != num_frames)
-        throw MHA_Error(__FILE__, __LINE__, "The input signal has %d bins, but the weights data has %d.", s_in->num_frames,
-                        num_frames);
+        throw MHA_Error(__FILE__, __LINE__,
+                        "The input signal has %u bins, but the weights data has %u.",
+                        s_in->num_frames, num_frames);
     unsigned int fr, ch, fb;
 
+    // No nyquist bin for odd fft lengths (one past last valid index)
+    const unsigned nyquist_index = (fftlen/2U) + (fftlen & 1U);
     for(fb = 0; fb < num_channels; fb++){
         for(ch = 0; ch < s_in->num_channels; ch++){
             ::value(fbpow, fb, ch) = 0;
             for(fr = bin1(fb); fr < bin2(fb); fr++){
-                ::value(fbpow, fb, ch) +=
+                float factor = 2; // account for negative frequencies
+                if (fr == 0 || fr == (nyquist_index)) {
+                    factor = 1; // no negative frequency for 0 and Nyquist
+                }
+                ::value(fbpow, fb, ch) += factor *
                     value(fr,fb) * value(fr,fb) * abs2(::value(s_in, fr, ch));
-                //(::value(s_in, fr, ch).re *::value(s_in, fr, ch).re +
-                //::value(s_in, fr, ch).im *::value(s_in, fr, ch).im);
             }
         }
     }
@@ -777,17 +838,18 @@ MHAOvlFilter::overlap_save_filterbank_t::vars_t::vars_t(MHAParser::parser_t & p)
 }
       
 
-MHAOvlFilter::overlap_save_filterbank_t::overlap_save_filterbank_t(MHAOvlFilter::overlap_save_filterbank_t::vars_t& fbpar, mhaconfig_t channelconfig_in)
+MHAOvlFilter::overlap_save_filterbank_t::overlap_save_filterbank_t(MHAOvlFilter::overlap_save_filterbank_t::vars_t& fbpar,
+                                                                   mhaconfig_t channelconfig_in)
     : MHAOvlFilter::fftfb_t(fbpar,fbpar.fftlen.data,channelconfig_in.srate),
       MHAFilter::fftfilterbank_t(channelconfig_in.fragsize,channelconfig_in.channels,nbands(),fbpar.fftlen.data),
       channelconfig_out_(channelconfig_in)
 {
     channelconfig_out_.channels *= nbands();
     unsigned int fftlen = (unsigned int)fbpar.fftlen.data;
-    //if( fftlen <= channelconfig_in.fragsize )
-    //  throw MHA_Error(__FILE__,__LINE__,"The FFT length (%d) must be at least fragsize (%d) to allow filter with length>1 (overlap_save_filterbank_t).",fftlen,channelconfig_in.fragsize);
     if( fftlen < channelconfig_in.fragsize )
-        throw MHA_Error(__FILE__,__LINE__,"Invalid FFT length (%d); must be at least fragsize (%d).",fftlen,channelconfig_in.fragsize);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Invalid FFT length (%u); must be at least fragsize (%u).",
+                        fftlen,channelconfig_in.fragsize);
     unsigned int FIRLength = fftlen-channelconfig_in.fragsize+1;
     MHASignal::spectrum_t FilterWeights(fftlen/2+1,nbands());
     MHASignal::waveform_t* FIRCoeffs;
@@ -929,7 +991,9 @@ std::vector<mha_real_t> MHAOvlFilter::fscale_bw_t::get_bw_hz() const
         for(unsigned int k=0;k<f.data.size();k++)
             bw_.push_back(bw.data[0]);
     }else{
-        throw MHA_Error(__FILE__,__LINE__,"Mismatching number of entries in f and bw vector (f: %d, bw: %d entries).",f.data.size(),bw.data.size());
+        throw MHA_Error(__FILE__,__LINE__,
+                        "Mismatching number of entries in f and bw vector (f: %zu, bw: %zu entries).",
+                        f.data.size(),bw.data.size());
     }
     for(unsigned int k=0;k<bw_.size();k++){
         mha_real_t f_l = unit.unit2hz(f.data[k]-0.5*bw_[k]);

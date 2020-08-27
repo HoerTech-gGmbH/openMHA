@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2009 2011 2012 2013 2016 HörTech gGmbH
+// Copyright © 2005 2006 2007 2009 2011 2013 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
 #include "mhafw_lib.h"
 #include "mha_parser.hh"
 #include "mha_error.hh"
-#include "mha.h"
+#include "mha.hh"
 #include "mha_algo_comm.hh"
 #include "mha_plugin.hh"
 #include "mha_signal.hh"
@@ -228,7 +228,10 @@ void fw_t::started()
 int fw_t::process(mha_wave_t* s_in,mha_wave_t** s_out)
 {
     try{
-        if( state != fw_running )
+        // The iolib may continue to send data after we got a stop request
+        // but before it processed it. As the state fw_stopping is active only
+        // during this time, we may suppress the error in that specific circumstance.
+        if( state != fw_running and state != fw_stopping )
             throw MHA_ErrorMsg("The framework is not in a running state.");
         if( !s_out )
             throw MHA_Error(__FILE__,__LINE__,"Output signal pointer is undefined.");
@@ -238,7 +241,8 @@ int fw_t::process(mha_wave_t* s_in,mha_wave_t** s_out)
     catch( MHA_Error& e ){
         proc_error_string.data = Getmsg(e);
 
-        printf("MHA Error: %s\n", proc_error_string.data.c_str());
+        fprintf(stderr, "MHA Error: %s\n", proc_error_string.data.c_str());
+        fflush(stderr);
 
         std::size_t found = proc_error_string.data.find("Fatal error");
         std::ofstream logfile;

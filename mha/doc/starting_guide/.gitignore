@@ -1,0 +1,11 @@
+*.aux
+*.idx
+*.log
+*.out
+*.pdf
+*.ind
+*.ilg
+*.toc
+plug_*
+*.wav
+*.gz

@@ -1,7 +1,11 @@
 mhadoc/
 mhaplugins/
+calibration/
+openMHA_calibration_manual.pdf
 openMHA_developer_manual.pdf
 openMHA_application_manual.pdf
 openMHA_gui_manual.pdf
+openMHA_starting_guide.pdf
 *_plugins*
 *_plugin.list
+*.log

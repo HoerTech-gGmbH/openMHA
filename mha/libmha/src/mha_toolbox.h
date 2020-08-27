@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2013 2016 HörTech gGmbH
+// Copyright © 2005 2013 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "mha.h"
+#include "mha.hh"
 #include "mha_error.hh"
 #include "mha_errno.h"
 #include "mha_parser.hh"

@@ -1,1 +1,1 @@
-libopenmha (VERSION)
+libopenmha (>=${FULLVERSIONALL}-gcc-5), libopenmha (<<${FULLVERSIONALL}-gcc-99), g++, make, libsndfile1-dev, libjack-jackd2-dev, jackd2, portaudio19-dev

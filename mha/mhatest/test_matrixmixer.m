@@ -19,30 +19,41 @@ function test_matrixmixer
   % A test signal.
   x = [1:1024]' / 8192;
   x = [x;flipud(x)];
+  inwav = 'test_matrixmixer_in.wav';
+  outwav = 'test_matrixmixer_out.wav';
 
   % first test: apply factor to a one-channel signal.
   mha = mha_start();
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
+  dsc.srate = 44100;
   dsc.instance = 'test_matrixmixer';
   dsc.nchannels_in = 1;
   dsc.mhalib = 'matrixmixer:m';
-  dsc.iolib = 'MHAIOParser';
+  dsc.iolib = 'MHAIOFile';
   dsc.mha.m = 0.5;
+  dsc.io.in = inwav;
+  dsc.io.out = outwav;
   mha_set(mha,'',dsc);
+  audiowrite(inwav, x, dsc.srate, 'BitsPerSample', 32);
+  unittest_teardown(@delete, inwav);
   mha_set(mha,'cmd','start');
-  y = mha_process_by_parser(mha, x')';
+  mha_set(mha,'cmd','release');
+  unittest_teardown(@delete, outwav);
+  y = audioread(outwav);
   assert_difference_below(0.5*x, y, 1e-6);
-  mha_set(mha,'cmd','stop');
 
   % second test: daisy-chain two matrixmixers.
   mha = mha_start();
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   clear dsc;
+  dsc.srate = 44100;
   dsc.instance = 'test_matrixmixer2';
-  % This test MHA processes 10 input channels
+  % In this test MHA processes 10 input channels.
   dsc.nchannels_in = 10;
   dsc.mhalib = 'mhachain';
-  dsc.iolib = 'MHAIOParser';
+  dsc.iolib = 'MHAIOFile';
+  dsc.io.in = inwav;
+  dsc.io.out = outwav;
   % We need to assign unique names to the 2 matrixmixers in the same chain 
   dsc.mha.algos = {'matrixmixer:m1','matrixmixer:m2'};
   % the first matrixmixer produces a single output channel
@@ -50,8 +61,10 @@ function test_matrixmixer
   % the second matrixmixer produces again 10 output channels
   dsc.mha.m2.m = [0.6; zeros(9,1)];
   mha_set(mha,'',dsc);
+  audiowrite(inwav, repmat(x,[1 10]), dsc.srate, 'BitsPerSample', 32);
   mha_set(mha,'cmd','start');
-  y = mha_process_by_parser(mha, repmat(x,[1 10])')';
+  mha_set(mha,'cmd','release');
+  y = audioread(outwav);
   assert_equal( size(x,1), size(y,1) );
   assert_equal( 10*size(x,2), size(y,2) );
   assert_difference_below(0.6*0.6*x, y(:,1), 1e-6);
@@ -60,15 +73,20 @@ function test_matrixmixer
   mha = mha_start();
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   clear dsc;
+  dsc.srate = 44100;
   dsc.instance = 'test_matrixmixer3';
   dsc.nchannels_in = 1;
   dsc.mhalib = 'mhachain';
-  dsc.iolib = 'MHAIOParser';
+  dsc.iolib = 'MHAIOFile';
+  dsc.io.in = inwav;
+  dsc.io.out = outwav;
   dsc.mha.algos = {'matrixmixer:m'};
   dsc.mha.m.m = [[0.5];[-0.2]];
   mha_set(mha,'',dsc);
+  audiowrite(inwav, x, dsc.srate, 'BitsPerSample', 32);
   mha_set(mha,'cmd','start');
-  y = mha_process_by_parser(mha, x')';
+  mha_set(mha,'cmd','release');
+  y = audioread(outwav);
   assert_equal( size(x,1), size(y,1) );
   assert_equal( 2*size(x,2), size(y,2) );
   assert_difference_below(0.5*x, y(:,1), 1e-6);
@@ -78,19 +96,25 @@ function test_matrixmixer
   mha = mha_start();
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   clear dsc;
+  dsc.srate = 44100;
   dsc.instance = 'test_matrixmixer4';
   dsc.nchannels_in = 1;
   dsc.mhalib = 'mhachain';
-  dsc.iolib = 'MHAIOParser';
+  dsc.iolib = 'MHAIOFile';
+  dsc.io.in = inwav;
+  dsc.io.out = outwav;
   dsc.mha.algos = {'wave2spec','matrixmixer:m','spec2wave'};
   dsc.mha.m.m = [0.5];
   mha_set(mha,'',dsc);
-  mha_set(mha,'cmd','start');
   fftlen = mha_get(mha, 'mha.wave2spec.fftlen');
   wndlen = mha_get(mha, 'mha.wave2spec.wndlen');
   fragsize = mha_get(mha, 'fragsize');
   ola_delay = fragsize + (fftlen - wndlen) / 2;
-  y = mha_process_by_parser(mha, [zeros(fftlen,1);x;zeros(ola_delay+fftlen,1)]' )';
+  audiowrite(inwav, [zeros(fftlen,1);x;zeros(ola_delay+fftlen,1)], ...
+             dsc.srate, 'BitsPerSample', 32);
+  mha_set(mha,'cmd','start');
+  mha_set(mha,'cmd','release');
+  y = audioread(outwav);
   y = y((fftlen + ola_delay+1):(end-fftlen));
   assert_difference_below(0.5*x, y, 1e-5);
 
@@ -98,19 +122,25 @@ function test_matrixmixer
   mha = mha_start();
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   clear dsc;
+  dsc.srate = 44100;
   dsc.instance = 'test_matrixmixer5';
   dsc.nchannels_in = 1;
   dsc.mhalib = 'mhachain';
-  dsc.iolib = 'MHAIOParser';
+  dsc.iolib = 'MHAIOFile';
+  dsc.io.in = inwav;
+  dsc.io.out = outwav;
   dsc.mha.algos = {'wave2spec','matrixmixer:m','spec2wave'};
   dsc.mha.m.m = [0.2 -0.5]'; % note: transposition operator
   mha_set(mha,'',dsc);
-  mha_set(mha,'cmd','start');
   fftlen = mha_get(mha, 'mha.wave2spec.fftlen');
   wndlen = mha_get(mha, 'mha.wave2spec.wndlen');
   fragsize = mha_get(mha, 'fragsize');
   ola_delay = fragsize + (fftlen - wndlen) / 2;
-  y = mha_process_by_parser(mha, [zeros(fftlen,1);x;zeros(ola_delay+fftlen,1)]')';
+  audiowrite(inwav, [zeros(fftlen,1);x;zeros(ola_delay+fftlen,1)], ...
+             dsc.srate, 'BitsPerSample', 32);
+  mha_set(mha,'cmd','start');
+  mha_set(mha,'cmd','release');
+  y = audioread(outwav);
   y = y((fftlen + ola_delay+1):(end-fftlen),:);
   assert_difference_below(0.2*x, y(:,1), 1e-5);
   assert_difference_below(-0.5*x, y(:,2), 1e-5);
@@ -119,19 +149,25 @@ function test_matrixmixer
   mha = mha_start();
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   clear dsc;
+  dsc.srate = 44100;
   dsc.instance = 'test_matrixmixer6';
   dsc.nchannels_in = 3;
   dsc.mhalib = 'mhachain';
-  dsc.iolib = 'MHAIOParser';
+  dsc.iolib = 'MHAIOFile';
+  dsc.io.in = inwav;
+  dsc.io.out = outwav;
   dsc.mha.algos = {'wave2spec','matrixmixer:m','spec2wave'};
   dsc.mha.m.m = [0.2, -0.5, 0.1];
   mha_set(mha,'',dsc);
-  mha_set(mha,'cmd','start');
   fftlen = mha_get(mha, 'mha.wave2spec.fftlen');
   wndlen = mha_get(mha, 'mha.wave2spec.wndlen');
   fragsize = mha_get(mha, 'fragsize');
   ola_delay = fragsize + (fftlen - wndlen) / 2;
-  y = mha_process_by_parser(mha, [zeros(fftlen,3);x,x,x;zeros(ola_delay+fftlen,3)]' )';
+  audiowrite(inwav, [zeros(fftlen,3);x,x,x;zeros(ola_delay+fftlen,3)], ...
+             dsc.srate, 'BitsPerSample', 32);
+  mha_set(mha,'cmd','start');
+  mha_set(mha,'cmd','release');
+  y = audioread(outwav);
   y = y((fftlen + ola_delay+1):(end-fftlen),:);
   assert_difference_below(-0.2*x, y, 1e-5);
 

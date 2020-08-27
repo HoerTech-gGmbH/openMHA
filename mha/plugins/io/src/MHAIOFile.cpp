@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2007 2009 2011 2013 2014 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2005 2006 2007 2009 2011 2013 2014 2015 2016 2017 HörTech gGmbH
+// Copyright © 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -106,7 +107,11 @@ void io_file_t::release()
 void io_file_t::prepare(int nch_in,int nch_out)
 {
     sf_in = NULL;
+    if( filename_input.data.size() == 0 )
+        throw MHA_Error(__FILE__,__LINE__,"Input filename not provided.");
     sf_out = NULL;
+    if( filename_output.data.size() == 0)
+        throw MHA_Error(__FILE__,__LINE__,"Output filename not provided.");
     s_in = NULL;
     s_file_in = NULL;
     total_read = 0;
@@ -115,6 +120,7 @@ void io_file_t::prepare(int nch_in,int nch_out)
         nchannels_out = nch_out;
         sf_in = sf_open( filename_input.data.c_str(), SFM_READ, &sfinf_in );
         nchannels_file_in = sfinf_in.channels;
+
         if( !sf_in )
             throw MHA_Error(__FILE__,__LINE__,"Unable to open \"%s\" for reading.",filename_input.data.c_str());
         if( strict_channel_match.data && (sfinf_in.channels != nchannels_in) )
@@ -125,7 +131,6 @@ void io_file_t::prepare(int nch_in,int nch_out)
                             sfinf_in.samplerate, samplerate);
         sfinf_out = sfinf_in;
         sfinf_out.channels = nchannels_out;
-        
         int count(0);
         sf_command(NULL, SFC_GET_FORMAT_SUBTYPE_COUNT, &count, sizeof(int));
         for(int k=0;k<count;k++){
@@ -140,8 +145,10 @@ void io_file_t::prepare(int nch_in,int nch_out)
         }
 
         sf_out = sf_open( filename_output.data.c_str(), SFM_WRITE, &sfinf_out );
+
         if( !sf_out )
             throw MHA_Error(__FILE__,__LINE__,"Unable to open \"%s\" for writing.",filename_output.data.c_str());
+        sf_command(sf_out, SFC_SET_CLIPPING, NULL, SF_TRUE);
         s_in = new MHASignal::waveform_t(fragsize,nchannels_in);
         s_file_in = new MHASignal::waveform_t(fragsize,nchannels_file_in);
         if( startsample.data )

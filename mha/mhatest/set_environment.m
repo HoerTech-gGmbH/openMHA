@@ -1,4 +1,20 @@
 function plugins = set_environment
+% Prepare this matlab/octave instance to start and communicate with MHA
+% This file is part of the HörTech Open Master Hearing Aid (openMHA)
+% Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
+%
+% openMHA is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Affero General Public License as published by
+% the Free Software Foundation, version 3 of the License.
+%
+% openMHA is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License, version 3 for more details.
+%
+% You should have received a copy of the GNU Affero General Public License, 
+% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+  
 git_dir = fileparts(fileparts(fileparts(mfilename('fullpath'))));
 config_mk = fopen([git_dir '/config.mk']);
 config_mk_contents = fscanf(config_mk,'%c',inf);
@@ -8,6 +24,7 @@ build_dir_line_index = strmatch('BUILD_DIR',config_mk_lines);
 build_dir_assignment = strsplit(config_mk_lines{build_dir_line_index(end)},'=');
 build_dir = strtrim(build_dir_assignment{2});
 
+global plugins;
 plugins = find_all_plugins(git_dir, build_dir);
 
 global MHA_INSTALL_DIR;
@@ -32,11 +49,10 @@ if ispc
   catch
   end
 else
-  ldpath = 'LD_LIBRARY_PATH';
-  if ismac()
-    ldpath = 'DYLD_LIBRARY_PATH';
+  if ~ismac()
+    ldpath = 'LD_LIBRARY_PATH';
+    setenv(ldpath,[getenv(ldpath) ':' git_dir '/mha/libmha/' build_dir]);
   end
-  setenv(ldpath,[getenv(ldpath) ':' git_dir '/mha/libmha/' build_dir]);
   dirs = {};
   for p = plugins
       dirs = [dirs, {fileparts(p{1})}];

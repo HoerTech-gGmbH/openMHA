@@ -1,6 +1,8 @@
+% This function tests plugin resampling
+%
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2018 HörTech gGmbH
-%
+
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
 % the Free Software Foundation, version 3 of the License.
@@ -13,7 +15,6 @@
 % You should have received a copy of the GNU Affero General Public License, 
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-% This function tests plugin resampling
 function test_resampling
   dsc.instance = 'test_resampling';
     dsc.nchannels_in = 1;
@@ -42,3 +43,8 @@ function test_resampling
     assert_difference_below(input_signal(15:806), output_signal(92+14:897), 4e-5);
 end
 
+% Local Variables:
+% mode: octave
+% coding: utf-8-unix
+% indent-tabs-mode: nil
+% End:

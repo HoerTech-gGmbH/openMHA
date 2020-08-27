@@ -17,13 +17,16 @@
 
 \section{The \mhad{}}\label{sec:linuxmhaserver}\label{sec:frameworks}
 
-The \mhad{} ('mha' on \Linux{}) provides a control interface for 
-the configuration and connects to the audio abstraction layer via the \mhad{} IO modules.
+The \mhad{} ('mha' on \Linux{} and \macOS{}, 'mha.exe' on \Windows{})
+provides a control interface for the configuration and connects to the audio
+abstraction layer via the \mhad{} IO modules.
 %
-The text based user interface is available through a TCP network
-socket.
+The text-based user interface is available through a TCP network
+socket. It can also be used through standard input and output of the
+\mhad command line application when it is started started with the
+command line option \texttt{--interactive}.
 %
-External network clients, e.g.\ telnet, Netcat or the \Octave{}/\Matlab{} control
+External network clients, e.g.\ telnet, netcat, putty, or the \Octave{}/\Matlab{} control
 interface function 'mhactl' (see \secpageref{sec:mhactl}) can be used
 to access this interface.
 %
@@ -58,6 +61,9 @@ greeting text or error messages.
   this TCP port on the localhost after it has established its own TCP server 
   socket, and announces its process ID and the TCP server port in use, and
   closes the connection again. 
+\item\verb!--interactive!\\Enable interpretation of MHA commands given on
+  standard input. Responses will be printed to standard output. \mha{} will
+  terminate when the input stream on standard input is closed.
 \item\verb!--interface=if | -i if!\\Set the network interface to which
 the \mhad{} should bind (default: 127.0.0.1).
 \item\verb!--daemon | -d!\\Start the \mhad{} in daemon
@@ -89,9 +95,6 @@ start of each session.
 
 \verb!mha --daemon ?read:defaults.cfg! will read
 configuration file named \emph{default.cfg} for each session.
-%
-Clients for the \mhad{} are the \Octave{}/\Matlab{} tool 'mhactl' and any
-telnet client (not part of the distribution).
 
 The \mhad{} searches for \mha{} plugins in the system library paths, or in
 the directories given in the environment variable {\tt
@@ -141,10 +144,10 @@ For historic reasons, the variable mhalib can also not be changed
 after initial assignment, but this will most likely be relaxed in a
 future release.
 %
-When the MHA is in prepared state, the number of input channels
+When the \mha{} is in prepared state, the number of input channels
 \texttt{nchannels\_in} cannot be changed.
 %
-When an MHA variable cannot be changed, then it is "locked", and
+When an \mha{} variable cannot be changed, then it is "locked", and
 attempts to write to it will cause an error.
 
 \begin{description}
@@ -213,19 +216,34 @@ value \verb!nop!\footnote{%
 \subsection{Audio abstraction layer}%
 \label{sec:audioabstraction}
 
-The audio abstraction layer connects the audio backbone, i.e.,
+The audio abstraction layer connects the audio backbone, e.g.,
 JACK (see \secpageref{sec:jack}) or audio files, with the \mhad{}.
 %
-This layer consists of two modules: 'MHAIOJack' for low delay real
-time processing with the JACK audio server (see \secpageref{sec:jack})
-on \Linux{} and 'MHAIOFile' for file to file processing.
+Different modules are available to connect to sound input and output:
+'MHAIOJack' for low delay real time processing with the JACK audio server
+(see \secpageref{sec:jack}) on \Linux{},
+and 'MHAIOFile' for file to file processing.
 
-\paragraph{The 'MHAIOJack' audio IO module}%
-\index{MHAIOJack}%
+'MHAIOJackdb' ('db' stands for double buffered) works simimlar to 'MHAIOJack',
+but permits that the Jack server's buffer size is a multiple of the \mha's
+buffer size.
+
+'MHAIOPortaudio' uses the Portaudio library to connect to different
+platform-specific audio APIs.
+
+'MHAIOalsa' uses the Linux alsa sound API directly for usage scenarios on
+mobile hardware where running a Jack audio server might need too much CPU.
+
+'MHAIOTCP' and 'MHAIOParser' receive and send audio over network connections
+(one as binary data, the other as text), and are mainly used for
+testing purposes.
+
+\paragraph{The 'MHAIOJack' and 'MHAIOJackdb' audio IO modules}%
+\index{MHAIOJack}\index{MHAIOJackdb}%
 \index{Jack Audio Connection Kit}%
 
 The module 'MHAIOJack' provides communication with the JACK audio
-server.
+server (see \secpageref{sec:jack}).
 %
 When the \mhad{} is prepared for processing, this module connects to a
 running JACK server and validates its parameters. The input and output
@@ -233,13 +251,20 @@ ports of the MHA can be connected to any other JACK ports through the
 \mha{} configuration (see below) or externally. Please note, that
 MHAIOJack currently supports only fixed sample rates and fragment
 sizes. Changing the fragment size of JACK while processing will stop
-the \mha{} processing thread. 
+the \mha{} processing thread. If sample rates are required which are not
+provided by JACK, the {\tt downsample} and {\tt upsample} plugins, or
+the {\tt resampling} plugin can be used to change the sampling rate inside
+the \mha{}. The module 'MHAIOJackdb' allows configuration of MHA fragment
+sizes which are a integer fragment of the actual Jack fragment size,
+e.g., Jack runs with a fragment size of 1024 samples, but the MHA is
+confgured with 64 samples.  Other fragment sizes can be realised with
+the double buffering plugin {\tt db}.
 
 Variables of the 'MHAIOJack' module:
 
 \begin{description}
 \mhavardesc{name}{Name of the JACK client. This variable only needs to
-  be modified if multiple instances of MHA should run simultaneously.}
+  be modified if multiple instances of \mha{} should run simultaneously.}
 
 \mhavardesc{con\_in}{Connection list for input \mha{} ports with one
   entry for each port, e.g.\ {\tt con\_in = [alsa\_pcm:capture\_1
@@ -280,6 +305,9 @@ releasing the \mhad{}. The file and data format of the output file
 is inherited from the input file, e.g.\ if the input file is a 32 bit
 WAVE file, also the output file will be. The plugin supports most
 commonly used file formats.
+
+Nota bene: When writing to WAVE files in integer formats MHAIOFile clips all
+values above +1.0 and below -1.0. To avoid clipping use floating point WAVE files.
 
 The variables of 'MHAIOFile' are:
 

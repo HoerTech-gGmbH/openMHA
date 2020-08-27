@@ -114,6 +114,7 @@ namespace MHAOvlFilter {
         MHAParser::bool_t normalize;    //!< Normalize sum of channels.
         MHAParser::bool_t fail_on_nonmonotonic; //!< Fail if frequency entries are non-monotonic (otherwise sort)
         MHAParser::bool_t fail_on_unique_bins; //!< Fail if center frequencies share the same FFT bin.
+        MHAParser::bool_t flag_allow_empty_bands; //!< Allow that frequency bands contain only zeros.
         MHAParser::vfloat_mon_t cf; //!< Final center frequencies in Hz.
         MHAParser::vfloat_mon_t ef; //!< Final edge frequencies in Hz.
         MHAParser::vfloat_mon_t cLTASS; //!< Bandwidth correction for LTASS noise (level of 0 dB RMS LTASS noise)

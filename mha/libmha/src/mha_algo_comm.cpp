@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2005 2013 2016 2018 HörTech gGmbH
+// Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2013 2016 HörTech gGmbH
+// Copyright © 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -220,12 +221,27 @@ initialisation time to the constructor of each plugin
 class \ref MHAPlugin::plugin_t "constructor".  This handle
 contains a reference handle, \ref algo_comm_t::handle, and a number of
 function pointers, \ref algo_comm_t::insert_var etc.. An algorithm
-communication variable is an object of type \ref comm_var_t.
+communication variable is accessed through objects of type \ref comm_var_t.
 
-For AC variables of numeric types, \mha Plugins for conversion into
-parsable monitor variables, acmon, and storage into Matlab or
-text files, acsave, are available.
+For \mha users, \mha provides generic plugins to inspect and store
+AC variables of numeric types:
+ - plugin acmon mirrors AC variables of numeric types in readonly configuration
+   variables (called monitors),
+ - plugin acsave stores AC variables into Matlab or text files.
+Plugin developers may also want to use these plugins to inspect any AC
+variables published by their own plugins during testing.
 
+As a developer of \mha plugin(s), please observe the following best practices
+in plugins using AC variables:
+  -# Plugins publishing AC variables:
+     - insert all variables during prepare()
+     - re-insert all variables during each process()
+     - memory used for storing AC variable values is allocated and owned
+       by the publishing plugin and needs to remain valid until the next
+       call to process() or release() of the same plugin.
+  -# Plugins consuming AC variable published by other plugins:
+     - poll required variables (and check validity) again during each
+       process() before accessing their values.
 */
 
 #define AC_SUCCESS 0
@@ -439,6 +455,26 @@ int MHAKernel::algo_comm_class_t::insert_var_float(void* handle,const char* name
         p->local_insert_var(name,var);
         return AC_SUCCESS;
     }
+    catch(MHA_Error& e){
+        (void)e;
+        return AC_INVALID_NAME;
+    }
+}
+
+int MHAKernel::algo_comm_class_t::insert_var_vfloat(void* handle,const char* name,std::vector<float>& ivar)
+{
+    try{
+        algo_comm_class_t* p = algo_comm_safe_cast(handle);
+        if(!p)
+            return AC_INVALID_HANDLE;
+        comm_var_t var;
+        var.data_type = MHA_AC_FLOAT;
+        var.num_entries = ivar.size();
+        var.stride = 1;
+        var.data = static_cast<void*>(const_cast<float*>(ivar.data()));
+        p->local_insert_var(name,var);
+        return AC_SUCCESS;
+    }
     catch(MHA_Error&e){
         (void)e;
         return AC_INVALID_NAME;
@@ -572,7 +608,9 @@ mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)
     if( err )
         throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
     if( (var.stride == 0) || (var.stride > var.num_entries) )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%d).",n.c_str(),var.stride);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The variable \"%s\" has invalid stride settings (%u).",
+                        n.c_str(),var.stride);
     if( var.num_entries == 0 )
         throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" contains no data.",n.c_str());
     mha_spec_t s;
@@ -580,7 +618,9 @@ mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)
     s.num_frames = var.stride;
     s.num_channels = var.num_entries / var.stride;
     if( s.num_channels * s.num_frames != var.num_entries )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%d): Not an integer fraction of entries.",n.c_str(),var.stride);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The variable \"%s\" has invalid stride settings (%u): Not an integer fraction of entries.",
+                        n.c_str(),var.stride);
     if( var.data_type != MHA_AC_MHACOMPLEX )
         throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid data type.",n.c_str());
     s.buf = (mha_complex_t*)var.data;
@@ -594,7 +634,7 @@ mha_wave_t MHA_AC::get_var_waveform(algo_comm_t ac,const std::string& n)
     if( err )
         throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
     if( (var.stride == 0) || (var.stride > var.num_entries) )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%d).",n.c_str(),var.stride);
+        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%u).",n.c_str(),var.stride);
     if( var.num_entries == 0 )
         throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" contains no data.",n.c_str());
     mha_wave_t s;
@@ -602,7 +642,9 @@ mha_wave_t MHA_AC::get_var_waveform(algo_comm_t ac,const std::string& n)
     s.num_channels = var.stride;
     s.num_frames = var.num_entries / var.stride;
     if( s.num_channels * s.num_frames != var.num_entries )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%d): Not an integer fraction of entries.",n.c_str(),var.stride);
+        throw MHA_Error(__FILE__,__LINE__,
+                        "The variable \"%s\" has invalid stride settings (%u): Not an integer fraction of entries.",
+                        n.c_str(),var.stride);
     if( var.data_type == MHA_AC_MHAREAL ){
         s.buf = (mha_real_t*)var.data;
         return s;
@@ -638,7 +680,7 @@ std::vector<float> MHA_AC::get_var_vfloat(algo_comm_t ac,const std::string& name
     if (cv.data_type != MHA_AC_MHAREAL) {
         throw MHA_Error(__FILE__,__LINE__,
                         "Algorithm communication variable %s has unexpected"
-                        " data type %d", name.c_str(), cv.data_type);
+                        " data type %u", name.c_str(), cv.data_type);
     }
     std::vector<float> vfloat;
     vfloat.resize(cv.num_entries);
@@ -850,7 +892,7 @@ void MHA_AC::ac2matrix_helper_t::getvar()
         break;
     default:
         throw MHA_Error(__FILE__,__LINE__,
-                        "Unsupported AC data format (%d).",
+                        "Unsupported AC data format (%u).",
                         acvar.data_type);
     }
 }
@@ -911,7 +953,7 @@ MHA_AC::acspace2matrix_t& MHA_AC::acspace2matrix_t::operator=(const MHA_AC::acsp
 {
     if( src.len != len )
         throw MHA_Error(__FILE__,__LINE__,
-                        "left value has %d entries, right value has %d.",
+                        "left value has %u entries, right value has %u.",
                         len,src.len);
     for(unsigned int k=0;k<len;k++)
         *data[k] = *(src.data[k]);

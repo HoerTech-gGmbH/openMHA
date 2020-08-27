@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2009 2013 2016 2017 HörTech gGmbH
+// Copyright © 2009 2013 2016 2017 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -97,7 +97,7 @@ void gaintable_t::update(std::vector<std::vector<std::vector<mha_real_t> > > new
 {
     if( data.size() != newGain.size() )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The gain table size cannot change (expected %d channels, got %d).",
+                        "The gain table size cannot change (expected %zu channels, got %zu).",
                         data.size(),newGain.size());
     for(unsigned int ch=0;ch<num_channels;ch++){
         if( isempty(newGain[ch]) ){
@@ -108,12 +108,12 @@ void gaintable_t::update(std::vector<std::vector<std::vector<mha_real_t> > > new
         }
         if( data[ch].size() != newGain[ch].size() )
             throw MHA_Error(__FILE__,__LINE__,
-                            "The gain table size cannot change (expected %d frequencies in channel %d, got %d).",
+                            "The gain table size cannot change (expected %zu frequencies in channel %u, got %zu).",
                             data[ch].size(),ch,newGain[ch].size());
         for( unsigned int kf=0;kf<num_F;kf++){
             if( data[ch][kf].size() != newGain[ch][kf].size() )
                 throw MHA_Error(__FILE__,__LINE__,
-                                "The gain table size cannot change (expected %d levels in band %d channel %d, got %d).",
+                                "The gain table size cannot change (expected %zu levels in band %u channel %u, got %zu).",
                                 data[ch][kf].size(),kf,ch,newGain[ch][kf].size());
         }
     }

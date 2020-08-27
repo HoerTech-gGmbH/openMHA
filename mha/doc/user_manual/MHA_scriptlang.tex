@@ -1,5 +1,5 @@
 %%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
-%%% Copyright © 2005 2006 2007 2008 2009 2011 2013 2017 2018 HörTech gGmbH
+%%% Copyright © 2005 2006 2007 2008 2009 2011 2013 2017 2018 2019 HörTech gGmbH
 %%%
 %%% openMHA is free software: you can redistribute it and/or modify
 %%% it under the terms of the GNU Affero General Public License as published by
@@ -181,6 +181,20 @@ upper boundary.
 For keyword list variables, the range is simply a space separated list of valid
 entries.
 
+\subsubsection{Physical units}\index{physical units}
+
+Numeric variables that describe physical facts like a distance or a
+time duration need to be given in some physical unit. The default
+physical units in \mha are the SI units, e.g. seconds for a time
+value, meters for a length, kilogramms for a mass, Newton for a force,
+Pascal for a pressure, square meters for an area, meters per second
+for a velocity, Hertz for a frequency. Sometimes, configuration
+variables differ from this convention, in this case, the description
+of the variable will contain the unit to use.
+
+When assigning or reading a configuration variable, only the numerical
+value is given, the physical unit's name is never appended to the number.
+
 \subsubsection{Variable Substitution and Environment
   Variables}\index{substitution}\index{environment variable}\index{variable!environment}
 
@@ -202,19 +216,57 @@ the substitution.
 
 \subsection{Communication between \mha{} Plugins}\index{AC variable}\index{variable!AC}\index{communication}
 
-Interaction of algorithms is a major issue in hearing aid
-development. In order to systematically analyse and control
-interaction problems, the \mha{} chain plugin 'mhachain' provides 
-a mechanism for sharing parameters and states between algorithms. 
-Any algorithm plugin can register selected AC vars (any data segment) to be public
-within one signal processing chain. Other algorithms within the same 
-processing chain can read and modify these AC vars which are accessed by name. Type and dimension are checked on each access. 
-This concept does not only provide analysis of interaction aspects 
-but also modular combination of signal processing strategies, 
-e.g.\ separation of noise estimators and noise reduction strategies 
-in different logical processing stages. A detailed description of 
-the programming interface can be found in the \DeveloperManual.
+Signal processing plugins in \mha{} often process the audio signal in a signal
+processing chain, as provided by the \mha{} chain plugin 'mhachain'.
+%
+These plugins already communicate with each other such that the output
+signal of one plugin is processed as the input signal to the next plugin in
+the chain, while the audio signal can be either time-domain waveform data or
+spectral-domain short-time fourier transform data.
 
+Some algorithms can be implemented as a combination of several plugins but then
+require more data to be shared between plugins than just the current audio
+signal.
+%
+\mha{} supports this by providing a mechanism to share
+any type of additional data between plugins in the form of algorithm
+communication variables (AC vars or AC variables).
+
+Some plugins provided with the \mha{} create AC variables, while
+other plugins can be configured to make use of AC variables created by
+other plugins. For example
+\begin{itemize}
+\item 
+  the 'rmslevel' plugin publishes the measured sound levels as AC vars,
+\item
+  the 'noise\_psd\_estimator' plugin estimates the noise power spectral density
+  and publishes it as an AC variable,
+\item
+  the 'smooth\_cepstrum' plugin uses the noise power spectral density from an
+  AC var provided by another plugin to reduce noise in the signal.
+\item
+  the 'acmon' and 'acsave' plugins can be used to export AC variables from the
+  \mha{} by mirroring them in parser monitors or by saving them to
+  a file on disk.
+\end{itemize}
+
+AC variables are identified by a name.
+%
+The naming convention for AC variables is: \\
+\textit{creator}\_\textit{varname} \\
+where \textit{creator} is the configured name\footnote{
+  Refer to the detailed description of plugin mhachain in the plugin manual for
+  the description of "configured name".
+}  of the plugin that creates this AC
+variable, and \textit{varname} describes the content or purpose of the variable.
+Plugins that create only a single AC variable may also name that variable like
+their configured name only.
+
+The above rules are conventions for plugin developers and not enforced by the
+\mha{} therefore you may find plugins that do not adhere to this convention.
+
+The command line tool \texttt{analysemhaplugin} can be used to find names of
+AC variables created by a plugin.
 
 %%% Local Variables: 
 %%% mode: latex

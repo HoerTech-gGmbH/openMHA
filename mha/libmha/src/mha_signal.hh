@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
-// Copyright © 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2013 2014 2016 2017 2018 2019 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 #ifndef __MHA_SIGNAL_H__
 #define __MHA_SIGNAL_H__
 
-#include "mha.h"
+#include "mha.hh"
 #include "mha_error.hh"
 #include <limits>
 #include <string>
@@ -31,6 +31,7 @@
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <type_traits>
 #include "mha_parser.hh"
 
 // some platforms do not define M_PI in <cmath>
@@ -43,9 +44,7 @@
 namespace MHASignal {
 
     /**
-       \ingroup mhasignal
        \brief Apply a function to each element of a mha_wave_t.
-       
        \param s Pointer to a mha_wave_t structure
        \param fun Function to be applied (one argument)
     */
@@ -56,17 +55,34 @@ namespace MHASignal {
     }
 
     /**
-       \ingroup mhasignal
        \brief Conversion from linear scale to dB (no SPL reference)
-       \param x Linear input.
+       \param x Linear input
+       \param eps minimum linear value (if x < eps --> convert eps instead), eps < 0 not allowed
+       \return NaN if x < 0 (log not defined for negative)
+       \throw MHA_Error if eps < 0
     */
-    inline mha_real_t lin2db(mha_real_t x)
+    inline mha_real_t lin2db(mha_real_t x, mha_real_t eps)
     {
-        return 20.0f*log10f(x);
+        if (eps < 0)
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Minimum linear value eps < 0 is not allowed!");
+        if (x < 0)
+            return std::numeric_limits<float>::quiet_NaN(); //log not defined for negative
+        else
+            return 20.0f * log10f(std::max(x,eps));
     }
 
     /**
-       \ingroup mhasignal
+       \brief Conversion from linear scale to dB (no SPL reference)
+       \param x Linear input.
+       \return NaN if x < 0 (log not defined for negative)
+    */
+    inline mha_real_t lin2db(mha_real_t x)
+    {
+        return lin2db(x, 0);
+    }
+
+    /**
        \brief Conversion from dB scale to linear (no SPL reference)
        \param x dB input.
     */
@@ -76,29 +92,52 @@ namespace MHASignal {
     }
 
     /**
-       \ingroup mhasignal
+       \brief conversion from squared values to dB (no SPL reference)
+       \param x squared value input
+       \param eps minimum squared value (if x < eps --> convert eps instead), eps < 0 not allowed
+       \return NaN if x < 0 (log not defined for negative)
+       \throw MHA_Error if eps < 0
+    */
+    inline mha_real_t sq2db(mha_real_t x, mha_real_t eps = 0.0f)
+    {
+        if (eps < 0)
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Minimum squared value eps < 0 is not allowed!");
+        if (x < 0)
+            return std::numeric_limits<float>::quiet_NaN(); //log not defined for negative
+        else
+            return 10.0f * log10f(std::max(x,eps));
+    }
+
+    /**
+       \brief conversion from dB to squared values (no SPL reference)
+       \param x dB input
+    */
+    inline mha_real_t db2sq(mha_real_t x)
+    {
+        return powf(10.0f, 0.1f * x);
+    }
+
+
+    /**
        \brief Conversion from linear Pascal scale to dB SPL
-       \param x Linear input.
+       \param x Linear input
+       \param eps minimum pascal value (if x < eps --> convert eps instead), eps < 0 not allowed
+       \return NaN if x < 0 (log not defined for negative)
+       \throw MHA_Error if eps < 0
     */
-    inline mha_real_t pa2dbspl(mha_real_t x)
+    inline mha_real_t pa2dbspl(mha_real_t x, mha_real_t eps = 0.0f)
     {
-        return 20.0f*log10f(50000.0f*std::max(1e-10f,x));
-    }
-    
-    /**
-       \ingroup mhasignal
-       \brief Conversion from squared Pascal scale to dB SPL
-       \param x squared pascal input
-       \param eps minimum squared-pascal value
-    */
-    inline mha_real_t pa22dbspl(mha_real_t x, mha_real_t eps = 1e-20f)
-    {
-        return 10.0f*log10f(2500000000.0f*std::max(eps,x));
+        if (eps < 0)
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Minimum pascal value eps < 0 is not allowed!");
+        if (x < 0)
+            return std::numeric_limits<float>::quiet_NaN(); //log not defined for negative
+        else
+            return 20.0f * log10f(5e+4f * std::max(x,eps));
     }
 
-
     /**
-       \ingroup mhasignal
        \brief Conversion from dB SPL to linear Pascal scale
        \param x Linear input.
     */
@@ -107,9 +146,34 @@ namespace MHASignal {
         return db2lin(x)*2e-5f;
     }
 
+    /**
+       \brief Conversion from squared Pascal scale to dB SPL
+       \param x squared pascal input
+       \param eps minimum squared-pascal value (if x < eps --> convert eps instead), eps < 0 not allowed
+       \return NaN if x < 0 (log not defined for negative)
+       \throw MHA_Error if eps < 0
+    */
+    inline mha_real_t pa22dbspl(mha_real_t x, mha_real_t eps = 0.0f)
+    {
+        if (eps < 0)
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Minimum squared pascal value eps < 0 is not allowed!");
+        if (x < 0)
+            return std::numeric_limits<float>::quiet_NaN(); //log not defined for negative
+        else
+            return 10.0f * log10f(25e+8f * std::max(x,eps));
+    }
 
     /**
-       \ingroup mhasignal
+       \brief conversion from dB SPL to squared Pascal scale
+       \param x dB SPL input
+    */
+     inline mha_real_t dbspl2pa2(mha_real_t x)
+    {
+        return db2sq(x) * 400e-12f;
+    }
+
+    /**
        \brief conversion from samples to seconds
        \param n     number of samples
        \param srate sampling rate / Hz
@@ -120,7 +184,6 @@ namespace MHASignal {
     }
 
     /**
-       \ingroup mhasignal
        \brief conversion from seconds to samples
        \param sec   time in seconds
        \param srate sampling rate / Hz
@@ -143,6 +206,15 @@ namespace MHASignal {
                                unsigned   fftlen,
                                mha_real_t srate)
     {
+        if (bin < 0) {
+            throw MHA_Error(__FILE__,__LINE__,
+                            "frequency for negative bin %f requested", bin);
+        }
+        if (bin*2 > fftlen) {
+            throw MHA_Error(__FILE__,__LINE__,
+                            "frequency for trans-nyquist bin %f "
+                            "(fftlen=%u) requested", bin, fftlen);
+        }
         return bin / fftlen * srate;
     }
 
@@ -158,6 +230,16 @@ namespace MHASignal {
                                 unsigned   fftlen,
                                 mha_real_t srate)
     {
+        if (freq < 0) {
+            throw MHA_Error(__FILE__,__LINE__,
+                            "bin index for negative frequency %f requested",
+                            freq);
+        }
+        if (freq > srate / 2) {
+            throw MHA_Error(__FILE__,__LINE__,
+                            "bin index for trans-nyquist frequency %f "
+                            "(samplint rate=%f) requested", freq, srate);
+        }
         return freq * fftlen / srate;
     }
     
@@ -249,7 +331,7 @@ namespace MHASignal {
         if( vec.size() == 1)
             vec.resize(n,vec[vec.size()-1]);
         if( vec.size() != n )
-            throw MHA_Error(__FILE__,__LINE__,"Invalid vector length (expected 1 or %d, got %d).",
+            throw MHA_Error(__FILE__,__LINE__,"Invalid vector length (expected 1 or %u, got %zu).",
                             n,vec.size());
         return vec;
     }
@@ -658,6 +740,11 @@ namespace MHASignal {
     /**
        \ingroup mhasignal
        \brief Return RMS level of a spectrum channel
+
+       Computes the RMS level of the signal in Pascal in the given channel.
+
+       Takes into account the the negative frequency bins that are not stored
+       (\ref clb).
        \param s Input spectrum
        \param channel Channel number to be tested
        \param fftlen FFT length (to correctly count the level of the Nyquist bin)
@@ -669,17 +756,21 @@ namespace MHASignal {
        \brief Colored spectrum intensity
        
        computes the squared sum of the spectrum after filtering with the
-       frequency response
+       frequency response. Takes into account the negative frequency bins
+       that are not stored (\ref clb).
        \param s Input spectrum
        \param channel Channel number to be tested
        \param fftlen FFT length (to correctly count the level of the Nyquist bin)
-       \param sqfreq_response A squared weighting factor for every fft bin.
+       \param sqfreq_response An array with one squared weighting factor for every
+                              fft bin. Array length must be equal to s->num_frames.
+                              nullptr can be given for equal weighting of all
+                              frequencies.
        \return sum of squares. Root of this is the colored level in Pa
     */
     mha_real_t colored_intensity(const mha_spec_t& s,
                                  unsigned int channel,
                                  unsigned int fftlen,
-                                 mha_real_t sqfreq_response[]);
+                                 mha_real_t * sqfreq_response = nullptr);
     /**
        \ingroup mhasignal
        \brief Find maximal absolute value
@@ -795,6 +886,8 @@ namespace MHASignal {
         waveform_t(const MHASignal::waveform_t& src);
         waveform_t(const std::vector<mha_real_t>& src);
         virtual ~waveform_t(void);
+        std::vector<mha_real_t> flatten() const;
+        explicit operator std::vector<mha_real_t>() const;
         inline void operator=(const mha_real_t& v){assign(v);};
         inline mha_real_t& operator[](unsigned int k) {return buf[k];};
         inline const mha_real_t& operator[](unsigned int k) const {return buf[k];};
@@ -2285,10 +2378,7 @@ namespace MHASignal {
        num_channels must be exchanged in dest.
      */
     void copy_permuted(mha_wave_t* dest,const mha_wave_t* src);
-
-
 }
-
 #endif
 
 // Local Variables:

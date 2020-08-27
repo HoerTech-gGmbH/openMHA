@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2007 2013 2016 2017 HörTech gGmbH
+// Copyright © 2006 2007 2013 2016 2017 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -101,7 +101,7 @@ mha_wave_t* MHAMultiSrc::waveform_t::update(mha_wave_t* s)
     mha_wave_t win;
     if( num_channels != cfg->size() )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Mismatching dimension: route data has %d entries, output signal %d.",
+                        "Mismatching dimension: route data has %zu entries, output signal %u.",
                         cfg->size(),num_channels);
     for(ch=0;ch<num_channels;ch++){
         win = *s;
@@ -109,11 +109,11 @@ mha_wave_t* MHAMultiSrc::waveform_t::update(mha_wave_t* s)
             win = MHA_AC::get_var_waveform( MHAMultiSrc::base_t::ac, (*cfg)[ch].name );
         if( win.num_frames != num_frames )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid number of frames in source \"%s\" (got %d, expected %d)",
+                            "Invalid number of frames in source \"%s\" (got %u, expected %u)",
                             (*cfg)[ch].name.c_str(),win.num_frames,num_frames);
         if( ((*cfg)[ch].channel >= (int)win.num_channels) || ((*cfg)[ch].channel < 0) )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Source channel is out of range (%s, %d channels available).",
+                            "Source channel is out of range (%s, %u channels available).",
                             (*cfg)[ch].name.c_str(),win.num_channels);
         for(k=0;k<num_frames;k++)
             value(k,ch) = ::value(win,k,(*cfg)[ch].channel);
@@ -146,7 +146,7 @@ mha_spec_t* MHAMultiSrc::spectrum_t::update(mha_spec_t* s)
     mha_spec_t win;
     if( num_channels != cfg->size() )
         throw MHA_Error(__FILE__,__LINE__,
-                        "Mismatching dimension: route data has %d entries, output signal %d.",
+                        "Mismatching dimension: route data has %zu entries, output signal %u.",
                         cfg->size(),num_channels);
     for(ch=0;ch<num_channels;ch++){
         win = *s;
@@ -154,11 +154,11 @@ mha_spec_t* MHAMultiSrc::spectrum_t::update(mha_spec_t* s)
             win = MHA_AC::get_var_spectrum( MHAMultiSrc::base_t::ac, (*cfg)[ch].name );
         if( win.num_frames != num_frames )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Invalid number of frames in source \"%s\" (got %d, expected %d)",
+                            "Invalid number of frames in source \"%s\" (got %u, expected %u)",
                             (*cfg)[ch].name.c_str(),win.num_frames,num_frames);
         if( ((*cfg)[ch].channel >= (int)win.num_channels) || ((*cfg)[ch].channel < 0) )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Source channel is out of range (%s, %d channels available).",
+                            "Source channel is out of range (%s, %u channels available).",
                             (*cfg)[ch].name.c_str(),win.num_channels);
         for(k=0;k<num_frames;k++)
             value(k,ch) = ::value(win,k,(*cfg)[ch].channel);

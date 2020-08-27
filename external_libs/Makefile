@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2016 2017 2018 HörTech gGmbH
+# Copyright © 2016 2017 2018 2019 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@ include ../magic.mk
 
 EXTERNAL_LIBS=$(realpath .)
 
-TARGETS = fftw.is_installed
+TARGETS = fftw.is_installed network-asio.is_installed
 
 include ../rules.mk
 
@@ -40,6 +40,18 @@ export LDFLAGS
 endif
 ifdef LDLIBS
 export LDLIBS
+endif
+
+# Pass compilers to third-party library build process
+ifdef CC
+export CC
+endif
+ifdef CXX
+export CXX
+endif
+
+ifeq "$(ARCH)" "armhf"
+CROSS_COMPILE=--build=`./config.guess` --host=arm-linux-gnueabi 
 endif
 
 # Build fftw-2
@@ -74,21 +86,42 @@ $(BUILD_DIR)/fftw.is_configured: $(BUILD_DIR)/.directory
 	sleep 0.01 && touch fftw-2.1.5/aclocal.m4
 	sleep 0.01 && touch fftw-2.1.5/configure
 	sleep 0.01 && touch fftw-2.1.5/Makefile.in
-	cd fftw-2.1.5/. && ./configure --enable-static --disable-shared --prefix="$(EXTERNAL_LIBS)/$(BUILD_DIR)" --bindir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/bin --libdir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/lib --includedir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/include  --enable-float --enable-type-prefix --disable-fast-install --disable-fortran
+	cd fftw-2.1.5/. && ./configure --enable-static --disable-shared --prefix="$(EXTERNAL_LIBS)/$(BUILD_DIR)" --bindir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/bin --libdir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/lib --includedir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/include  --enable-float --enable-type-prefix --disable-fast-install --disable-fortran $(CROSS_COMPILE)
 	cd "$(EXTERNAL_LIBS)" && touch $@
 
 
-googlemock: $(BUILD_DIR)/googlemock.is_configured
+googlemock: $(BUILD_DIR)/googlemock.is_installed
 
-$(BUILD_DIR)/googlemock.is_configured: \
+$(BUILD_DIR)/googlemock.is_installed: googletest/WORKSPACE \
 	$(BUILD_DIR)/lib/.directory $(BUILD_DIR)/include/.directory
-	touch $@	
-	git submodule update --init --recursive
-	cd googletest/googlemock/make && $(MAKE)
-	cp googletest/googlemock/make/gmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
-	cp -ax googletest/googletest/include/gtest $(BUILD_DIR)/include/
-	cp -ax googletest/googlemock/include/gmock $(BUILD_DIR)/include/
+	sed -e s/-std=c++11//g -e \
+	  's/^libgmock_main.a : gmock_main.o$$/libgmock_main.a : gmock-all.o gtest-all.o gmock_main.o/' \
+	  <googletest/googlemock/make/Makefile \
+	  >googletest/googlemock/make/Makefile.full_gmock_main
+	grep -q '^libgmock_main.a : gmock-all.o gtest-all.o gmock_main.o$$' \
+	  googletest/googlemock/make/Makefile.full_gmock_main \
+	  # error: inspect & adapt googlemock Makefile changes!
+	cd googletest/googlemock/make && $(MAKE) \
+	  -f Makefile.full_gmock_main
+	cp googletest/googlemock/make/*gmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
+	cp -a googletest/googletest/include/gtest $(BUILD_DIR)/include/
+	cp -a googletest/googlemock/include/gmock $(BUILD_DIR)/include/
 	touch $@
+
+googletest/WORKSPACE:
+	git clone https://github.com/google/googletest
+	cd googletest && git checkout dc792bc607a4c7d6644b9b9b8a1cf31f9aafb9bb
+
+network-asio: $(BUILD_DIR)/network-asio.is_installed
+
+$(BUILD_DIR)/network-asio.is_installed: network-asio/.gitignore \
+	$(BUILD_DIR)/include/.directory
+	cp -a network-asio/asio/include/asio* $(BUILD_DIR)/include/
+	touch $@
+
+network-asio/.gitignore:
+	git clone https://github.com/chriskohlhoff/asio network-asio
+	cd network-asio && git checkout 22afb86 # release 1.12.2
 
 # Local Variables:
 # compile-command: "make"

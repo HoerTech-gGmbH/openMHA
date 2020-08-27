@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2008 2012 2013 2014 2015 2016 2017 HörTech gGmbH
+// Copyright © 2005 2006 2008 2012 2013 2014 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,14 +24,38 @@
 #endif
 
 
-std::string mha_getenv(std::string envvar)
-{
-    std::string lp("");
 #ifdef _WIN32
+/// Retrieves environment variable's value on windows
+/// @param envvar  Name of environment variable to retrieve
+/// @param content Space to store content of environment variable
+/// @return true if the retrieval of the environment variable succeeded
+static inline bool get_windows_environment_variable(const std::string & envvar,
+                                                    std::string & content)
+{
     char lpsz[16*MAX_PATH];
     ZeroMemory(lpsz, 16*MAX_PATH);
-    if (GetEnvironmentVariable(envvar.c_str(), lpsz, 16*MAX_PATH))
-        lp = lpsz;
+    if (GetEnvironmentVariable(envvar.c_str(), lpsz, 16*MAX_PATH)) {
+        content = lpsz;
+        return true;
+    }
+    return false;
+}
+#endif
+
+bool mha_hasenv(const std::string & envvar)
+{
+#ifdef _WIN32
+    std::string temp;
+    return get_windows_environment_variable(envvar, temp);
+#else
+    return getenv(envvar.c_str());
+#endif
+}
+std::string mha_getenv(const std::string & envvar)
+{
+    std::string lp;
+#ifdef _WIN32
+    get_windows_environment_variable(envvar, lp);
 #else
     char * s = getenv(envvar.c_str());
     if(s)
@@ -39,6 +64,26 @@ std::string mha_getenv(std::string envvar)
     return lp;
 }
 
+void mha_delenv(const std::string & envvar)
+{
+#ifdef _WIN32
+    SetEnvironmentVariable(envvar.c_str(), nullptr);
+#else
+    unsetenv(envvar.c_str());
+#endif
+}
+
+int mha_setenv(const std::string & envvar, const std::string & value)
+{
+#ifdef _WIN32
+    if (!SetEnvironmentVariable(envvar.c_str(), value.c_str()))
+        return GetLastError();
+#else
+    if (setenv(envvar.c_str(), value.c_str(), true))
+        return errno;
+#endif
+    return 0;
+}
 
 std::list<std::string> mha_library_paths()
 {
@@ -46,6 +91,10 @@ std::list<std::string> mha_library_paths()
 #ifndef MHA_STATIC_PLUGINS
     std::string lp;
     lp = mha_getenv("MHA_LIBRARY_PATH");
+#ifdef __APPLE__
+    if (lp.size() == 0)
+        lp = "/usr/local/lib/openmha";
+#endif //  __APPLE__
     if( !lp.size() )
         lp += ";";
     else if( lp[lp.size()-1] != ';' )

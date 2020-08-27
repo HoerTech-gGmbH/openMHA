@@ -1,0 +1,280 @@
+%%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
+%%% Copyright © 2019 HörTech gGmbH
+%%%
+%%% openMHA is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as published by
+%%% the Free Software Foundation, version 3 of the License.
+%%%
+%%% openMHA is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License, version 3 for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License, 
+%%% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+% Latex header for doxygen 1.8.11
+% adapted for openMHA
+\documentclass[11pt,a4paper,twoside]{article}
+
+% Packages required by doxygen
+\usepackage{fixltx2e}
+\usepackage{calc}
+\usepackage{../openMHAdoxygen}
+\setlength{\headheight}{13.6pt}
+\usepackage[export]{adjustbox} % also loads graphicx
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{makeidx}
+\usepackage{multicol}
+\usepackage{multirow}
+\PassOptionsToPackage{warn}{textcomp}
+\usepackage{textcomp}
+\usepackage[nointegrals]{wasysym}
+\usepackage[table]{xcolor}
+
+% Font selection
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{amssymb}
+\usepackage{sectsty}
+\usepackage{textcomp}
+\renewcommand{\familydefault}{\sfdefault}
+\allsectionsfont{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\renewcommand{\DoxyLabelFont}{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\newcommand{\+}{\discretionary{\mbox{\scriptsize$\hookleftarrow$}}{}{}}
+
+% Headers & footers
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\renewcommand{\sectionmark}[1]{%
+  \markright{\thesection\ #1}%
+}
+\fancyhead[LE]{\fancyplain{}{\bfseries\thepage}}
+\fancyhead[CE]{\fancyplain{}{}}
+\fancyhead[RE]{\fancyplain{}{\bfseries\leftmark}}
+\fancyhead[LO]{\fancyplain{}{\bfseries\rightmark}}
+\fancyhead[CO]{\fancyplain{}{}}
+\fancyhead[RO]{\fancyplain{}{\bfseries\thepage}}
+\fancyfoot[LE]{\fancyplain{}{}}
+\fancyfoot[CE]{\fancyplain{}{}}
+\fancyfoot[RE]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2019 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[LO]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2019 H\"orTech gGmbH, Oldenburg }}
+\fancyfoot[CO]{\fancyplain{}{}}
+\fancyfoot[RO]{\fancyplain{}{}}
+
+% Indices & bibliography
+\usepackage{natbib}
+\usepackage{tocloft}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{4}
+\addtolength{\cftsubsecnumwidth}{5pt}
+\makeindex
+
+% Custom commands
+\newcommand{\clearemptydoublepage}{%
+  \newpage{\pagestyle{empty}\cleardoublepage}%
+}
+
+\usepackage{caption}
+\captionsetup{labelsep=space,justification=centering,font={bf},singlelinecheck=off,skip=4pt,position=top}
+
+\setlength\parindent{0pt}
+\usepackage{hyperref}
+\usepackage[hang,flushmargin]{footmisc}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{subcaption}
+\usepackage{fancyvrb} %Für Rahmen um Code Boxen
+
+\begin{document}
+\begin{comment}
+\MHAtitle{Getting Started}
+\newpage
+\MHAcopyright{}
+\newpage
+\tableofcontents
+\newpage
+\end{comment}
+\pagenumbering{arabic}
+
+
+\begin{comment}
+windows --interactive mode?
+
+\end{comment}
+
+
+
+
+
+
+
+\section{Dealing with AC Variables}
+\label{sec:freqshifter}
+
+%During the openMHA installation process several Matlab functions were copied to the corresponding installation directory. In  the standard case you can find these Matlab function in \textbf{Program Files\textbackslash openMHA\textbackslash mfiles}.
+%For this section you will make use of several openMHA Matlab function which you can find in \textit{/usr/lib/openmha/mfiles}. \textbf{Copy} these files to a non-protected directory, e.g. \textit{/home/YourUserName/Documents/}.
+
+
+
+\begin{enumerate}
+%\item Copy the \textbf{mfiles} folder into a non protected directory, e.g.
+%\textbf{\textbackslash Users\textbackslash YourUserName\textbackslash
+%Documents}
+\item \textbf{End} all running \textbf{mha processes} 
+\item \textbf{Open Matlab or Octave} 
+\item Set LD\_LIBRARY\_PATH to empty by typing \\ {\ttfamily
+  $\rightarrow$ setenv(\textquotesingle
+  LD\_LIBRARY\_PATH\textquotesingle,\textquotesingle\textquotesingle)} \\
+  into the \textbf{Command Window}
+\item Use the Matlab/Octave \textbf{"Current Folder"} control to navigate to:
+
+\begin{itemize}
+\item \textcolor{orange}{\textbf{Linux}}: \\
+  \textit{/usr/share/openmha/examples/05-frequency-shifting}
+\item \textcolor{orange}{\textbf{Windows}}: \\
+  \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 05-frequency-shifting}
+\item \textcolor{orange}{\textbf{macOS}}: \\
+  \textit{/usr/local/share/openmha/examples/05-frequency-shifting}
+\end{itemize}
+
+\item In order to use the Matlab functions of openMHA type the following using the \textbf{Command Window:} 
+
+\begin{itemize}
+\item \textcolor{orange}{\textbf{Linux}}: \\ $\rightarrow$
+  {\ttfamily addpath(\textquotesingle{}/usr/lib/openmha/mfiles\textquotesingle{})}
+\item \textcolor{orange}{\textbf{Windows}}: \\ $\rightarrow$
+  {\ttfamily addpath(\textquotesingle{}C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textquotesingle{})}
+\item \textcolor{orange}{\textbf{macOS}}: \\ $\rightarrow$
+  {\ttfamily addpath(\textquotesingle{}/usr/local/lib/openmha/mfiles/\textquotesingle{})}
+\end{itemize}
+
+
+\item Use the Command Window to enable communication with openMHA through java by typing: 
+
+\begin{itemize}
+\item \textcolor{orange}{\textbf{Linux}}: \\ $\rightarrow$
+  {\ttfamily javaaddpath(\textquotesingle{}/usr/lib/openmha/mfiles/mhactl\_java.jar\textquotesingle{})}
+\item \textcolor{orange}{\textbf{Windows}}: \\ $\rightarrow$
+  {\ttfamily javaaddpath(\textquotesingle{}C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textbackslash mhactl\_java.jar\textquotesingle{})}
+\item \textcolor{orange}{\textbf{macOS}}: \\ $\rightarrow$
+  {\ttfamily javaaddpath(\textquotesingle{}/usr/local/lib/openmha/mfiles/mhactl\_java.jar\textquotesingle{})}
+\end{itemize}
+
+\item In order to start a new openMHA instance type \\
+  $\rightarrow$ {\ttfamily openmha = mha\_start;}
+\item In order to read in the configuration file type: \\
+  $\rightarrow$ {\ttfamily mha\_query(openmha,\textquotesingle{}\textquotesingle{},\textquotesingle{}read:coherence\_live.cfg\textquotesingle{});}
+\item \textbf{Start JACK Server} using \textbf{JACK Control}\\
+  (Setting: Sample Rate = 44100, Frames/Period = 64)
+\item Start the mha process by typing \\ $\rightarrow$
+  {\ttfamily mha\_set(openmha, \textquotesingle{}cmd\textquotesingle{},
+                      \textquotesingle{}start\textquotesingle{} );}
+\item \textbf{JACK Control}: Connect the "capture" and "playback" channels
+  of the sound card to the MHA "in" and "out" channels.
+  Connect a microphone to the soundcard.
+\item 
+\item $\rightarrow$ {\ttfamily mha\_get(openmha,\textquotesingle{}\textquotesingle{},\textquotesingle{}'mha.overlapadd.mhachain.acmon')}
+\item $\rightarrow$ {\ttfamily mha\_get(openmha,\textquotesingle{}\textquotesingle{},\textquotesingle{}'mha.overlapadd.mhachain.acmon.coherence\_rcoh')}
+
+\textbf{Gain\_live.cfg:}
+
+\begin{Verbatim}[frame=single,numbers=left,commandchars=\\\{\}]
+#The number of channels we want to process
+
+\textcolor{orange}{\textbf{nchannels_in = 2}}
+#Number of frames to be processed in each block.
+\textcolor{orange}{\textbf{fragsize = 64}}
+#Sampling rate. Has to be the same as the input signal of JACK
+\textcolor{orange}{\textbf{srate = 44100}}
+#Again, we want to use the plugin "mhachain"
+\textcolor{orange}{\textbf{mhalib = transducers}}
+Here we will only use one plugin "gain"
+\textcolor{orange}{\textbf{mha.algos=[ gain ]}}
+#Set max and min gain factors in dB
+\textcolor{orange}{\textbf{mha.gain.min=-20}}
+\textcolor{orange}{\textbf{mha.gain.max=20}}
+#two gain factors (left and right)
+\textcolor{orange}{\textbf{mha.gain.gains=[ -10 10 ]}}
+#In this example, we load the IO library that connects
+#the MHA to the Jack audio server.
+\textcolor{orange}{\textbf{iolib = MHAIOJackdb}}
+
+
+
+iolib = MHAIOJackdb
+
+mha.plugin_name = overlapadd
+
+mha.calib_in.peaklevel = [90 90]
+mha.calib_out.peaklevel = [90 90]
+
+mha.overlapadd.fftlen = 256
+mha.overlapadd.wnd.len = 128
+
+
+
+
+
+
+
+
+\end{Verbatim} 
+
+\textbf{Matlab Script:}
+
+\begin{Verbatim}[frame=single,numbers=left,commandchars=\\\{\}]
+#The number of channels we want to process
+\textcolor{orange}{\textbf{nchannels_in = 2}}
+#Number of frames to be processed in each block.
+\textcolor{orange}{\textbf{fragsize = 64}}
+#Sampling rate. Has to be the same as the input signal of JACK
+\textcolor{orange}{\textbf{srate = 44100}}
+#Again, we want to use the plugin "mhachain"
+\textcolor{orange}{\textbf{mhalib = mhachain}}
+Here we will only use one plugin "gain"
+\textcolor{orange}{\textbf{mha.algos=[ gain ]}}
+#Set max and min gain factors in dB
+\textcolor{orange}{\textbf{mha.gain.min=-20}}
+\textcolor{orange}{\textbf{mha.gain.max=20}}
+#two gain factors (left and right)
+\textcolor{orange}{\textbf{mha.gain.gains=[ -10 10 ]}}
+#In this example, we load the IO library that connects
+#the MHA to the Jack audio server.
+\textcolor{orange}{\textbf{iolib = MHAIOJackdb}}
+\end{Verbatim} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{enumerate}
+%mha_get(openmha,'mha.overlapadd.mhachain.acmon')
+\newpage
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "openMHA_application_manual"
+%%% indent-tabs-mode: nil
+%%% coding: utf-8-unix
+%%% End:

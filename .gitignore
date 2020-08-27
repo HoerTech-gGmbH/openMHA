@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,10 @@
 # The readme recommends copying all plugins into one "bin" directory.
 bin
 lib
+include
+# Auto-generated pdf documents
+openMHA_*.pdf
+pdf-*.zip
 
 # Editor backup and lock files
 *~
@@ -24,23 +28,22 @@ lib
 *.bak
 ~$*
 .~lock*
-
+*.swp
 # system-specific configuration
 config.mk
 
 # An artifact left by octave when it crashes
 mha/tools/mfiles/octave-workspace
 
-# platform-specific directories where build artifacts are stored.
-x86_64-linux-gcc-5
-x86_64-linux-gcc-7
-x86_64-linux-clang
-i686-linux-gcc-5
-i686-MinGW-gcc-6
-i686-MinGW-gcc-7
-x86_64-MinGW-gcc-7
-armv7l-linux-gcc-4.9
+# Platform-specific directories where build artifacts are stored.  These globs
+# catch directories of the form "<arch>-<platform>-<compiler>[-<version>]/".
+*-linux-*/
+*-MinGW-*/
 x86_64-Darwin-clang
+
+# Build artefacts
+git_commit_hash.txt
+
 # coverage analysis artifacts
 coverage.info
 coverage
@@ -55,11 +58,34 @@ coverage
 mha/tools/mfiles/classpath.txt
 
 # python cache
-mha/examples/09-localizer-steering-beamformer/visualisation_web/__pycache__
-mha/examples/09-localizer-steering-beamformer/Output/*
+examples/09-localizer-steering-beamformer/visualisation_web/__pycache__
+examples/09-localizer-steering-beamformer/Output/*
 
 # from patching
 *.rej
+
+# debian packages leave intermediate make targets in repository base directory
+*.deb
+
+# debian packages
+mha/tools/packaging/deb
+
+#local editor configuration
+.clang_complete
+.dir-locals.el
+GPATH
+GRTAGS
+GTAGS
+
+#Windows packaging artifacts
+*.exe
+
+#Node-red auto-backup files
+*.flow.backup
+
+# Running mhacontrol in pre-release tests creates these files in Matlab's CWD:
+mhacfg_localhost_33337_mha.mat
+mhagui_window_positions.mat
 
 # Local Variables:
 # coding: utf-8-unix

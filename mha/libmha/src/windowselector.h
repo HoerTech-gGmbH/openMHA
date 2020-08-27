@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2013 2014 2016 2018 HörTech gGmbH
+// Copyright © 2006 2013 2014 2016 2017 2018 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -50,6 +50,11 @@ public:
      * @param p The configuration parser where to insert the window parameters.
      *          E.g. the plugin wave2spec's interface class. */
     void insert_items(MHAParser::parser_t* p);
+
+    /** Lock/Unlock variables
+     * @param b_ Desired lock state
+     */
+    void setlock(bool b_);
 
     /** A collector event that fires when any of the window parameters managed
      * here is written to. */

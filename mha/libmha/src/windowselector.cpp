@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2006 2009 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2006 2009 2013 2014 2016 2017 2018 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -46,6 +46,12 @@ void windowselector_t::insert_items(MHAParser::parser_t* p)
     p->insert_item("userwnd",&userwnd);
 }
 
+void windowselector_t::setlock(bool b_) {
+    wndtype.setlock(b_);
+    wndexp.setlock(b_);
+    userwnd.setlock(b_);
+}
+
 void windowselector_t::update_parser()
 {
     invalidate_window_data();
@@ -74,7 +80,7 @@ const MHAWindow::base_t& windowselector_t::get_window_data(unsigned length)
         case 5 : // user
             if( userwnd.data.size() != length )
                 throw MHA_Error(__FILE__,__LINE__,
-                                "wave2spec: User window size (%d) is not window length (%d).",
+                                "wave2spec: User window size (%zu) is not window length (%u).",
                                 userwnd.data.size(),length);
             wnd = new MHAWindow::user_t(userwnd.data);
             break;

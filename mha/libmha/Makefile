@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2016 2017 2018 HörTech gGmbH
+# Copyright © 2013 2014 2016 2017 2018 2019 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -39,7 +39,7 @@ OBJECTS = \
 	windowselector.o \
 	mha_fifo.o \
 	pluginbrowser.o \
-
+	mha_utils.o \
 
 LDFLAGS += -L../../external_libs/$(PLATFORM_CC)/lib
 
@@ -68,13 +68,23 @@ ifeq "MinGW" "$(PLATFORM)"
 LDLIBS += -Wl,--out-implib,$(basename $@).a
 endif
 
-$(MHA_FFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(FFTW_LIB)
+$(MHA_FFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(FFTW_LIB) $(BUILD_DIR)/.directory
 	ar x $< $(notdir $@) && mv $(notdir $@) $@
 
-$(MHA_RFFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(RFFTW_LIB)
+$(MHA_RFFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(RFFTW_LIB) $(BUILD_DIR)/.directory
 	ar x $< $(notdir $@) && mv $(notdir $@) $@
 
-$(BUILD_DIR)/unit-test-runner: LDFLAGS += -L$(BUILD_DIR) -Wl,-rpath=./$(BUILD_DIR) -lopenmha
+ifeq "$(PLATFORM)" "linux"
+FIND_LIBOPENMHA_RPATH = -Wl,-rpath=./$(BUILD_DIR)
+endif
+# Different rule than normal to build unit-test-runner in this
+# directory: we do link against libopenmha, and we do not list the
+# files under test on the compiler command line, because they are
+# already in the lib and would duplicate all the classes. Make the lib
+# an explicit dependency.
+$(BUILD_DIR)/unit-test-runner: $(unit_tests_test_files) $(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT)
+	@echo dependencies = $^
+	$(CXX) $(CXXFLAGS) --coverage -o $@ $(unit_tests_test_files) $(LDFLAGS) $(LDLIBS) $(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT) -lgmock_main -lpthread
 
 # Local Variables:
 # coding: utf-8-unix

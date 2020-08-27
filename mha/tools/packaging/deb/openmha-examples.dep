@@ -1,1 +1,1 @@
-openmha (VERSION)
+openmha (>=${FULLVERSIONALL}-gcc-5), openmha (<<${FULLVERSIONALL}-gcc-99)

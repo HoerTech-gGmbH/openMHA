@@ -1,0 +1,15 @@
+#Copy the following code into a new file, set execution permissions
+# and execute it as root:
+#!/bin/bash
+set -e
+for file in $(pkgutil --only-files --files org.openmha.openMHA); do
+    if [[ -z "$file" ]]; then
+       echo "Error trying to delete /!";
+       exit 1;
+    fi
+    rm /$file;
+done
+rmdir /usr/local/share/openmha;
+rmdir /usr/local/lib/openmha;
+rmdir /usr/local/doc/openmha;
+pkgutil --forget org.openmha.openMHA;

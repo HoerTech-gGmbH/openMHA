@@ -1,0 +1,152 @@
+// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// Copyright © 2018 2019 2020 HörTech gGmbH
+//
+// openMHA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, version 3 of the License.
+//
+// openMHA is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License, version 3 for more details.
+//
+// You should have received a copy of the GNU Affero General Public License, 
+// version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+// On the 2019 windows build server, we cannot use the sh step anymore.
+// This workaround invokes the msys2 bash, sets the required environment
+// variables, and executes the desired command.
+def windows_bash(command) {
+  bat ('C:\\msys64\\usr\\bin\\bash -c "source /jenkins.environment && set -ex && ' + command + ' "')
+  // This will probably fail if command contains multiple lines, quotes, or
+  // similar.  Currently all our shell commands are simple enough for this
+  // simple solution to work.  Should this no longer be sufficient, then we
+  // could write the shell command to a temporary file and execute this file
+  // after sourcing the enviroment.
+}
+
+// Encapsulation of the build steps to perform when compiling openMHA
+// dependencies
+// @param stage_name the stage name is "system && arch" where system is bionic,
+//                   xenial, windows, or mac, and arch is x86_64, i686,
+//                   or armv7. Both are separated by an && operator and spaces.
+//                   This string is also used as a valid label expression for
+//                   jenkins. The appropriate nodes have the respective labels.
+//                   We might need to extend this in future to include the
+//                   "mhadev" label, to differentiate build environments
+//                   for the same system and architecture but with different
+//                   library / tool dependencies.
+def depndcy_build_steps(stage_name) {
+  // Extract components from stage_name:
+  def system, arch, buildenv
+  (system,arch,buildenv) = stage_name.split(/ *&& */) // regexp for missing/extra spaces
+
+  // platform booleans
+  def linux = (system != "windows" && system != "mac")
+  def windows = (system == "windows")
+  def mac = (system == "mac")
+
+  // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
+  def cpus = (arch == "armv7") ? 5 : 2 // default on other systems is 2 cores
+
+  // workaround to invoke unix shell on all systems
+  def bash = { command -> windows ? windows_bash(command) : sh(command) }
+
+  // checkout openMHA from version control system, the exact same revision that
+  // triggered this job on each build slave
+  checkout scm
+
+  // Avoid that artifacts from previous builds influence this build
+  bash "git reset --hard && git clean -ffdx"
+
+  // Autodetect libs/compiler
+  bash "./configure"
+
+  // Compile and install dependencies
+  bash ("make -j $cpus external_libs googletest")
+
+  // Place dependency sources in tar file so we can manipulate their timestamp
+  bash ("tar cvzf sources.tgz --exclude=.git external_libs")
+  
+  // Place installed dependencies in tar file to preserve their timestamps
+  bash ("tar cvzf installation.tgz external_libs/*-*-*/")
+
+  // Store compiled/installed dependencies for this job's build artifact
+  stash name: (arch+"_"+system), includes: '*.tgz'
+}
+
+pipeline {
+    agent {label "jenkinsmaster"}
+    stages {
+        stage("build") {
+            parallel {
+                stage(                         "bionic && x86_64 && mhadev") {
+                    agent {label               "bionic && x86_64 && mhadev"}
+                    steps {depndcy_build_steps("bionic && x86_64 && mhadev")}
+                }
+                stage(                         "focal && x86_64 && mhadev") {
+                    agent {label               "focal && x86_64 && mhadev"}
+                    steps {depndcy_build_steps("focal && x86_64 && mhadev")}
+                }
+                stage(                         "xenial && x86_64 && mhadev") {
+                    agent {label               "xenial && x86_64 && mhadev"}
+                    steps {depndcy_build_steps("xenial && x86_64 && mhadev")}
+                }
+                stage(                         "bionic && armv7 && mhadev") {
+                    agent {label               "bionic && armv7 && mhadev"}
+                    steps {depndcy_build_steps("bionic && armv7 && mhadev")}
+                }
+                stage(                         "windows && x86_64 && mhadev") {
+                    agent {label               "windows && x86_64 && mhadev"}
+                    steps {depndcy_build_steps("windows && x86_64 && mhadev")}
+                }
+                stage(                         "mac && x86_64 && mhadev") {
+                    agent {label               "mac && x86_64 && mhadev"}
+                    steps {depndcy_build_steps("mac && x86_64 && mhadev")}
+                }
+            }
+        }
+        stage("publish") {
+            steps {
+                // remove external_libs it it's there for a clean slate
+                sh ("mv external_libs external_libs_ || true")
+                sh ("rm -rf external_libs_")
+
+                // unpack the sources only once
+                unstash "x86_64_bionic"
+                sh ("tar xzf sources.tgz")
+                // manipulate timestamps of sources so that compilation is newer
+                sh ("find external_libs -type f | xargs touch -t 200501010000")
+
+                // unpack compiled results from all platforms
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "x86_64_focal"
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "x86_64_xenial"
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "armv7_bionic"
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "x86_64_windows"
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "x86_64_mac"
+                sh ("tar xzf installation.tgz && rm *.tgz")
+
+                // creates a single artifact containing all variants
+                sh ("tar cvzf external_libs.tgz external_libs")
+                archiveArtifacts 'external_libs.tgz'
+            }
+        }
+    }
+
+    // Email notification on failed build taken from
+    // https://jenkins.io/doc/pipeline/tour/post/
+    // multiple recipients are comma-separated:
+    // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
+    post {
+        failure {
+                 mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,g.grimm@hoertech.de',
+                 subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                 body: "Something is wrong with ${env.BUILD_URL}"
+        }
+    }
+}

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2005 2006 2007 2011 2013 2015 2016 2017 HörTech gGmbH
+// Copyright © 2004 2005 2006 2007 2011 2013 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +26,7 @@
 #ifndef MHA_ALGO_COMM_H
 #define MHA_ALGO_COMM_H
 
-#include "mha.h"
+#include "mha.hh"
 #include "mha_signal.hh"
 #include <vector>
 #include <string>

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2017 HörTech gGmbH
+// Copyright © 2017 2019 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ Accessibility of configuration variables and data exchange between plugins
 types in the \mha are distinguished by their different access methods. The 
 variable types in the \mha are:
 \addindex configuration variable
-	- <B> Configuration variables </B>: Read and write accesses are 
+        - <B> Configuration variables </B>: Read and write accesses are 
 possible through the \mha configuration language interface. Configuration 
 variables are implemented as C++ classes with a public data member of the 
 underlying C type. Configuration variables can be read and modified from 
@@ -33,18 +33,18 @@ the configuration variable can use the exposed data member directly. All
 accesses through the \mha configuration language are checked for data type, 
 valid range, and access restrictions. 
 \addindex monitor variable
-	- <B> Monitor variables </B>: Read access is possible through the 
+        - <B> Monitor variables </B>: Read access is possible through the 
 \mha configuration language. Write access is only possible from the C++ code. 
 Internally, monitor variables have a similar C++ class interface as 
 configuration variables.
 \addindex AC variable
-	- <B> AC variables </B> (\ref algocomm "algorithm communication variables"): 
+        - <B> AC variables </B> (\ref algocomm "algorithm communication variables"): 
 Any C or C++ data structure can be shared within an \mha chain. Access management and 
 name space is realised in \mha chain plugin ('mhachain').  AC 
 variables are not available to the \mha configuration language interface, 
 although a read-only converter plugin \c acmon is available.
 \addindex runtime configuration 
-	- <B> Runtime configuration </B>: Algorithms usually derive more 
+        - <B> Runtime configuration </B>: Algorithms usually derive more 
 parameters (runtime configuration) from the \mha configuration language 
 variables. When a configuration variable changes through configuration 
 language write access, then the runtime configuration has to be recomputed. 
@@ -53,14 +53,18 @@ a C++ class, which recomputes the runtime configuration from configuration
 variables in the constructor. The \mha supports lock-free and thread-safe 
 replacement of the runtime configuration instance (see \ref ex5 and references 
 therein).
-	.
 
 \image html variables.png 
 \image latex variables.pdf "Variable types in the \mha" width=0.7\textwidth
 
+Variables that describe physical facts to the MHA user should be given
+in SI units, e.g. meters for distances (not centimeters or inches), seconds for
+times (not milliseconds or minutes) etc for reasons of uniformity and simplicity
+of handling derived units.
+
 The C++ data types are shown in the figure below. These variables can be 
 accessed via the \mhad using the \mha configuration language. For more 
-details see 'Application engineers' manual'.
+details see the \mha application manual.
 
 \image html parserelements.png
 \image latex parserelements.pdf "MHAParser elements" width=0.7\textwidth

@@ -18,7 +18,7 @@
 
 #include <vector>
 #include <map>
-#include "mha.h"
+#include "mha.hh"
 
 #ifdef __cplusplus
 

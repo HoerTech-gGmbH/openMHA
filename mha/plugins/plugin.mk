@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
+# Copyright © 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -15,8 +15,8 @@
 
 # to be included by plugin specific Makefiles.
 
-include ../../../../config.mk
-include ../../../../magic.mk
+include ../../../config.mk
+include ../../../magic.mk
 
 SOURCE_DIR=.
 PLUGINS = $(notdir $(abspath .))
@@ -79,6 +79,56 @@ dummy_freenect:
 endif
 endif
 
+ifeq "$(NEEDS_LSL)" "yes"
+ifneq "$(WITH_LSL)" "yes"
+# this plugin needs lsl.
+# Do not compile if lsl not available.
+# instead, execute this dummy rule. as default target
+dummy_lsl:
+	@echo "not compiling" $(PLUGINS) "since lsl is not available"
+endif
+endif
+
+ifeq "$(NEEDS_EIGEN)" "yes"
+ifneq "$(WITH_EIGEN)" "yes"
+# this plugin needs eigen3.
+# Do not compile if eigen3 not available.
+# instead, execute this dummy rule. as default target
+dummy_eigen:
+	@echo "not compiling" $(PLUGINS) "since eigen3 is not available"
+endif
+endif
+
+ifeq "$(NEEDS_OSC)" "yes"
+ifneq "$(WITH_OSC)" "yes"
+# this plugin needs osc.
+# Do not compile if osc not available.
+# instead, execute this dummy rule. as default target
+dummy_osc:
+	@echo "not compiling" $(PLUGINS) "since osc is not available"
+endif
+endif
+
+ifeq "$(NEEDS_LIBSERIAL)" "yes"
+ifneq "$(WITH_LIBSERIAL)" "yes"
+# this plugin needs libserial.
+# Do not compile if libserial not available.
+# instead, execute this dummy rule. as default target
+dummy_libserial:
+	@echo "not compiling" $(PLUGINS) "since libserial is not available"
+endif
+endif
+
+ifeq "$(NEEDS_CXX17)" "yes"
+ifeq ($(CXXSTANDARD),$(findstring $(CXXSTANDARD),"gnu++98c++98gnu++03c++03gnu++0xc++0xgnu++11c++11gnu++1yc++1ygnu++14c++14"))
+# this plugin needs at least c++17.
+# Do not compile if c++17 not available.
+# instead, execute this dummy rule. as default target
+dummy_cxx17:
+	@echo "not compiling" $(PLUGINS) "since c++17 standard not available"
+endif
+endif
+
 ifeq "$(EXCLUDE_FROM_WINDOWS_COMPILATION)" "yes"
 ifeq "$(PLATFORM)" "MinGW"
 # this plugin cannot be compiled on windows.
@@ -116,16 +166,24 @@ dummy08:
 endif
 endif
 
-include ../../../../rules.mk
+include ../../../rules.mk
 
-CXXFLAGS += -I../../../../external_libs/$(PLATFORM_CC)/include
-CXXFLAGS += -I../../../libmha/src
-CFLAGS += -I../../../libmha/src
-LDFLAGS += -L../../../libmha/$(BUILD_DIR)
+CXXFLAGS += -I../../../external_libs/$(PLATFORM_CC)/include
+CXXFLAGS += -I../../libmha/src
+CFLAGS += -I../../libmha/src
+LDFLAGS += -L../../libmha/$(BUILD_DIR)
 LDLIBS += -l$(MHATOOLBOX_NAME)
+
+# Library-dependent plugin artifact rule specific modifications of compiler
+# and linker flags need to have their own if statements because they must
+# come after the include ../../../rules.mk block and the dummy targets must come
+# before it.
+
+ifeq "$(NEEDS_LSL)" "yes"
+$(PLUGIN_AND_TEST_ARTIFACTS): LDLIBS += -llsl
+endif
 
 
 # Local Variables:
-# coding: utf-8-unix
 # coding: utf-8-unix
 # End:
