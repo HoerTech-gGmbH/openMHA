@@ -32,7 +32,6 @@ MHA_INSTALL_DIR = [git_dir '/mha/frameworks/' build_dir];
 setenv('MHA_INSTALL_DIR',MHA_INSTALL_DIR);
 addpath([git_dir '/mha/tools/mfiles']);
 addpath([git_dir '/mha/mhatest']);
-javaaddpath ([git_dir '/mha/tools/mfiles/mhactl_java.jar']);
 
 if ispc
   bin_dir = [git_dir '\mha\bin'];
