@@ -29,7 +29,15 @@ The openMHA can be split into four major components :
 \end{itemize} 
 \MHAfigure[][0.4\linewidth]{Layered structure of the open Master Hearing Aid}{structure_openmha}
 
-{\bf The MHA command line application} acts as a plugin host. It can load signal processing plugins as well as audio input-\/output modules (IO). Additionally, it provides the command line configuration interface and a TCP/IP based configuration interface. Different IO modules exist: For real-\/time signal processing, commonly the openMHA \emph{MHAIOJack} module (see \PluginManual) is used, which provides an interface to the Jack Audio Connection Kit (JACK), the module \emph{MHAIOFile} provide audio file access and \emph{MHAIOTCP} TCP/IP-\/based signal exchange.
+{\bf The MHA command line application} acts as a plugin host. It can
+load signal processing plugins as well as audio input-\/output modules
+(IO). Additionally, it provides the command line configuration
+interface and a TCP/IP based configuration interface. Different IO
+modules exist: For real-\/time signal processing, commonly the openMHA
+\emph{MHAIOJack} module is used, which provides an
+interface to the Jack Audio Connection Kit (JACK), the module
+\emph{MHAIOFile} provide audio file access and \emph{MHAIOTCP}
+TCP/IP-\/based signal exchange.
 
 {\bf openMHA plugins} provide the audio signal processing capabilities and audio signal handling. Typically, one openMHA plugin implements one specific algorithm. A complete virtual hearing aid signal processing can be achieved by a combination of several openMHA plugins.\subsection{Platform Services and Conventions}\label{index_pltf}
 The openMHA platform offers some services and conventions to algorithms implemented in plugins, that make it especially well suited to develop hearing aid algorithms, while still supporting general-\/purpose signal processing.\subsubsection{Audio Signal Domains}\label{index_asd}

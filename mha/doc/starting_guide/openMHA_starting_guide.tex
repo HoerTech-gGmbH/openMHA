@@ -166,17 +166,77 @@ commentstyle=\color{orange},
 \pagenumbering{arabic}
 
 
-\begin{comment}
-\section{Introduction - What is openMHA?}
+%% \include{getting_started_intro.tex}
+\section{Introduction}
+The H\"{o}rTech \emph{open Master Hearing Aid} (openMHA), is a
+development and evaluation software platform that is able to execute
+hearing aid signal processing in real-time on standard computing
+hardware with a low delay between sound input and output.
 
-The large incidence rate of hearing loss (about 13\% of the US population), its high economic costs and the limitations of technical rehabilitative solutions call for an effort towards improving the rehabilitation of hearing impairment. The major aim of the envisaged project is therefore to facilitate research and development towards new technical solutions that improve rehabilitative devices. To achieve this, a large group of researchers will be provided with the means to efficiently develop and evaluate, in collaborative multi-center environments, novel signal processing schemes, individualized fitting procedures, technical solutions and services for hearing devices such as hearing aids and assistive listening devices. This approach leads to more integrated, sustainable and focused research towards improving hearing devices in general. [kopiert von Website, weglassen?, anpassen?] \\
-\end{comment}
+\subsection{About this Manual}
+This manual provides instructions for first steps to be taken when
+starting to work with openMHA. After outlining the purpose and basic
+structure of openMHA the user is guided through the installation and
+invocation of the openMHA command line application. Then, some basic
+configurations and step-by-step instructions on how to run them are
+presented in order to give a first insight how openMHA is
+controlled. Furthermore, tools are introduced that are helpful to
+operate openMHA such as using the Jack Audio Connection Kit (JACK)
+with the openMHA, invoking openMHA inside Matlab/Octave, and basic
+instructions on writing your own configuration are given.
 
-\begin{comment}
-\textcolor{orange}{\textbf{Note: There are some sections which differ from each other depending on your operating system and some which do not. The system-dependent sections will be indicated with the * - symbol. }}
-\end{comment}
+
+\subsection{Structure}\label{index_str}
+The openMHA can be split into four major components:
+\begin{itemize}
+\item The openMHA command line application (MHA)
+\item Signal processing plugins (plugins)
+\item Audio input-output modules (IO)
+\item The openMHA toolbox library (libopenmha)
+\end{itemize} 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\linewidth]{../images/structure_openmha.pdf}
+  \caption[openMHA structure]{Layered structure of the open Master
+    Hearing Aid}
+  \label{structure_openmha}
+\end{figure}
 
 
+{\bf The MHA command line application} acts as a plugin host. It can
+load signal processing plugins as well as audio input-output modules
+(IO). Additionally, it provides the command line configuration
+interface and a TCP/IP based configuration interface. Different IO
+modules exist: For real-time signal processing, commonly the openMHA
+\emph{MHAIOJack} module is used, which
+provides an interface to the Jack Audio Connection Kit (JACK), the
+module \emph{MHAIOFile} provide audio file access and \emph{MHAIOTCP}
+TCP/IP-based signal exchange.
+
+{\bf openMHA plugins} provide the audio signal processing capabilities
+and audio signal handling. Typically, one openMHA plugin implements
+one specific algorithm. A complete virtual hearing aid signal
+processing can be achieved by a combination of several openMHA
+plugins.
+\subsection{Platform Services and Conventions}\label{index_pltf}
+The openMHA platform offers some services and conventions to
+algorithms implemented in plugins, that make it especially well suited
+to develop hearing aid algorithms, while still supporting
+general-purpose signal processing.\\ As in most other plugin hosts,
+the audio signal in the openMHA is processed in fragments, i.e., in
+chunks of the input signal stream with a defined length. However,
+plugins are not restricted to propagate audio signal as fragments of
+audio samples in the time domain another option is to propagate the
+audio signal in the short time Fourier transform (STFT) domain,
+i.e. as spectra of fragments of audio signal, so that not every plugin
+has to perform its own STFT analysis and synthesis. Since STFT
+analysis and re-synthesis of acceptable audio quality always
+introduces an algorithmic delay, sharing STFT data is a necessity for
+a hearing aid signal processing platform in order to achieve a
+sufficiently low delay for the whole processing chain.\\ Sharing
+non-audio information between the plugins is achieved by using
+algorithm communication (AC) variables. They will be discussed further
+in section \ref{sec:ac_variables} of this manual.
 
 
 
