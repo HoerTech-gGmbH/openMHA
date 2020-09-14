@@ -1362,6 +1362,7 @@ void MHAParser::StrCnv::str2val( const std::string & s, float &v )
  * of a string.
  * 
  * @param s The string to parse
+ * @pre s.size() > 0
  * @param v The float variable to fill with a value
  * @return  The rest of the string.
  */
@@ -1376,49 +1377,95 @@ static std::string parse_1_float( const std::string & s, mha_real_t & v )
 }
 
 /**
+ * This function checks for unbalanced parenthesis in the string containing complex number.
+ * @param str The string to check.  This function returns normally only when the
+ *            string starts with an opening bracket and ends with a closing bracket.
+ * @pre str.size() > 0
+ * @throw MHA_ErrorMsg This function raises an error with an appropriate error message
+ *                     if the string does not start with an opening bracket '(' or if
+ *                     it does not end with a closing bracket ')'.
+ */
+static void check_parenthesis_complex( const std::string & str)
+{
+    bool opening_brkt_found = ( str.find('(') != std::string::npos ); // bracket found at some location
+    bool closing_brkt_found = ( str.find(')') != std::string::npos ); // same
+    bool correct_opening_brkt = ( str.front() == '(' );
+    bool correct_closing_brkt = ( str.back() == ')' );
+    if ( (opening_brkt_found && (! correct_opening_brkt)) || (closing_brkt_found && (! correct_closing_brkt )) )
+        throw MHA_ErrorMsg( "There must be no symbol or character outside the parenthesis '()' containing complex value" );
+    if ( correct_opening_brkt && correct_closing_brkt ) // both brackets present at right locations
+        return;
+    else if ( (! correct_opening_brkt) && correct_closing_brkt ) // opening bracket missing from its expected place
+        throw MHA_ErrorMsg( "opening '(' missing in complex number" );
+    else if ( correct_opening_brkt && (! correct_closing_brkt) ) // closing bracket missing from its expected place
+        throw MHA_ErrorMsg( "closing ')' missing, or complex number has a space in it" );
+    else if ( (! correct_opening_brkt) && (! correct_closing_brkt) ) // both brackets are missing from their expected places
+        throw MHA_ErrorMsg( "parenthesis '()' missing, or complex number has a space in it" );
+}
+
+/**
+ * This function checks for valid sign (b/w real & img. parts of complex number). It also 
+ * checks if real part is missing in complex number.
+ * @param str String containing sign and onward imaginary part.
+ * @pre str.size() > 0
+ * @throw This function raises an error if wrong sign (other than '+' or '-') is found.
+ *        It also raises error, if it finds 'i' instead of sign. This can happen when real 
+ *        part is missing in complex number and 'i' (of imaginary part) is found where sign was expected. 
+ * @return +1 for '+' sign and -1 for '-' sign
+ */
+static int check_sign_complex( const std::string & str )
+{
+    int sign = 0;
+    if ( str[0] == '+' )
+        sign = 1;
+    else if ( str[0] == '-' ) 
+        sign = -1;
+    else if ( str[0] == 'i') // e.g: if (+bi) instead of (a+bi), +b is parsed as real component and treats 'i' as sign
+        throw MHA_Error( __FILE__, __LINE__, "real part is missing in the complex number" ); 
+    else
+        throw MHA_Error( __FILE__, __LINE__, "imaginary part starts with '%c' instead of '+' or '-'", str[0] ); 
+    return sign;
+}
+
+/**
  * This internal function parses a complex number from the beginning of a
  * string.
  * 
  * @param s The string to parse
  * @param v The complex variable to fill with a value
+ * @throw MHA_ErrorMsg This function raises an error if s does not have characters except spaces, tabs etc
  * @return  The rest of the string.
  */
 static std::string parse_1_complex( const std::string & s, mha_complex_t & v )
 {
-    std::string rest = s.substr( s.find_first_not_of( " \t" ) );
-    if( rest[0] != '(' ) {
+    std::string rest = s; 
+    MHAParser::trim(rest); // remove spaces, tabs etc before '('
+    if ( rest.size () == 0) // to avoid executing rest[0] (in the next if condition) on an empty string
+        throw MHA_ErrorMsg( "variable without value" ); 
+    if ( ( rest[0] != '(' ) && ( rest.find('i') == std::string::npos ) ) { // no bracket or 'i'; not a complex number
         v.im = 0;
         return parse_1_float( rest, v.re );
     }
-    rest = parse_1_float( rest.substr( 1 ), v.re );
-    rest = rest.substr( rest.find_first_not_of( " \t" ) );
-    int sign = 0;
-    switch ( rest[0] ) {
-    case '+':
-        sign = 1;
-        break;
-    case '-':
-        sign = -1;
-        break;
-    default:
-        throw MHA_Error( __FILE__, __LINE__, "imaginary part starts with '%c' instead of '+' or '-'", rest[0] );
-    }
-    rest = parse_1_float( rest.substr( 1 ), v.im );
-    v.im *= sign;
-    rest = rest.substr( rest.find_first_not_of( " \t" ) );
-    if( rest[0] != 'i' )
+    check_parenthesis_complex( rest ); // since it is complex number; check for parenthesis
+    rest = parse_1_float( rest.substr( 1 ), v.re );  // contents after '(' passed, to extract real part 
+    MHAParser::trim( rest ); // remove space after the real part 
+    int sign = check_sign_complex( rest );
+    rest = parse_1_float( rest.substr( 1 ), v.im ); // contents after the sign passed, to extract imaginary part 
+    v.im *= sign; // appropriate sign assigned to v.im as updated in func. check_sign_complex
+    MHAParser::trim( rest ); // remove space after img. part
+    /* rest contains contents after img. part, ideally 'i)' but at least one character ')' is present, 
+    as it is guaranteed by the func. check_parenthesis_complex, therefore rest.size() > 0 
+    */
+    if ( rest[0] != 'i' )
         throw MHA_ErrorMsg( "missing 'i' after imaginary part" );
-    if (rest.size() > 1)
-        rest = rest.substr( rest.find_first_not_of( " \t", 1 ) );
-    if( rest[0] != ')' )
-        throw MHA_ErrorMsg( "closing ')' missing in complex value" );
-    return rest.substr( 1 );
+    MHAParser::trim( rest = rest.substr( 1 ) ); // remove space after 'i' after creating substring
+    return rest.substr( 1 ); // substring after ')', there should be nothing left!
 }
 
 void MHAParser::StrCnv::str2val( const std::string & s, mha_complex_t & v )
 {
     std::string rest = parse_1_complex( s, v );
-    if( rest.size(  ) )
+    if( rest.size(  ) ) // If there is still some content left after ')' in a complex number
         throw MHA_Error( __FILE__, __LINE__, "unrecognized content %s after parsing complex number", rest.c_str(  ) );
 }
 
