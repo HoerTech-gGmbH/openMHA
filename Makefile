@@ -62,7 +62,7 @@ ifeq "$(PLATFORM)" "Darwin"
 install: all
 	@mkdir -p  $(DESTDIR)$(PREFIX)/bin
 	@mkdir -p  $(DESTDIR)$(PREFIX)/lib
-	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) \
+	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name '*$(DYNAMIC_LIB_EXT)' \
         ! -name Info.plist \
         -exec cp {} $(DESTDIR)$(PREFIX)/lib/ \; \
         -execdir install_name_tool -change $(shell pwd)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
