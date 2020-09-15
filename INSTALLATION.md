@@ -3,7 +3,7 @@
 This installation guide describes the installation process of openMHA on
 Linux (__I.__), Windows (__II.__), and macOS (__III.__) operating systems.
 
-## I. Installation from binary packages on Ubuntu.
+## I. Installation from binary packages on Ubuntu and ARM-based systems.
 
 First, add the openMHA package repository to your system:
 
@@ -23,9 +23,16 @@ In Ubuntu 16.04:
     sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de xenial universe'
     sudo apt update
 
+On Computers with an ARM CPU running a recent 32-bit variant of
+Debian, Ubuntu, Raspberry Pi OS, Armbian, or similar:
+
+    wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    echo 'deb [arch=armhf] http://apt.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmha.list
+    sudo apt update
+
 Install openMHA and some openMHA usage examples:
 ```
-sudo apt-get install openmha openmha-examples
+sudo apt install openmha openmha-examples
 ```
 
 After installation, openMHA documentation is found in
@@ -48,8 +55,8 @@ install the development package __libopenmha-dev__.
 For updating openMHA when a new release is available, execute:
 
 ```
-sudo apt-get update
-sudo apt-get install openmha
+sudo apt update
+sudo apt install openmha
 ```
 
 This will upgrade all installed openmha packages to their latest version.
