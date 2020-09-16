@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2009 2010 2012 2013 2014 2015 HörTech gGmbH
-// Copyright © 2017 2018 HörTech gGmbH
+// Copyright © 2017 2018 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -98,8 +98,6 @@ cfg_t::cfg_t(const algo_comm_t& iac,
     rec_frames(0),
     max_frames(imax_frames)
 {
-    //DEBUG(imax_frames);
-    //DEBUG(varnames.size());
     if( !varnames.size() ){
         int get_entries_error_code;
         unsigned int cstr_len = 512;
@@ -126,8 +124,6 @@ cfg_t::cfg_t(const algo_comm_t& iac,
         varnames = entrl;
     }
     nvars = varnames.size();
-    //DEBUG(nvars);
-    //mha_debug("%s:%d nvars = %d\n",__FILE__,__LINE__,nvars);
     if( !nvars )
         return;
     unsigned int k;
@@ -148,7 +144,6 @@ cfg_t::~cfg_t()
     }
 }
 
-//! 
 /*!
 
 This function is called in the processing thread.
@@ -156,8 +151,6 @@ This function is called in the processing thread.
 */
 void cfg_t::store_frame()
 {
-    //DEBUG(rec_frames);
-    //DEBUG(max_frames);
     if( rec_frames >= max_frames )
         return;
     unsigned int k;
@@ -167,7 +160,6 @@ void cfg_t::store_frame()
     rec_frames++;
 }
 
-//! 
 /*!
   This function is called in the configuration thread.
 
@@ -339,9 +331,6 @@ save_var_t::save_var_t(const std::string& nm,int n,const algo_comm_t& iac)
     default:
         ndim = 0;
     }
-    //DEBUG(ndim);
-    //DEBUG(nframes);
-    //mha_debug("%s:%d name=%s ndim=%d\n",__FILE__,__LINE__,name.c_str(),ndim);
     if( ndim * nframes > 0 ){
         if( b_complex ){
             data = new double[ndim*nframes*2];
@@ -361,11 +350,8 @@ save_var_t::~save_var_t()
 
 void save_var_t::store_frame()
 {
-    //DEBUG(data);
     if( !data )
         return;
-    //DEBUG(framecnt);
-    //DEBUG(nframes);
     if( framecnt >= nframes )
         return;
     comm_var_t v;
@@ -414,7 +400,6 @@ void save_var_t::store_frame()
         default:
             return;
     }
-    //DEBUG(maxframe);
     framecnt++;
     if( framecnt > maxframe )
         maxframe = framecnt;
@@ -431,12 +416,12 @@ void save_var_t::save_txt(FILE* fh,unsigned int writeframes)
     for(kfr=0;kfr<writeframes;kfr++)
         for(kd=0;kd<ndim;kd++){
             if( b_complex )
-                fprintf(fh,"(%g;%g)%s",
+                fprintf(fh,"(%.17g;%.17g)%s",
                         data[2*(kd*nframes+kfr)],
                         data[2*(kd*nframes+kfr)+1],
                         (kd<ndim-1)?"\t":"\n");
             else
-                fprintf(fh,"%g%s",data[kd*nframes+kfr],(kd<ndim-1)?"\t":"\n");
+                fprintf(fh,"%.17g%s",data[kd*nframes+kfr],(kd<ndim-1)?"\t":"\n");
         }
     fprintf(fh,"\n\n");
 }
@@ -453,19 +438,19 @@ void save_var_t::save_m(FILE* fh,unsigned int writeframes)
     for(kfr=0;kfr<writeframes;kfr++)
         for(kd=0;kd<ndim;kd++){
             if( b_complex )
-                fprintf(fh,"(%g+i*%g)%s",
+                fprintf(fh,"(%.17g+%.17gi)%s",
                         data[2*(kd*nframes+kfr)],
                         data[2*(kd*nframes+kfr)+1],
-                        (kd<ndim-1)?" ":"; ...\n");
+                        (kd<ndim-1) ? " " : "; ...\n");
             else
-                fprintf(fh,"%g%s",data[kd*nframes+kfr],(kd<ndim-1)?" ":"; ...\n");
+                fprintf(fh,"%.17g%s",data[kd*nframes+kfr],
+                        (kd<ndim-1) ? " " : "; ...\n");
         }
     fprintf(fh,"\n];\n\n");
 }
 
 void save_var_t::save_mat4(FILE* fh,unsigned int writeframes)
 {
-    //DEBUG(writeframes);
     std::string local_name = name;
     unsigned int maxlen = 19;
     if( local_name.size() > maxlen )
@@ -474,7 +459,6 @@ void save_var_t::save_mat4(FILE* fh,unsigned int writeframes)
         return;
     if( writeframes > maxframe )
         writeframes = maxframe;
-    //DEBUG(maxframe);
     CHECK_VAR(fh);
     // fill the matlab header and write to disk:
     mat4head_t m4h;
@@ -494,7 +478,6 @@ void save_var_t::save_mat4(FILE* fh,unsigned int writeframes)
     double* newdata = new double[writeframes];
     unsigned int kdim,kfr;
     // first, save real part:
-    //DEBUG(ndim);
     for(kdim=0;kdim<ndim;kdim++){
         for(kfr=0;kfr<writeframes;kfr++){
             if( b_complex )
