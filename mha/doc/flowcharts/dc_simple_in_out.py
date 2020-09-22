@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 HörTech gGmbH
+# Copyright © 2018 2020 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -13,6 +14,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+# This python file recreates the plot stored in file dc_simple_in_out.py.
+# It is not executed automatically by the build system builds because it needs
+# python-matplotlib installed on the build agents.  To avoid creating more
+# build dependencies, the generated .png file is also stored in git.
 
 from matplotlib import pyplot as plt
 import numpy as np
