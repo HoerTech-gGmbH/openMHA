@@ -27,15 +27,26 @@ separate apt repository.  Please be aware that
 
 In Ubuntu 20.04:
 
-    wget -qO- https://aptdev.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de focal universe'
     sudo apt-add-repository 'deb [arch=amd64] http://aptdev.hoertech.de focal universe'
-    sudo apt-get install openmha openmha-examples
+    sudo apt install openmha openmha-examples
 
 In Ubuntu 18.04:
 
-    wget -qO- https://aptdev.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de bionic universe'
     sudo apt-add-repository 'deb [arch=amd64] http://aptdev.hoertech.de bionic universe'
-    sudo apt-get install openmha openmha-examples
+    sudo apt install openmha openmha-examples
+
+On Computers with an ARM CPU running a recent 32-bit variant of
+Debian, Ubuntu, Raspberry Pi OS, Armbian, or similar:
+
+    wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
+    echo 'deb [arch=armhf] http://apt.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmha.list
+    echo 'deb [arch=armhf] http://aptdev.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmhadev.list
+    sudo apt update
+    sudo apt install openmha openmha-examples
 
 ### 1.2 Removal of Ubuntu development packages
 
@@ -46,12 +57,19 @@ to install development versions,
 In Ubuntu 20.04:
 
     sudo apt-add-repository --remove 'deb [arch=amd64] http://aptdev.hoertech.de focal universe'
-    sudo apt-get purge libopenmha
+    sudo apt purge libopenmha
 
 In Ubuntu 18.04:
 
     sudo apt-add-repository --remove 'deb [arch=amd64] http://aptdev.hoertech.de bionic universe'
-    sudo apt-get purge libopenmha
+    sudo apt purge libopenmha
+
+On Computers with an ARM CPU running a recent 32-bit variant of
+Debian, Ubuntu, Raspberry Pi OS, Armbian, or similar:
+
+    sudo rm /etc/apt/sources.list.d/openmhadev.list
+    sudo apt update
+    sudo apt purge libopenmha
 
 Then check that openMHA is really uninstalled: executing
 
