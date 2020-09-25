@@ -16,10 +16,10 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 chkhdr(){
-    echo "#include <$1> "| g++ -x c++ - -c $MACCXXFLAGS -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+    echo "#include <$1>" | cpp -x c++ - $MACINCLUDES -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 chklib(){
-    echo "int main(){return 0;}"| g++ -x c++ - $MACLDFLAGS -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+    echo "int main(){return 0;}"| cc -x c++ - $MACLDFLAGS -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 gccver(){
     gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'
@@ -118,10 +118,11 @@ gccver(){
             echo DYNAMIC_LIB_EXT=".dylib"
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
             echo TOOLSET=clang
-            echo WITH_JACK=yes
+            WITH_JACK=yes
             echo LDLIBS+='-L/opt/local/lib'
             MACCXXFLAGS+="-I/opt/local/include -Wno-error=unused-command-line-argument"
-            MACLDFLAGS+=-L/opt/local/include
+            MACINCLUDES+="-I/opt/local/include"
+            MACLDFLAGS+="-L/opt/local/lib"
             CXXSTANDARD=c++17
     esac
     echo ARCH=$ARCH
