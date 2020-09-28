@@ -13,248 +13,153 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "mha_algo_comm.h"
-#include "mha_plugin.hh"
-#include "mha_os.h"
-#include "mha_events.h"
-#include "mha_defs.h"
+#include "lsl2ac.hh"
 
-#include "lsl_cpp.h"
-
-#include <memory>
-#include <map>
-#include <string>
-#include <exception>
-#include <vector>
-#include <chrono>
-/** All types for the lsl2ac plugins live in this namespace. */
-namespace lsl2ac{
-enum class underrun_behavior { Zero=0, Copy, Abort};
-
-/** LSL to AC bridge variable */
-class save_var_t {
-public:
-    /** C'tor of lsl to ac bridge.
-     * @param name_ Name of LSL stream to be received
-     * @param info_ LSL stream info object containing metadata
-     * @param ac_ Handle to ac space
-     * @param ub_ Underrun behavior. 0=Zero out, 1=Copy, 2=Abort
-     */
-    // This is a function try block. Really ugly syntax but the only way to handle exceptions
-    // in the ctor initializer list. See http://www.gotw.ca/gotw/066.htm
-    save_var_t(const std::string& name_, const lsl::stream_info& info_, const algo_comm_t& ac_, underrun_behavior ub_) try :
-        stream(info_),
-            buf(new mha_real_t[info_.channel_count()]),
-            ac(ac_),
-            ts_name(info_.name()+"_ts"),
-            tc_name(info_.name()+"_tc"),
-            tic(std::chrono::steady_clock::now()),
-            ub(ub_),
-            name(name_)
-            {
-                stream.open_stream();
-                //channel_count() = LSL speak for number of samples received per pull_sample
-                cv.num_entries=info_.channel_count();
-                cv.stride=1;
-                cv.data_type=MHA_AC_FLOAT;
-                cv.data=buf.get();
-                ac.insert_var(ac.handle,info_.name().c_str(),cv);
-                ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
-                ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
-                // According to lsl doc the first call to time_correction takes several ms, subsequent
-                // calls are 'instant'. Calling it here to avoid blocking later.
-                tc=stream.time_correction();
-            }
-    catch (MHA_Error& e) {
-        //The framework can handle MHA_Errors. Just re-throw
-        throw;
-    }
-    catch (std::exception & e) {
-        // LSL does not document its exceptions very well, but all exceptions I encountered inherit from std::exception
-        // Rethrow as MHA_Error
-        throw MHA_Error(__FILE__,__LINE__,"Could not subscribe to stream %s: %s",info_.name().c_str(),e.what());
-    }
-    catch (...) {
-        //No matter what happened before, throw an MHA_Error so that the framework can handle that
-        throw MHA_Error(__FILE__,__LINE__,"Could not subscribe to stream %s: Unknown error",info_.name().c_str());
-    } ;
-    /** Get stream info object from stream inlet */
-    lsl::stream_info info() {
-        return stream.info();
-    };
-    /** Get number of entries in the stream object*/
-    unsigned num_entries() {
-        return stream.info().channel_count();
-    };
-
-    ~save_var_t()=default;
-    /** Receive a sample from lsl and copy to AC space. Handling of underrun is configuration-dependent */
-    void receive_frame()  {
-        if(skip){
-            return;
-        }
-        else{
-            if(ub==underrun_behavior::Zero)
-                impl_receive_frame_zero();
-            else if(ub==underrun_behavior::Copy)
-                impl_receive_frame_copy();
-            else if(ub==underrun_behavior::Abort)
-                impl_receive_frame_abort();
-            else
-                throw MHA_Error(__FILE__,__LINE__,"Bug: Unknown underrun behavior: %i!",static_cast<int>(ub));
-        }
-    };
-private:
-    /** LSL stream outlet. Interface to lsl */
-    lsl::stream_inlet stream;
-    /** Pointer to data buffer of the ac variable. */
-    std::unique_ptr<mha_real_t[]> buf;
-    /** Handle to AC space */
-    const algo_comm_t& ac;
-    /** Timeseries AC variable */
-    comm_var_t cv;
-    /** Current timestamp */
-    double ts;
-    /** Current time correction */
-    double tc;
-    /** Timestamp name */
-    std::string ts_name;
-    /** Time correction name */
-    std::string tc_name;
-    /** time point of last time correction pull */
-    std::chrono::time_point<std::chrono::steady_clock> tic;
-    /** Should the variable be skipped in future process calls? Only true when error occured. */
-    bool skip=false;
-    /** Behavior on stream underrun */
-    underrun_behavior ub;
-    /** Name of stream. Must be saved separately because the stream info might be unrecoverable in error cases */
-    const std::string name;
-    void impl_receive_frame_zero(){
-        try {
-            ts=stream.pull_sample(buf.get(),num_entries(),0.0f);
-            if(ts==0.0){
-                for(size_t i=0;i<num_entries();i++)
-                    buf[i]=0.0f;
-            }
-            auto toc=std::chrono::steady_clock::now();
-            if(toc-tic>std::chrono::seconds(5)){
-                tc=stream.time_correction();
-                tic=toc;
-            }
-            ac.insert_var(ac.handle,name.c_str(),cv);
+// This is a function try block. Really ugly syntax but the only way to handle exceptions
+// in the ctor initializer list. See http://www.gotw.ca/gotw/066.htm
+lsl2ac::save_var_t::save_var_t(const lsl::stream_info& info_, const algo_comm_t& ac_, underrun_behavior ub_) try :
+    stream(info_,/*buflen=*/1/*second*/),
+        buf(new mha_real_t[info_.channel_count()]),
+        ac(ac_),
+        ts_name(info_.name()+"_ts"),
+        tc_name(info_.name()+"_tc"),
+        tic(std::chrono::steady_clock::now()),
+        ub(ub_),
+        name(info_.name())
+        {
+            for(int i=0; i<info_.channel_count(); i++)
+                buf.get()[i]=0.0;
+            stream.open_stream();
+            // According to lsl doc the first call to time_correction takes several ms, subsequent
+            // calls are 'instant'. Calling it here to avoid blocking later.
+            tc=stream.time_correction();
+            cv.stride=info_.channel_count();
+            cv.num_entries=info_.channel_count();
+            cv.data_type=MHA_AC_FLOAT;
+            cv.data=buf.get();
+            ac.insert_var(ac.handle,info_.name().c_str(),cv);
             ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
             ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
         }
-        //If the stream is recoverable, lsl does not throw, instead tries to recover.
-        // Handle any other exception as a permanent underrun
-        catch(...){
+ catch (MHA_Error& e) {
+    //The framework can handle MHA_Errors. Just re-throw
+    throw;
+ }
+ catch (std::exception & e) {
+     // LSL does not document its exceptions very well, but all exceptions I encountered inherit from std::exception
+     // Rethrow as MHA_Error
+     throw MHA_Error(__FILE__,__LINE__,"Could not subscribe to stream %s: %s",info_.name().c_str(),e.what());
+ }
+ catch (...) {
+     //No matter what happened before, throw an MHA_Error so that the framework can handle that
+     throw MHA_Error(__FILE__,__LINE__,"Could not subscribe to stream %s: Unknown error",info_.name().c_str());
+ }
+
+lsl::stream_info lsl2ac::save_var_t::info() {
+    return stream.info();
+}
+
+unsigned  lsl2ac::save_var_t::num_entries() {
+    return stream.info().channel_count();
+}
+
+void lsl2ac::save_var_t::receive_frame()  {
+    if(skip){
+        return;
+    }
+    else{
+        if(ub==underrun_behavior::Zero)
+            impl_receive_frame_zero();
+        else if(ub==underrun_behavior::Copy)
+            impl_receive_frame_copy();
+        else if(ub==underrun_behavior::Abort)
+            impl_receive_frame_abort();
+        else
+            throw MHA_Error(__FILE__,__LINE__,"Bug: Unknown underrun behavior: %i!",static_cast<int>(ub));
+    }
+}
+
+double lsl2ac::save_var_t::pull_latest_sample(){
+    double tmp=0.0;
+    while(stream.samples_available())
+        tmp=stream.pull_sample(buf.get(),num_entries(),0.0f);
+    return tmp;
+}
+
+void lsl2ac::save_var_t::get_time_correction() {
+    auto toc=std::chrono::steady_clock::now();
+    if(toc-tic>std::chrono::seconds(5)){
+        tc=stream.time_correction();
+        tic=toc;
+    }
+}
+
+void lsl2ac::save_var_t::insert_vars(){
+    ac.insert_var(ac.handle,name.c_str(),cv);
+    ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
+    ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
+}
+
+void lsl2ac::save_var_t::impl_receive_frame_zero(){
+    try {
+        ts=pull_latest_sample();
+        if(ts==0.0){
             for(size_t i=0;i<num_entries();i++)
                 buf[i]=0.0f;
-            stream.close_stream();
-            skip=true;
+        }
+        get_time_correction();
+        insert_vars();
+    }
+    //If the stream is recoverable, lsl does not throw, instead tries to recover.
+    // Handle any other exception as a permanent underrun
+    catch(...){
+        for(size_t i=0;i<num_entries();i++)
+            buf[i]=0.0f;
+        stream.close_stream();
+        skip=true;
+    }
+}
+
+void lsl2ac::save_var_t::impl_receive_frame_copy(){
+    try {
+        double old_ts=ts;
+        //If no new samples are there, buf does not get touched...
+        ts=pull_latest_sample();
+        //...but we need to reset ts to the old value
+        if(ts==0.0){
+            ts=old_ts;
+        }
+        get_time_correction();
+        insert_vars();
+    }
+    //If the stream is recoverable, lsl does not throw, instead tries to recover.
+    // Handle any other exception as a permanent underrun
+    catch(...){
+        stream.close_stream();
+        skip=true;
+    }
+}
+void lsl2ac::save_var_t::impl_receive_frame_abort(){
+    class UnderrunError{};
+    try {
+        ts=pull_latest_sample();
+        if(ts==0.0){
+            throw UnderrunError();
+        }
+        else{
+            get_time_correction();
+            insert_vars();
         }
     }
-
-    void impl_receive_frame_copy(){
-        try {
-            double old_ts=ts;
-            //If no new samples are there, buf does not get touched...
-            ts=stream.pull_sample(buf.get(),num_entries(),0.0f);
-            //...but we need to reset ts to the old value
-            if(ts==0.0){
-                ts=old_ts;
-            }
-            auto toc=std::chrono::steady_clock::now();
-            if(toc-tic>std::chrono::seconds(5)){
-                tc=stream.time_correction();
-                tic=toc;
-            }
-            ac.insert_var(ac.handle,name.c_str(),cv);
-            ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
-            ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
-        }
-        //If the stream is recoverable, lsl does not throw, instead tries to recover.
-        // Handle any other exception as a permanent underrun
-        catch(...){
-            stream.close_stream();
-            skip=true;
-        }
+    catch(UnderrunError &e){
+        throw MHA_Error(__FILE__,__LINE__,"Stream: %s has no new samples!",name.c_str());
     }
-    void impl_receive_frame_abort(){
-        class UnderrunError{};
-        try {
-            ts=stream.pull_sample(buf.get(),num_entries(),0.0f);
-            if(ts==0.0){
-                throw UnderrunError();
-            }
-            else{
-                auto toc=std::chrono::steady_clock::now();
-                if(toc-tic>std::chrono::seconds(5)){
-                    tc=stream.time_correction();
-                    tic=toc;
-                }
-                ac.insert_var(ac.handle,name.c_str(),cv);
-                ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
-                ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
-            }
-        }
-        catch(UnderrunError &e){
-            throw MHA_Error(__FILE__,__LINE__,"Stream: %s has no new samples!",name.c_str());
-        }
-        catch(std::exception &e){
-            throw MHA_Error(__FILE__,__LINE__,"Error in stream %s: %s",name.c_str(),e.what());
-        }
-        catch(...){
-            throw MHA_Error(__FILE__,__LINE__,"Unknown error in stream %s!",name.c_str());
-        }
+    catch(std::exception &e){
+        throw MHA_Error(__FILE__,__LINE__,"Error in stream %s: %s",name.c_str(),e.what());
     }
-};
-
-/** Runtime configuration class of the lsl2ac plugin */
-class cfg_t {
-    /** Maps variable name to unique ptr's of lsl to ac bridges. */
-    std::map<std::string, std::unique_ptr<save_var_t>> varlist;
-public:
-
-    /** C'tor of lsl2ac run time configuration
-     * @param ac_         AC space, data from LSL will be inserted as AC variables
-     * @param streamnames_   Names of LSL streams to be subscribed to
-     */
-    cfg_t(const algo_comm_t& ac_, underrun_behavior underrun_, const std::vector<std::string>& streamnames_);
-    void process();
-
-};
-
-/** Plugin class of lsl2ac */
-class lsl2ac_t : public MHAPlugin::plugin_t<cfg_t>
-{
-public:
-    lsl2ac_t(algo_comm_t iac,const char* chain, const char* algo);
-    /** Prepare constructs the vector of bridge variables and locks
-     * the configuration, then calls update(). */
-    void prepare(mhaconfig_t&);
-    /** Processing fct for waveforms. Calls process(void). */
-    mha_wave_t* process(mha_wave_t* s) {process();return s;};
-    /** Processing fct for spectra. Calls process(void). */
-    mha_spec_t* process(mha_spec_t* s) {process();return s;};
-    /** Process function. */
-    void process();
-    /** Release fct. Unlocks variable name list */
-    void release();
-private:
-    /** Retrieves all stream names from LSL and fills them into
-        available_streams. 
-     */
-    void get_all_stream_names();
-    /** Construct new runtime configuration */
-    void update();
-    MHAParser::vstring_t streams;
-    MHAParser::bool_t activate;
-    MHAParser::kw_t underrun_behavior;
-    MHAEvents::patchbay_t<lsl2ac_t> patchbay;
-    /** Monitor variable containing all available streams. */
-    MHAParser::vstring_mon_t available_streams;
-};
+    catch(...){
+        throw MHA_Error(__FILE__,__LINE__,"Unknown error in stream %s!",name.c_str());
+    }
 }
 
 lsl2ac::lsl2ac_t::lsl2ac_t(algo_comm_t iac,const char* chain, const char* algo)
@@ -325,7 +230,7 @@ lsl2ac::cfg_t::cfg_t(const algo_comm_t& ac_, underrun_behavior ub_, const std::v
         auto matching_streams=lsl::resolve_stream("name",name,/*minimum=*/1,/*timeout=*/1.0);
         if(!matching_streams.size())
             throw MHA_Error(__FILE__,__LINE__,"No stream with name %s found!",name.c_str());
-        varlist.insert({name,std::make_unique<save_var_t>(name,matching_streams[0],ac_,ub_)});
+        varlist.insert({name,std::make_unique<save_var_t>(matching_streams[0],ac_,ub_)});
     }
 }
 

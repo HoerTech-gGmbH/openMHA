@@ -191,6 +191,11 @@ LDLIBS += -l$(MHATOOLBOX_NAME)
 
 ifeq "$(NEEDS_LSL)" "yes"
 $(PLUGIN_AND_TEST_ARTIFACTS): LDLIBS += -llsl
+ifneq "$(WITH_LSL)" "yes"
+# Do not compile unit test if lsl not available.
+$(BUILD_DIR)/unit-test-runner:
+	@echo "not compiling" $(PLUGINS) " unit test since lsl is not available"
+endif
 endif
 
 
