@@ -230,7 +230,7 @@ lsl2ac::cfg_t::cfg_t(const algo_comm_t& ac_, underrun_behavior ub_, const std::v
         auto matching_streams=lsl::resolve_stream("name",name,/*minimum=*/1,/*timeout=*/1.0);
         if(!matching_streams.size())
             throw MHA_Error(__FILE__,__LINE__,"No stream with name %s found!",name.c_str());
-        varlist.insert({name,std::make_unique<save_var_t>(matching_streams[0],ac_,ub_)});
+        varlist.emplace(std::make_pair(name,std::make_unique<save_var_t>(matching_streams[0],ac_,ub_)));
     }
 }
 
