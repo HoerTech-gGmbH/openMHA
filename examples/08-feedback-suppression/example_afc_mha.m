@@ -43,7 +43,7 @@ clc
 % currently done in octave) into the openMHA proper.
 
 % Main MHA path
-working_dir = '../../';
+working_dir = '../../mha/';
 
 %% init
 addpath ([working_dir 'tools/mfiles/']);
@@ -53,9 +53,6 @@ mhapath = [working_dir '../bin/'];
 
 % MHA libraries path
 mha_lib_path = [working_dir '../lib/'];
-
-% java path
-javaaddpath( [working_dir 'tools/mfiles/mhactl_java.jar'] );
 
 % define environment
 setenv('MHA_INSTALL_DIR', mhapath );
@@ -84,14 +81,14 @@ dm      = zeros(P, 1) + epsi;
 nm      = zeros(P, 1) + epsi;
 km      = zeros(P, Lhhat) + epsi;
 
-f       = zeros(P, 1) + epsi;   	% adaptive forward linear predictor vector
-b       = zeros(P, 2) + epsi;   	% adaptive backward linear predictor vector
+f       = zeros(P, 1) + epsi;     % adaptive forward linear predictor vector
+b       = zeros(P, 2) + epsi;     % adaptive backward linear predictor vector
 
-fx      = zeros(P, 1) + epsi;   	% forward linear predictor vector for output signal
-bx      = zeros(P, 2) + epsi;   	% backward linear predictor vector for output signal
+fx      = zeros(P, 1) + epsi;     % forward linear predictor vector for output signal
+bx      = zeros(P, 2) + epsi;     % backward linear predictor vector for output signal
 
-fe_n      = zeros(P, 1) + epsi;   	% forward linear predictor vector for error signal for NLMS
-be_n      = zeros(P, 2) + epsi;   	% backward linear predictor vector for error signal for NLMS
+fe_n      = zeros(P, 1) + epsi;     % forward linear predictor vector for error signal for NLMS
+be_n      = zeros(P, 2) + epsi;     % backward linear predictor vector for error signal for NLMS
 
 %% general settings for common part filtering
 Npc = 8;
@@ -174,7 +171,7 @@ vHFreq = freqz(vH,1,2048);
 
 %% step through all fragments of input
 for s=1:hopsize:length(vX)-fragsize
-    
+
     if s == lenX/2
         vH = vHphone;
         vHFreq = freqz(vH,1,2048);

@@ -12,17 +12,14 @@ if ismac
     % Code to run on Mac platform
     setenv('PATH', [getenv('PATH') ':/usr/local/bin']);
     addpath('/usr/local/lib/openmha/mfiles/')
-    javaaddpath('/usr/local/lib/openmha/mfiles/mhactl_java.jar')    
 elseif isunix
     % Code to run on Linux platform
     setenv('LD_LIBRARY_PATH','') % Set LD_LIBRARY_PATH to empty
     addpath('/usr/lib/openmha/mfiles')
-    javaaddpath('/usr/lib/openmha/mfiles/mhactl_java.jar')
 elseif ispc
     % Code to run on Windows platform
     setenv('LD_LIBRARY_PATH','') % Set LD_LIBRARY_PATH to empty
     addpath('C:\Program Files\openMHA\mfiles')
-    javaaddpath('C:\Program Files\openMHA\mfiles\mhactl_java.jar')
 else
     disp('Platform not supported')
 end
