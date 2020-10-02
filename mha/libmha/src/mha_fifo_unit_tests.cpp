@@ -5,14 +5,8 @@
 #include "mha.hh"
 #include "mha_error.hh"
 #include "mha_fifo.h"
-#include "mha_plugin.hh" // test runtime config fifo
 #include <gtest/gtest.h>
 #include <thread>
-
-class Test_mha_fifo_t : public ::testing::Test
-{
-    // This fixture has no data, setup nor teardown, and no friends.
-};
 
 class Test_mha_fifo_lf_t : public ::testing::Test
 {
@@ -46,7 +40,7 @@ public:
     void test_underrun();
 };
 
-#define DATA_SIZE 1000
+static constexpr unsigned DATA_SIZE = 1000U;
 
 class Test_mha_fifo_lw_t: public ::testing::Test
 {
@@ -59,8 +53,6 @@ public:
 
     void fill_source_data();
     void check_target_data();
-    virtual void svc();
-    std::thread thread;
 
     void SetUp();
     void TearDown();
@@ -77,8 +69,6 @@ public:
     mha_real_t target_data[DATA_SIZE];
 
     void fill_source_data();
-    virtual void svc();
-    std::thread thread;
 
     void SetUp();
     void TearDown();
@@ -102,29 +92,7 @@ public:
     void test_remove_all(void);
 };
 
-class test_cfg_t {
-public:
-    int i;
-    static int instances;
-    explicit test_cfg_t(int n) : i(n) {++instances;}
-    ~test_cfg_t() {--instances;}
-};
-int test_cfg_t::instances = 0;
-
-class Test_mha_plugin_rtcfg_t : public ::testing::Test
-{   
-    MHAPlugin::config_t<test_cfg_t> t;
-public:
-    void SetUp() {test_cfg_t::instances = 0;}
-    void test_initial_state();
-    void test_push_config(void);
-    void test_poll_config(void);
-    void test_peek_config(void);
-    void test_cleanup_unused_cfg(void);
-    void test_remove_all_cfg(void);
-};
-
-TEST_F(Test_mha_fifo_t,overflow_protection)
+TEST(Test_mha_fifo_t,overflow_protection)
 {
     // Check that allocating a fifo with MAX_UINT elements is prohibited
     // We need to allocate capacity+1 elements. The number of allocated elements
@@ -135,7 +103,7 @@ TEST_F(Test_mha_fifo_t,overflow_protection)
     const unsigned max_uint = std::numeric_limits<unsigned>::max();
     ASSERT_THROW(mha_fifo_t<char> fifo(max_uint), MHA_Error);
 }
-TEST_F(Test_mha_fifo_t,test_size_0)
+TEST(Test_mha_fifo_t,test_size_0)
 {
     mha_fifo_t<mha_real_t> fifo(0);
     ASSERT_EQ(0U, fifo.get_fill_count());
@@ -148,7 +116,7 @@ TEST_F(Test_mha_fifo_t,test_size_0)
     
 }
 
-TEST_F(Test_mha_fifo_t,test_size_1)
+TEST(Test_mha_fifo_t,test_size_1)
 {
     mha_fifo_t<mha_real_t> fifo(1);
     mha_real_t data = 0.1;
@@ -161,7 +129,7 @@ TEST_F(Test_mha_fifo_t,test_size_1)
     ASSERT_EQ(0.1f, data);
     
     // Writing 0 instances succeeds and does not alter the FIFO
-    fifo.write(&data, 0);
+    ASSERT_NO_THROW(fifo.write(&data, 0));
     ASSERT_EQ(0U, fifo.get_fill_count());
     ASSERT_EQ(1U, fifo.get_available_space());
 
@@ -171,7 +139,7 @@ TEST_F(Test_mha_fifo_t,test_size_1)
     ASSERT_EQ(1U, fifo.get_available_space());
 
     // Writing one instance succeeds and fills the FIFO
-    fifo.write(&data, 1);
+    ASSERT_NO_THROW(fifo.write(&data, 1));
     ASSERT_EQ(1U, fifo.get_fill_count());
     ASSERT_EQ(0U, fifo.get_available_space());
     
@@ -197,7 +165,7 @@ TEST_F(Test_mha_fifo_t,test_size_1)
     ASSERT_EQ(0.0f, data);
 }
 
-TEST_F(Test_mha_fifo_t,test_available_space_20)
+TEST(Test_mha_fifo_t,test_available_space_20)
 {
     mha_fifo_t<mha_real_t> * fifo = new mha_fifo_t<mha_real_t>(20);
     ASSERT_EQ(0U, fifo->get_fill_count());
@@ -205,7 +173,7 @@ TEST_F(Test_mha_fifo_t,test_available_space_20)
     delete fifo;
 }
 
-TEST_F(Test_mha_fifo_t,test_size_200)
+TEST(Test_mha_fifo_t,test_size_200)
 {
     mha_fifo_t<mha_real_t> fifo(200);
     ASSERT_EQ(0U, fifo.get_fill_count());
@@ -227,7 +195,7 @@ TEST_F(Test_mha_fifo_t,test_size_200)
     ASSERT_EQ(13U*14U*2U, read_counter);
 }
 
-TEST_F(Test_mha_fifo_t,test_placement_new)
+TEST(Test_mha_fifo_t,test_placement_new)
 {
     constexpr size_t L = 12U;
     struct custom_type_t {
@@ -267,18 +235,6 @@ TEST_F(Test_mha_fifo_t,test_placement_new)
     EXPECT_EQ(13*14*2, read_counter);
 }
 
-TEST_F(Test_mha_fifo_lf_t,mha_fifo_t)
-{
-    // avoid undefined behaviour, commenting out the whole test
-    /*
-    mha_fifo_t<double> fifo(1000000,-1.0);
-    const bool expect_read_error = true;
-    // Triggering read errors is unreliable.
-    const bool fail_when_expected_read_errors_do_not_occur = false;
-
-    stress(fifo, expect_read_error,fail_when_expected_read_errors_do_not_occur);
-    */
-}
 TEST_F(Test_mha_fifo_lf_t,mha_fifo_lf_t)
 {
     mha_fifo_lf_t<double> fifo(1000000,-1.0);
@@ -637,19 +593,6 @@ void Test_mha_fifo_lw_t::check_target_data()
     }
 }
 
-void Test_mha_fifo_lw_t::svc()
-{
-    unsigned k;
-    unsigned k_max = DATA_SIZE 
-        / source_fragsize * source_fragsize
-        / target_fragsize * target_fragsize;
-    for (k = 0;
-         (k + target_fragsize) <= k_max;
-         k += target_fragsize) {
-        fifo->read(target_data + k, target_fragsize);
-    }
-}
-
 void Test_mha_fifo_lw_t::testing_blocksize_adaptation(size_t source_fragsize,
                                                       size_t target_fragsize,
                                                       size_t fifo_size)
@@ -661,7 +604,20 @@ void Test_mha_fifo_lw_t::testing_blocksize_adaptation(size_t source_fragsize,
         fifo_size = delay + std::max(target_fragsize, source_fragsize);
     fifo = new mha_fifo_lw_t<mha_real_t>(fifo_size);
     fill_source_data();
-    thread = std::thread(&Test_mha_fifo_lw_t::svc, this);
+
+    std::thread thread([&](){
+            unsigned k;
+            unsigned k_max = DATA_SIZE 
+            / source_fragsize * source_fragsize
+            / target_fragsize * target_fragsize;
+            for (k = 0;
+                 (k + target_fragsize) <= k_max;
+                 k += target_fragsize) {
+                fifo->read(target_data + k, target_fragsize);
+            }
+        }
+    );
+
     size_t k = 0;
     while ((k + source_fragsize) <= DATA_SIZE) {
         fifo->write(source_data + k, source_fragsize);
@@ -698,24 +654,6 @@ void Test_mha_dblbuf_t::fill_source_data()
         source_data[i] = rand();
 }
 
-void Test_mha_dblbuf_t::svc()
-{
-    unsigned k;
-    unsigned k_max = (DATA_SIZE
-                      / dblbuf->get_inner_size() * dblbuf->get_inner_size()
-                      + dblbuf->get_delay())
-        / dblbuf->get_outer_size() * dblbuf->get_outer_size();
-    mha_real_t * temp = new mha_real_t[dblbuf->get_inner_size()];
-    for (k = 0;
-         (k + dblbuf->get_inner_size()) <= k_max;
-         k += dblbuf->get_inner_size()) {
-        //printf("Have read %u\n", k); fflush(stdout);
-        dblbuf->input(temp);
-        dblbuf->output(temp);
-    }
-    delete [] temp;
-}
-
 void Test_mha_dblbuf_t::testing_blocksize_adaptation(unsigned source_fragsize,
                                                      unsigned target_fragsize,
                                                      unsigned delay)
@@ -738,7 +676,22 @@ void Test_mha_dblbuf_t::testing_blocksize_adaptation(unsigned source_fragsize,
     ASSERT_EQ(dblbuf->get_fifo_size(),
                          dblbuf->get_output_fifo_space());
     fill_source_data();
-    thread = std::thread(&Test_mha_dblbuf_t::svc, this);
+    std::thread thread([&](){
+            unsigned k;
+            unsigned k_max =
+            (DATA_SIZE / dblbuf->get_inner_size() * dblbuf->get_inner_size()
+             + dblbuf->get_delay())
+            / dblbuf->get_outer_size() * dblbuf->get_outer_size();
+            std::vector<mha_real_t> temp(dblbuf->get_inner_size());
+            for (k = 0;
+                 (k + dblbuf->get_inner_size()) <= k_max;
+                 k += dblbuf->get_inner_size()) {
+                dblbuf->input(temp.data());
+                dblbuf->output(temp.data());
+            }
+        }
+    );
+
     unsigned k = 0;
     unsigned k_max = (DATA_SIZE / target_fragsize * target_fragsize)
         / source_fragsize * source_fragsize;
@@ -839,94 +792,6 @@ void Test_mha_rt_fifo_t::test_remove_all(void)
     ASSERT_TRUE(fifo->current == 0);
 }
 TEST_F(Test_mha_rt_fifo_t,test_remove_all) {test_remove_all();}
-
-void Test_mha_plugin_rtcfg_t::test_initial_state()
-{
-    ASSERT_TRUE(t.cfg == 0);
-    ASSERT_TRUE(t.cfg_root != 0);
-    ASSERT_TRUE(t.cfg_root.load()->data == 0);
-    ASSERT_TRUE(t.cfg_root.load()->next == 0);
-    ASSERT_EQ(false, t.cfg_root.load()->not_in_use);
-    ASSERT_THROW(t.poll_config(), MHA_Error);
-}
-TEST_F(Test_mha_plugin_rtcfg_t,test_initial_state) {
-    test_initial_state();
-}
-void Test_mha_plugin_rtcfg_t::test_push_config(void)
-{
-    // First push pushes new data behind NULL object
-    test_cfg_t * c = new test_cfg_t(0);
-    t.push_config(c);
-    ASSERT_TRUE(t.cfg == 0);
-    ASSERT_EQ(c, t.cfg_root.load()->next.load()->data);
-    ASSERT_TRUE(t.cfg_root.load()->next.load()->next == 0);
-    ASSERT_EQ(false, t.cfg_root.load()->next.load()->not_in_use);
-
-    // Next push pushes new data behind previous object
-    t.push_config(new test_cfg_t(1));
-    ASSERT_TRUE(t.cfg_root.load()->next.load()->next != 0);
-    ASSERT_EQ(1, t.cfg_root.load()->next.load()->next.load()->data->i);
-    ASSERT_TRUE(t.cfg_root.load()->next.load()->next.load()->next == 0);
-    ASSERT_EQ(false, t.cfg_root.load()->not_in_use);
-    ASSERT_EQ(false, t.cfg_root.load()->next.load()->not_in_use);
-    ASSERT_EQ(false, t.cfg_root.load()->next.load()->next.load()->not_in_use);
-
-    // Push deletes no longer in use data
-    ASSERT_TRUE(t.cfg_root.load()->data == 0);
-    t.cfg_root.load()->not_in_use = true;
-    t.cfg_root.load()->next.load()->not_in_use = true;
-    ASSERT_EQ(2, test_cfg_t::instances);
-    t.push_config(0);
-    ASSERT_EQ(1, t.cfg_root.load()->data->i);
-    ASSERT_EQ(1, test_cfg_t::instances);
-}
-TEST_F(Test_mha_plugin_rtcfg_t,test_push_config) {test_push_config();}
-void Test_mha_plugin_rtcfg_t::test_poll_config(void)
-{
-    ASSERT_THROW(t.poll_config(), MHA_Error);
-    t.push_config(new test_cfg_t(0));
-    ASSERT_NO_THROW(t.poll_config());
-    ASSERT_EQ(true, t.cfg_root.load()->not_in_use);
-    ASSERT_TRUE(t.cfg != 0);
-    ASSERT_EQ(0, t.cfg->i);
-}
-TEST_F(Test_mha_plugin_rtcfg_t,test_poll_config) {
-    test_poll_config();
-}
-void Test_mha_plugin_rtcfg_t::test_peek_config(void)
-{
-    t.push_config(new test_cfg_t(0));
-    ASSERT_NO_THROW(t.peek_config());
-    ASSERT_EQ(false, t.cfg_root.load()->not_in_use);
-    ASSERT_TRUE(t.peek_config() != 0);
-    ASSERT_EQ(0, t.peek_config()->i);
-}
-TEST_F(Test_mha_plugin_rtcfg_t,test_peek_config) {test_peek_config();}
-void Test_mha_plugin_rtcfg_t::test_cleanup_unused_cfg(void)
-{
-    t.push_config(new test_cfg_t(0));
-    t.push_config(new test_cfg_t(1));
-    t.push_config(new test_cfg_t(2));
-    t.poll_config();
-    ASSERT_EQ(3, test_cfg_t::instances);
-    t.cleanup_unused_cfg();
-    ASSERT_EQ(1, test_cfg_t::instances);
-}
-TEST_F(Test_mha_plugin_rtcfg_t,test_cleanup_unused_cfg) {
-    test_cleanup_unused_cfg();
-}
-void Test_mha_plugin_rtcfg_t::test_remove_all_cfg(void)
-{
-    t.push_config(new test_cfg_t(0));
-    t.push_config(new test_cfg_t(1));
-    t.push_config(new test_cfg_t(2));
-    t.poll_config();
-    ASSERT_EQ(3, test_cfg_t::instances);
-    t.remove_all_cfg();
-    ASSERT_EQ(0, test_cfg_t::instances);
-    ASSERT_EQ(nullptr, t.cfg_root);
-}
-TEST_F(Test_mha_plugin_rtcfg_t,test_remove_all_cfg) {test_remove_all_cfg();}
 
 // Local Variables:
 // compile-command: "make -C .. unit-tests"

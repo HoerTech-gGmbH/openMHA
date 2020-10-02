@@ -22,8 +22,8 @@
 #include "mha_error.hh"
 
 /** 
- * A FIFO class for blocksize adaptation 
- * Synchronization: None. Use external synchronisation or synchronization 
+ * A FIFO class.
+ * Synchronization: None.  Use external synchronisation or synchronization 
  * in inheriting class.  Assignment, copy and move constructors are disabled.
  */
 template <class T>
@@ -102,7 +102,7 @@ protected:
 
     /** Compute fill count from given write pointer and read pointer.
      * @param wp Write pointer.
-     * @param rm Read pointer.
+     * @param rp Read pointer.
      * @pre wp and rp must point to an instance of T inside buf.
      * @return Number of elements that can be read from the fifo when wp and rp
      *         have the given values. */
@@ -795,9 +795,12 @@ mha_fifo_t<T>::mha_fifo_t(unsigned max_fill_count, const T & t)
         throw MHA_Error(__FILE__,__LINE__,"Cannot create fifo of size %u",
                         max_fill_count);
     try{
+        // We need to initialize all elements of the fifo as a valid instance
+        // of T because we call assignment operator and eventually destructor
+        // on them.  Let std::vector care about initialization and destruction.
         buf.resize(max_fill_count + 1U, t);
     } catch(const std::bad_alloc &) {
-        throw MHA_Error(__FILE__,__LINE__,"System does not have enough RAM to "
+        throw MHA_Error(__FILE__,__LINE__,"Not enough memory to "
                         "allocate fifo of size %u", max_fill_count);
     }
     read_ptr = write_ptr = buf.data();
