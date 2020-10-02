@@ -17,45 +17,31 @@
 #define __MHA_FIFO_H__
 
 #include <algorithm>
+#include <vector>
 #include "mha_error.hh"
-
-#ifdef min
-#undef min
-#endif
-#ifdef max
-#undef max
-#endif
-
 
 /** 
  * A FIFO class for blocksize adaptation 
  * Synchronization: None. Use external synchronisation or synchronization 
- * in inheriting class.
+ * in inheriting class.  Assignment, copy and move constructors are disabled.
  */
 template <class T>
 class mha_fifo_t {
-    /** The maximum fill count of this FIFO. */
-    const unsigned max_fill_count;
-
-    /** The memory allocated to store the data. 
-     * max_fill_count + 1 locations are allocated:
-     * At least one location is always unused, because we have
+    /** The memory allocated to store the data in the fifo.
+     * At least one location in buf is always unused, because we have
      * max_fill_count + 1 possible fillcounts [0:max_fill_count] that we 
      * need to distinguish. */
-    T * buf;
+    std::vector<T> buf;
 
     /** points to location where to write next */
     T * write_ptr;
 
     /**  points to location where to read next */
     const T * read_ptr;
-
-    /** wether buf was allocated using placement new or array new. */
-    bool buf_uses_placement_new;
 public:
     /** The data type exchanged by this fifo */
-    typedef T value_type;
-    
+    typedef typename std::vector<T>::value_type value_type;
+
     /** write specified ammount of data to the fifo.
      * @param data Pointer to source data.
      * @param count Number of instances to copy
@@ -75,23 +61,30 @@ public:
     virtual unsigned get_available_space() const;
 
     /** The capacity of this fifo */
-    virtual unsigned get_max_fill_count() const {return max_fill_count;}
-
-    /** Create FIFO with fixed buffer size */
-    explicit mha_fifo_t(unsigned max_fill_count);
+    virtual unsigned get_max_fill_count() const {return buf.size()-1;}
 
     /** Create FIFO with fixed buffer size, where all (initially unused) 
-        copies of T are initialized as copies of t */
-    mha_fifo_t(unsigned max_fill_count, const T & t);
+        instances of T are initialized as copies of t.
+        @param max_fill_count The maximum number of instances of T that can
+               be held at the same time inside the fifo.
+        @param The fifo allocates a vector of max_fill_count+1 instances of
+               T for storage, one of which is always unused. */
+    explicit mha_fifo_t(unsigned max_fill_count, const T & t = T());
+
+    /** Make destructor virtual. */
+    virtual ~mha_fifo_t() = default;
 
     /** Copy constructor */
-    mha_fifo_t(const mha_fifo_t& src);
+    mha_fifo_t(const mha_fifo_t&) = delete;
 
-    /** Destroy FIFO */
-    virtual ~mha_fifo_t();
+    /** Move constructor */
+    mha_fifo_t(mha_fifo_t&&) = delete;
 
     /** Assignment operator */
-    mha_fifo_t<T>& operator=(const mha_fifo_t<T>&);
+    mha_fifo_t<T>& operator=(const mha_fifo_t<T>&) = delete;
+
+    /** Move assignment operator */
+    mha_fifo_t<T>& operator=(mha_fifo_t<T>&&) = delete;
 
 protected:
     /** Empty the fifo at once. Should be called by the reader, or
@@ -673,11 +666,10 @@ void mha_fifo_t<T>::write(const T * data, unsigned count)
                         "Could not write %u instances to FIFO: There"
                         " is only space for %u instances",
                         count, available_space);
-    unsigned k;
-    for( k = 0; 
-         k < count;
-         ++k, write_ptr = (write_ptr +1 - buf) % (max_fill_count + 1) + buf ) {
-        *write_ptr = data[k];
+    while (count--) {
+        *write_ptr++ = *data++;
+        if (write_ptr > &buf.back())
+            write_ptr = &buf.front();
     }
 }
 
@@ -690,91 +682,45 @@ void mha_fifo_t<T>::read(T * buffer, unsigned count)
                         "Could not read %u instances from FIFO:"
                         " Only %u instances available",
                         count, available_data);
-    unsigned k;
-    for (k = 0; 
-         k < count; 
-         ++k, read_ptr = (read_ptr + 1 - buf) % (max_fill_count + 1) + buf ) {
-        buffer[k] = *read_ptr;
+    while (count--) {
+        *buffer++ = *read_ptr++;
+        if (read_ptr > &buf.back())
+            read_ptr = &buf.front();
     }
 }
 
 template <class T>
 unsigned mha_fifo_t<T>::get_fill_count() const
 {
-    // The extra "+ max_fill_count + 1" might look unnecessary, but is required
-    return (write_ptr + max_fill_count + 1 - read_ptr) % (max_fill_count + 1);
+    // The extra "+ buf.size()" prevents underflow.
+    return (write_ptr + buf.size() - read_ptr) % buf.size();
 }
 
 template <class T>
 unsigned mha_fifo_t<T>::get_available_space() const
 {
-    return max_fill_count - this->mha_fifo_t<T>::get_fill_count();
+    return mha_fifo_t<T>::get_max_fill_count()-mha_fifo_t<T>::get_fill_count();
 }
 
 template <class T>
-mha_fifo_t<T>::mha_fifo_t(unsigned max_fill_count_)
-    : max_fill_count(max_fill_count_),
-      buf_uses_placement_new(false)
+mha_fifo_t<T>::mha_fifo_t(unsigned max_fill_count, const T & t)
 {
-    read_ptr = write_ptr = buf = new T[max_fill_count_ + 1];
-}
+    // ensure that max_fill_count+1 can be stored in unsigned without overflow
+    if ((max_fill_count + 1U) <= max_fill_count)
+        throw MHA_Error(__FILE__,__LINE__,"Cannot create fifo of size %u",
+                        max_fill_count);
 
-template <class T>
-mha_fifo_t<T>::mha_fifo_t(unsigned max_fill_count_, const T & t)
-    : max_fill_count(max_fill_count_),
-      buf_uses_placement_new(true)
-{
-    buf = reinterpret_cast<T*>(new char[sizeof(T) * (max_fill_count + 1)]);
-    for (unsigned i = 0; i <= max_fill_count; ++i) {
-        new(static_cast<void*>(buf+i)) T(t);
+    try{
+        // We need to initialize all elements of the fifo as a valid instance
+        // of T because we call assignment operator and eventually destructor
+        // on them.  Let std::vector care about initialization and destruction.
+        buf.resize(max_fill_count + 1U, t);
+    } catch(std::bad_alloc &) {
+        throw MHA_Error(__FILE__,__LINE__,"Not enough memory to "
+                        "allocate fifo of size %u", max_fill_count);
     }
-    read_ptr = write_ptr = buf;
+    read_ptr = write_ptr = buf.data();
 }
-
-template <class T>
-mha_fifo_t<T>::mha_fifo_t(const mha_fifo_t<T>& src)
-    : max_fill_count(src.max_fill_count),
-      buf_uses_placement_new(true)
-{
-    buf = reinterpret_cast<T*>(new char[sizeof(T) * (max_fill_count + 1)]);
-    for (unsigned i = 0; i <= max_fill_count; ++i) {
-        new(static_cast<void*>(buf+i)) T(src.buf[i]);
-    }
-    read_ptr = src.read_ptr - src.buf + buf;
-    write_ptr = src.write_ptr - src.buf + buf;
-}
-
-template <class T>
-mha_fifo_t<T>::~mha_fifo_t()
-{
-    if (buf_uses_placement_new) {
-        for (unsigned i = 0; i <= max_fill_count; ++i) {
-            buf[i].~T();
-        }
-        delete [] reinterpret_cast<char*>(buf);
-
-    }
-    else {
-        delete [] buf;
-    }
-    read_ptr = write_ptr = buf = 0;
-}
-
-
-template <class T>
-mha_fifo_t<T>& mha_fifo_t<T>::operator=(const mha_fifo_t<T>& src)
-{
-    if( src.max_fill_count != max_fill_count )
-        throw MHA_Error(__FILE__,__LINE__,"Expected same size (this %u, src %u)",max_fill_count,src.max_fill_count);
-    for (unsigned i = 0; i <= max_fill_count; ++i) {
-        buf[i] = src.buf[i];
-    }
-    read_ptr = src.read_ptr - src.buf + buf;
-    write_ptr = src.write_ptr - src.buf + buf;
-    return *this;
-}
-
-
 
 template <class T>
 void mha_drifter_fifo_t<T>::write(const T * data, unsigned count)
