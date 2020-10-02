@@ -46,8 +46,8 @@ private:
     MHAProc_wave2spec_t inner_process_wave2spec;
     MHASignal::waveform_t inner_input;
     void* libdata;
-    mha_fifo_t<mha_real_t> wave_fifo;
-    mha_fifo_t<MHA_AC::acspace2matrix_t> ac_fifo;
+    mha_fifo_lf_t<mha_real_t> wave_fifo;
+    mha_fifo_lf_t<MHA_AC::acspace2matrix_t> ac_fifo;
     MHA_AC::acspace2matrix_t inner_ac_copy;
     MHA_AC::acspace2matrix_t outer_ac_copy;
     algo_comm_t outer_ac;

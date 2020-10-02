@@ -36,7 +36,7 @@ private:
     bool act_;
     mhaconfig_t cf_;
     SNDFILE* sf;
-    mha_fifo_t<mha_real_t> fifo;
+    mha_fifo_lf_t<mha_real_t> fifo;
     unsigned int minw_;
     pthread_t writethread;
     float* data;

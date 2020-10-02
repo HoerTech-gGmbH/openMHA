@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <atomic>
 #include "mha_error.hh"
 
 /** 
@@ -49,19 +50,21 @@ public:
     virtual void write(const T * data, unsigned count);
 
     /** read data from fifo
-     * @param buf Pointer to the target buffer
-     * @param count Number of instances to copy
+     * @param outbuf Pointer to the target buffer.
+     * @param count  Number of instances to copy.
      * @throw MHA_Error when there is not enough data available. */
-    virtual void read(T * buf, unsigned count);
+    virtual void read(T * outbuf, unsigned count);
 
     /** Read-only access to fill_count */
-    virtual unsigned get_fill_count() const;
+    virtual unsigned get_fill_count() const {
+        return get_fill_count(write_ptr, read_ptr);
+    }
 
     /** Read-only access to available_space */
     virtual unsigned get_available_space() const;
 
     /** The capacity of this fifo */
-    virtual unsigned get_max_fill_count() const {return buf.size()-1;}
+    virtual unsigned get_max_fill_count() const {return buf.size()-1U;}
 
     /** Create FIFO with fixed buffer size, where all (initially unused) 
         instances of T are initialized as copies of t.
@@ -90,7 +93,91 @@ protected:
     /** Empty the fifo at once. Should be called by the reader, or
      * when the reader is inactive. */
     void clear() {read_ptr = write_ptr;}
+
+    /** read-only access to the write pointer for derived classes */
+    const T * get_write_ptr() const {return write_ptr;}
+
+    /** read-only access to read pointer for derived classes */
+    const T * get_read_ptr() const {return read_ptr;}
+
+    /** Compute fill count from given write pointer and read pointer.
+     * @param wp Write pointer.
+     * @param rm Read pointer.
+     * @pre wp and rp must point to an instance of T inside buf.
+     * @return Number of elements that can be read from the fifo when wp and rp
+     *         have the given values. */
+    inline unsigned get_fill_count(const T * wp, const T * rp) const {
+        if (wp >= rp) // Direct subtraction will not underflow in this case.
+            // Direct difference will also not overflow when converted to return
+            // type unsigned, see overflow check in mha_fifo_t<T> constructor.
+            return wp - rp;
+        // Avoid underflow (buf is used as a ringbuffer).
+        return wp + buf.size() - rp;
+    }
 };
+
+/**
+ * A lock-free FIFO class for transferring data from a producer thread to
+ * a consumer thread.  Inherits basic functionality from mha_fifo_t, adds
+ * release-acquire semantics to ensure consumer that the fill count or free
+ * space deduced from read and write pointers is consistent with the actual
+ * data.  Copying, moving, and assignment of FIFO are forbidden by base class.
+ */
+template <class T>
+class mha_fifo_lf_t : public mha_fifo_t<T> {
+    /** atomic copy of the write_ptr, only modified by the producer thread */
+    std::atomic<const T *> atomic_write_ptr;
+
+    /** atomic copy of the read ptr, only modified by the consumer thread */
+    std::atomic<const T *> atomic_read_ptr;
+public:
+    /** Write specified ammount of data to the fifo.
+     * Must only be called by the writer thread.
+     * @param data  Pointer to source data.
+     * @param count Number of instances to copy.
+     * @throw MHA_Error when there is not enough space available. */
+    virtual void write(const T * data, unsigned count) override {
+        mha_fifo_t<T>::write(data, count);
+        // The following store-release is used by a corresponding load-acquire
+        // in method get_fill_count
+        atomic_write_ptr.store(this->get_write_ptr());
+    }
+    /** Read data from fifo. Must only be called by the reader thread.
+     * @param outbuf Pointer to the target buffer.
+     * @param count  Number of instances to copy.
+     * @throw MHA_Error when there is not enough data available. */
+    virtual void read(T * outbuf, unsigned count) override {
+        mha_fifo_t<T>::read(outbuf, count);
+        // The following store-release is used by a corresponding load-acquire
+        // in method get_available_space
+        atomic_read_ptr.store(this->get_read_ptr());
+    }
+    /** get_fill_count() must only be called by the reader thread */
+    virtual unsigned get_fill_count() const override {
+        // we need to load-acquire the atomic write pointer, but we can
+        // read the read pointer non-atomically, because it is only modified
+        // by the reader thread, in which we execute.
+        return mha_fifo_t<T>::get_fill_count(atomic_write_ptr.load(),
+                                             this->get_read_ptr());
+    }
+    /** get_available_space() must only be called by the writer thread */
+    virtual unsigned get_available_space() const override {
+        // we can read the write pointer non-atomically, because it is only
+        // modified by the writer thread, but we need to load-aquire the atomic
+        // read pointer.
+        return this->get_max_fill_count()
+            - mha_fifo_t<T>::get_fill_count(this->get_write_ptr(),
+                                         atomic_read_ptr.load());
+    }
+    /** Create FIFO with fixed buffer size. All (initially unused)
+        instances of T are initialized as copies of t */
+    explicit mha_fifo_lf_t(unsigned max_fill_count, const T & t = T())
+        : mha_fifo_t<T>(max_fill_count, t),
+          atomic_write_ptr(this->get_write_ptr()),
+          atomic_read_ptr(this->get_read_ptr()) {
+    }
+};
+
 
 // forward reference for the friend test class.
 class Test_mha_drifter_fifo_t;
@@ -667,14 +754,16 @@ void mha_fifo_t<T>::write(const T * data, unsigned count)
                         " is only space for %u instances",
                         count, available_space);
     while (count--) {
-        *write_ptr++ = *data++;
-        if (write_ptr > &buf.back())
+        *write_ptr = *data++;
+        if (write_ptr >= &buf.back())
             write_ptr = &buf.front();
+        else
+            ++write_ptr;
     }
 }
 
 template <class T>
-void mha_fifo_t<T>::read(T * buffer, unsigned count)
+void mha_fifo_t<T>::read(T * outbuf, unsigned count)
 {
     unsigned available_data = get_fill_count();
     if (count > available_data)
@@ -683,17 +772,12 @@ void mha_fifo_t<T>::read(T * buffer, unsigned count)
                         " Only %u instances available",
                         count, available_data);
     while (count--) {
-        *buffer++ = *read_ptr++;
-        if (read_ptr > &buf.back())
+        *outbuf++ = *read_ptr;
+        if (read_ptr >= &buf.back())
             read_ptr = &buf.front();
+        else
+            ++read_ptr;
     }
-}
-
-template <class T>
-unsigned mha_fifo_t<T>::get_fill_count() const
-{
-    // The extra "+ buf.size()" prevents underflow.
-    return (write_ptr + buf.size() - read_ptr) % buf.size();
 }
 
 template <class T>
@@ -702,6 +786,7 @@ unsigned mha_fifo_t<T>::get_available_space() const
     return mha_fifo_t<T>::get_max_fill_count()-mha_fifo_t<T>::get_fill_count();
 }
 
+
 template <class T>
 mha_fifo_t<T>::mha_fifo_t(unsigned max_fill_count, const T & t)
 {
@@ -709,14 +794,10 @@ mha_fifo_t<T>::mha_fifo_t(unsigned max_fill_count, const T & t)
     if ((max_fill_count + 1U) <= max_fill_count)
         throw MHA_Error(__FILE__,__LINE__,"Cannot create fifo of size %u",
                         max_fill_count);
-
     try{
-        // We need to initialize all elements of the fifo as a valid instance
-        // of T because we call assignment operator and eventually destructor
-        // on them.  Let std::vector care about initialization and destruction.
         buf.resize(max_fill_count + 1U, t);
-    } catch(std::bad_alloc &) {
-        throw MHA_Error(__FILE__,__LINE__,"Not enough memory to "
+    } catch(const std::bad_alloc &) {
+        throw MHA_Error(__FILE__,__LINE__,"System does not have enough RAM to "
                         "allocate fifo of size %u", max_fill_count);
     }
     read_ptr = write_ptr = buf.data();

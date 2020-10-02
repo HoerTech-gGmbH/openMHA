@@ -14,6 +14,24 @@ class Test_mha_fifo_t : public ::testing::Test
     // This fixture has no data, setup nor teardown, and no friends.
 };
 
+class Test_mha_fifo_lf_t : public ::testing::Test
+{
+public:
+    /// stress test the fifo, try to produce synchronization errors
+    /// @param fifo Instance of either mha_fifo_t or mha_fifo_lf_t
+    /// @param expect_read_error We would expect the stress test to fail with
+    ///                       mha_fifo_t (set this to true), and to not fail
+    ///                       with mha_fifo_lf_t (set this to false).  The
+    ///                       way the test is set up, it would produce a read
+    ///                       error as a result of insufficient documentation.
+    /// @param fail_when_expected_read_errors_do_not_occur
+    ///                       Failures may be difficult to reproduce.  Indicate
+    ///                       here if the test should fail when we expect a
+    ///                       sync failure but no sync failure happens.
+    ///                       Unexpected sync failures are always errors.
+    void stress(mha_fifo_t<double> & fifo, bool expect_read_error,
+                bool fail_when_expected_read_errors_do_not_occur);
+};
 
 class Test_mha_drifter_fifo_t : public ::testing::Test
 {
@@ -28,7 +46,7 @@ public:
     void test_underrun();
 };
 
-static constexpr unsigned DATA_SIZE = 1000U;
+#define DATA_SIZE 1000
 
 class Test_mha_fifo_lw_t: public ::testing::Test
 {
@@ -106,6 +124,17 @@ public:
     void test_remove_all_cfg(void);
 };
 
+TEST_F(Test_mha_fifo_t,overflow_protection)
+{
+    // Check that allocating a fifo with MAX_UINT elements is prohibited
+    // We need to allocate capacity+1 elements. The number of allocated elements
+    // should still be representable as an unsigned. MAX_UINT+1 elements
+    // cannot be represented in an unsigned, therefore MAX_UINT must be
+    // prohibited.
+
+    const unsigned max_uint = std::numeric_limits<unsigned>::max();
+    ASSERT_THROW(mha_fifo_t<char> fifo(max_uint), MHA_Error);
+}
 TEST_F(Test_mha_fifo_t,test_size_0)
 {
     mha_fifo_t<mha_real_t> fifo(0);
@@ -132,7 +161,7 @@ TEST_F(Test_mha_fifo_t,test_size_1)
     ASSERT_EQ(0.1f, data);
     
     // Writing 0 instances succeeds and does not alter the FIFO
-    ASSERT_NO_THROW(fifo.write(&data, 0));
+    fifo.write(&data, 0);
     ASSERT_EQ(0U, fifo.get_fill_count());
     ASSERT_EQ(1U, fifo.get_available_space());
 
@@ -142,7 +171,7 @@ TEST_F(Test_mha_fifo_t,test_size_1)
     ASSERT_EQ(1U, fifo.get_available_space());
 
     // Writing one instance succeeds and fills the FIFO
-    ASSERT_NO_THROW(fifo.write(&data, 1));
+    fifo.write(&data, 1);
     ASSERT_EQ(1U, fifo.get_fill_count());
     ASSERT_EQ(0U, fifo.get_available_space());
     
@@ -196,6 +225,107 @@ TEST_F(Test_mha_fifo_t,test_size_200)
         }
     }
     ASSERT_EQ(13U*14U*2U, read_counter);
+}
+
+TEST_F(Test_mha_fifo_t,test_placement_new)
+{
+    constexpr size_t L = 12U;
+    struct custom_type_t {
+        char s[L];
+    };
+    // Check that we can copy custom_type by value.
+    custom_type_t c1{"Hello"}, c2{c1};
+    EXPECT_STREQ("Hello", c1.s);
+    EXPECT_STREQ("Hello", c2.s);
+
+    mha_fifo_t<custom_type_t> fifo(200, c1);
+
+    EXPECT_EQ(0U, fifo.get_fill_count());
+    EXPECT_EQ(200U, fifo.get_available_space());
+
+    std::vector<custom_type_t> in =
+        {custom_type_t{"0"}, custom_type_t{"1"}, custom_type_t{"2"},
+         custom_type_t{"3"}, custom_type_t{"4"}, custom_type_t{"5"},
+         custom_type_t{"6"}, custom_type_t{"7"}, custom_type_t{"8"},
+         custom_type_t{"9"}, custom_type_t{"10"},
+         custom_type_t{"11"}, custom_type_t{"12"}};
+    std::vector<custom_type_t> out = {14, custom_type_t{"-14"}};
+
+    int read_counter = 0;
+    while (atoi(in[0].s) < 13*14*2) {
+        fifo.write(in.data(), 13);
+        for (auto & c : in) {
+            snprintf(c.s, L-1, "%hd", short(atoi(c.s) + 13));
+            c.s[L-1] = '\0';
+        }
+        if (fifo.get_fill_count() >= 14) {
+            fifo.read(out.data(), 14);
+            for (unsigned k = 0; k < 14; ++k)
+                EXPECT_EQ(read_counter++, atoi(out[k].s));
+        }
+    }
+    EXPECT_EQ(13*14*2, read_counter);
+}
+
+TEST_F(Test_mha_fifo_lf_t,mha_fifo_t)
+{
+    // avoid undefined behaviour, commenting out the whole test
+    /*
+    mha_fifo_t<double> fifo(1000000,-1.0);
+    const bool expect_read_error = true;
+    // Triggering read errors is unreliable.
+    const bool fail_when_expected_read_errors_do_not_occur = false;
+
+    stress(fifo, expect_read_error,fail_when_expected_read_errors_do_not_occur);
+    */
+}
+TEST_F(Test_mha_fifo_lf_t,mha_fifo_lf_t)
+{
+    mha_fifo_lf_t<double> fifo(1000000,-1.0);
+    stress(fifo, false, true);
+}
+
+void Test_mha_fifo_lf_t::
+stress(mha_fifo_t<double> & fifo, bool expect_read_error,
+                bool fail_when_expected_read_errors_do_not_occur) {
+    const unsigned capacity = fifo.get_max_fill_count();
+    const unsigned transfer_size = capacity / 3U;
+    std::vector<double> in(transfer_size);
+    const unsigned transfers = 1000U;
+    size_t reader_error_count = 0;
+    double factor = 1e-8;
+    auto reader_thread = std::thread
+        ([&](){
+             std::vector<double> out(capacity);
+             for (unsigned received_samples = 0;
+                  received_samples < transfer_size * transfers;) {
+                 unsigned n = fifo.get_fill_count();
+                 if (n) {
+                     fifo.read(out.data(),n);
+                     reader_error_count +=
+                         (out[n-1] != factor*(received_samples+n-1));
+                     received_samples += n;
+                 }
+             }
+         });
+    for (unsigned transfer = 0; transfer < transfers; ++transfer) {
+        unsigned begin = transfer * transfer_size;
+        for (unsigned k = 0; k < transfer_size; ++k) {
+            in[k] = factor*(begin+k);
+        }
+        while(fifo.get_available_space()<transfer_size)
+            ;
+        fifo.write(in.data(),transfer_size);
+    }
+    reader_thread.join();
+    if (expect_read_error) {
+        printf("EXPECTED FAILURES, FAILURE COUNT=%zu\n", reader_error_count);
+        if (fail_when_expected_read_errors_do_not_occur) {
+            EXPECT_GT(reader_error_count, 0U);
+        }
+    } else {
+        EXPECT_EQ(0U, reader_error_count);
+    }
 }
 
 void Test_mha_drifter_fifo_t::SetUp()
@@ -726,7 +856,7 @@ void Test_mha_plugin_rtcfg_t::test_push_config(void)
 {
     // First push pushes new data behind NULL object
     test_cfg_t * c = new test_cfg_t(0);
-    ASSERT_NO_THROW(t.push_config(c));
+    t.push_config(c);
     ASSERT_TRUE(t.cfg == 0);
     ASSERT_EQ(c, t.cfg_root.load()->next.load()->data);
     ASSERT_TRUE(t.cfg_root.load()->next.load()->next == 0);
