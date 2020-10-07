@@ -30,7 +30,7 @@ std::string plugins::hoertech::acrec::to_iso8601(time_t tm){
 }
 
 acrec_t::acrec_t(const algo_comm_t& iac,const std::string&,const std::string&)
-    : MHAPlugin::plugin_t<acwriter_t>("wav file recorder",iac),
+    : MHAPlugin::plugin_t<acwriter_t>("ac variable file recorder",iac),
       ac(iac)
 {
     insert_member(fifolen);
