@@ -31,6 +31,7 @@
 class Test_save_var_t; // Forward declaration
 namespace lsl2ac{
   enum class underrun_behavior { Zero=0, Copy, Abort};
+  enum class overrun_behavior { Discard=0, Ignore};
 
 
   /** LSL to AC bridge variable */
@@ -46,8 +47,12 @@ namespace lsl2ac{
      * @param info_ LSL stream info object containing metadata
      * @param ac_ Handle to ac space
      * @param ub_ Underrun behavior. 0=Zero out, 1=Copy, 2=Abort
+     * @param ob_ Overrun behavior. 0=Discard oldest, 1=Ignore
+     * @param buffersize_ LSL buffer size
+     * @param chunksize_ LSL chunk size
      */
-    save_var_t(const lsl::stream_info& info_, const algo_comm_t& ac_, underrun_behavior ub_);
+    save_var_t(const lsl::stream_info& info_, const algo_comm_t& ac_, underrun_behavior ub_,
+               overrun_behavior ob_, int buffersize_, int chunksize_);
     ~save_var_t()=default;
     /** Get stream info object from stream inlet */
     lsl::stream_info info();
@@ -78,12 +83,14 @@ namespace lsl2ac{
     bool skip=false;
     /** Behavior on stream underrun */
     underrun_behavior ub;
+    /** Behavior on stream overrun */
+    overrun_behavior ob;
     /** Name of stream. Must be saved separately because the stream info might be unrecoverable in error cases */
     const std::string name;
-    /** Pull latest sample from stream and save it in buf.
-     * @returns latest valid timestamp
+    /** Pull sample from stream and save it in buf.
+     * @returns timestamp or saved sample
      */
-    double pull_latest_sample();
+    double pull_sample();
     /** Refresh time correction value every 5s */
     void get_time_correction();
     /** Insert stream value, time stamp and time offset into ac space*/
@@ -103,10 +110,15 @@ namespace lsl2ac{
   public:
 
     /** C'tor of lsl2ac run time configuration
-     * @param ac_         AC space, data from LSL will be inserted as AC variables
-     * @param streamnames_   Names of LSL streams to be subscribed to
+     * @param ac_          AC space, data from LSL will be inserted as AC variables
+     * @param underrun_    Underrun behavior
+     * @param overrun_     Overrun behavior
+     * @param bufsize_     Buffer size of the LSL stream inlet
+     * @param chunksize_   Chunk size of the LSL stream
+     * @param streamnames_ Names of LSL streams to be subscribed to
      */
-    cfg_t(const algo_comm_t& ac_, underrun_behavior underrun_, const std::vector<std::string>& streamnames_);
+    cfg_t(const algo_comm_t& ac_, underrun_behavior underrun_, overrun_behavior overrun_,
+          int bufsize_, int chunksize_,const std::vector<std::string>& streamnames_);
     void process();
 
   };
@@ -134,11 +146,28 @@ namespace lsl2ac{
     void get_all_stream_names();
     /** Construct new runtime configuration */
     void update();
-    MHAParser::vstring_t streams;
-    MHAParser::bool_t activate;
-    MHAParser::kw_t underrun_behavior;
+    /** Convencience function lock/unlock all config variables
+     * @param lock_ True to lock, False for unlock
+     */
+    void setlock(bool lock_);
+    /** Config variable for list of streams to be saved. */
+    MHAParser::vstring_t streams={"List of LSL streams to be saved, empty for all.","[]"};
+    /** Config variable for activation/deactivation of plugin. */
+    MHAParser::bool_t activate={"Receive from network?","yes"};
+    /** Config variable setting how underruns should be handled. */
+    MHAParser::kw_t underrun_behavior={"How to handle underrun","zero","[zero copy abort]"};
+    /** Config variable for overrun behavior. */
+    MHAParser::kw_t overrun_behavior={"How to handle overrun","discard","[discard ignore]"};
+    /** Config variable for maximum buffer size of LSL */
+    MHAParser::int_t buffersize={"The maximum amount of data for LSL to buffer."
+                             " In seconds if there is a nominal sampling rate,"
+                             " otherwise x100 in samples","360","[0,]"};
+    /** Config variable for maximum chunk size of LSL */
+    MHAParser::int_t chunksize={"The maximum size, in samples, at which chunks are transmitted by LSL."
+                                " Default means sender decides","0","[0,]"};
+    /** Patchbay for configuration callbacks. */
     MHAEvents::patchbay_t<lsl2ac_t> patchbay;
     /** Monitor variable containing all available streams. */
-    MHAParser::vstring_mon_t available_streams;
+    MHAParser::vstring_mon_t available_streams={"List of all available LSL streams"};
   };
 }

@@ -85,7 +85,9 @@ protected:
   lsl2ac::save_var_t var;
   Test_save_var_t_abort():
     Test_save_var_t(),
-    var(info,ac,lsl2ac::underrun_behavior::Abort){}
+    var(info,ac,lsl2ac::underrun_behavior::Abort,
+        lsl2ac::overrun_behavior::Discard,
+        1,0){}
 };
 
 class Test_save_var_t_copy : public Test_save_var_t {
@@ -93,7 +95,9 @@ protected:
   lsl2ac::save_var_t var;
   Test_save_var_t_copy():
     Test_save_var_t(),
-    var(info,ac,lsl2ac::underrun_behavior::Copy){}
+    var(info,ac,lsl2ac::underrun_behavior::Copy,
+        lsl2ac::overrun_behavior::Discard,
+        1,0){}
 };
 
 class Test_save_var_t_zero : public Test_save_var_t {
@@ -101,7 +105,9 @@ protected:
   lsl2ac::save_var_t var;
   Test_save_var_t_zero():
     Test_save_var_t(),
-    var(info,ac,lsl2ac::underrun_behavior::Zero){}
+    var(info,ac,lsl2ac::underrun_behavior::Zero,
+        lsl2ac::overrun_behavior::Discard,
+        1,0){}
 };
 
 
