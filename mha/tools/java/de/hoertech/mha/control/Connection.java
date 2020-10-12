@@ -17,6 +17,7 @@ package de.hoertech.mha.control;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This class establishes a connection to the MHA (Master-Hearing-Aid) server
@@ -140,7 +141,8 @@ public class Connection implements Parser {
         sb.append(command);
         sb.append("\n");
       }
-      outToServer.writeBytes(sb.toString());
+      byte[] stringAsByteArray = sb.toString().getBytes(StandardCharsets.UTF_8);
+      outToServer.write(stringAsByteArray);
       outToServer.flush();
       
       for (; i < responses.length; ++i) {
@@ -191,8 +193,8 @@ public class Connection implements Parser {
       mhaServerSocket.setTcpNoDelay(true);
       outToServer = new DataOutputStream(mhaServerSocket
           .getOutputStream());
-      inFromServer = new BufferedReader(new InputStreamReader(
-          mhaServerSocket.getInputStream()));
+      inFromServer = new
+          BufferedReader(new InputStreamReader(mhaServerSocket.getInputStream()));
     } else if (mhaServerSocket != null) {
       try {
         mhaServerSocket.close();
