@@ -1242,17 +1242,17 @@ void MHAParser::StrCnv::str2val( const std::string & s, int &v )
     if ( s.find_first_of("0123456789") == std::string::npos )
         throw MHA_Error( __FILE__, __LINE__, " A valid numeric value must be given! \"%s\" is invalid", s.c_str ( ));
     const char *s_cp = s.c_str(  );
-    long int temp_val;
+    long int val;
     char *s_ptr = NULL;
     errno = 0;
-    temp_val = strtol( s_cp, &s_ptr, 10 );
+    val = strtol( s_cp, &s_ptr, 10 );
     if( ( s_cp == s_ptr ) || ( strlen( s_ptr ) != 0 ) ) {
         throw MHA_Error( __FILE__, __LINE__, "\"%s\" does not contain a valid scalar value (%s)", s.c_str(  ), s_ptr );
     }
-    bool int_overflow_occurs = ( temp_val > std::numeric_limits<int>::max() || temp_val < std::numeric_limits<int>::min() );
+    bool int_overflow_occurs = ( val > std::numeric_limits<int>::max() || val < std::numeric_limits<int>::min() );
     if( ( errno == ERANGE ) || int_overflow_occurs )
         throw MHA_Error( __FILE__, __LINE__, " value %s is outside the valid range of integer", s.c_str( ) );
-    v = temp_val;
+    v = val;
 }
 
 template<class arg_t> void MHAParser::StrCnv::str2val( const std::string & s, std::vector<arg_t>& v )
