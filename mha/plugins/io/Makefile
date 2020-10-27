@@ -49,6 +49,7 @@ $(BUILD_DIR)/MHAIOFile$(PLUGIN_EXT): LDLIBS += -lsndfile
 
 $(BUILD_DIR)/MHAIOPortAudio$(PLUGIN_EXT): LDLIBS += -lportaudio
 
+$(BUILD_DIR)/MHAIOalsa$(PLUGIN_EXT): $(BUILD_DIR)/mha_io_utils.o
 $(BUILD_DIR)/MHAIOalsa$(PLUGIN_EXT): LDLIBS += -lasound
 
 $(BUILD_DIR)/MHAIOTCP$(PLUGIN_EXT) $(BUILD_DIR)/MHAIOAsterisk$(PLUGIN_EXT): $(BUILD_DIR)/mha_tcp.o

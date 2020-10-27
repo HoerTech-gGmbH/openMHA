@@ -18,6 +18,7 @@
 #include "mha_toolbox.h"
 #include "mha_signal.hh"
 #include "mha_events.h"
+#include "mha_io_utils.hh"
 #include <math.h>
 #include <unistd.h>
 #include <alsa/asoundlib.h>
@@ -127,7 +128,6 @@ private:
     MHASignal::waveform_t wave;
     const mha_real_t gain;
     const mha_real_t invgain;
-    const mha_real_t val_min, val_max;
     snd_pcm_format_t pcm_format;
 };
 
@@ -156,18 +156,10 @@ bool alsa_t<T>::write(mha_wave_t* s)
 {
     unsigned int k, ch;
     snd_pcm_sframes_t cnt;
-    mha_real_t val;
     if (s)
         for(k=0;k<fragsize;k++)
             for(ch=0;ch<channels;ch++){
-                val = invgain * value(s,k,ch);
-                if (isnanf(val))
-                    val = 0.0f;
-                else if( val < val_min )
-                    val = val_min;
-                else if( val > val_max )
-                    val = val_max;
-                buffer[channels*k+ch] = static_cast<T>(val);
+                buffer[channels*k+ch]=mhaioutils::to_int_clamped<T>(value(s,k,ch));
             }
     else
         for(k=0;k<fragsize;k++)
@@ -210,9 +202,7 @@ alsa_t<T>::alsa_t(const alsa_dev_par_parser_t& par,
       frame_data(channels,0),
       wave(fragsize,channels),
       gain(-1.0f/std::numeric_limits<T>::min()),
-      invgain(1.0f/gain),
-      val_min(std::numeric_limits<T>::min()),
-      val_max(std::numeric_limits<T>::max())
+      invgain(1.0f/gain)
 {
     if( std::is_same<T,int32_t>::value) {
         pcm_format=SND_PCM_FORMAT_S32_LE;
