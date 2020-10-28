@@ -16,7 +16,7 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 chkhdr(){
-    echo "#include <$1>" | cpp -x c++ - $MACINCLUDES -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+    echo "#include <$1>" | cc -E -x c++ - $MACINCLUDES -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 chklib(){
     echo "int main(){return 0;}"| cc -x c++ - $MACLDFLAGS -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
