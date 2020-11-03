@@ -29,6 +29,7 @@ pdf-*.zip
 ~$*
 .~lock*
 *.swp
+
 # system-specific configuration
 config.mk
 
@@ -76,6 +77,8 @@ mha/tools/packaging/deb
 GPATH
 GRTAGS
 GTAGS
+.clangd
+compile_commands.json
 
 #Windows packaging artifacts
 *.exe
