@@ -653,7 +653,7 @@ mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)
     int err = ac.get_var(ac.handle,n.c_str(),&var);
     if( err )
         throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
-    if( (var.stride == 0) || (var.stride > var.num_entries) )
+    if( (var.stride == 0) || (var.num_entries!=0 && var.stride > var.num_entries) )
         throw MHA_Error(__FILE__,__LINE__,
                         "The variable \"%s\" has invalid stride settings (%u).",
                         n.c_str(),var.stride);
@@ -679,10 +679,8 @@ mha_wave_t MHA_AC::get_var_waveform(algo_comm_t ac,const std::string& n)
     int err = ac.get_var(ac.handle,n.c_str(),&var);
     if( err )
         throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
-    if( (var.stride == 0) || (var.stride > var.num_entries) )
+    if( (var.stride == 0) || (var.num_entries!=0 && var.stride > var.num_entries) )
         throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%u).",n.c_str(),var.stride);
-    if( var.num_entries == 0 )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" contains no data.",n.c_str());
     mha_wave_t s;
     memset(&s,0,sizeof(s));
     s.num_channels = var.stride;

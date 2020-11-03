@@ -52,6 +52,9 @@
                 "(\\.cc$)",
                 "(\\.cpp)",
                 "(\\.hh$)"
+            ],
+            "flags": [
+                "inline-suppr"
             ]
         },
         "Merge-Conflicts": {
