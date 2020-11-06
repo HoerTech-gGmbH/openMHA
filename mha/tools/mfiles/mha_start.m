@@ -81,7 +81,7 @@ function [mha_handle, mha_process] = mha_start( port, pre_binary, post_binary )
     end
   end
   mha_handle.timeout = 50;
-  
+
   serverport = 0;
   backlog = 1;
   address = javaMethod('getByName','java.net.InetAddress','127.0.0.1');
@@ -103,7 +103,7 @@ function [mha_handle, mha_process] = mha_start( port, pre_binary, post_binary )
     PATH_backup = getenv('PATH');
     remove_octave_directories_from_windows_path()
   end
-  
+
   octave_version = ver('Octave');
   % octave 4.0.0 did not translate cellstrings correctly to Java string arrays.
   if( isoctave() && strcmp(octave_version.Version,'4.0.0') )
@@ -113,10 +113,8 @@ function [mha_handle, mha_process] = mha_start( port, pre_binary, post_binary )
     try
       mha_process = javaruntime.exec(command);
     catch exception
-      if strcmp(exception.message, ...
-                ['[java] java.lang.OutOfMemoryError: unable to create ', ...
-                 'native thread: possibly out of memory or ', ...
-                 'process/resource limits reached'])
+      if ~isempty(strcmp(exception.message, ...
+                '[java] java.lang.OutOfMemoryError: unable to create '))
         disp(['expected exception for this octave version, ', ...
               'does not affect functionality'])
       else
@@ -126,12 +124,12 @@ function [mha_handle, mha_process] = mha_start( port, pre_binary, post_binary )
   else
     mha_process = javaruntime.exec(command);
   end
-  
+
   % restore PATH
   if ispc() && isoctave()
     setenv('PATH', PATH_backup);
   end
-  
+
   connection = acceptor.accept();
   reader = javaObject('java.io.BufferedReader', ... 
                       javaObject('java.io.InputStreamReader', ...
@@ -143,7 +141,7 @@ function [mha_handle, mha_process] = mha_start( port, pre_binary, post_binary )
   reader.close();
   connection.close();
   acceptor.close();
-  
+
 % Local Variables:
 % mode: octave
 % indent-tabs-mode: nil

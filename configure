@@ -202,6 +202,10 @@ gccver(){
         arm*)
             echo "SSE+=-mcpu=cortex-a8 -mfloat-abi=hard -mfpu=neon"
             ;;
+        aarch64)
+            echo "SSE+=-mcpu=cortex-a73.cortex-a53" # Remove this line if the
+            # generated binaries do not execute correctly on your aarch64 board.
+            ;;
         x86_64*|i686*)
             echo "SSE+=-msse -msse2 -mfpmath=sse"
             ;;

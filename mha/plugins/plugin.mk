@@ -37,6 +37,11 @@ ifeq "$(findstring arm, $(ARCH))" "arm"
 dummy02:
 	@echo "not compiling" $(PLUGINS) "since it cannot be compiled for ARM"
 endif
+ifeq "$(findstring aarch64, $(ARCH))" "aarch64"
+# this plugin cannot be compiled for ARM processors.
+dummy02:
+	@echo "not compiling" $(PLUGINS) "since it cannot be compiled for ARM"
+endif
 endif
 
 ifeq "$(NEEDS_BOOST)" "yes"
