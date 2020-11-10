@@ -28,10 +28,10 @@ def windows_bash(command) {
 // Encapsulation of the build steps to perform when compiling openMHA for
 // phabricator code reviews
 // @param stage_name the stage name is "system && arch" where system is bionic,
-//                   xenial, windows, or mac, and arch is x86_64, i686,
-//                   or armv7. Both are separated by an && operator and spaces.
+//                   xenial, windows, or mac, and arch is x86_64, i686, aarch64,
+//                   or armv7.  Both are separated by an && operator and spaces.
 //                   This string is also used as a valid label expression for
-//                   jenkins. The appropriate nodes have the respective labels.
+//                   jenkins.  The appropriate nodes have the respective labels.
 //                   We might need to extend this in future to include the
 //                   "mhadev" label, to differentiate build environments
 //                   for the same system and architecture but with different
@@ -48,7 +48,11 @@ def openmha_build_steps(stage_name) {
   def docs = (devenv == "mhadoc") //Create PDFs only on 1 of the parallel builds
 
   // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
-  def cpus = (arch == "armv7") ? 5 : 2 // default on other systems is 2 cores
+  def cpus = 2 // default on other systems is 2 cores
+  if (arch == "armv7" || arch == "aarch64") {
+    cpus = 5
+  }
+
   def additional_cpus_for_docs = 7
 
   // workaround to invoke unix shell on all systems
@@ -191,6 +195,10 @@ pipeline {
                 stage(                         "bionic && armv7 && mhadev") {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
+                }
+                stage(                         "bionic && aarch64 && mhadev") {
+                    agent {label               "bionic && aarch64 && mhadev"}
+                    steps {openmha_build_steps("bionic && aarch64 && mhadev")}
                 }
                 stage(                         "windows && x86_64 && mhadev") {
                     agent {label               "windows && x86_64 && mhadev"}
