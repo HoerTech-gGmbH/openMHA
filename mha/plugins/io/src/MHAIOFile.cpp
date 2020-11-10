@@ -243,6 +243,7 @@ void io_file_t::start()
         }
         sf_writef_float( sf_out, s_out->buf, read_cnt );
     }while( (read_cnt == (int)s_in->num_frames) && ((length.data==0)||(total_read<length.data)) );
+    total_read=0;
     stopped(0,0);
 }
 

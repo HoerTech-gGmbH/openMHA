@@ -20,6 +20,9 @@ function test_mhaiofile
   outwav = 'OUT.wav';
   unittest_teardown(@delete, [outwav]);
   fclose(fopen(outwav, 'w'));
+  inwav = 'IN.wav';
+  unittest_teardown(@delete, [inwav]);
+  fclose(fopen(inwav, 'w'));
 
   % Basic MHA setup
   dsc.srate = 44100;
@@ -36,9 +39,10 @@ function test_mhaiofile
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
 
   % Actual tests
-  test_no_sign_flip(mha, dsc, outwav);
+  test_no_sign_flip(mha, dsc, inwav, outwav);
   test_float_has_no_clipping(mha, dsc, outwav)
   test_int_has_clipping(mha, dsc, outwav)
+  test_length_gets_respected(mha,dsc, inwav, outwav)
 end
 
 
@@ -60,10 +64,7 @@ end
 
 
 % See T703
-function test_no_sign_flip(mha, dsc, outwav)
-  inwav = 'IN.wav';
-  unittest_teardown(@delete, [inwav]);
-  fclose(fopen(inwav, 'w'));
+function test_no_sign_flip(mha, dsc, inwav, outwav)
   snd_in=sin(2*pi*440*(0:dsc.srate)/dsc.srate);
   audiowrite(inwav,snd_in,dsc.srate);
   mha_set(mha,'io.in',inwav);
@@ -77,6 +78,23 @@ end
 function idx=detect_flips(x)
   idx = find(abs(diff(x))>1);
 end
+
+% See T1355
+function test_length_gets_respected(mha, dsc, inwav, outwav)
+  io_len=128;
+  num_proc=2;
+  snd_in=ones(10*dsc.fragsize,1);
+  audiowrite(inwav,snd_in,dsc.srate);
+  mha_set(mha,'io.length',io_len);
+  mha_set(mha,'io.in',inwav);
+  for i = 1:num_proc
+    mha_set(mha,'cmd','start');
+  end
+  mha_set(mha,'cmd','release');
+  snd_out=audioread(outwav);
+  assert_equal(num_proc*io_len,size(snd_out,1));
+end
+
 % Local Variables:
 % mode: octave
 % coding: utf-8-unix
