@@ -186,6 +186,7 @@ void spec2wave_if_t::prepare(mhaconfig_t& t)
     }
     catch(MHA_Error& e){
         setlock(false);
+        throw;
     }
 }
 
