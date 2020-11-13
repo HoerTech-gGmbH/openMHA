@@ -23,11 +23,11 @@ In Ubuntu 16.04:
     sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de xenial universe'
     sudo apt update
 
-On Computers with an ARM CPU running a recent 32-bit variant of
+On Computers with an ARM CPU running a recent variant of
 Debian, Ubuntu, Raspberry Pi OS, Armbian, or similar:
 
     wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
-    echo 'deb [arch=armhf] http://apt.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmha.list
+    echo 'deb http://apt.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmha.list
     sudo apt update
 
 Install openMHA and some openMHA usage examples:

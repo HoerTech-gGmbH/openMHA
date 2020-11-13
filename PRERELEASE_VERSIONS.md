@@ -39,12 +39,12 @@ In Ubuntu 18.04:
     sudo apt-add-repository 'deb [arch=amd64] http://aptdev.hoertech.de bionic universe'
     sudo apt install openmha openmha-examples
 
-On Computers with an ARM CPU running a recent 32-bit variant of
+On Computers with an ARM CPU running a recent variant of
 Debian, Ubuntu, Raspberry Pi OS, Armbian, or similar:
 
     wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
-    echo 'deb [arch=armhf] http://apt.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmha.list
-    echo 'deb [arch=armhf] http://aptdev.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmhadev.list
+    echo 'deb http://apt.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmha.list
+    echo 'deb http://aptdev.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmhadev.list
     sudo apt update
     sudo apt install openmha openmha-examples
 
@@ -64,7 +64,7 @@ In Ubuntu 18.04:
     sudo apt-add-repository --remove 'deb [arch=amd64] http://aptdev.hoertech.de bionic universe'
     sudo apt purge libopenmha
 
-On Computers with an ARM CPU running a recent 32-bit variant of
+On Computers with an ARM CPU running a recent variant of
 Debian, Ubuntu, Raspberry Pi OS, Armbian, or similar:
 
     sudo rm /etc/apt/sources.list.d/openmhadev.list
