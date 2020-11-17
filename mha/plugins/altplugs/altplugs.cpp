@@ -316,14 +316,18 @@ MHAPLUGIN_DOCUMENTATION\
 (altplugs,
  "plugin-arrangement data-flow",
  "The plugin {\\tt altplugs} allows configuration of alternative plugins.\n"
- "The plugin used for processing can be selected via the {\\tt select}"
- " variable at any time.\n"
+ "Plugins can either be registered en-bloc via the {\\tt plugs} variable or one by one"
+ " by repeated assignment to the {\\tt add} variable. Plugins can be removed via {\\tt delete}.\n"
+ " Registered plugins are configured as sub parsers of {\\tt altplugs}. "
+ "The plugin to be used for processing can be selected via the {\\tt select}"
+ " variable at any time. If the plugin output is in the time domain the newly selected plugin"
+ " can optionally be faded in, {\\tt ramplen} controlling the ramp length, the old plugin "
+ " is always switched off instantaneously. \n"
  "Any plugins can be used as alternative plugins, with the only limitations"
  " that input and output domain and signal dimension is equal for all"
  " alternative plugins.\n"
- "Plugins can be renamed using the \":\" operator.\n\n"
- "This plugin is automatically located by the graphical user interface"
- " {\tt mhacontrol} and used for an algorithm selection panel.\n"
+ "Plugins can renamed using the \":\" operator.\n\n"
+ "A module for the {\\tt mhacontrol} graphical user interface is provided."
  )
 
 
