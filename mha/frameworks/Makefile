@@ -68,6 +68,8 @@ ifneq "$(TOOLSET)" "clang"
 $(BUILD_DIR)/mha: LDFLAGS+=-Wl,--dynamic-list=export_fw_t.list
 endif
 
+$(BUILD_DIR)/analysemhaplugin: $(BUILD_DIR)/mhafw_lib.o
+
 $(BUILD_DIR)/mha: $(OBJECTS:%.o=$(BUILD_DIR)/%.o)
 
 $(BUILD_DIR)/testalsadevice: LDLIBS += -lasound
