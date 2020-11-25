@@ -651,6 +651,77 @@ Breakpoint 2, example6_t::process (this=0x7ffff6a06c0d, wave=0x10a8b550)
 (gdb)
 \endverbatim
 
+
+\section unittests Writing unit tests for \mha plugins
+This section
+introduces how to test a plugin with C++ unit tests using the
+Googletest framework. In order to execute the tests, navigate to the
+\mha root directory and run \c make \c unit-tests in your terminal.
+Afterwards you may execute \c make \c unit-tests in the plugin directory
+in order to only execute the very test you are working on.
+
+\subsection ex7 example7
+
+As an example, unit tests for plugin \c example7.cpp are written,
+which is functionally the same as plugin \c example1.cpp (see section
+\ref ex1). In order to write unit tests for your plugin it must have
+its class/function declarations in a header file (.hh) so you can
+include it in the unit test file. The class/function definitions are
+contained in the respective source file (.cpp).\n The unit tests are
+written using a test fixture class (here: \c example7\_testing) which
+will be inherited by the individual tests (\c TEST\_F). This enables us
+to use the members in \c example7\_testing in multiple tests without
+the need for redundant declarations.
+
+\snippet example7_unit_tests.cpp first docu snippet
+
+The test fixture class is derived from the \b ::testing::Test class
+declared in \c gtest.h. The constructor of \c example7\_t
+needs three
+parameters, namely a handle to the algorithm communication variable space
+and two
+strings. A container for audio signals for repeatedly passing blocks
+of the input signal to the plugin under test is also allocated by the
+test fixture class. It is defined as an instance of \c
+MHASignal::waveform\_t with the name \c wave\_input and its values are
+zero upon initialization.
+
+\snippet example7_unit_tests.cpp second docu snippet
+
+The first test checks whether the state methods work as expected.
+Next to the actual processing there are often certain variables in each
+individual \mha plugin that
+need to be allocated beforehand or wiped from memory afterwards.  The
+methods that are used to do this are \c prepare() and \c release().
+In order to assert that they were called and that we switched states
+accordingly we use the methods \c prepare\_() and \c release\_()
+(Note: the underscore!) that are defined in the plugin base class \c
+mha\_plugin\_t<>.  These methods keep track of the state, call \c
+prepare() and \c release() and do additional bookkeeping. To ensure
+that the state methods work as expected the Googletest methods \c
+EXPECT\_FALSE and \c EXPECT\_TRUE are used.
+
+\snippet example7_unit_tests.cpp third docu snippet
+
+In this test the goal is to assess the main feature of the plugin
+(\c example7\_t), which is the same as in \c example1\_t, namely
+altering the signal's first channel by a constant factor of 0.1.
+The variable \c wave\_input is the signal that will be processed by
+the plugin. In order to assert the success, the elements in
+\c wave\_input are set to a constant value of 1, because they are 0 upon
+initialization. During the \c process() function all elements of
+the first channel of \c wave\_input are multiplied by the factor 0.1.
+Before \c process() is called the value assigned to \c wave\_input is checked
+via the method \c EXPECT\_FLOAT\_EQ provided by Googletest. The values
+of \c wave\_input are retrieved by the method \c value() by passing
+the desired sample position and channel number as second and third
+input parameter, respectively. Here, we checked the values of two frames
+in each channel to show the difference before and after processing;
+the frame
+indices were chosen randomly. After calling \c process(), the values
+contained in \c wave\_input are checked again to make sure that the
+plugin worked as intended.
+
 */
 
 /* LocalWords:  \mha plugin Matlab Configurator

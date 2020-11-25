@@ -18,7 +18,7 @@
  * The purpose of this example is to show the developer how to conduct a
  * C++-Unit-Test on MHA Plugins. Therefore this example7 code is the same
  * as example1 with the difference that it is split into a .cpp and a .hh
- * file in order to provide the class declaration to the Unit-Tests.
+ * file in order to provide the unit-tests with the class declaration.
  */
 
 #include "example7.hh"
