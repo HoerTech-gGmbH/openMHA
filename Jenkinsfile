@@ -200,8 +200,17 @@ pipeline {
         }
         stage("debian packages for apt") {
             agent {label "aptly"}
-            // do not publish packages for any branches except these
-            when { anyOf { branch 'master'; branch 'development' } }
+            // publish packages for branch development automatically
+            when { branch 'development' }
+
+            // Releases are not automatically uploaded to apt because
+            // we still need to check that all installers function
+            // after they have been created. When this verification has
+            // been done, then start a Replay build of master on Jenkins,
+            // and change this Jenkinsfile as follows: comment-out the "when"
+            // line above, remove the comment before the following "when"
+            // line, and then Run the replay build.
+            // when { anyOf { branch 'master'; branch 'development' } }
             steps {
                 // receive all deb packages from openmha build
                 unstash "x86_64_bionic"

@@ -153,6 +153,12 @@ fi
 echo "Now the mac and windows installers need to be attached to the github release."
 echo "Answer yes when finished."
 ask_yes_no
+echo "Now the Linux installers need to be published to our apt repository."
+echo "Open Jenkins in webbrowser, navigate to the last openMHA master branch build,"
+echo "select replay, then search in the Jenkinsfile for the comment containing"
+echo '"Releases are not automatically" ... and follow the instructions in this comment.'
+echo "Answer yes when finished."
+ask_yes_no
 
 if $dry_run
 then
