@@ -7,8 +7,14 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
 % sFitmodel.frequencies contains the center frequencies for the amplification bands
 % sFitmodel.levels      contains input levels in SPL for which to compute the gains
 % sGt              contains 2 matrices, l and r that contain gains in dB
-%                  for every input level (rows) and band (columns)
+%                  for every input level (rows) and band (columns).
+%                  The gains computed by the linear camfit rule are modified to
+%                  not allow negative gains, and to maximally produce the output
+%                  level of global CAMFIT_MAXOUT (default: 100dB) in each band.
 % sGt              may also contain an expansion_slope field.
+% sGt.insertion_gains contains the level-independent insertion gains computed
+%                  with `hearing_loss * 0.48 + intercept` except when this would
+%                  gain would attenuate, then 0 is returned for the respective band.
 % Linear cambridge rule for hearing aid fittings.  
 % Implemented as described in B. Moore (1998), "Use of a loudness model for 
 % hearing-aid fitting. I. Linear hearing aids" Brit. J. Audiol. (32) 317-335
@@ -21,7 +27,7 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
 % variable CAMFIT_MAXOUT before this function is called.
   
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2007 2011 2013 2015 2016 2017 2018 HörTech gGmbH
+% Copyright © 2007 2011 2013 2015 2016 2017 2018 2020 HörTech gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -75,10 +81,14 @@ function sGt = gainrule_camfit_linear(sAud, sFitmodel)
 
     % set all gains to 0 for 0dB HL flat audiogram
     insertion_gains.(side) = insertion_gains.(side) * any(htl.(side));
-    
+
+    % return non-negative insertion gains in gaintable matrix
     sGt.(side) = repmat(insertion_gains.(side), length(sFitmodel.levels),1);
 
-    % where output level is greater than max_output_level, reduce gain
+    % additionally, return non-negative insertion gains as separate fields
+    sGt.insertion_gains.(side) = insertion_gains.(side);
+
+    % where output level is greater than max_output_level, reduce gain in gaintable matrix
     output_levels = sGt.(side) + repmat(sFitmodel.levels(:),1,length(insertion_gains.(side)));
     safe_output_levels = min(output_levels, max_output_level);
     sGt.(side) = sGt.(side) - (output_levels - safe_output_levels);

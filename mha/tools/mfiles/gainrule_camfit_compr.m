@@ -81,7 +81,7 @@ function sGt = gainrule_camfit_compr(sAud, sFitmodel)
   end
 
   for side=sFitmodel.side
-    compression_ratio.(side) = minima_distance ./ max(Lmid+Gmid.(side)(end,:) - Lmin-Gmin.(side), 13);
+    compression_ratio.(side) = minima_distance ./ max(Lmid+Gmid.insertion_gains.(side) - Lmin-Gmin.(side), 13);
     compression_ratio.(side) = max(compression_ratio.(side), 1);
 
     sGt.(side) = gains(Lmin,Gmin.(side),compression_ratio.(side),sFitmodel.levels);
