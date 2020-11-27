@@ -185,7 +185,7 @@ while launch_gui
   clientid = mha_get(mha, 'mha.overlapadd.mhachain.dc.clientid');
 
   if isempty(clientid)
-    answer_id = questdlg('No Client ID found! If you want to try again, please make sure that you created a fit.',
+    answer_id = questdlg('No Client ID found! If you want to try again, please make sure that you created a fit.',...
                          'Client ID Error','Try Again','Abort','Try Again');
     switch answer_id
       case 'Try Again'
@@ -230,7 +230,7 @@ for soundfile_index = 1:numel(soundfiles_src)
   soundfile = soundfiles{soundfile_index};
   outfile = [outdir,'/',clientid,'/',soundfile];
   if ~overwrite_all && exist(outfile)
-    answer_outfile = questdlg(sprintf('Soundfile %s already exists, do you want to overwrite it?',outfile),
+    answer_outfile = questdlg(sprintf('Soundfile %s already exists, do you want to overwrite it?',outfile),...
                               'Output File Conflict', ...
                               'Yes','Yes, for all','No','Yes');
     switch answer_outfile
@@ -262,7 +262,7 @@ for soundfile_index = 1:numel(soundfiles_src)
   y = y(1+samples_file+samples_delay:end,:);
   if any(abs(y)>1) && ~allow_clipping_all
     answer_clip = questdlg(sprintf('WARNING! File %s will contain samples > 1. Do you want to write anyway?',outfile),...
-                           'Output File Warning',
+                           'Output File Warning',...
                            'Yes','Yes, for all','No','Abort','No');
     switch answer_clip
       case 'Yes'
