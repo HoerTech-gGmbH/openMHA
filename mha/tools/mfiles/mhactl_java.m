@@ -28,22 +28,18 @@ function [r,state] = mhactl_java(handle, eval, query)
 persistent connections;
 persistent last_mhactl_java_invocation;
 
-if isempty(last_mhactl_java_invocation)
-  last_mhactl_java_invocation = now();
-end
-
 if isequal(handle, 'retire_connections')
   retire_connections(connections(2,:));
   r=[];state=[];connections={};return
 end
 
-if (now() - last_mhactl_java_invocation) * 24 * 3600 > 1.2
-  retire_connections(connections(2,:));
-  connections={};
+if ~isempty(last_mhactl_java_invocation)
+  if (now() - last_mhactl_java_invocation) * 24 * 3600 > 1.2
+    retire_connections(connections(2,:));
+    connections={};
+  end
 end
 
-last_mhactl_java_invocation = now();
-  
 if ~isequal(eval, 'eval')
   error('second parameter to mhactl_java has to be string ''eval''.')
 end
@@ -77,9 +73,14 @@ end
 if isempty(connection) % No matching existing connection, create new
   connection = javaObject('de.hoertech.mha.control.Connection');
   connection.setTimeout(handle.timeout * 1000);
-  connection.setAddress(handle.host, handle.port);
+  if connection.setAddress(handle.host, handle.port) == false
+    error('Could not resolve host %s or could not connect to %s:%d', ...
+          handle.host, handle.host, handle.port);
+  end
   connections = [connections, {handle; connection}];
 end
+
+last_mhactl_java_invocation = now();
 
 % Communicate
 r = {};
