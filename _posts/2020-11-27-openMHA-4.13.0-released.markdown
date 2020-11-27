@@ -1,0 +1,29 @@
+---
+layout: post
+title:  "openMHA 4.13.0 available"
+date:   2020-11-27 08:00:00
+category: software
+tags: [release, 4.13.0]
+---
+
+__openMHA 4.13.0__ contains updates of various tools and features
+
+### New features and enhancements
+
+* Python tool for controlling openMHA from Python
+* Enhanced instructions and tool for calibrating the Portable Hearing Lab
+* Support for 64-bit ARM architectures
+* Reworked labstreaming layer receiver plugin for extended user control and enhanced stream reception
+* Support of several data formats for audio recording
+* Continous recording of AC variables to disk
+* Updates of installation and compilation instructions
+* ...
+
+### Bug fixes
+* openMHA matlab network connection management
+* Fix error in our computation of the compressive camfit gain rule
+* Improved error handling in STFT plugins
+* ...
+
+
+
