@@ -61,6 +61,7 @@ mha/tools/mfiles/classpath.txt
 # python cache
 examples/09-localizer-steering-beamformer/visualisation_web/__pycache__
 examples/09-localizer-steering-beamformer/Output/*
+*.egg-info/
 
 # from patching
 *.rej
