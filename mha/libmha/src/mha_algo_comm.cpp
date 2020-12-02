@@ -855,7 +855,7 @@ void MHA_AC::double_t::insert()
     memset(&acv,0,sizeof(acv));
     acv.data_type = MHA_AC_DOUBLE;
     acv.num_entries = 1;
-    acv.stride = 0;
+    acv.stride = 1;
     acv.data = &data;
     int err = ac.insert_var(ac.handle, name.c_str(), acv);
     if( err )

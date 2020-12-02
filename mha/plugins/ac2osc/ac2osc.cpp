@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <memory>
 #include <lo/lo.h>
 #include <pthread.h>
 #include <sched.h>
@@ -57,7 +58,7 @@ private:
     MHAParser::int_t skip;
     /** abort if used in real-time thread? */
     MHAParser::bool_t rt_strict;
-    MHA_AC::acspace2matrix_t* acspace;
+    std::unique_ptr<MHA_AC::acspace2matrix_t> acspace;
     MHAEvents::patchbay_t<ac2osc_t> patchbay;
     bool b_record;
     uint8_t* rtmem;
@@ -76,7 +77,6 @@ ac2osc_t::ac2osc_t(algo_comm_t iac,const char* chain, const char* algo)
     mode("record mode","pause","[rec pause]"),
     skip("number of frames to skip after sending","0","[0,]"),
     rt_strict("abort if used in real-time thread?","yes"),
-    acspace(nullptr),
     b_record(false),
     rtmem(new uint8_t[0x100000]),
     skipcnt(0),
@@ -96,7 +96,8 @@ ac2osc_t::ac2osc_t(algo_comm_t iac,const char* chain, const char* algo)
 void ac2osc_t::prepare(mhaconfig_t& cf)
 {
     try {
-    acspace = new MHA_AC::acspace2matrix_t(ac,vars.data);
+        lo_addr = nullptr;
+        acspace = std::make_unique<MHA_AC::acspace2matrix_t>(ac,vars.data);
     framerate = cf.srate / cf.fragsize;
     lo_addr = lo_address_new( host.data.c_str(), port.data.c_str() );
     lo_address_set_ttl(lo_addr, ttl.data );
@@ -115,9 +116,10 @@ void ac2osc_t::prepare(mhaconfig_t& cf)
         vars.setlock(false);
         mode.setlock(false);
         rt_strict.setlock(false);
-        lo_send( lo_addr, "/mhastate","s","unprepared");
-        lo_address_free( lo_addr );
-        delete acspace;
+        if (lo_addr){
+            lo_send( lo_addr, "/mhastate","s","unprepared");
+            lo_address_free( lo_addr );
+        }
         throw e;
     }
 }
@@ -127,7 +129,6 @@ void ac2osc_t::release()
     is_first_run=true;
     lo_send( lo_addr, "/mhastate","s","released");
     lo_address_free( lo_addr );
-    delete acspace;
     host.setlock(false);
     port.setlock(false);
     ttl.setlock(false);
