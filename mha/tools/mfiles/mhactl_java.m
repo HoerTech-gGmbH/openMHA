@@ -29,12 +29,14 @@ persistent connections;
 persistent last_mhactl_java_invocation;
 
 if isequal(handle, 'retire_connections')
-  retire_connections(connections(2,:));
+  if ~isempty(connections)
+    retire_connections(connections(2,:));
+  endif
   r=[];state=[];connections={};return
 end
 
 if ~isempty(last_mhactl_java_invocation)
-  if (now() - last_mhactl_java_invocation) * 24 * 3600 > 1.2
+  if (now() - last_mhactl_java_invocation) * 24 * 3600 > 1.2 && ~isempty(connections)
     retire_connections(connections(2,:));
     connections={};
   end
