@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2008 2009 2010 2011 2013 2014 2015 2016 2018 2019 HörTech gGmbH
+// Copyright © 2020 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -129,7 +130,7 @@ public:
     void release();
     mha_spec_t* process(mha_spec_t*);
 private:
-    int num_channels;
+    MHA_AC::int_t num_channels;
     DynComp::dc_afterburn_t burn;
     MHAEvents::patchbay_t<interface_t> patchbay;
     void update_cfg();
@@ -151,22 +152,21 @@ interface_t::interface_t(const algo_comm_t& ac_,
                          const std::string& al)
     : MHAPlugin::plugin_t<fftfb_plug_t>("Multiband compressor framework based on level in overlapping filter bands.",ac_),
       MHAOvlFilter::fftfb_vars_t(static_cast<MHAParser::parser_t&>(*this)),
-      num_channels(0),
+      num_channels(ac_, al + "_nch", 0),
       algo(al),
       plug(*this,ac),
       plug_sigs(NULL)
 {
     set_node_id("multibandcompressor");
     insert_member(burn);
-    std::string ch_name(al+"_nch");
-    ac.insert_var_int(ac.handle, ch_name.c_str(), &num_channels);
 }
 
 void interface_t::prepare(mhaconfig_t& tf)
 {
     if( tf.domain != MHA_SPECTRUM )
         throw MHA_ErrorMsg("Only spectral processing is supported.");
-    num_channels = input_cfg().channels;
+    num_channels.data = input_cfg().channels;
+    num_channels.insert();
     update_cfg();
     poll_config();
     cfg->insert();
@@ -208,6 +208,7 @@ void interface_t::update_cfg()
 mha_spec_t* interface_t::process(mha_spec_t* s)
 {
     poll_config();
+    num_channels.insert();
     if( plug_sigs ){
         burn.update_burner();
         plug_sigs->update_levels(cfg,s);
