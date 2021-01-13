@@ -53,7 +53,6 @@ http://www.openmha.org/docs/openMHA_starting_guide.pdf
 
 ## Known issues
 ### General
-* analysemhaplugin does not work for io plugins.
 ### macOS
 * There are some known issues with Octave under macOS. The openMHA gui may not work correctly with octave. As an alternative Matlab can be used.
 * The jack audio plugin expects the [JackOSX distribution](http://www.jackaudio.org) to be installed. Developers wanting to use jack from other sources must compile openMHA themselves.
