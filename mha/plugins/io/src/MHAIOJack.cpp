@@ -89,12 +89,14 @@ using namespace MHAIOJack;
 
 void io_jack_t::get_delays_in()
 {
-    delays_in.data = MHAJack::get_port_capture_latency_int(connections_in.data);
+    if(is_prepared())
+        delays_in.data = MHAJack::get_port_capture_latency_int(connections_in.data);
 }
 
 void io_jack_t::get_delays_out()
 {
-    delays_out.data = MHAJack::get_port_playback_latency_int(connections_out.data);
+    if(is_prepared())
+        delays_out.data = MHAJack::get_port_playback_latency_int(connections_out.data);
 }
 
 void io_jack_t::read_get_cpu_load()
@@ -234,9 +236,9 @@ io_jack_t::io_jack_t(unsigned int ifragsize,
                   : std::string("default"))),
       clientname("Name of JACK client","MHA"),
       connections_in("Connections for input ports","[]"),
-      delays_in("Input delay in samples as reported by JACK"),
+      delays_in("Input delay in samples as reported by JACK. Only valid after prepare."),
       connections_out("Connections for output ports","[]"),
-      delays_out("Output delay in samples as reported by JACK"),
+      delays_out("Output delay in samples as reported by JACK. Only valid after prepare."),
       portnames_in("Names of input ports (empty for automatic names)","[]"),
       portnames_out("Names of output ports (empty for automatic names)","[]"),
       ports_in_physical("Physical (hardware) input ports"),
