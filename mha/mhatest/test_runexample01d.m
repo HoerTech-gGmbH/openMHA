@@ -30,7 +30,7 @@ function mha = test_runexample01d()
   % start jack asynchronously
   jack_pid = system('jackd -d dummy -r 44100 -p 64', false, 'async');
   assert_all(jack_pid > 0);
-  % The PID we got is that of the shell that started jack, useless for killing jackd
+  unittest_teardown(@waitpid,jack_pid);
   unittest_teardown(@system, 'killall -9 jackd');
   pause(1);
   assert_all(wait_for_jack(2));
