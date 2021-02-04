@@ -333,9 +333,9 @@ std::string mhaserver_t::on_received_line(const std::string& cmd)
 
 #ifndef NORELEASE_WARNING // This is not a release build. Add warning to output.
 #define NORELEASE_WARNING "\n" \
-    "##############################################################\n" \
-    "# ATTENTION: THIS VERSION OF OPENMHA IS A PRERELEASE VERSION #\n" \
-    "##############################################################\n" \
+    "#############################################################\n" \
+    "# ATTENTION: THIS BUILD OF OPENMHA IS NOT A RELEASE VERSION #\n" \
+    "#############################################################\n" \
     "\n"
 #define VERSION_EXTENSION "+"
 #endif
@@ -344,7 +344,7 @@ std::string mhaserver_t::on_received_line(const std::string& cmd)
 NORELEASE_WARNING \
 "The Open Master Hearing Aid (openMHA) server version " \
 MHA_RELEASE_VERSION_STRING    VERSION_EXTENSION    "\n" \
-"Copyright (c) 2005-2020 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
+"Copyright (c) 2005-2021 HoerTech gGmbH, D-26129 Oldenburg, Germany"\
 "\n\n"\
 "This program comes with ABSOLUTELY NO WARRANTY; "\
 "for details see file COPYING.\n"\
