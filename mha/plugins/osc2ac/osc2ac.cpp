@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <lo/lo.h>
+#include "mha_parser.hh"
 #include "mha_plugin.hh"
 
 /** Class for converting messages received at a single osc address to a single
@@ -70,6 +71,10 @@ public:
      *         0 if not. */
     int handler(const char *types, lo_arg **argv,int argc);
 private:
+    /** Name of the ac variable */
+    std::string acname;
+    /** OSC address */
+    std::string oscaddr;
     /** AC variable storage */
     MHA_AC::waveform_t ac_data;
     /** OSC variable storage */
@@ -80,9 +85,27 @@ private:
 
 osc_variable_t::osc_variable_t(const std::string& name, unsigned int size,
                                algo_comm_t hAC, lo_server_thread lost)
-    : ac_data(hAC,name,size,1,false),
+    : ac_data(hAC,
+              [&](){
+                  // Split the given name by ':' the left side
+                  // is the AC name, if there's none take the right side
+                  MHAParser::expression_t expr(name,":");
+                  if(!expr.lval.size())
+                      return expr.rval.c_str();
+                  else return expr.lval.c_str();
+              }(),
+              size,1,false),
       osc_data(size,1),
-      name_("/"+name)
+      name_([&](){
+          // Split the given name by ':'; the right side
+          // is the AC name, if there's none take the left side
+          // prepend with '/' if necessary
+          MHAParser::expression_t expr(name,":");
+          auto n=expr.rval.size() ? expr.rval : expr.lval;
+          if(n[0]!='/')
+              return "/"+n;
+          else
+              return n;}())
 {
     std::string fmt;
     for(unsigned int k=0;k<size;k++)
