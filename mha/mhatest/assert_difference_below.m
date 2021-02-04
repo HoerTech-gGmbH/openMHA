@@ -6,7 +6,7 @@ function assert_difference_below(expected, actual, epsilon, error_message)
 % epsilon.
 
 % This file is part of MatlabUnit.  
-% Copyright (C) 2003-2005 Medizinische Physik, Universit‰t Oldenburg
+% Copyright (C) 2003-2005 Medizinische Physik, Universit√§t Oldenburg
 % Author: Tobias Herzke
 % File Version: $Id: assert_difference_below.m,v 1.6 2005/04/13 16:17:09 tobiasl Exp $
 

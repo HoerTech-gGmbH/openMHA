@@ -1,18 +1,18 @@
 function assert_equal(expected, actual, error_message)
 % Gfb_assert_equal(expected, actual [, error_message])
 %
-% prüft zwei Skalare, Vektoren, Matrizen, oder Structs auf Gleichheit.
+% prÃ¼ft zwei Skalare, Vektoren, Matrizen, oder Structs auf Gleichheit.
 % Es ist ein Fehler,
 % wenn die Werte nicht gleich sind.
 %
 % Parameter
 % expected      erwarteter Wert
 % actual        zu testender Wert
-% error_message Sprechende Fehlermeldung für den Fall der Ungleichheit, kann
+% error_message Sprechende Fehlermeldung fÃ¼r den Fall der Ungleichheit, kann
 %               weggelassen werden
 
 % This file is part of MatlabUnit.  
-% Copyright (C) 2003-2005 Medizinische Physik, Universität Oldenburg
+% Copyright (C) 2003-2005 Medizinische Physik, UniversitÃ¤t Oldenburg
 % Author: Tobias Herzke
 % File Version: $Id: assert_equal.m,v 1.5 2005/08/29 07:29:10 tobiasl Exp $
 

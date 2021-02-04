@@ -11,7 +11,7 @@ function str = format_backtrace(format, bt)
 %         function itself.
 
 % This file is part of MatlabUnit.  
-% Copyright (C) 2003-2005 Medizinische Physik, Universit‰t Oldenburg
+% Copyright (C) 2003-2005 Medizinische Physik, Universit√§t Oldenburg
 % Author: Tobias Herzke
 % File Version: $Id: format_backtrace.m,v 1.3 2005/04/13 16:17:09 tobiasl Exp $
 
