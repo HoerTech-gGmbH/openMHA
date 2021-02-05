@@ -32,7 +32,7 @@ function test_mha_start_output_streams
                       true);                      % Store received text.
   % we need to let mha get a chance to print the string to its output
   pause(0.1);
-  assert_all(~isempty(strfind(stdout.get(),'Copyright (c) 2005-2020 HoerTech')))
+  assert_all(~isempty(regexp(stdout.get(),"Copyright ... 2005-20[0-9]{2} HoerTech gGmbH")));
 
   % Test 2 : discarding stdout of the new MHA process but accessing stderr
   [mha,process] = mha_start();

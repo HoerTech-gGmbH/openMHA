@@ -135,6 +135,7 @@ namespace MHAJack {
         void set_output_portnames(const std::vector<std::string>&);
         float get_cpu_load();
         void set_use_jack_transport(bool ut){ use_jack_transport = ut;};
+        bool is_prepared() const { return b_prepared; };
     private:
         void prepare_impl(const char* server_name,
                           const char* client_name,

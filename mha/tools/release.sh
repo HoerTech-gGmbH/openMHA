@@ -170,8 +170,10 @@ then
     exit 0
 fi
 
+# Get PDF documents from Jenkins and publish on openMHA website (=branch gh-pages)
 echo "Retrieve the generated PDFs from Jenkins for upload to github-pages..."
 wget http://localhost:8080/job/openMHA/job/openMHA/job/master/lastSuccessfulBuild/artifact/pdf-$VER.zip
+# Temporarily, we need a separate clone for changing branch gh-pages:
 git clone --branch=gh-pages --single-branch git@github.com:HoerTech-gGmbH/openMHA GHPAGES
 cd GHPAGES/docs
 unzip ../../pdf-$VER.zip
@@ -184,7 +186,4 @@ else
     git push
 fi
 cd ../..
-
-echo delete gh-pages checkout in GHPAGES?
-ask_yes_no
 rm -rf GHPAGES
