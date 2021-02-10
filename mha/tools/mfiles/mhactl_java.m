@@ -31,7 +31,7 @@ persistent last_mhactl_java_invocation;
 if isequal(handle, 'retire_connections')
   if ~isempty(connections)
     retire_connections(connections(2,:));
-  endif
+  end
   r=[];state=[];connections={};return
 end
 
