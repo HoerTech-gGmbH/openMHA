@@ -23,8 +23,10 @@ In Ubuntu 16.04:
     sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de xenial universe'
     sudo apt update
 
-On Computers with an ARM CPU running a recent variant of
-Debian, Ubuntu, Raspberry Pi OS, Armbian, or similar:
+On Computers with an ARM CPU running a recent variant of Debian, Ubuntu,
+Raspberry Pi OS, Armbian, or similar:  The following instructions work for
+both, 32 and 64 bit ARM systems.  A requirement for 32 bit ARM systems is that
+the CPU needs to be at least ARMv7.
 
     wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
     echo 'deb http://apt.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmha.list
