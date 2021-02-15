@@ -427,6 +427,29 @@ you have multiple output channels. You have to assign the peaklevels
 and FIR filter coefficients to the correct output channels that
 correspond to the measured hardware.
 
+Additional  \Octave{}/\Matlab{} tools that we want to mention here briefly:
+\begin{enumerate}
+  \item
+    For target devices with low computational power, using the FIR filter
+    of plugin \texttt{transducers} (computed in the time domain) may
+    be too computationally expensive.
+    %
+    For \mha{} configurations running on devices like these, an alternative
+    may be to adjust the frequency response with an  \texttt{equalize} plugin
+    in the frequency domain.
+    %
+    If you want to take this route, you may want to consider to use our
+    \Octave{}/\Matlab{} function \texttt{fresponse\_to\_eq}.
+    %
+    As always, please inspect this function before using it for calibration
+    purposes.
+  \item
+    For calibrating the portable hearing lab (PHL), you may want to consider our
+    application note in openMHA
+    \href{https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/22-phl-calibration}{
+      example 22}.
+\end{enumerate}
+
 \subsection{Test your calibration}
 
 It is crucial to test your calibration. Please configure a simple \mha{} with the
