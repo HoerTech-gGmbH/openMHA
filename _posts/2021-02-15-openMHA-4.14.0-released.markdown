@@ -1,0 +1,17 @@
+---
+layout: post
+title:  "openMHA 4.14.0 available"
+date:   2021-02-15 08:00:00
+category: software
+tags: [release, 4.14.0]
+---
+
+__openMHA 4.14.0__ provides a new tool set for using Matlab code with openMHA
+
+The main feature of openMHA release 4.14.0 is a set of documentation, tools and examples that allow the integration of signal processing implemented in Matlab in the openMHA framework based in the Matlab Coder. The Matlab Coder offers two ways to integrate Matlab code into openMHA:
+
+I. It can be used to convert Matlab code into C/C++ that can be compiled by the user with the openMHA software to generate a native openMHA plugin. An [code example](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/23-matlab-coder) that can serve as a template for own developments is available. 
+
+II. A shared library can be generated from Matlab code that can be loaded by a wrapper plugin into an openMHA configuration - the matlab_wrapper plugin. In this case the user is not required to compile the code by himself. A [simple example](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/24-matlab-wrapper-simple) is available that can be used as template for own plugins as well as an [advanced example](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/25-matlab-wrapper-advanced) which is described in detail in the [Matlab Coder Integration manual](/docs/openMHA_matlab_coder_integration.pdf).
+
+This first version of the tool set supports signal processing in the time domain. An extension to spectral processing within openMHA's overlapadd framework is in preparation and will be released soon. 
