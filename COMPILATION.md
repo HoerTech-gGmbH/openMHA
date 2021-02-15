@@ -202,6 +202,7 @@ Linux recommended for document regeneration.
 Please install all dependencies for openMHA compilation first, along 
 with the following prerequisites for recreating the documents (optional!):
 
+- Ubuntu 18.04
 - doxygen
 - xfig
 - graphviz
