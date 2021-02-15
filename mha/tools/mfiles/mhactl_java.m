@@ -9,7 +9,7 @@ function [r,state] = mhactl_java(handle, eval, query)
 % state:  Vector of result codes: 0 for success, 1 for failure.
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2011 2013 2014 2017 2020 HörTech gGmbH
+% Copyright © 2011 2013 2014 2017 2020 2021 HörTech gGmbH
 
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by

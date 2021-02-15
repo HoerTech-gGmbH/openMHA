@@ -1,6 +1,6 @@
 #!/bin/bash -e
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 2019 2020 HörTech gGmbH
+# Copyright © 2018 2019 2020 2021 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
