@@ -116,26 +116,7 @@ std::list<std::string> mha_library_paths()
     return paths;
 }
 
-
-dynamiclib_t::dynamiclib_t(const std::string& n)
-    : modulename(n)
-#ifndef _WIN32
-    ,h(NULL)
-#endif
-{
-#ifdef MHA_STATIC_PLUGINS // plugin code is compiled into executable
-  fullname = modulename;
-#ifdef _WIN32
-  h = GetModuleHandle(NULL);
-#else
-  h = dlopen(NULL, RTLD_LAZY);
-#endif
-  // check if code for this plugin is present by checking marker symbol
-  if (!resolve("dummy_interface_test"))
-    throw MHA_Error(__FILE__,__LINE__,
-                    "Plugin \"%s\" is not present in this MHA executable",
-                    n.c_str());
-#else
+void dynamiclib_t::load_lib(const std::string& n){
     std::list<std::string> paths(mha_library_paths());
     std::string lp("");
     std::string loadliberr("");
@@ -159,27 +140,28 @@ dynamiclib_t::dynamiclib_t(const std::string& n)
         throw MHA_Error(__FILE__,__LINE__,
                         "Unable to load library \"%s\" (MHA_LIBRARY_PATH=%s).%s",
                         n.c_str(), libpath.c_str(),loadliberr.c_str());
-#endif
 }
 
-void* dynamiclib_t::resolve(const std::string& n)
+dynamiclib_t::dynamiclib_t(const std::string& n)
+    : modulename(n),
+      h(nullptr)
 {
-    std::string resolve_name =
-#ifdef MHA_STATIC_PLUGINS
-        "MHA_STATIC_" + getmodulename() + "_" +
-#else
-        "MHA_DYNAMIC_" + 
-#endif
-    n;
+    load_lib(n);
+}
+
+dynamiclib_t::dynamiclib_t() : h(nullptr) {}
+
+void* dynamiclib_t::resolve(const std::string& name)
+{
 #ifdef _WIN32
     void* ret;
-    ret = (void*)GetProcAddress(h,resolve_name.c_str());
+    ret = (void*)GetProcAddress(h,name.c_str());
     if( ret )
         return ret;
-    resolve_name = "_" + resolve_name;
-    return (void*)GetProcAddress(h,resolve_name.c_str());
+    auto tmp="_"+name;
+    return (void*)GetProcAddress(h,tmp.c_str());
 #else
-    return dlsym(h,resolve_name.c_str());
+    return dlsym(h,name.c_str());
 #endif
 }
 
@@ -195,15 +177,60 @@ void* dynamiclib_t::resolve_checked(const std::string& n)
 
 dynamiclib_t::~dynamiclib_t()
 {
-#ifndef MHA_STATIC_PLUGINS
+    // Derived classes might do their own cleanup and set h to null. Otherwise
+    // fall back to this default.
+    if(h){
 #ifdef _WIN32
-    FreeLibrary( h );
+        FreeLibrary( h );
 #else
-    dlclose( h );
+        dlclose( h );
 #endif
+        h=nullptr;
+    }
+}
+
+pluginlib_t::pluginlib_t(const std::string& n)
+    : dynamiclib_t()
+{
+    modulename=n;
+#ifdef MHA_STATIC_PLUGINS // plugin code is compiled into executable
+  fullname = modulename;
+#ifdef _WIN32
+  h = GetModuleHandle(NULL);
+#else
+  h = dlopen(NULL, RTLD_LAZY);
+#endif
+  // check if code for this plugin is present by checking marker symbol
+  // The virtual call in the ctor is okay in this case because pluginlib_t::resolve is called,
+  // which is what we actually want.
+  // cppcheck-suppress virtualCallInConstructor
+  if (!resolve("dummy_interface_test"))
+      throw MHA_Error(__FILE__, __LINE__, "Plugin \"%s\" is not present in this MHA executable",
+                      n.c_str());
+#else
+  load_lib(n);
 #endif
 }
 
+void* pluginlib_t::resolve(const std::string& n)
+{
+    std::string resolve_name =
+#ifdef MHA_STATIC_PLUGINS
+        "MHA_STATIC_" + getmodulename() + "_" +
+#else
+        "MHA_DYNAMIC_" + 
+#endif
+    n;
+    return dynamiclib_t::resolve(resolve_name);
+}
+
+pluginlib_t::~pluginlib_t() {
+    // If mha was compiled with static plugins, bypass the base
+    // class cleanup is necessary by setting h to null.
+#ifdef MHA_STATIC_PLUGINS
+    h=nullptr;
+#endif
+}
 
 std::list<std::string> list_dir(const std::string& path,const std::string& pattern)
 {

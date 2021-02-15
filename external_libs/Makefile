@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2016 2017 2018 2019 HörTech gGmbH
+# Copyright © 2016 2017 2018 2019 2021 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@ include ../magic.mk
 
 EXTERNAL_LIBS=$(realpath .)
 
-TARGETS = fftw.is_installed network-asio.is_installed
+TARGETS = libemx.is_installed fftw.is_installed network-asio.is_installed
 
 include ../rules.mk
 
@@ -122,6 +122,14 @@ $(BUILD_DIR)/network-asio.is_installed: network-asio/.gitignore \
 network-asio/.gitignore:
 	git clone https://github.com/chriskohlhoff/asio network-asio
 	cd network-asio && git checkout 22afb86 # release 1.12.2
+
+libemx: $(BUILD_DIR)/libemx.is_installed
+
+$(BUILD_DIR)/libemx.is_installed: $(BUILD_DIR)/include/.directory $(BUILD_DIR)/lib/.directory
+	cd libemx/. && $(MAKE) -j 1
+	cp libemx/$(BUILD_DIR)/libemx.a $(BUILD_DIR)/lib/libemx.a
+	cp libemx/src/*.h* $(BUILD_DIR)/include/.
+	touch $@
 
 # Local Variables:
 # compile-command: "make"

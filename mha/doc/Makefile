@@ -1,6 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2002 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 
-# Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
+# Copyright © 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,9 @@ endif
 
 MHANAME = openMHA
 
-all: $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf $(MHANAME)_calibration_manual.pdf $(MHANAME)_starting_guide.pdf plugins
+all: $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf \
+     $(MHANAME)_calibration_manual.pdf $(MHANAME)_starting_guide.pdf \
+     $(MHANAME)_matlab_coder_integration.pdf plugins
 
 .PHONY : images plugins mhadoc clean
 
@@ -60,6 +62,9 @@ $(MHANAME)_gui_manual.pdf: user_manual/$(MHANAME)_gui_manual.pdf
 $(MHANAME)_starting_guide.pdf: starting_guide/$(MHANAME)_starting_guide.pdf
 	cp -lv --remove-destination $< $@
 
+$(MHANAME)_matlab_coder_integration.pdf: matlab_coder_integration/$(MHANAME)_matlab_coder_integration.pdf
+	cp -lv --remove-destination $< $@
+
 .PHONY : images user_manual/$(MHANAME)_application_manual.pdf user_manual/$(MHANAME)_gui_manual.pdf
 
 user_manual/$(MHANAME)_application_manual.pdf: images mhadoc
@@ -73,6 +78,9 @@ calibration/$(MHANAME)_calibration_manual.pdf: images mhadoc
 
 starting_guide/$(MHANAME)_starting_guide.pdf: images mhadoc
 	$(MAKE) -C starting_guide $(MHANAME)_starting_guide.pdf
+
+matlab_coder_integration/$(MHANAME)_matlab_coder_integration.pdf:
+	$(MAKE) -C matlab_coder_integration $(MHANAME)_matlab_coder_integration.pdf
 
 images:
 	$(MAKE) -C images

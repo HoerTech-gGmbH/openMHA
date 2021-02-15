@@ -1,0 +1,33 @@
+This example is intended to give an introduction on using matlab coder to generate openMHA
+plugins by natively compiling openMHA. The example makes use of a 2 channel switching 
+algorithm impleted using Matlab to give a step-by-step guide on generating a plugin.
+
+List of Files:
+  README
+  channel_switch.m              -  Example algorithm for plugin implementation
+  make.m                        -  Matlab coder script to generate C code
+  process.m                     -  User function from which C code is generated
+  verification.m                -  Verifies if Matlab and openMHA output are the same
+  plugin_skeleton:              -  Directory containing plugin skeleton code
+      matlabcoder_skeleton.cpp  -  Plugin skeleton file
+      Makefile                  -  Makefile necessary for openMHA compilation
+
+Instructions on compiling user plugin:
+  - Place algorithm(s) implemented in matlab inside process function.
+  - The process function should take a block and output an equally sized block.
+  - Using make.m, matlab coder will generate C code for the process function (Matlab coder is necessary).
+  - Running make.m generates a subdirectory "codegen". 
+  - "codegen/lib/process/" should then be copied to the directory "mha/plugins/<PLUGIN_NAME>".
+  - Files located inside "plugin_skeleton/" should also be copied to the same <PLUGIN_NAME> directory
+  - The "matlabcoder_skeleton.cpp" filename needs be changed to "<PLUGIN_NAME>.cpp".
+  - "make install" can then be used to compile and install mha plugins.
+
+Verification:
+  - The verification tool uses Matlab. Section 4 of Application Manual describes how to setup Matlab tools with MHA. 
+  - verification.m and process.m along with it's dependencies should be placed in 
+    "mha/plugins/<PLUGIN_NAME>" directory.
+  - The verification function located in this library can be used to check if the outputs
+    from matlab and the compiled plugin are identical.
+  - The verification function takes three arguments: <PLUGIN_NAME>, test signal and fragment size.
+  - If the function runs without displaying any errors, the outputs are identical, within an error margin 
+    of 10e-5.

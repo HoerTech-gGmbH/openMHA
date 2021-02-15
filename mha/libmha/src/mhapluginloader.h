@@ -144,7 +144,7 @@ namespace PluginLoader {
         void resolve_and_init();
         int lib_err;
         algo_comm_t ac;
-        dynamiclib_t lib_handle;
+        pluginlib_t lib_handle;
         void* lib_data;
         // callback handles:
         MHAGetVersion_t MHAGetVersion_cb;

@@ -58,7 +58,7 @@ public:
 protected:
     void test_error();
     int lib_err;
-    dynamiclib_t lib_handle;
+    pluginlib_t lib_handle;
     void* lib_data;
     // callback handles:
     IOInit_t IOInit_cb;
