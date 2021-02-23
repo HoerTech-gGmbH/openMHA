@@ -286,8 +286,6 @@ namespace MHAParser {
         entry_map_t entries;
         /** identification string */
         std::string id_string;
-        std::string srcfile;
-        unsigned int srcline;
         std::string last_errormsg;
     };
 

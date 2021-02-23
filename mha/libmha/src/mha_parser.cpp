@@ -734,8 +734,7 @@ std::string MHAParser::parser_t::query_savemons( const std::string & fname )
 
 std::string MHAParser::parser_t::query_readfile( const std::string & fname )
 {
-    srcfile = fname;
-    srcline = 0;
+    unsigned srcline = 0;
     std::ifstream fh( fname.c_str(  ) );
     std::string  returnval;
     if( fh.fail(  ) ) {
@@ -770,7 +769,8 @@ std::string MHAParser::parser_t::query_readfile( const std::string & fname )
         fh.close(  );
         last_errormsg = e.get_msg(  );
         throw MHA_Error( __FILE__, __LINE__,
-                         "%s\n(while parsing \"%s\" line %u)", last_errormsg.c_str(  ), srcfile.c_str(  ), srcline );
+                         "%s\n(while parsing \"%s\" line %u)",
+                         last_errormsg.c_str(  ), fname.c_str(  ), srcline );
     }
 }
 
