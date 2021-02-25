@@ -1,7 +1,7 @@
 # Installation instructions
 
 This installation guide describes the installation process of openMHA on
-Linux (__I.__), Windows (__II.__), and macOS (__III.__) operating systems.
+Linux (__I.__),  macOS(__II.__), and Windows (__III.__) operating systems.
 
 ## I. Installation from binary packages on Ubuntu and ARM-based systems.
 
