@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2013 2014 2015 2017 2018 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,12 +21,18 @@
 #include <math.h>
 #include <time.h>
 
+/// Runtime configuration of the sine plugin
 struct sine_cfg_t {
+    /// Phase increment per sample, divided by 2 pi for easier phase wrapping.
     double phase_increment_div_2pi;
+    /// Amplitude of the sinusoid in Pascal.
     double amplitude;
+    /// 0 for mode replace, 1 for mode mix. Used as factor on input signal.
     int    mix;
+    /// Indices of affected audio channels.
     const std::vector<int> channels;
 
+    /// Constructor computes data members from input parameters.
     sine_cfg_t(double sampling_rate,
                mha_real_t frequency, 
                mha_real_t newlev,
@@ -39,16 +45,22 @@ struct sine_cfg_t {
     {}
 };
 
+/// Interface class of plugin \c sine, a sinusoid generator plugin.
 class sine_t : public MHAPlugin::plugin_t<sine_cfg_t> {
 public:
+    /// Constructor initializes and connects configuration variables
     sine_t(
            const algo_comm_t&,
            const std::string& chain_name,
            const std::string& algo_name);
-    ~sine_t();
+    /// Computes sinusoid and mixes/replaces input signal. If the amplitude
+    /// has changed since the last process callback, spread out the amplitude
+    /// change linearly across all samples of the buffer to avoid clicks.
     mha_wave_t* process(mha_wave_t*);
+    /// Adapts range of channel variable and prepares.
     void prepare(mhaconfig_t&);
 private:
+    /// Computes new runtime configuration
     void update_cfg();
     MHAParser::float_t lev;
     MHAParser::float_t frequency;
@@ -77,7 +89,7 @@ sine_t::sine_t(const algo_comm_t& iac,
       frequency("Frequency in Hz", "0","[0,["),
       mode("Replace input signal with tone or mix tone into input signal", 
            "replace", "[replace mix]"),
-      channels("List of audio channels to feed with tone "\
+      channels("0-based indices of audio channels to feed with tone\n"
                "(all other audio channels are not affected)", "[]")
 {
     insert_item("lev",&lev);
@@ -88,10 +100,6 @@ sine_t::sine_t(const algo_comm_t& iac,
     patchbay.connect(&frequency.writeaccess,this,&sine_t::update_cfg);
     patchbay.connect(&mode.writeaccess,this,&sine_t::update_cfg);
     patchbay.connect(&channels.writeaccess,this,&sine_t::update_cfg);
-}
-
-sine_t::~sine_t()
-{
 }
 
 void sine_t::prepare(mhaconfig_t& tf)
@@ -130,7 +138,11 @@ MHAPLUGIN_CALLBACKS(sine,sine_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (sine,
  "signal-generator",
- "")
+ "Sine generator plugin.  Adds a sinusoid with the given RMS level to the"
+ " configured audio channels.  If the amplitude changes from one block of"
+ " audio to the next, then the amplitude change is spread out linearly"
+ " across all samples of the audio block that first sees the new level"
+ " to avoid clicks from discontinuities.")
 
 // Local Variables:
 // compile-command: "make"
