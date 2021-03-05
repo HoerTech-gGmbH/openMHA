@@ -5,7 +5,12 @@ permalink: /hardware/
 menu: main
 ---
 
-![Cape4all on BeagleBone Black wireless](/images/BBBw_Cape4all.jpg "Cape4all on BeagleBone Black wireless. Photo: Hendrik Kayser"){: align="right" width="360px"}
+![Portable Hearing Laboratory](/images/phl.png "Portable Hearing Laboratory"){: align="right" width="400px"}
+
+#### Portable Hearing Laboratory
+The Portable Hearing Laboratory (PHL) combines portable hardware and the openMHA software to an integrated hearing aid research platform. The PHL consist of a [Beaglebone Black wireless](https://beagleboard.org/black-wireless) single-board computer extended with a multi-channel audio board based on the "Cape4all" audio interface (see below). The system includes a battery and a set of binaural behind-the-ear (BTE) hearing aids that comprise two microphones on each side and receivers in the canal (RIC).  The BTE- RIC devices are connected with the processing box via flexible cables. The optimized Linux operating system [Mahalia](http://mahalia.openmha.org/) runs on the hardware. The whole system can be worn by a user with a neckband and allows hearing aid research in the field based on openMHA. More information can be found at the according [BatAndCat webpage](https://batandcat.com/portable-hearing-laboratory-phl.html). 
+
+![Cape4all on BeagleBone Black wireless](/images/BBBw_Cape4all.jpg "Cape4all on BeagleBone Black wireless. Photo: Hendrik Kayser"){: align="right" width="240px"}
 
 #### Cape4all on BeagleBone Black  
 
