@@ -1,6 +1,6 @@
-// This file is part of the HörTech Open Master Hearing Aid (openMHA)
+// This file is part of the open HörTech Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <limits>
-#include "mha_plugin.hh"
-#include "mha_filter.hh"
+#include "dc_simple.hh"
 
 namespace dc_simple {
 
@@ -52,69 +50,6 @@ mha_real_t not_zero(mha_real_t x,const std::string& comment = "")
     return x;
 }
 
-class dc_vars_t {
-public:
-    dc_vars_t(MHAParser::parser_t&);
-    MHAParser::vfloat_t g50;
-    MHAParser::vfloat_t g80;
-    MHAParser::vfloat_t maxgain;
-    MHAParser::vfloat_t expansion_threshold;
-    MHAParser::vfloat_t expansion_slope;
-    MHAParser::vfloat_t limiter_threshold;
-    MHAParser::vfloat_t tauattack;
-    MHAParser::vfloat_t taudecay;
-    MHAParser::bool_t bypass;
-};
-
-class dc_vars_validator_t {
-public:
-    dc_vars_validator_t(const dc_vars_t& v,unsigned int s);
-};
-
-class level_smoother_t : private dc_vars_validator_t {
-public:
-    level_smoother_t(const dc_vars_t& vars,
-                     mha_real_t filter_rate,
-                     mhaconfig_t buscfg);
-    mha_wave_t* process(mha_spec_t*);
-    mha_wave_t* process(mha_wave_t*);
-private:
-    MHAFilter::o1flt_lowpass_t attack;
-    MHAFilter::o1flt_maxtrack_t decay;
-    unsigned int nbands;
-    unsigned int fftlen;
-    MHASignal::waveform_t level_wave;
-    MHASignal::waveform_t level_spec;
-};
-
-class dc_t : private dc_vars_validator_t {
-public:
-    dc_t(const dc_vars_t& vars,
-         mha_real_t filter_rate,
-         unsigned int nch,
-         unsigned int fftlen);
-    mha_spec_t* process(mha_spec_t*, mha_wave_t* level_db);
-    mha_wave_t* process(mha_wave_t*, mha_wave_t* level_db);
-private:
-    class line_t {
-    public:
-        line_t(mha_real_t x1,mha_real_t y1,mha_real_t x2,mha_real_t y2);
-        line_t(mha_real_t x1,mha_real_t y1,mha_real_t slope);
-        inline mha_real_t operator()(mha_real_t x){return m*x+y0;};
-    private:
-        mha_real_t m, y0;
-    };
-    std::vector<mha_real_t> expansion_threshold;
-    std::vector<mha_real_t> limiter_threshold;
-    std::vector<line_t> compression;
-    std::vector<line_t> expansion;
-    std::vector<line_t> limiter;
-    std::vector<mha_real_t> maxgain;
-    unsigned int nbands;
-public:
-    std::vector<float> mon_l, mon_g;
-};
-
 dc_t::line_t::line_t(mha_real_t x1,mha_real_t y1,mha_real_t x2,mha_real_t y2)
     : m((y2-y1) / not_zero(x2-x1,"(line_t::line_t)")),y0(y1 - m*x1)
 {
@@ -124,37 +59,6 @@ dc_t::line_t::line_t(mha_real_t x1,mha_real_t y1,mha_real_t m_)
     : m(m_),y0(y1 - m*x1)
 {
 }
-
-typedef MHAPlugin::plugin_t<dc_t> DC;
-typedef MHAPlugin::config_t<level_smoother_t> LEVEL;
-
-class dc_if_t : public DC, public LEVEL, public dc_vars_t {
-public:
-    dc_if_t(const algo_comm_t& ac_,
-            const std::string& th_,
-            const std::string& al_);
-    void prepare(mhaconfig_t& tf);
-    void release();
-    mha_spec_t* process(mha_spec_t*);
-    mha_wave_t* process(mha_wave_t*);
-private:
-    void update_dc();
-    void update_level();
-    void has_been_modified(){modified.data = 1;};
-    void read_modified(){modified.data = 0;};
-    void update_level_mon();
-    void update_gain_mon();
-    MHAParser::string_t clientid;
-    MHAParser::string_t gainrule;
-    MHAParser::string_t preset;
-    MHAParser::int_mon_t modified;
-    MHAParser::vfloat_mon_t mon_l, mon_g;
-    MHAParser::string_t filterbank;
-    MHAParser::vfloat_mon_t center_frequencies;
-    MHAParser::vfloat_mon_t edge_frequencies;
-    MHAEvents::patchbay_t<dc_if_t> patchbay;
-    bool prepared;
-};
 
 dc_if_t::dc_if_t(const algo_comm_t& ac_,
                  const std::string& th_,
