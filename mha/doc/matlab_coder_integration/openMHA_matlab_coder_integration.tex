@@ -113,18 +113,17 @@
 \usepackage{fancyvrb} %Für Rahmen um Code Boxen
 \usepackage{listings}
 
-\lstdefinestyle{customc}{
-language = tcl,
-commentstyle=\color{orange},
-  %columns = flexible
-  basicstyle = \ttfamily,
-  showstringspaces = false,
-  numbers=left,
-  numberstyle=\tiny,
-  frame = single
-}
+ \lstdefinestyle{customc}{
+ commentstyle=\color{orange},
+   columns = flexible
+   basicstyle = \ttfamily,
+   showstringspaces = false,
+   numbers=left,
+   numberstyle=\tiny,
+   frame = single
+ }
 
-\lstset{escapechar=@,style=customc}
+\lstset{style=customc}
 
 \begin{document}
 \MHAtitle{Matlab Coder integration}
@@ -424,7 +423,7 @@ dimensions of the signal we need to announce this fact to the \mha{} framework.
 We do this by changing the \texttt{channels} member of \texttt{signal\_dimensions} to one.
 Note that in line 15 we need to explicitly cast the value to the appropriate type lest we
 get errors during code generation. Also observe that the change to \texttt{channels}
-was the last thing we did, as we needed to original value before!
+was the last thing we did, as we needed the original value before!
 \subsubsection*{Process}
 \begin{lstlisting}[language=Matlab]
 function [wave_out,user_config] = ...
@@ -493,76 +492,69 @@ end
 \end{lstlisting}
 We do not need to do any cleanup, so we leave it empty.
 \subsubsection*{Deployment}
-If we have set up the \Matlab{} Coder to use a compiler that produces \mha{} compatible
-output we can just move the resulting user library to the appropriate directory, start \mha{}, 
-point the matlab\_wrapper plugin to the library and configure the user
-algorithm, like shown in example\_2.cfg:
-\begin{lstlisting}
-[...]
-# We have to tell the MHA how many audio channels to process.
-# The "nchannels_in" variable accepts positive integers.
-nchannels_in = 2
-# The number of output channels is auto-deduced by the MHA.
-
-# When we perform real-time signal processing, we process the signal
-# in small chunks of data.
-# The setting "fragsize" tells the MHA how many audio samples per
-# channel
-# are to be processed in each chunk.
-fragsize=128
-
-# MHA processes discrete-time digital audio signals with a fixed
-# sampling rate.  The sampling rate tells MHA how many samples per
-# second have been digitized in each audio channel.
-srate = 24000
-
-# In this example, we load the IO library that reads from and writes 
-# to sound files.
-iolib = MHAIOFile
-
-# This variable is used to select the input sound file.
-# The file name of the sound file to use as the input 
-# sound signal to the MHA is written to this variable.
-io.in = test.wav
-
-# Note that to ensure that the sound file was properly closed,
-# the MHA should be told to exit (cmd=quit).
-io.out = out.wav
-
-# The MHA framework can load a single MHA plugin to process the data.
-# We tell the MHA which plugin to load with the "mhalib" variable.
-# Usually MHA configurations consist of more than just one plugin.
-# MHA provides structuring plugins that can themselves load other
-# plugins for this purpose.
-mhalib = matlab_wrapper
-
-# Tell the matlab_wrapper plugin to look for the user library
-# example_2 (without suffix!). The plugin then loads the library
-# and tries to resolve the callback functions and parses the
-# user configuration defined in init()
-mha.library_name=example_2
-
-# Execute the prepare callback. 
-# As we reset the configuration variables in our prepare function,
-# all configuration will be overwritten during prepare(), 
-# so we can only configure our plugin after the callback 
-cmd=prepare
-
-# Set the channel delay to 50 samples and 100 samples. One entry per
-# channel
-mha.delay=[[50 100]]
-
-# Set the channel wise gain in dB to -5 for both channels. 
-mha.gain=[[-5 -5]]
-
-#This configuration file can be run with the following command
-#mha ?read:example_2.cfg cmd=start cmd=quit
+To generate the C code from our \Matlab{} code we can use \texttt{make.m}
+unchanged. Let's take a look:
+\begin{lstlisting}[language=Matlab]
+%% Create configuration object of class 'coder.CodeConfig'.
+cfg = coder.config('dll','ecoder',false);
+cfg.GenerateReport = true;
+cfg.ReportPotentialDifferences = false;
+cfg.SaturateOnIntegerOverflow = false;
+cfg.FilePartitionMethod = 'SingleFile';
+cfg.EnableOpenMP = false;
+cfg.RuntimeChecks = true;
+cfg.SupportNonFinite = false;
+cfg.HardwareImplementation.ProdHWDeviceType = ...
+                'Generic->32-bit x86 compatible';
+cfg.HardwareImplementation.ProdLongLongMode = true;
+cfg.HardwareImplementation.TargetLongLongMode = true;
 \end{lstlisting}
+At the beginning we initialize the \texttt{coder} configuration object with some sensible
+defaults, like defining the target device, enabling run time checks, and so on.
+A complete list can be found in the \Matlab{} coder documentation. Changing the
+settings should only be done after careful consideration and never without
+reason. \\
+The second section defines the types of the input arguments for \texttt{init()}:
+\begin{lstlisting}[language=Matlab]
+%% Define argument types for entry-point 'init'.
+ARGS = cell(4,1);
+ARGS{1} = cell(1,1);
+ARGS_1_1 = struct;
+ARGS_1_1.name = coder.typeof('X',[1 Inf],[0 1]);
+ARGS_1_1.value = coder.typeof(0,[Inf Inf],[1 1]);
+ARGS{1}{1} = coder.typeof(ARGS_1_1,[Inf  1],[1 0]);
+ARGS{1}{1} = coder.cstructname(ARGS{1}{1},'user_config_t');
+\end{lstlisting}
+Changing any of these required customization of the matlab\_wrapper plugin. If
+such customization seems necessary choosing the native compilation approach is
+recommended. \\
+The last section actually invokes the \Matlab{} coder:
+\begin{lstlisting}[language=Matlab]
+[...]
+
+%% Invoke MATLAB Coder.
+codegen -config cfg -o example_25... 
+         init -args ARGS{1}...
+         prepare -args ARGS{2}...
+         process -args ARGS{3}...
+         release
+
+[...]
+
+\end{lstlisting}
+The \texttt{-config} argument takes the configuration object we constructed
+earlier, \texttt{-o} takes the output file name(s). Change that argument to your liking.
+The rest of the invocation defines the entry-point functions and their argument
+types pairwise. First \texttt{init} and the input arguments to \texttt{init},
+then prepare, etc\ldots
+If one or more functions are not needed the argument pair can be removed from
+this line. Note that \texttt{process()} is not optional and the matlab\_wrapper
+plugin will refuse to start without it. \\
 If the generated code needs to be compiled by hand, we need to uncomment the
 last block in \texttt{make.m}:
 \begin{lstlisting}[language=Matlab]
 %% Optionally package the code for deployment elsewhere
-load('codegen\dll\example_2\buildinfo.mat')
+load('codegen\dll\example_25\buildinfo.mat')
 packNGo(buildInfo,'fileName','example_2.zip');
 \end{lstlisting}
 and rerun code generation. This makes the \texttt{packNGo} utility pack all
@@ -570,7 +562,57 @@ source code needed to compile the plugin into \texttt{example\_2.zip}.
 We then can move the contents of the resulting zip file into a separate
 directory and compile them using Makefile provided in the example directory.
 Note that this also enables us to use the \Matlab{} Coder on one machine and deploy
-the generated code on another machine where the Coder is not available.
+the generated code on another machine where the Coder is not available. \\
+The makefile needed to compile the example is relatively simple as far as
+makefiles go:
+\begin{lstlisting}[language=make]
+  example_25.so: example_25.o example_25_emxAPI.o example_25_emxutil.o
+    $(CC) -shared -o $@ $^
+      $(CC) -c -o $@ $<
+\end{lstlisting}
+In the first line we define the target library we want to compile and its dependencies:
+\texttt{example\_25.so} depends on \texttt{example\_25.o}, \texttt{example\_25\_emxAPI.o}, 
+and \texttt{example\_25\_emxutil.o}. The Make program automatically provides the rule 
+to how compile \texttt{.o} files from \texttt{.c} files.
+Here the first file, \texttt{example\_25.c}, contains the actual
+generated source code, \texttt{example\_25\_emxAPI.c} and
+\texttt{example\_25\_emxutil.c} contain utility code handling the structures the
+\Matlab{} coder generates to handle variable size matrices and similar
+constructs. \\
+This makefile should be fairly universal and be usable for any system needing only 
+small adjustments like e.g.\ the file suffix for shared libraries in and the actual 
+name of the input and output files. If needed the compiler flags can be customized further.
+See the documentation of your compiler for details. \\
+If, on the other hand, the \Matlab{} Coder was set up to use a compiler that produces \mha{} compatible
+output we can just move the resulting user library to the appropriate directory, start \mha{}, 
+point the matlab\_wrapper plugin to the library and configure the user
+algorithm, like shown in \texttt{example\_2.cfg}:
+\begin{lstlisting}
+nchannels_in = 2
+fragsize=128
+srate = 16000
+
+iolib = MHAIOFile
+io.in = example_25.wav
+io.out = out.wav
+
+mhalib = matlab_wrapper
+mha.library_name=example_25
+cmd=prepare
+mha.delay=[50 100]
+mha.gain=[-5 -5]
+\end{lstlisting}
+The first two sections are the usual setup routine for \mha{} where signal
+parameters like the number of input channels, the fragment size and the sampling
+rate are set up. We also tell \mha{} to use file to file processing for this
+example. using \texttt{example\_25.wav} as input and \texttt{out.wav} as output.
+Lines XXff. contain the actual configuration of the matlab\_wrapper plugin. We
+first tell \mha{} to load the library named \texttt{example\_25}, leaving out the
+file suffix. We then need to issue the \texttt{prepare} command because we reset
+\texttt{delay} and \texttt{gain} to default values in our \texttt{prepare()}
+function, overwritting all values we would assign before the prepare call.
+Finally we set the delay to 50 and 100 samples respectively and the
+gain to $-5\,\mathrm{dB}$ for both channels.
 
 \section{Native compilation}\label{sec:native compilation}
 If the code can not be rewritten to fit the wrapper plugin restrictions or when

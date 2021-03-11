@@ -61,8 +61,8 @@ ARGS{3}{3} = coder.typeof(ARGS_3_3,[Inf  1],[1 0]);
 ARGS{3}{3} = coder.cstructname(ARGS{3}{3},'user_config_t');
 
 %% Invoke MATLAB Coder.
-codegen -config cfg -o example_2 init -args ARGS{1} prepare -args ARGS{2} process -args ARGS{3} release
+codegen -config cfg -o example_25 init -args ARGS{1} prepare -args ARGS{2} process -args ARGS{3} release
 
 %% Optionally package the code for deployment elsewhere
-%load('codegen\dll\example_2\buildinfo.mat')
-%packNGo(buildInfo,'fileName','example_2.zip');
+%load('codegen\dll\example_25\buildinfo.mat')
+%packNGo(buildInfo,'fileName','example_25.zip');
