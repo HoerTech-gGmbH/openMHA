@@ -160,7 +160,7 @@ spec2wave_if_t::spec2wave_if_t(const algo_comm_t& iac,const std::string&,const s
                                        " for mod(wndlen,fragsize)=0.\n"
                                        "Also note that postwindowing only"
                                        " works for wndpos=0.5.\n"
-                                       "Alway set ramplen=0 here if wndpos!=0"
+                                       "Always set ramplen=0 here if wndpos!=0"
                                        " in the corresponding wave2spec.",
                                        iac),
       ramplen("Relative length of post windowing hanning ramps"
