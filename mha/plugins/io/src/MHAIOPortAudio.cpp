@@ -164,15 +164,26 @@ namespace MHAIOPortAudio {
                    IOStoppedEvent_t stop_event,
                    void* stop_handle)
       : MHAParser::parser_t("MHA IO library for portaudio V19 backend"),
-        device_name("Variable to load device by name.  This name has to"
+        device_name_in("Variable to load device by name.  This name has to"
                     " match the portaudio device\nname, exactly or as a"
                     " substring.  Exact matches take precedence over\nsubstring"
                     " matches.  Thereafter, matches at lower device indices are"
-                    " preferred.\ndevice_index will be updated when a match is"
+                    " preferred.\ndevice_index_in will be updated when a match is"
                     " found.",
                     "default"),
-        device_index("Variable to load device by index.  Upon setting"
-                     " device_index,\ndevice_name will be"
+        device_index_in("Variable to load device by index.  Upon setting"
+                     " device_index_in,\ndevice_name_in will be"
+                     " updated to the full portaudio name of this device.",
+                     "0", "[0,32767]"),
+        device_name_out("Variable to load device by name.  This name has to"
+                    " match the portaudio device\nname, exactly or as a"
+                    " substring.  Exact matches take precedence over\nsubstring"
+                    " matches.  Thereafter, matches at lower device indices are"
+                    " preferred.\ndevice_index_out will be updated when a match is"
+                    " found.",
+                    "default"),
+        device_index_out("Variable to load device by index.  Upon setting"
+                     " device_index_out,\ndevice_name_out will be"
                      " updated to the full portaudio name of this device.",
                      "0", "[0,32767]")
     {
@@ -201,46 +212,84 @@ namespace MHAIOPortAudio {
                         Pa_GetErrorText(err));
       device_info.fill_info();
       insert_member(device_info);
-      insert_member(device_name);
-      insert_member(device_index);
-      device_index.set_range("[0," + MHAParser::StrCnv::
+      insert_member(device_name_in);
+      insert_member(device_index_in);
+      insert_member(device_name_out);
+      insert_member(device_index_out);
+      device_index_in.set_range("[0," + MHAParser::StrCnv::
+                             val2str(device_info.numDevices.data) + "[");
+      device_index_out.set_range("[0," + MHAParser::StrCnv::
                              val2str(device_info.numDevices.data) + "[");
       try {
-        device_name_updated();
+        device_name_in_updated();
       } catch (MHA_Error & e) {
-        device_index_updated();
+        device_index_in_updated();
       }
-      patchbay.connect(&device_name.writeaccess, this,
-                       &io_portaudio_t::device_name_updated);
-      patchbay.connect(&device_index.writeaccess, this,
-                       &io_portaudio_t::device_index_updated);
+      try {
+        device_name_out_updated();
+      } catch (MHA_Error & e) {
+        device_index_out_updated();
+      }
+      patchbay.connect(&device_name_in.writeaccess, this,
+                       &io_portaudio_t::device_name_in_updated);
+      patchbay.connect(&device_index_in.writeaccess, this,
+                       &io_portaudio_t::device_index_in_updated);
+      patchbay.connect(&device_name_out.writeaccess, this,
+                       &io_portaudio_t::device_name_out_updated);
+      patchbay.connect(&device_index_out.writeaccess, this,
+                       &io_portaudio_t::device_index_out_updated);
     }
     
-    void device_name_updated() {
+    void device_name_in_updated() {
       for (size_t i = 0; i < device_info.name.data.size(); ++i)
-        if (device_info.name.data[i] == device_name.data) {
-          device_index.data = i;
+        if (device_info.name.data[i] == device_name_in.data) {
+          device_index_in.data = i;
           return;
         }
       for (size_t i = 0; i < device_info.name.data.size(); ++i)
-        if (device_info.name.data[i].find(device_name.data) !=
+        if (device_info.name.data[i].find(device_name_in.data) !=
             std::string::npos) {
-          device_index.data = i;
+          device_index_in.data = i;
           return;
         }
       throw MHA_Error(__FILE__,__LINE__, "No portaudio device name contains"
                       " \"%s\". Valid portaudio device names are: %s",
-                      device_name.data.c_str(),
+                      device_name_in.data.c_str(),
+                      MHAParser::StrCnv::
+                      val2str(device_info.name.data).c_str());
+    }
+    void device_name_out_updated() {
+      for (size_t i = 0; i < device_info.name.data.size(); ++i)
+        if (device_info.name.data[i] == device_name_out.data) {
+          device_index_out.data = i;
+          return;
+        }
+      for (size_t i = 0; i < device_info.name.data.size(); ++i)
+        if (device_info.name.data[i].find(device_name_out.data) !=
+            std::string::npos) {
+          device_index_out.data = i;
+          return;
+        }
+      throw MHA_Error(__FILE__,__LINE__, "No portaudio device name contains"
+                      " \"%s\". Valid portaudio device names are: %s",
+                      device_name_out.data.c_str(),
                       MHAParser::StrCnv::
                       val2str(device_info.name.data).c_str());
     }
 
-    void device_index_updated() {
-      if ((device_index.data < 0) ||
-           (device_index.data > device_info.numDevices.data))
+    void device_index_in_updated() {
+      if ((device_index_in.data < 0) ||
+           (device_index_in.data > device_info.numDevices.data))
         throw MHA_Error(__FILE__,__LINE__, "Device index %d is out of range",
-                        device_index.data);
-      device_name.data = device_info.name.data[device_index.data];
+                        device_index_in.data);
+      device_name_in.data = device_info.name.data[device_index_in.data];
+    }
+    void device_index_out_updated() {
+      if ((device_index_out.data < 0) ||
+           (device_index_out.data > device_info.numDevices.data))
+        throw MHA_Error(__FILE__,__LINE__, "Device index %d is out of range",
+                        device_index_out.data);
+      device_name_out.data = device_info.name.data[device_index_out.data];
     }
 
     ~io_portaudio_t()
@@ -278,8 +327,10 @@ namespace MHAIOPortAudio {
     // PortAudio stream handle
     PaStream * portaudio_stream;
 
-    MHAParser::string_t device_name;
-    MHAParser::int_t device_index;
+    MHAParser::string_t device_name_in;
+    MHAParser::int_t device_index_in;
+    MHAParser::string_t device_name_out;
+    MHAParser::int_t device_index_out;
     MHAEvents::patchbay_t<io_portaudio_t> patchbay;
   };
 
@@ -348,7 +399,8 @@ void MHAIOPortAudio::io_portaudio_t::cmd_prepare(int nchannels_in,
 
   outpar.channelCount = nchannels_out;
   inpar.channelCount = nchannels_in;
-  outpar.device = inpar.device = device_index.data;
+  outpar.device = device_index_out.data;
+  inpar.device = device_index_in.data;
   outpar.sampleFormat = inpar.sampleFormat = paFloat32;
 
   PaError err = Pa_OpenStream(&portaudio_stream,
@@ -364,8 +416,10 @@ void MHAIOPortAudio::io_portaudio_t::cmd_prepare(int nchannels_in,
                     Pa_GetErrorText(err));
   s_in = new MHASignal::waveform_t(fragsize, nchannels_in);
 
-  device_name.setlock(true);
-  device_index.setlock(true);
+  device_name_in.setlock(true);
+  device_index_in.setlock(true);
+  device_name_out.setlock(true);
+  device_index_out.setlock(true);
 }
 
 void MHAIOPortAudio::io_portaudio_t::cmd_start()
@@ -394,8 +448,10 @@ void MHAIOPortAudio::io_portaudio_t::cmd_release()
             Pa_GetErrorText(err));
   delete s_in;
   s_out = s_in = 0;
-  device_name.setlock(false);
-  device_index.setlock(false);
+  device_name_in.setlock(false);
+  device_index_in.setlock(false);
+  device_name_out.setlock(false);
+  device_index_out.setlock(false);
 }
 
 

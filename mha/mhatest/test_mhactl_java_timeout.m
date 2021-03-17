@@ -19,16 +19,22 @@ function test_mhactl_java_timeout
   mha = mha_start;
   unittest_teardown(@mha_set,mha,'cmd','quit');
 
+  % We tell mha to sleep 3 seconds before responding.
+  sleep_time = 3;
+  % But we tell Matlab to give up waiting for a response earlier, after 1 s.
   mha.timeout = 1;
   t0 = tic;
   try ;
-    mha_set(mha,'sleep', 3); % should be interrupted by timeout
+    mha_set(mha,'sleep', sleep_time); % should be interrupted by timeout
   catch
   end
-  actual_timeout = toc(t0);
+  actual_timeout = toc(t0); % How many seconds Matlab has spent in mha_set.
 
-  % Actual_timeout will normally be a little bit longer than mha.timeout,
-  % but can also be a little bit shorter (Observation on Windows)
-  % Both approx. 0.5 constants together give the necessary leeway.
-  assert_difference_below(mha.timeout+0.4999,actual_timeout,0.5);
+  % actual_timeout will normally be a bit longer than mha.timeout,
+  % but can also be a little bit shorter (Observation on Windows).
+  % It should always be significantly shorter than the configured sleep time.
+  assert_all([(actual_timeout < sleep_time  - 1.0) % shorter than sleep time
+              (actual_timeout < mha.timeout + 1.0) % Can be longer than timeout
+              (actual_timeout > mha.timeout - 0.1) % Can be little bit shorter
+             ]);
 end
