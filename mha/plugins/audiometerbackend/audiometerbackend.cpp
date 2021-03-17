@@ -22,6 +22,7 @@
 #include "mha_filter.hh"
 #include "mha_signal_fft.h"
 
+#include <random>
 #define DEBUG(x) std::cerr << __FILE__ << ":" << __LINE__ << " " #x "=" << x << std::endl
 
 namespace audiometerbackend {
@@ -39,20 +40,24 @@ private:
     void iterate_lnn();
     void bandpass();
     unsigned int _fmin,_fmax;
+    std::random_device dev;
+    std::default_random_engine rng;
+    std::uniform_real_distribution<float> random;
 };
 
 lnn3rdoct_t::lnn3rdoct_t(unsigned int fs, unsigned int f,float bw,unsigned int niter)
     : MHASignal::waveform_t(fs,1),
       _fmin(std::min(fs/2+1,(unsigned int)(f*pow(2.0,-0.5*bw)))),
-      _fmax(std::min(fs/2+1,(unsigned int)(f*pow(2.0,0.5*bw))))
+      _fmax(std::min(fs/2+1,(unsigned int)(f*pow(2.0,0.5*bw)))),
+      rng(dev())
 {
     //DEBUG(fs);
     //DEBUG(f);
     unsigned int nrand_it = 2;
     for(unsigned int krand_it=0;krand_it<nrand_it;krand_it++)
         for(unsigned int k=0;k<num_frames;k++){
-            buf[k] += (float)rand()/RAND_MAX;
-            buf[k] -= (float)rand()/RAND_MAX;
+            buf[k] += random(rng);
+            buf[k] -= random(rng);
         }
 
     *this *= 1.0f/nrand_it;
