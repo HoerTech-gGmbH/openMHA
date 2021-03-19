@@ -1,4 +1,4 @@
-function mhagui_calibration_dialog( mode, mha )
+function fh = mhagui_calibration_dialog( mode, mha )
 % mhagui_calibration_dialog - calibration interface for 'transducers' plugin
 %
 % Create calibration wizard GUI:
@@ -22,13 +22,14 @@ function mhagui_calibration_dialog( mode, mha )
   switch mode
     case 'upload'
       calib_upload;
+      fh = [];
     case 'gui'
-      calib_gui;
+      fh = calib_gui;
     otherwise
       error(sprintf('Invalid calibration mode ''%s''.',mode));
   end
 
-function calib_gui()
+function fh = calib_gui()
   global mha_basic_cfg;
   libconfigdb();
   libmhagui();
@@ -171,10 +172,12 @@ function h = infomessage( fmt, varargin )
   msg = sprintf(fmt,varargin{:});
   h = uicontrol('Style','text','position',[20 70 572 380],...
                 'HorizontalAlignment','left',...
-                'VerticalAlignment','top',...
                 'Fontsize',14,...
                 'BackgroundColor',col_bg,...
-                'String',msg);
+                'String',wordwrap(msg));
+  if ~isempty(ver('Octave'))
+    set(h,'VerticalAlignment','top');
+  end
 
 
 function calib_clone_and_edit( varargin )
@@ -446,15 +449,8 @@ function mhagui_calib_start_next()
   cCalibDB = get_calib_db;
   [sCalibExist,idx] = configdb.smap_get(cCalibDB,sCalib.id);
   if ~isempty(idx)
-    if isfield(sCalibExist,'writable') && (~sCalibExist.writable)
-      error(sprintf(['Please enter an other calibration ID, ' ...
+    error(sprintf(['Please enter an other calibration ID, ' ...
                      '''%s'' already exists in list'],sCalib.id));
-    end
-    resp = questdlg(sprintf(['Replace calibration\n''%s''?'],name),...
-                    'Confirmation','No','Yes','No');
-    if ~strcmp(resp,'Yes')
-      error('not overwriting existing calibration');
-    end
   end
   % end verification
   sCalib.writable = 1;
@@ -1359,6 +1355,19 @@ function x = realifft( y )
     ytmp(nbins) = real(ytmp(nbins));
     ytmp2 = [ytmp; conj(ytmp(nbins-1:-1:2))];
     x(:,ch) = real(ifft(ytmp2));
+  end
+  
+function s = wordwrap( s )
+  width = 50;
+  lastbreak = 0;
+  for k=1:numel(s)
+    if (s(k) == 10)
+      lastbreak = k;
+    end
+    if (s(k) == ' ') && (k-lastbreak > width)
+      s(k) = 10;
+      lastbreak = k;
+    end
   end
   
   % Local Variables:
