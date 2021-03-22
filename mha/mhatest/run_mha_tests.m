@@ -66,6 +66,8 @@ files = files(1).m;
 % iterate over all "test_*.m" files
 times = {};
 indices = strmatch('test_', files);
+
+disp([char(10),'----- Matlab/Octave tests are running, please wait ... -----',char(10)]);
 for index = indices(:)'
     filename = files{index};
     start_time = clock;
