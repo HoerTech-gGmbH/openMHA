@@ -28,49 +28,49 @@
  * well as the prewhitening using the LPC coefficients.
  */
 
-#include "prediction_error.h"
+#include "adaptive_feedback_canceller.h"
 
-#define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &prediction_error::update_cfg)
+#define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &adaptive_feedback_canceller::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-prediction_error_config::prediction_error_config(algo_comm_t &ac, const mhaconfig_t in_cfg, prediction_error *pred_err)
+adaptive_feedback_canceller_config::adaptive_feedback_canceller_config(algo_comm_t &ac, const mhaconfig_t in_cfg, adaptive_feedback_canceller *afc)
     : ac(ac),
-      ntaps(pred_err->ntaps.data),
+      ntaps(afc->ntaps.data),
       frames(in_cfg.fragsize),
       channels(in_cfg.channels), //all input channels processed
-      s_E(ac, pred_err->name_e.data, in_cfg.fragsize, in_cfg.channels, false), // Prediction error
-      F(ac,pred_err->name_f.data, pred_err->ntaps.data,in_cfg.channels,false), // Estimated filter is saved in the AC space
-      Pu(pred_err->ntaps.data,in_cfg.channels),                                // and thereby made accessible to other
-      name_lpc_(pred_err->name_lpc.data),                                      // plugins in the same chain
-      n_no_update_(pred_err->n_no_update.data),
+      s_E(ac, afc->name_e.data, in_cfg.fragsize, in_cfg.channels, false), // Prediction error
+      F(ac,afc->name_f.data, afc->ntaps.data,in_cfg.channels,false), // Estimated filter is saved in the AC space
+      Pu(afc->ntaps.data,in_cfg.channels),                                // and thereby made accessible to other
+      name_lpc_(afc->name_lpc.data),                                      // plugins in the same chain
+      n_no_update_(afc->n_no_update.data),
       no_iter(0),
       iter(0),
       v_G(1, channels),
       s_U(frames, channels),
-      s_E_pred_err_delay(pred_err->pred_err_delay.data, channels),
-      s_W(pred_err->delay_w.data, in_cfg.channels),
-      s_Wflt(pred_err->ntaps.data, in_cfg.channels, pred_err->ntaps.data),
-      s_U_delay(pred_err->delay_d.data, channels),
-      s_U_delayflt(pred_err->lpc_order.data + 1, in_cfg.channels, pred_err->lpc_order.data + 1),
+      s_E_afc_delay(afc->afc_delay.data, channels),
+      s_W(afc->delay_w.data, in_cfg.channels),
+      s_Wflt(afc->ntaps.data, in_cfg.channels, afc->ntaps.data),
+      s_U_delay(afc->delay_d.data, channels),
+      s_U_delayflt(afc->lpc_order.data + 1, in_cfg.channels, afc->lpc_order.data + 1),
       F_Uflt(1, channels), // Filtered output signal is saved to be recalled in the next iteration to compute the error signal
-      s_Y_delay(pred_err->delay_d.data, in_cfg.channels),
-      s_Y_delayflt(pred_err->lpc_order.data + 1, in_cfg.channels, pred_err->lpc_order.data + 1),
-      UbufferPrew(pred_err->ntaps.data, in_cfg.channels, pred_err->ntaps.data)
+      s_Y_delay(afc->delay_d.data, in_cfg.channels),
+      s_Y_delayflt(afc->lpc_order.data + 1, in_cfg.channels, afc->lpc_order.data + 1),
+      UbufferPrew(afc->ntaps.data, in_cfg.channels, afc->ntaps.data)
 {
     //initialize plugin state for a new configuration
 
-    if( (pred_err->gains.data.size() != channels) && (pred_err->gains.data.size() != 1) )
+    if( (afc->gains.data.size() != channels) && (afc->gains.data.size() != 1) )
         throw MHA_Error(__FILE__,__LINE__,
                         "The number of entries in the gain vector must be"
                         " either %u (one per channel) or 1 (same gains for all channels)", channels);
 
-    if( pred_err->gains.data.size() == 1 ){
+    if( afc->gains.data.size() == 1 ){
 
         for(unsigned int ch = 0; ch < channels;ch++)
-            v_G.value(0, ch) = pow(10.0, 0.05 * pred_err->gains.data[0]);
+            v_G.value(0, ch) = pow(10.0, 0.05 * afc->gains.data[0]);
     }else{
         for(unsigned int ch = 0; ch < channels; ch++)
-            v_G.value(0, ch) = pow(10.0, 0.05 * pred_err->gains.data[ch]);
+            v_G.value(0, ch) = pow(10.0, 0.05 * afc->gains.data[ch]);
     }
 
     EPrew.buf = new mha_real_t[in_cfg.channels];
@@ -100,7 +100,7 @@ prediction_error_config::prediction_error_config(algo_comm_t &ac, const mhaconfi
 
 }
 
-prediction_error_config::~prediction_error_config()
+adaptive_feedback_canceller_config::~adaptive_feedback_canceller_config()
 {
     delete EPrew.buf;
     delete UPrew.buf;
@@ -119,7 +119,7 @@ inline void make_friendly_number_by_limiting( mha_real_t& x )
 
 // the actual processing implementation
 // In the input buffer (s_Y), the oldest sample ist the first sample (0th) of the buffer
-mha_wave_t *prediction_error_config::process(mha_wave_t *s_Y, mha_real_t rho, mha_real_t c)
+mha_wave_t *adaptive_feedback_canceller_config::process(mha_wave_t *s_Y, mha_real_t rho, mha_real_t c)
 {
     //do actual processing here using configuration state
 
@@ -184,7 +184,7 @@ mha_wave_t *prediction_error_config::process(mha_wave_t *s_Y, mha_real_t rho, mh
 
         // Add the current prediction error into the prediction error delay line
         // Get the delayed sample out of it
-        s_Usmpl = s_E_pred_err_delay.process(&smpl);
+        s_Usmpl = s_E_afc_delay.process(&smpl);
 
         // Compute the gain in the forward path
         for (ch = 0; ch < channels; ch++)
@@ -270,17 +270,17 @@ mha_wave_t *prediction_error_config::process(mha_wave_t *s_Y, mha_real_t rho, mh
     return &s_U;
 }
 
-void prediction_error_config::insert()
+void adaptive_feedback_canceller_config::insert()
 {
     F.insert();
     s_E.insert();
 }
 
 /** Constructs our plugin. */
-prediction_error::prediction_error(algo_comm_t & ac,
+adaptive_feedback_canceller::adaptive_feedback_canceller(algo_comm_t & ac,
                                    const std::string & chain_name,
                                    const std::string & algo_name)
-    : MHAPlugin::plugin_t<prediction_error_config>("Prediction error method for adaptive feedback cancellation",ac),
+    : MHAPlugin::plugin_t<adaptive_feedback_canceller_config>("Prediction error method for adaptive feedback cancellation",ac),
     rho("Step size","0.01","]0,2]"),
     c("Regularization parameter","1e-5","]0,]"),
     ntaps("Length of the feedback path filter in taps","32","]0,]"),
@@ -289,7 +289,7 @@ prediction_error::prediction_error(algo_comm_t & ac,
     name_f("Name of the AC variable for saving the adapive filter", "F"),
     name_lpc("Name of the AC variable for the LPC coefficients", "lpc"),
     lpc_order("Length of the lpc filter in taps", "20", "]0, 1024]"),
-    pred_err_delay("Delay in the forward path in taps", "96", "]0,["),
+    afc_delay("Delay in the forward path in taps", "96", "]0,["),
     delay_w("Delay in the adaptive filtering path due to the microphone and loudspeaker transducers in taps", "130", "[0,["),
     delay_d("Delay in the adaptive filtering path for the LPC in taps", "161", "[0,["),
     n_no_update("Number of iterations without updating the filter coefficients", "0", "[0,1024[")
@@ -307,14 +307,14 @@ prediction_error::prediction_error(algo_comm_t & ac,
     INSERT_PATCH(name_f);
     INSERT_PATCH(name_lpc);
     INSERT_PATCH(lpc_order);
-    INSERT_PATCH(pred_err_delay);
+    INSERT_PATCH(afc_delay);
     INSERT_PATCH(delay_w);
     INSERT_PATCH(delay_d);
     insert_member(n_no_update);
 
 }
 
-prediction_error::~prediction_error() {}
+adaptive_feedback_canceller::~adaptive_feedback_canceller() {}
 
 /** Plugin preparation.
  *  An opportunity to validate configuration parameters before instantiating a configuration.
@@ -322,7 +322,7 @@ prediction_error::~prediction_error() {}
  *   Structure containing a description of the form of the signal (domain,
  *   number of channels, frames per block, sampling rate.
  */
-void prediction_error::prepare(mhaconfig_t & signal_info)
+void adaptive_feedback_canceller::prepare(mhaconfig_t & signal_info)
 {
     //good idea: restrict input type and dimension
     if (!signal_info.channels)
@@ -344,14 +344,14 @@ void prediction_error::prepare(mhaconfig_t & signal_info)
     poll_config()->insert();
 }
 
-void prediction_error::update_cfg()
+void adaptive_feedback_canceller::update_cfg()
 {
     if ( is_prepared() ) {
 
         //when necessary, make a new configuration instance
         //possibly based on changes in parser variables
-        prediction_error_config *config;
-        config = new prediction_error_config( ac, input_cfg(), this );
+        adaptive_feedback_canceller_config *config;
+        config = new adaptive_feedback_canceller_config( ac, input_cfg(), this );
         push_config( config );
     }
 }
@@ -359,7 +359,7 @@ void prediction_error::update_cfg()
 /**
  * Checks for the most recent configuration and defers processing to it.
  */
-mha_wave_t * prediction_error::process(mha_wave_t * signal)
+mha_wave_t * adaptive_feedback_canceller::process(mha_wave_t * signal)
 {
     //this stub method defers processing to the configuration class
     return poll_config()->process( signal, rho.data, c.data );
@@ -370,7 +370,7 @@ mha_wave_t * prediction_error::process(mha_wave_t * signal)
  * The first argument is the class name, the other arguments define the
  * input and output domain of the algorithm.
  */
-MHAPLUGIN_CALLBACKS(prediction_error,prediction_error,wave,wave)
+MHAPLUGIN_CALLBACKS(adaptive_feedback_canceller,adaptive_feedback_canceller,wave,wave)
 
 /*
  * This macro creates code classification of the plugin and for
@@ -382,7 +382,7 @@ MHAPLUGIN_CALLBACKS(prediction_error,prediction_error,wave,wave)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION\
-(prediction_error,
+(adaptive_feedback_canceller,
  "feedback-suppression adaptive",
  "This plugin implements the prediction error method to perform adaptive feedback cancellation."
  "The prediction error method estimates the feedback path by minimizing the error between the desired and the"

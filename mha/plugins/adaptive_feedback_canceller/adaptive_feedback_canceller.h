@@ -13,20 +13,20 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PREDICTION_ERROR_H
-#define PREDICTION_ERROR_H
+#ifndef ADAPTIVE_FEEDBACK_CANCELLER_H
+#define ADAPTIVE_FEEDBACK_CANCELLER_H
 
 #include "mha_plugin.hh"
 
 
-class prediction_error;
+class adaptive_feedback_canceller;
 
 //runtime config
-class prediction_error_config {
+class adaptive_feedback_canceller_config {
 
 public:
-    prediction_error_config(algo_comm_t &ac, const mhaconfig_t in_cfg, prediction_error *pred_err);
-    ~prediction_error_config();
+    adaptive_feedback_canceller_config(algo_comm_t &ac, const mhaconfig_t in_cfg, adaptive_feedback_canceller *afc);
+    ~adaptive_feedback_canceller_config();
 
     mha_wave_t* process(mha_wave_t*s_Y, mha_real_t rho, mha_real_t c);
     void insert();
@@ -54,7 +54,7 @@ private:
     MHASignal::waveform_t  v_G;
 
     MHASignal::waveform_t s_U;
-    MHASignal::delay_t s_E_pred_err_delay;
+    MHASignal::delay_t s_E_afc_delay;
 
     MHASignal::delay_t s_W;
     MHASignal::ringbuffer_t s_Wflt;
@@ -75,12 +75,12 @@ private:
 
 };
 
-class prediction_error : public MHAPlugin::plugin_t<prediction_error_config> {
+class adaptive_feedback_canceller : public MHAPlugin::plugin_t<adaptive_feedback_canceller_config> {
 
 public:
-    prediction_error(algo_comm_t & ac,const std::string & chain_name,
+    adaptive_feedback_canceller(algo_comm_t & ac,const std::string & chain_name,
                      const std::string & algo_name);
-    ~prediction_error();
+    ~adaptive_feedback_canceller();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
     void release(void) {/* Do nothing in release */}
@@ -94,7 +94,7 @@ public:
     MHAParser::string_t name_f;
     MHAParser::string_t name_lpc;
     MHAParser::int_t lpc_order;
-    MHAParser::vint_t pred_err_delay;
+    MHAParser::vint_t afc_delay;
     MHAParser::vint_t delay_w;
     MHAParser::vint_t delay_d;
     MHAParser::int_t n_no_update;
@@ -104,11 +104,11 @@ private:
 
     /* patch bay for connecting configuration parser
        events with local member functions: */
-    MHAEvents::patchbay_t<prediction_error> patchbay;
+    MHAEvents::patchbay_t<adaptive_feedback_canceller> patchbay;
 
 };
 
-#endif // PREDICTION_ERROR_H
+#endif // ADAPTIVE_FEEDBACK_CANCELLER_H
 
 // Local Variables:
 // compile-command: "make"
