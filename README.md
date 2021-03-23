@@ -1,6 +1,6 @@
 # openMHA
 
-HörTech Open Master Hearing Aid (openMHA)
+Open Master Hearing Aid (openMHA) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4569575.svg)](https://doi.org/10.5281/zenodo.4569575)
 
 ## Content of the openMHA release 4.14.0 (2021-02-15)
 
@@ -25,18 +25,19 @@ See below for a list of available reference implementations.
 
 ## Citation in publications
 
-In publications using openMHA, please cite
+In publications using openMHA please use the DOI assigned to this Github repository
+and cite related publications:
 
 Herzke, T., Kayser, H., Loshaj, F., Grimm, G., Hohmann, V., Open signal
 processing software platform for hearing aid research (openMHA).
 Proceedings of the Linux Audio Conference. Université Jean Monnet,
 Saint-Étienne, pp. 35-42, 2017.
 
-As we are working on an updated paper, please check back this section
-of the README for updates.
+A preprint of a journal manuscript submitted to SoftwareX is available at 
+[arXiv](https://arxiv.org/abs/2103.02313) and [zenodo](https://doi.org/10.5281/zenodo.4601603).
 
-For individual algorithms, please also refer to the list of
-publications at the end of this README.
+For individual algorithms, please also refer to the plugin documentation and the 
+list of publications at the end of this README.
 
 ## Installation
 
