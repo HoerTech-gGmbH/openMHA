@@ -21,6 +21,9 @@
 #include <math.h>
 #include <unistd.h>
 #include <stdio.h>
+#ifdef __linux__
+  #include <pa_linux_alsa.h>
+#endif
 
 #define ERR_SUCCESS 0
 #define ERR_IHANDLE -1
@@ -420,6 +423,9 @@ void MHAIOPortAudio::io_portaudio_t::cmd_prepare(int nchannels_in,
   device_index_in.setlock(true);
   device_name_out.setlock(true);
   device_index_out.setlock(true);
+  #ifdef __linux__
+  PaAlsa_EnableRealtimeScheduling(portaudio_stream, 1);
+  #endif
 }
 
 void MHAIOPortAudio::io_portaudio_t::cmd_start()
