@@ -1,6 +1,6 @@
 %%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
 %%% Copyright © 2005 2006 2007 2008 2010 2011 2012 2013 2017 2018 HörTech gGmbH
-%%% Copyright © 2019 2020 HörTech gGmbH
+%%% Copyright © 2019 2020 2021 HörTech gGmbH
 %%%
 %%% openMHA is free software: you can redistribute it and/or modify
 %%% it under the terms of the GNU Affero General Public License as published by
@@ -27,11 +27,20 @@
 \RequirePackage{ifthen}
 \RequirePackage{verbatim}
 \RequirePackage[table]{xcolor}
+%\RequirePackage{tabu_doxygen}
+\RequirePackage{fancyvrb}
 \RequirePackage{longtable}
 \RequirePackage{tabu}
 \RequirePackage{tabularx}
 \RequirePackage{multirow}
 \RequirePackage{fancyhdr}
+\RequirePackage{hanging}
+\RequirePackage{ifpdf}
+\RequirePackage[export]{adjustbox}
+\RequirePackage{amssymb}
+\RequirePackage{stackengine}
+\RequirePackage[normalem]{ulem} % for strikeout, but don't modify emphasis
+
 
 %---------- Copied from mha.sty---------------------------------------
 
@@ -54,6 +63,17 @@
     \vskip -\dimen@%
     \vskip\z@skip% hide the previous |\vskip| from |\addvspace|
   \endgroup%
+}
+
+\newcommand{\DoxyHorRuler}[1]{%
+  \setlength{\parskip}{0ex plus 0ex minus 0ex}%
+  \ifthenelse{#1=0}%
+  {%
+    \hrule%
+  }%
+  {%
+    \hrulefilll%
+  }%
 }
 
 \newcommand{\DoxyLabelFont}{}
@@ -106,19 +126,53 @@
   \normalsize%
 }
 
-% Used by @code ... @endcode
-\newenvironment{DoxyCode}{%
-  \par%
-  \scriptsize%
-  \begin{alltt}%
-}{%
-  \end{alltt}%
-  \normalsize%
+% Necessary for redefining not defined characters, i.e. "Replacement Character" in tex output.
+\newlength{\CodeWidthChar}
+\newlength{\CodeHeightChar}
+\settowidth{\CodeWidthChar}{?}
+\settoheight{\CodeHeightChar}{?}
+% Necessary for hanging indent
+\newlength{\DoxyCodeWidth}
+
+\newcommand\DoxyCodeLine[1]{\hangpara{\DoxyCodeWidth}{1}{#1}\par}
+
+\newcommand\NiceSpace{%
+     \discretionary{}{\kern\fontdimen2\font}{\kern\fontdimen2\font}%
 }
 
+% Used by @code ... @endcode
+\newenvironment{DoxyCode}[1]{%
+  \par%
+  \scriptsize%
+  \normalfont\ttfamily%
+  \rightskip0pt plus 1fil%
+  \settowidth{\DoxyCodeWidth}{000000}%
+  \settowidth{\CodeWidthChar}{?}%
+  \settoheight{\CodeHeightChar}{?}%
+  \setlength{\parskip}{0ex plus 0ex minus 0ex}%
+  \ifthenelse{\equal{#1}{0}}
+  {
+    {\lccode`~32 \lowercase{\global\let~}\NiceSpace}\obeyspaces%
+  }
+  {
+    {\lccode`~32 \lowercase{\global\let~}}\obeyspaces%
+  }
+
+}{%
+  \normalfont%
+  \normalsize%
+  \settowidth{\CodeWidthChar}{?}%
+  \settoheight{\CodeHeightChar}{?}%
+}
+
+% Redefining not defined characters, i.e. "Replacement Character" in tex output.
+\def\ucr{\adjustbox{width=\CodeWidthChar,height=\CodeHeightChar}{\stackinset{c}{}{c}{-.2pt}{%
+   \textcolor{white}{\sffamily\bfseries\small ?}}{%
+   \rotatebox{45}{$\blacksquare$}}}}
+
 % Used by @example, @include, @includelineno and @dontinclude
-\newenvironment{DoxyCodeInclude}{%
-  \DoxyCode%
+\newenvironment{DoxyCodeInclude}[1]{%
+	\DoxyCode{#1}%
 }{%
   \endDoxyCode%
 }
@@ -301,10 +355,10 @@
     \tabulinesep=1mm%
     \par%
     \ifthenelse{\equal{#1}{}}%
-      {\begin{longtabu} spread 0pt [l]{|X[-1,l]|X[-1,l]|}}% name + description
+      {\begin{longtabu*}spread 0pt [l]{|X[-1,l]|X[-1,l]|}}% name + description
     {\ifthenelse{\equal{#1}{1}}%
-      {\begin{longtabu} spread 0pt [l]{|X[-1,l]|X[-1,l]|X[-1,l]|}}% in/out + name + desc
-      {\begin{longtabu} spread 0pt [l]{|X[-1,l]|X[-1,l]|X[-1,l]|X[-1,l]|}}% in/out + type + name + desc
+      {\begin{longtabu*}spread 0pt [l]{|X[-1,l]|X[-1,l]|X[-1,l]|}}% in/out + name + desc
+      {\begin{longtabu*}spread 0pt [l]{|X[-1,l]|X[-1,l]|X[-1,l]|X[-1,l]|}}% in/out + type + name + desc
     }
     \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #2}\\[1ex]%
     \hline%
@@ -313,7 +367,7 @@
     \hline%
     \endhead%
 }{%
-    \end{longtabu}%
+    \end{longtabu*}%
     \vspace{6pt}%
 }
 
@@ -321,7 +375,7 @@
 \newenvironment{DoxyFields}[1]{%
     \tabulinesep=1mm%
     \par%
-    \begin{longtabu} spread 0pt [l]{|X[-1,r]|X[-1,l]|X[-1,l]|}%
+    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|X[-1,l]|}%
     \multicolumn{3}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
     \hline%
     \endfirsthead%
@@ -329,7 +383,7 @@
     \hline%
     \endhead%
 }{%
-    \end{longtabu}%
+    \end{longtabu*}%
     \vspace{6pt}%
 }
 
@@ -337,7 +391,7 @@
 \newenvironment{DoxyEnumFields}[1]{%
     \tabulinesep=1mm%
     \par%
-    \begin{longtabu} spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
+    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
     \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
     \hline%
     \endfirsthead%
@@ -345,7 +399,7 @@
     \hline%
     \endhead%
 }{%
-    \end{longtabu}%
+    \end{longtabu*}%
     \vspace{6pt}%
 }
 
@@ -359,7 +413,7 @@
 \newenvironment{DoxyRetVals}[1]{%
     \tabulinesep=1mm%
     \par%
-    \begin{longtabu} spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
+    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
     \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
     \hline%
     \endfirsthead%
@@ -367,7 +421,7 @@
     \hline%
     \endhead%
 }{%
-    \end{longtabu}%
+    \end{longtabu*}%
     \vspace{6pt}%
 }
 
@@ -375,7 +429,7 @@
 \newenvironment{DoxyExceptions}[1]{%
     \tabulinesep=1mm%
     \par%
-    \begin{longtabu} spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
+    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
     \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
     \hline%
     \endfirsthead%
@@ -383,7 +437,7 @@
     \hline%
     \endhead%
 }{%
-    \end{longtabu}%
+    \end{longtabu*}%
     \vspace{6pt}%
 }
 
@@ -391,7 +445,7 @@
 \newenvironment{DoxyTemplParams}[1]{%
     \tabulinesep=1mm%
     \par%
-    \begin{longtabu} spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
+    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
     \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
     \hline%
     \endfirsthead%
@@ -399,7 +453,7 @@
     \hline%
     \endhead%
 }{%
-    \end{longtabu}%
+    \end{longtabu*}%
     \vspace{6pt}%
 }
 
@@ -467,11 +521,11 @@
 \newcommand{\PBS}[1]{\let\temp=\\#1\let\\=\temp}%
 \newenvironment{TabularC}[1]%
 {\tabulinesep=1mm
-\begin{longtabu} spread 0pt [c]{*#1{|X[-1]}|}}%
-{\end{longtabu}\par}%
+\begin{longtabu*}spread 0pt [c]{*#1{|X[-1]}|}}%
+{\end{longtabu*}\par}%
 
 \newenvironment{TabularNC}[1]%
-{\begin{tabu} spread 0pt [l]{*#1{|X[-1]}|}}%
+{\begin{tabu}spread 0pt [l]{*#1{|X[-1]}|}}%
 {\end{tabu}\par}%
 
 % Used for member group headers
@@ -522,6 +576,31 @@
 
 % Version of hypertarget with correct landing location
 \newcommand{\Hypertarget}[1]{\Hy@raisedlink{\hypertarget{#1}{}}}
+
+% possibility to have sections etc. be within the margins
+% unfortunately had to copy part of book.cls and add \raggedright
+\makeatletter
+\newcommand\doxysection{\@startsection {section}{1}{\z@}%
+                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
+                                   {2.3ex \@plus.2ex}%
+                                   {\raggedright\normalfont\Large\bfseries}}
+\newcommand\doxysubsection{\@startsection{subsection}{2}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\raggedright\normalfont\large\bfseries}}
+\newcommand\doxysubsubsection{\@startsection{subsubsection}{3}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\raggedright\normalfont\normalsize\bfseries}}
+\newcommand\doxyparagraph{\@startsection{paragraph}{4}{\z@}%
+                                    {3.25ex \@plus1ex \@minus.2ex}%
+                                    {-1em}%
+                                    {\raggedright\normalfont\normalsize\bfseries}}
+\newcommand\doxysubparagraph{\@startsection{subparagraph}{5}{\parindent}%
+                                       {3.25ex \@plus1ex \@minus .2ex}%
+                                       {-1em}%
+                                      {\raggedright\normalfont\normalsize\bfseries}}
+\makeatother
 
 % Define caption that is also suitable in a table
 \makeatletter

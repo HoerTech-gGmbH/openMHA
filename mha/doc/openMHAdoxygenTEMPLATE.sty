@@ -1,0 +1,219 @@
+%%% This file is part of the Open HörTech Master Hearing Aid (openMHA)
+%%% Copyright © 2005 2006 2007 2008 2010 2011 2012 2013 2017 2018 HörTech gGmbH
+%%% Copyright © 2019 2020 2021 HörTech gGmbH
+%%%
+%%% openMHA is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as published by
+%%% the Free Software Foundation, version 3 of the License.
+%%%
+%%% openMHA is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License, version 3 for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License, 
+%%% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+% stylesheet for doxygen 1.8.11
+% adapted for openMHA
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{openMHAdoxygen}
+
+% Packages used by this style file
+\RequirePackage{alltt}
+\RequirePackage{array}
+\RequirePackage{calc}
+\RequirePackage{float}
+\RequirePackage{ifthen}
+\RequirePackage{verbatim}
+\RequirePackage[table]{xcolor}
+%\RequirePackage{tabu_doxygen}
+\RequirePackage{fancyvrb}
+\RequirePackage{longtable}
+\RequirePackage{tabu}
+\RequirePackage{tabularx}
+\RequirePackage{multirow}
+\RequirePackage{fancyhdr}
+\RequirePackage{hanging}
+\RequirePackage{ifpdf}
+\RequirePackage[export]{adjustbox}
+\RequirePackage{amssymb}
+\RequirePackage{stackengine}
+\RequirePackage[normalem]{ulem} % for strikeout, but don't modify emphasis
+
+
+%---------- Copied from mha.sty---------------------------------------
+
+% Use helvetica font instead of times roman
+%\RequirePackage{helvet}
+\RequirePackage{sectsty}
+%\RequirePackage{tocloft}
+\providecommand{\rmdefault}{phv}
+\providecommand{\bfdefault}{bc}
+
+%---------- Content of automatically generated mhadoc/latex/doxygen.sty goes here ----------------
+
+%% Due to the breaking of 'make doc' between Ubuntu 18.04 and 20.04 I have prepared this template
+%% for you, dear reader, to not waste too much of your time. Usually doxygen creates its own style file
+%% (here: 'mhadoc/latex/doxygen.sty'), which it still does but we have an altered version of this
+%% style file for the openMHA, namely 'openMHAdoxygen.sty'. This file is used instead of
+%% 'mhadoc/latex/doxygen.sty' but only gets a version number update instead of a whole new creation.
+%% So if in the future some commands which are defined in 'mhadoc/latex/doxygen.sty' but are not defined
+%% in 'openMHAdoxygen.sty' it means that a doxygen update has changed how the style file is created and
+%% 'openMHAdoxygen.sty' is obsolete. For this case I have prepared this file, you only have to paste
+%% the contents (except the '\RequirePackage'-stuff) below this comment. For the required packages
+%% you have to try and see for your self a bit ('tabu_doxygen' is outdated and should be avoided).
+
+
+
+%----------openMHA options --------------------------------------------
+
+\usepackage{makeidx}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{alltt}
+\usepackage{times}
+\usepackage{upquote}
+\ifx\pdfoutput\undefined
+\usepackage[ps2pdf,
+            pagebackref=true,
+            colorlinks=true,
+            linkcolor=blue
+           ]{hyperref}
+\DeclareGraphicsExtensions{.eps,.ps}
+\usepackage{pspicture}
+\else
+\usepackage[pdftex,
+            pagebackref=true,
+            colorlinks=true,
+            linkcolor=blue
+           ]{hyperref}
+\DeclareGraphicsExtensions{.pdf,.png}
+\fi
+\usepackage{calc}
+\usepackage{array}
+\pagestyle{fancyplain}
+\usepackage[round]{natbib}
+\bibliographystyle{plainnat}
+\addtocounter{secnumdepth}{1}
+
+
+
+\newcommand{\mhavar}[1]{{\tt #1}\index{#1@\texttt{#1}}}
+\newcommand{\mhavardesc}[2]{\item\mhavar{#1}\\#2}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\lhead[\fancyplain{}{\bfseries\thepage}]
+        {\fancyplain{}{\bfseries\rightmark}}
+\rhead[\fancyplain{}{\bfseries\leftmark}]
+        {\fancyplain{}{\bfseries\thepage}}
+\rfoot[\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2021 H\"orTech gGmbH, Oldenburg }]{}
+\lfoot[]{\fancyplain{}{\bfseries\scriptsize \copyright{} 2005-2021 H\"orTech gGmbH, Oldenburg }}
+\cfoot{}
+%
+%
+\usepackage[T1]{fontenc}
+\makeindex
+\setcounter{tocdepth}{2}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\familydefault}{phv}
+\renewcommand{\paragraph}[1]{\par\medskip\penalty-100{\bf #1}\par}
+\pagenumbering{roman}
+\usepackage{optparams}
+\long\def\MHAfigurex[#1][#2][#3]#4#5{\begin{figure}[#3]\centering\includegraphics[width=#2]{#5}\caption[#1]{#4}\label{fig:#5}\end{figure}}
+
+\newcommand{\MHAfigure}{\optparams{\MHAfigurex}{[][75mm][htbp]}}
+
+\newcommand{\figref}[1]{Fig.\ \ref{fig:#1}}
+
+\newcommand{\MHAversion}{4.14.0}
+\newcommand{\MHAtitle}[1]{
+\begin{titlepage}
+\vspace*{2cm}
+\begin{center}
+{\Huge\bf The Open Master Hearing Aid (openMHA)\\[1ex]\large \MHAversion }\\
+\vfill
+
+{\Huge 
+
+#1
+
+\bigskip
+
+
+}
+\vfill
+{\includegraphics[width=7cm]{hoertechlogo}}\\
+\vspace*{0.5cm}
+{\small \copyright{} 2005-2021 by H\"orTech gGmbH, Marie-Curie-Str. 2,
+  D--26129 Oldenburg, Germany}\\
+\end{center}
+\end{titlepage}
+\thispagestyle{empty}
+~
+
+\vfill
+
+{\bf The Open Master Hearing Aid (openMHA) -- #1}\\
+H\"orTech gGmbH\\
+Marie-Curie-Str. 2\\
+D--26129 Oldenburg
+
+
+}
+
+\newcommand{\MHAcopyright}{
+{\large LICENSE AGREEMENT}
+  
+This file is part of the H\"{o}rTech Open Master Hearing Aid (openMHA)
+\\
+Copyright \copyright{} 2005 2006 2007 2008 2009 2010 2012 2013 2014 2015 2016
+H\"{o}rTech gGmbH.
+\\
+Copyright \copyright{} 2017 2018 2019 2020
+H\"{o}rTech gGmbH.
+
+openMHA is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+openMHA is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License, version 3 for more details.
+
+You should have received a copy of the GNU Affero General Public License, 
+version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+}
+
+%\newcommand{\Matlab}{MATLAB$^{\textrm{\textregistered{}}}$}
+%\newcommand{\Windows}{MS Windows$^{\textrm{\textregistered{}}}$}
+%\newcommand{\Linux}{Linux$^{\textrm{\textregistered{}}}$}
+\newcommand{\Matlab}{MATLAB}
+\newcommand{\Octave}{GNU Octave}
+\newcommand{\Windows}{MS Windows}
+\newcommand{\Linux}{Linux}
+\newcommand{\macOS}{macOS}
+\newcommand{\mha}{openMHA}
+\newcommand{\mhad}{\mha{} host application}
+\newcommand{\MatlabDir}{./mha/tools/mfiles/}
+\newcommand{\EngineerManual}{Application Engineers' Manual}
+\newcommand{\AudiologistManual}{Graphical User Interface Control Manual}
+\newcommand{\DeveloperManual}{Plugin Developers' Manual}
+\newcommand{\PluginManual}{\mha{} Plugins Manual}
+\newcommand{\secpageref}[1]{section \ref{#1} on page \pageref{#1}}
+\definecolor{monitorcolor}{rgb}{0.5,0.5,0.6}
+
+% TOC subsection number >= 100 overlap text without this
+%\makeatletter
+%  \renewcommand\l@subsection{\@dottedtocline{2}{1.5em}{3em}}
+%\makeatother
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "openMHA_application_manual"
+%%% indent-tabs-mode: nil
+%%% coding: utf-8-unix
+%%% End: 
