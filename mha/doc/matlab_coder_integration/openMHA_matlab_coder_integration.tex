@@ -185,13 +185,13 @@ For more information consult the \mha{} application manual.
 \subsection*{Document structure}
 There are two ways to integrate the generated code into \mha{} as 
 as plugin: The matlab\_wrapper plugin and the `native compilation. The matlab\_wrapper
-plugin is easier to use but less flexible. The plugin is, via configuration variable, pointed to the user library compiled
-from the generated code and calls the user functions at the appropriate times.
+plugin is easier to use but less flexible. The plugin is provided the name of
+the user library to the plugin. The plugin then loads the user library and calls the user functions at the appropriate times.
 This approach relies on the user code following a prescribed form described in section~\ref{sec:wrapper plugin}.
 
-The `native compilation' approach offers more flexibility but the user must be able to set up an development environment
-able to compile \mha{} from source and know some C++ in order to integrate the generated code into the provided plugin
-skeleton source code. This approach is described in~\ref{sec:native compilation}.
+The `native compilation' approach offers more flexibility but the user must be able to set up a development environment
+able to compile \mha{} from source, and know some C++ in order to integrate the
+generated code into the provided source code. This approach is described in~\ref{sec:native compilation}.
 
 \subsection*{Which approach to use?}
 There is no hard and fast rule on which approach to use for a given algorithm. The
@@ -200,7 +200,8 @@ following guidelines can be used to figure out which approach probably fits best
 Usage of the matlab\_wrapper plugin is recommended if:
 \begin{itemize}
 \item There is little or no institutional knowledge of C++
-\item The user code does hold little and/or simple state  
+\item The user code does hold no or only simple state, i.e. there is no or only
+  simple data that needs to be stored from one audio block processing to the next.
 \item No or little configuration at runtime is needed
 \item The user code has a monolithic structure, i.e.\ it can be thought of as
   one big black box where the signal goes in and output comes out
@@ -238,8 +239,8 @@ matlab\_wrapper plugin expects some entry-point functions to be present, see
 subsection~\ref{subsec:writing_code}.
 
 \subsection*{Input types}
-Because C is statically types, all input and output types must be known at
-compile time. Unlike in \Matlab{} input and output types become part of the
+Because C is statically typed, all input and output types must be known at
+compile time. Unlike in \Matlab{}, input and output types become part of the
 function signature and can not be changed later, including array dimensions.
 If a function needs to accept variable size arrays, they need to be wrapped
 in a struct, done automatically at code generation.
@@ -277,7 +278,7 @@ The user code and the plugin interface via four entry point functions:
 \texttt{init()}, \texttt{prepare()}, \texttt{process()}, and \texttt{release()}, of which \texttt{process()} is mandatory.
 These functions are automatically called by the wrapper plugin at construction, and during the \texttt{prepare()},
 \texttt{process()} and \texttt{release()} callbacks respectively.
-In order for the matlab\_wrapper plugin to properly resolve these functions must confirm to the proscribed interface,
+In order for the matlab\_wrapper plugin to properly resolve these functions, they must confirm to the proscribed interface,
 i.e.\ their input and output parameters must be exactly as described in the following.\\
 
 \texttt{init()} is called when the user library is loaded. It must follow the form:
@@ -320,8 +321,8 @@ processing requires a fixed number of channels or a certain sampling rate is req
   \end{description}
   Example:
 \begin{lstlisting}[language=Matlab]
-  function [signal_dimensions, user_config]=prepare(signal_dimensions,...
-                                                    user_config)
+  function [signal_dimensions, user_config]=...
+           prepare(signal_dimensions, user_config)
   user_config(1).value(1,1)=2; % Assign a value to the
                                % first element of user_config 
   signal_dimensions.channels=1; % Output contains only one channel
@@ -354,27 +355,27 @@ A current limitation is that changes made to \texttt{user\_config} during \textt
 lost on configuration change from the parser side, so the user must be wary when using \texttt{user\_config} to store
 dynamic state like i.e.\ filter states.
 \subsection{Deployment}
-In order to get a ready to use user library the \Matlab{} Coder needs to be
+In order to get a ready to use user library, the \Matlab{} Coder needs to be
 setup to use a compiler. Please refer to the \Matlab{} Coder documentation for
 how to do this. If the user library is compiled using a different compiler than
-\mha{} there may be compatibility problems. If possible on Windows use the MinGW
-compiler, on Linux use gcc and on macOS use clang. If the \Matlab{} Coder
+\mha{} there may be compatibility problems. If possible, use the MinGW
+compiler on Windows, the gcc compiler on Linux, and clang on macOS. If the \Matlab{} Coder
 can not be setup to use a compatible compiler, the generated code may need to be
 exported using the \texttt{packNGo} utility provided by the \Matlab{} Coder and
-compiled by hand. For compilation the same setup as is used to compile \mha{}
+compiled manually. For compilation, the same setup as is used to compile \mha{}
 can be used. See \texttt{COMPILATION.md} for details. \\
-In any case the user library then needs to be copied to where
-\mha{} looks for its plugins in order for the wrapper plugin to find the
-library. By default these locations are
+In any case the user library (usually a shared library with the file ending
+\texttt{.so}, \texttt{.dylib}, or \texttt{.dll}) then needs to be copied to where
+\mha{} looks for its plugins. By default these locations are
 \begin{itemize}
 \item \texttt{C:\textbackslash\textbackslash Program Files\textbackslash openMHA\textbackslash bin} (Windows)
 \item \texttt{/usr/local/lib/openmha} (macOS)
-\item \texttt{/usr/lib} (macOS)
+\item \texttt{/usr/lib} (Linux)
 \end{itemize}
 \subsection{Example}
 This section describes step-by-step how to go from the empty template code
 in \\ \texttt{examples/24-matlab-wrapper-simple}
-to a user library implementing a simple delay-and-sum algorithm where the delay
+to a user library implementing a simple delay-and-sum algorithm, where the delay
 and the gain are real-time configurable on a per-channel basis.
 The finished code can be found in \texttt{examples/25-matlab-wrapper-advanced}
 \subsubsection*{Init}
@@ -584,7 +585,8 @@ small adjustments like e.g.\ the file suffix for shared libraries in and the act
 name of the input and output files. If needed the compiler flags can be customized further.
 See the documentation of your compiler for details. \\
 If, on the other hand, the \Matlab{} Coder was set up to use a compiler that produces \mha{} compatible
-output we can just move the resulting user library to the appropriate directory, start \mha{}, 
+output we can just move the resulting user library, usually a shared library with the file ending
+\texttt{.so}, \texttt{.dylib}, or \texttt{.dll}, to the appropriate directory, start \mha{},
 point the matlab\_wrapper plugin to the library and configure the user
 algorithm, like shown in \texttt{example\_2.cfg}:
 \begin{lstlisting}
