@@ -13,13 +13,74 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "mha.hh"
+#include "mhafw_lib.h"
 #include "mhapluginloader.h"
 #include "mha_algo_comm.hh"
 #include <exception>
 #include <getopt.h>
+#include <memory>
 #include <stdarg.h>
 #include <fstream>
 #include <set>
+
+/* Interface class for normal plugins that can be loaded by mhapluginloader
+ * and io plugins that need to be loaded by fw_t. Provides the part of the parser
+ * interface that the documentation generation relies upon.
+ */
+class plug_wrapperI: public MHAParser::base_t {
+public:
+    plug_wrapperI():MHAParser::base_t(""){};
+    virtual ~plug_wrapperI()=default;
+    virtual std::vector<std::string> get_categories()=0;
+    virtual std::string parse(const std::string& str)=0;
+    virtual bool has_parser()=0;
+    virtual std::string get_documentation()=0;
+    virtual bool has_process(mha_domain_t,mha_domain_t)=0;
+};
+
+/* Implementation for io plugins. Intercepts the calls to fw_t and
+ * Modifies the strings send to the parser if necessary
+ */
+class io_wrapper : public plug_wrapperI, public fw_t {
+public:
+    io_wrapper(algo_comm_t iac, const std::string& libname):fw_t(){
+        (void)iac;
+        fw_t::parse("iolib="+libname);
+    };
+    virtual ~io_wrapper()=default;
+    virtual std::vector<std::string> get_categories(){return {"io"};};
+    virtual std::string parse(const std::string& str){
+        if(str.front()=='?')
+            return fw_t::parse("io"+str);
+        else if(str.front()=='.')
+            return fw_t::parse("io"+str);
+        else
+            return fw_t::parse("io."+str);
+    };
+    virtual bool has_parser(){return true;};
+    virtual std::string get_documentation(){return fw_t::parse("io?help");};
+    virtual bool has_process(mha_domain_t in,mha_domain_t out){
+        if(in==MHA_WAVEFORM and out==MHA_WAVEFORM)
+            return true;
+        else
+            return false;
+    };
+};
+
+/* Implementation for normal plugins. Just forwards the calls to the loaded plugin
+ */
+class plug_wrapper : public plug_wrapperI, PluginLoader::mhapluginloader_t {
+public:
+    plug_wrapper(algo_comm_t iac, const std::string& libname):PluginLoader::mhapluginloader_t(iac,libname){};
+    virtual ~plug_wrapper()=default;
+    virtual std::vector<std::string> get_categories(){return PluginLoader::mhapluginloader_t::get_categories();};
+    virtual std::string parse(const std::string& str){return  PluginLoader::mhapluginloader_t::parse(str);};
+    virtual bool has_parser(){return PluginLoader::mhapluginloader_t::has_parser();};
+    virtual std::string get_documentation(){return PluginLoader::mhapluginloader_t::get_documentation();};
+    virtual bool has_process(mha_domain_t in,mha_domain_t out){return PluginLoader::mhapluginloader_t::has_process(in, out);};
+};
+
 
 /** Escapes various character sequences in texts not intended to be processed
  * by LaTeX for processing by LaTeX.  Focus is on correct display of symbols
@@ -90,16 +151,21 @@ private:
     const std::string plugname;
     const std::string latex_plugname;
     MHAKernel::algo_comm_class_t ac;
-    PluginLoader::mhapluginloader_t loader;
+    std::unique_ptr<plug_wrapperI> loader;
     const std::string plugin_macro;
 };
 
 latex_doc_t::latex_doc_t(const std::string& plugname_,const std::string& plugin_macro_)
     : plugname(plugname_),
       latex_plugname(conv2latex(plugname)),
-      loader(ac.get_c_handle(),plugname),
       plugin_macro(plugin_macro_)
 {
+    try{
+        loader=std::make_unique<plug_wrapper>(ac.get_c_handle(),plugname);
+    }
+    catch(...){
+        loader=std::make_unique<io_wrapper>(ac.get_c_handle(),plugname);
+      }
 }
 
 std::string latex_doc_t::get_latex_doc()
@@ -114,16 +180,16 @@ std::string latex_doc_t::get_latex_doc()
     retv += "\\" + plugin_macro + "{" + latex_plugname + "}\n\\label{plug:" + plugname + "}\n\n";
     retv += "\\index{" + latex_plugname + " (MHA plugin)}\n";
     retv += "\\index{plugin!" + latex_plugname + "}\n";
-    std::vector<std::string> cats = loader.get_categories();
+    std::vector<std::string> cats = loader->get_categories();
     for( unsigned int k=0;k<cats.size();k++){
         retv += "\\index{" + conv2latex(cats[k]) + " (plugin category)!" + latex_plugname + "}\n";
     }
-    if( loader.has_parser() )
-        retv += conv2latex(loader.parse("?help")) + "\n\n";
-    std::string detailed_doc(loader.get_documentation());
+    if( loader->has_parser() )
+        retv += conv2latex(loader->parse("?help")) + "\n\n";
+    std::string detailed_doc(loader->get_documentation());
     if( detailed_doc.size() )
         retv += plugin_subsection_macro + "{Detailed description}\n\n" +
-            loader.get_documentation() + "\n\n";
+            loader->get_documentation() + "\n\n";
     retv += plugin_subsection_macro +
         "{Supported domains}\n\nThe MHA plugin {\\tt " + latex_plugname +
         "} supports these signal domains:\n\\begin{itemize}\n";
@@ -131,7 +197,7 @@ std::string latex_doc_t::get_latex_doc()
     unsigned int n_domains(0);
     for( indom = 0; indom < MHA_DOMAIN_MAX; indom++ ) 
         for( outdom = 0; outdom < MHA_DOMAIN_MAX; outdom++ ) 
-            if( loader.has_process(indom,outdom) ){
+            if( loader->has_process(indom,outdom) ){
                 retv += " \\item " + strdom(indom) + " to " + strdom(outdom) + "\n";
                 n_domains++;
             }
@@ -149,20 +215,20 @@ std::string latex_doc_t::get_latex_doc()
         }
         retv += "\n\n";
     }
-    if( loader.has_parser() ){
-        retv += get_parser_tab(&loader,"",plugin_subsection_macro);
+    if( loader->has_parser() ){
+        retv += get_parser_tab(loader.get(),"",plugin_subsection_macro);
     }
     return retv;
 }
 
 std::string latex_doc_t::get_main_category() const
 {
-    return loader.get_categories()[0];
+    return loader->get_categories()[0];
 }
 
 std::vector<std::string> latex_doc_t::get_categories() const
 {
-    return loader.get_categories();
+    return loader->get_categories();
 }
 
 std::string latex_doc_t::strdom( mha_domain_t d ) const

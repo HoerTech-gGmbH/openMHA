@@ -106,9 +106,6 @@ namespace MHAIOPortAudio {
                         "Could not get number of portaudio sound devices: %s",
                         Pa_GetErrorText(err));
       }
-      if (numDevices.data == 0)
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Could not find any portaudio sound devices");
 
       structVersion.data.clear();
       name.data.clear();
@@ -223,15 +220,18 @@ namespace MHAIOPortAudio {
                              val2str(device_info.numDevices.data) + "[");
       device_index_out.set_range("[0," + MHAParser::StrCnv::
                              val2str(device_info.numDevices.data) + "[");
-      try {
-        device_name_in_updated();
-      } catch (MHA_Error & e) {
-        device_index_in_updated();
-      }
-      try {
-        device_name_out_updated();
-      } catch (MHA_Error & e) {
-        device_index_out_updated();
+      // If there are no devices, don't need to update anything
+      if(device_info.numDevices.data>0){
+        try {
+          device_name_in_updated();
+        } catch (MHA_Error & e) {
+          device_index_in_updated();
+        }
+        try {
+          device_name_out_updated();
+        } catch (MHA_Error & e) {
+          device_index_out_updated();
+        }
       }
       patchbay.connect(&device_name_in.writeaccess, this,
                        &io_portaudio_t::device_name_in_updated);
@@ -281,15 +281,17 @@ namespace MHAIOPortAudio {
     }
 
     void device_index_in_updated() {
+      // Valid device indices are in the range [0,device_info.numDevices.data-1]
       if ((device_index_in.data < 0) ||
-           (device_index_in.data > device_info.numDevices.data))
+           (device_index_in.data >= device_info.numDevices.data))
         throw MHA_Error(__FILE__,__LINE__, "Device index %d is out of range",
                         device_index_in.data);
       device_name_in.data = device_info.name.data[device_index_in.data];
     }
     void device_index_out_updated() {
+      // Valid device indices are in the range [0,device_info.numDevices.data-1]
       if ((device_index_out.data < 0) ||
-           (device_index_out.data > device_info.numDevices.data))
+           (device_index_out.data >= device_info.numDevices.data))
         throw MHA_Error(__FILE__,__LINE__, "Device index %d is out of range",
                         device_index_out.data);
       device_name_out.data = device_info.name.data[device_index_out.data];
@@ -381,6 +383,11 @@ int MHAIOPortAudio::io_portaudio_t::portaudio_callback
 void MHAIOPortAudio::io_portaudio_t::cmd_prepare(int nchannels_in,
                                                  int nchannels_out)
 {
+  if (device_info.numDevices.data == 0)
+    throw MHA_Error(__FILE__,__LINE__,
+                    "Could not find any portaudio sound devices");
+
+      
   if (nchannels_in < 0)
     throw MHA_Error(__FILE__,__LINE__,
                     "prepare: nonsense input channel count %d received",

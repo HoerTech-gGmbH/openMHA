@@ -70,6 +70,8 @@ endif
 
 $(BUILD_DIR)/analysemhaplugin: $(BUILD_DIR)/mhafw_lib.o
 
+$(BUILD_DIR)/generatemhaplugindoc: $(BUILD_DIR)/mhafw_lib.o
+
 $(BUILD_DIR)/mha: $(OBJECTS:%.o=$(BUILD_DIR)/%.o)
 
 $(BUILD_DIR)/testalsadevice: LDLIBS += -lasound

@@ -40,6 +40,14 @@ MHA_PLUGINDIRS=$(subst $(space),;,$(PLUGINDIRS))
 
 # Get plugin names
 PLUGIN_NAMES:=$(subst $(space),"\n",$(filter-out io,$(foreach plg,$(PLUGINDIRS),$(word 3,$(subst /,$(space),$(plg))))))
+IO_NAMES:=$(subst $(space),"\n",$(filter-out MHAIOAsterisk,$(patsubst ../plugins/io/$(PLATFORM_CC)/%$(DYNAMIC_LIB_EXT),%,$(wildcard ../plugins/io/$(PLATFORM_CC)/MHAIO*$(DYNAMIC_LIB_EXT)))))
+libext:
+	@echo $(DYNAMIC_LIB_EXT)
+io_names:
+	@echo $(IO_NAMES)
+
+names:
+	@echo $(PLUGIN_NAMES)
 
 MHADISTS = openMHA
 
@@ -94,7 +102,7 @@ mhadoc: images
 plugins: $(MHADISTS:=_plugins.pdf)
 
 %_plugin.list: 
-	echo $(PLUGIN_NAMES) | sort > $@
+	echo $(PLUGIN_NAMES)"\n"$(IO_NAMES) | sort > $@
 
 %_plugin_section.tex: %_plugin.list
 	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" ../frameworks/$(BUILD_DIR)/generatemhaplugindoc -o $@ -c subsection -p subsubsection `cat $<` 
