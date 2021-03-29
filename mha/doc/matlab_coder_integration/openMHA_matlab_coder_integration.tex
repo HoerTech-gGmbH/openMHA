@@ -278,7 +278,7 @@ The user code and the plugin interface via four entry point functions:
 \texttt{init()}, \texttt{prepare()}, \texttt{process()}, and \texttt{release()}, of which \texttt{process()} is mandatory.
 These functions are automatically called by the wrapper plugin at construction, and during the \texttt{prepare()},
 \texttt{process()} and \texttt{release()} callbacks respectively.
-In order for the matlab\_wrapper plugin to properly resolve these functions, they must confirm to the proscribed interface,
+In order for the matlab\_wrapper plugin to properly resolve these functions, they must confirm to the prescribed interface,
 i.e.\ their input and output parameters must be exactly as described in the following.\\
 
 \texttt{init()} is called when the user library is loaded. It must follow the form:
@@ -303,7 +303,10 @@ this can be done during the prepare call, where \texttt{signal\_dimensions} and 
 \texttt{prepare()} is called when the prepare command is issued. All
 initialization that depends on the form of the signal should be done here,
 furthermore the properties of the input signal can be checked, i.e., in case the 
-processing requires a fixed number of channels or a certain sampling rate is required.
+processing requires a fixed number of channels or a certain sampling rate is
+required. If the processing changes any signal property, the
+appropriate member of \texttt{signal\_dimensions} must be changed accordingly to
+inform the \mha{} framework of the change.
 \texttt{prepare()} takes two arguments:
   \begin{description}
   \item[signal\_dimensions] is a struct with information about the input signal.
@@ -328,14 +331,18 @@ processing requires a fixed number of channels or a certain sampling rate is req
   signal_dimensions.channels=1; % Output contains only one channel
   end
 \end{lstlisting}
-All signal processing has to happen in the \texttt{process()} function. It has the following signature:
+All signal processing has to happen in the \texttt{process\_xy()} function. `XY' takes different values
+depending on the input and output signal domains. Use `ww' for waveform to
+waveform processing,  `ss' for spectrum to spectrum processing,  `ws' for waveform
+to spectrum, and `sw' for spectrum to waveform processing. The function has the following signature:
 \begin{lstlisting}[language=Matlab]
-  function [wave_out,user_config] = process(wave_in,...
+  function [s_out,user_config] = process_xy(s_in,...
                                             signal_dimensions,...
                                             user_config)
 \end{lstlisting}
 The parameters signal\_dimensions and user\_config are described above.
-\texttt{wave\_in} is a \texttt{InfxInf} array of doubles.
+\texttt{wave\_in} is a \texttt{InfxInf} array of doubles or complex numbers in
+the case of spectral processing.
 The \texttt{release} function is used to do final cleanup if necessary.
 It takes no parameters and returns nothing:
 \begin{lstlisting}[language=Matlab]
@@ -355,6 +362,7 @@ A current limitation is that changes made to \texttt{user\_config} during \textt
 lost on configuration change from the parser side, so the user must be wary when using \texttt{user\_config} to store
 dynamic state like i.e.\ filter states.
 \subsection{Deployment}
+\label{subsec:Deployment}
 In order to get a ready to use user library, the \Matlab{} Coder needs to be
 setup to use a compiler. Please refer to the \Matlab{} Coder documentation for
 how to do this. If the user library is compiled using a different compiler than
@@ -425,6 +433,25 @@ We do this by changing the \texttt{channels} member of \texttt{signal\_dimension
 Note that in line 15 we need to explicitly cast the value to the appropriate type lest we
 get errors during code generation. Also observe that the change to \texttt{channels}
 was the last thing we did, as we needed the original value before!
+\subsubsection*{process\_ww, process\_ss, process\_sw and process\_ws}
+In order to be able to use \texttt{make.m} for every combination signal domain
+with minimal changes, we introduce \texttt{process\_ww}, \texttt{process\_ss},
+\texttt{process\_ws}, and \texttt{process\_sw}. These entry-point functions serve
+as proxy for the real processing processing function and all contain the same
+code forwarding the call to the `real' processing function:
+\begin{lstlisting}[language=Matlab]
+function [s_out,user_config] = process_ss(s_in,...
+                               signal_dimensions,...
+                               user_config)
+% This function provides the entry point for spectrum to spectrum
+% processing and forwards the actual processing to process(...)
+% Do not touch unless you know what you are doing! 
+% The actual processing should be done in process.m
+[s_out,user_config]=process(s_in,signal_dimensions,user_config);
+end
+\end{lstlisting}
+This allows us to keep the code invoking the \Matlab{} mostly the same. More on
+that later. 
 \subsubsection*{Process}
 \begin{lstlisting}[language=Matlab]
 function [wave_out,user_config] = ...
@@ -531,17 +558,29 @@ such customization seems necessary choosing the native compilation approach is
 recommended. \\
 The last section actually invokes the \Matlab{} coder:
 \begin{lstlisting}[language=Matlab]
+%% Example coder invocation. Remove the unneeded callbacks
+% codegen -config cfg ...
+% -o example_24 ...
+% init -args ARGS{1} ...
+% prepare -args ARGS{2} ...
+% process_ww -args ARGS{3} ...
+% process_ss -args ARGS{4} ...
+% process_ws -args ARGS{5} ...
+% process_sw -args ARGS{6} ...
+% release
+\end{lstlisting}
+We remove the processing
+callbacks that we do not need and arrive at the final coder invocation:
+\begin{lstlisting}[language=Matlab]
 [...]
-
 %% Invoke MATLAB Coder.
 codegen -config cfg -o example_25... 
          init -args ARGS{1}...
          prepare -args ARGS{2}...
-         process -args ARGS{3}...
+         process_ww -args ARGS{3}...
          release
 
 [...]
-
 \end{lstlisting}
 The \texttt{-config} argument takes the configuration object we constructed
 earlier, \texttt{-o} takes the output file name(s). Change that argument to your liking.
@@ -549,7 +588,8 @@ The rest of the invocation defines the entry-point functions and their argument
 types pairwise. First \texttt{init} and the input arguments to \texttt{init},
 then prepare, etc\ldots
 If one or more functions are not needed the argument pair can be removed from
-this line. Note that \texttt{process()} is not optional and the matlab\_wrapper
+this line. Note that the correct \texttt{process\_xy()} for the input and output
+domains set by \texttt{prepare()} is needed and the matlab\_wrapper
 plugin will refuse to start without it. \\
 If the generated code needs to be compiled by hand, we need to uncomment the
 last block in \texttt{make.m}:
@@ -567,9 +607,8 @@ the generated code on another machine where the Coder is not available. \\
 The makefile needed to compile the example is relatively simple as far as
 makefiles go:
 \begin{lstlisting}[language=make]
-  example_25.so: example_25.o example_25_emxAPI.o example_25_emxutil.o
+example_25.so: example_25.o example_25_emxAPI.o example_25_emxutil.o
     $(CC) -shared -o $@ $^
-      $(CC) -c -o $@ $<
 \end{lstlisting}
 In the first line we define the target library we want to compile and its dependencies:
 \texttt{example\_25.so} depends on \texttt{example\_25.o}, \texttt{example\_25\_emxAPI.o}, 

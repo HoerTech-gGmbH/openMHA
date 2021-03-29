@@ -27,7 +27,11 @@ extern "C" {
    * @return null-byte
    */
   extern char argInit_char_T(void);
-  /** Initialize a double to zero
+  /** Initialize a complex double to zero
+   * @return (0.0,0.0)
+   */
+  extern creal_T argInit_creal_T(void);
+  /** Initialize a real double to zero
    * @return 0.0
    */
   extern double argInit_real_T(void);
@@ -49,6 +53,11 @@ extern "C" {
    * @return Pointer to the array
    */
   extern emxArray_user_config_t *c_argInit_Unboundedx1_user_conf(int sz=0);
+  /** Initialize a sx x sy matrix of complex doubles
+   * @param Number of rows
+   * @param Number of columns
+   */
+  extern emxArray_creal_T *c_argInit_UnboundedxUnbounded_c(void);
   /** Initialize a sx x sy matrix of doubles
    * @param Number of rows
    * @param Number of columns

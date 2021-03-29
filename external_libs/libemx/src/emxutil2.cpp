@@ -49,6 +49,20 @@ char argInit_char_T(void)
   return '\0';
 }
 
+creal_T argInit_creal_T(void)
+{
+  creal_T result;
+  double re_tmp;
+
+  /* Set the value of the complex variable.
+     Change this value to the value that the application requires. */
+  re_tmp = argInit_real_T();
+  result.re = re_tmp;
+  result.im = re_tmp;
+  return result;
+}
+
+
 double argInit_real_T(void)
 {
   return 0.0;
@@ -103,6 +117,28 @@ emxArray_user_config_t *c_argInit_Unboundedx1_user_conf(int sz)
     /* Set the value of the array element.
        Change this value to the value that the application requires. */
     result->data[idx0] = argInit_user_config_t();
+  }
+
+  return result;
+}
+
+emxArray_creal_T *c_argInit_UnboundedxUnbounded_c(int sx, int sy)
+{
+  emxArray_creal_T *result;
+  int idx0;
+  int idx1;
+
+  /* Set the size of the array.
+     Change this size to the value that the application requires. */
+  result = emxCreate_creal_T(sx, sy);
+
+  /* Loop over the array to initialize each element. */
+  for (idx0 = 0; idx0 < result->size[0U]; idx0++) {
+    for (idx1 = 0; idx1 < result->size[1U]; idx1++) {
+      /* Set the value of the array element.
+         Change this value to the value that the application requires. */
+      result->data[idx0 + result->size[0] * idx1] = argInit_creal_T();
+    }
   }
 
   return result;

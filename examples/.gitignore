@@ -2,3 +2,6 @@
 output_*.wav
 *OUT.wav
 *.mat
+codegen
+*.prj
+*.asv

@@ -1,6 +1,7 @@
 function [signal_dimensions, user_config]=prepare(signal_dimensions, user_config)
 %PREPARE 
-% Optional, prepare global data, check dimensions, etc..
+% Check for correct input domain, set the correct initial size of 'delay'
+% and gain, set number of output channels to 1
 if(signal_dimensions.domain~='W')
     fprintf('This plugin can only process signals in the time domain. Got %s\n',signal_dimensions.domain);assert(false);
 end

@@ -90,6 +90,19 @@ typedef struct {
 } emxArray_user_config_t;
 
 #endif                                 /*typedef_emxArray_user_config_t*/
+
+#ifndef typedef_emxArray_creal_T
+#define typedef_emxArray_creal_T
+
+typedef struct {
+  creal_T *data;
+  int *size;
+  int allocatedSize;
+  int numDimensions;
+  bool canFreeData;
+} emxArray_creal_T;
+
+#endif                                 /*typedef_emxArray_creal_T*/
 #endif
 
 /* End of code generation (types.h) */

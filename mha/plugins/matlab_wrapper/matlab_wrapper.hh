@@ -13,6 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef MATLAB_WRAPPER_HH
+#define MATLAB_WRAPPER_HH
+
+#define MHAPLUGIN_OVERLOAD_OUTDOMAIN
+
+#include "mha.hh"
+#include "mha_signal.hh"
 #include "types.h"
 
 #include "mha_plugin.hh"
@@ -23,6 +30,23 @@
 
 /** Namespace where all classes of the matlab wrapper plugin live*/
 namespace matlab_wrapper {
+
+  template<mha_domain_t T>
+  struct types;
+
+  template<>
+  struct types<MHA_WAVEFORM>{
+    typedef emxArray_real_T array;
+    typedef mha_wave_t signal_type;
+    typedef MHASignal::waveform_t class_signal_type;
+  };
+
+  template<>
+  struct types<MHA_SPECTRUM>{
+    typedef emxArray_creal_T array_type;
+    typedef mha_spec_t signal_type;
+    typedef MHASignal::spectrum_t class_signal_type;
+  };
 
 /** Thin wrapper around the emxArray containing the user defined configuration variables.
  * This wrapper holds a copy of the user configuration which is used by the process callback.
@@ -78,13 +102,31 @@ class matlab_wrapper_t : public MHAPlugin::plugin_t<matlab_wrapper_rt_cfg_t>
      */
     explicit wrapped_plugin_t(const char* name_);
     /** Dtor. */
-    ~wrapped_plugin_t();
-    /** Process callback. Convert mha-type mha_wave_t to matlab array and
-     * calls wrapped process callback
+    virtual ~wrapped_plugin_t();
+    /** Process callback. Converts mha-type wave to matlab array and
+     * calls wrapped process callback, then convert output to mha type
      * @param s input/output signal
      * @param user_config_ Ptr to user configuration array
      */
-    mha_wave_t* process(mha_wave_t* s,emxArray_user_config_t* user_config_);
+    mha_wave_t* process_ww(mha_wave_t* s,emxArray_user_config_t* user_config_);
+    /** Process callback. Converts mha-type spectrum to matlab array and
+     * calls wrapped process callback, then convert output to mha type
+     * @param s input/output signal
+     * @param user_config_ Ptr to user configuration array
+     */
+    mha_spec_t* process_ss(mha_spec_t* s,emxArray_user_config_t* user_config_);
+    /** Process callback. Converts mha-type wave to matlab array and
+     * calls wrapped process callback, then convert output to mha type
+     * @param s input/output signal
+     * @param user_config_ Ptr to user configuration array
+     */
+    mha_spec_t* process_ws(mha_wave_t* s,emxArray_user_config_t* user_config_);
+    /** Process callback. Converts mha-type spectrum to matlab array and
+     * calls wrapped process callback, then convert output to mha type
+     * @param s input/output signal
+     * @param user_config_ Ptr to user configuration array
+     */
+    mha_wave_t* process_sw(mha_spec_t* s,emxArray_user_config_t* user_config_);
     /** Prepare callback. Calls wrapped prepare function if necessary and determines output signal dimensions */
     void prepare(mhaconfig_t& config);
     /** Release callback. Cleans up io arrays and calls wrapped release if necessary. */
@@ -98,9 +140,18 @@ class matlab_wrapper_t : public MHAPlugin::plugin_t<matlab_wrapper_rt_cfg_t>
     void (*fcn_terminate)()=nullptr;
     /** Handle to matlab generated init function */
     void (*fcn_init)(emxArray_user_config_t*)=nullptr;
-    /** Handle to matlab generated process function */
-    void (*fcn_process)(const emxArray_real_T *, const signal_dimensions_t *,
+    /** Handle to matlab generated wave to wave process function */
+    void (*fcn_process_ww)(const emxArray_real_T *, const signal_dimensions_t *,
                         emxArray_user_config_t*, emxArray_real_T *)=nullptr;
+    /** Handle to matlab generated spectrum to spectrum process function */
+    void (*fcn_process_ss)(const emxArray_creal_T *, const signal_dimensions_t *,
+                        emxArray_user_config_t*, emxArray_creal_T *)=nullptr;
+    /** Handle to matlab generated wave to spectrum process function */
+    void (*fcn_process_ws)(const emxArray_real_T *, const signal_dimensions_t *,
+                           emxArray_user_config_t*, emxArray_creal_T *)=nullptr;
+    /** Handle to matlab generated spectrum to wave process function */
+    void (*fcn_process_sw)(const emxArray_creal_T *, const signal_dimensions_t *,
+                           emxArray_user_config_t*, emxArray_real_T *)=nullptr;
     /** Handle to matlab generated prepare function */
     void (*fcn_prepare)(signal_dimensions_t *,
                         emxArray_user_config_t *)=nullptr;
@@ -111,8 +162,14 @@ class matlab_wrapper_t : public MHAPlugin::plugin_t<matlab_wrapper_rt_cfg_t>
     emxArray_real_T* wave_in=nullptr;
     /** Ptr to emxArray holding the output signal */
     emxArray_real_T* wave_out=nullptr;
+    /** Ptr to emxArray holding the input signal */
+    emxArray_creal_T* spec_in=nullptr;
+    /** Ptr to emxArray holding the output signal */
+    emxArray_creal_T* spec_out=nullptr;
     /** MHA waveform holding the output signal */
     std::unique_ptr<MHASignal::waveform_t> mha_wave_out;
+    /** MHA waveform holding the output signal */
+    std::unique_ptr<MHASignal::spectrum_t> mha_spec_out;
   };
 
 public:
@@ -120,10 +177,22 @@ public:
    * @param iac Handle to ac space
    */
   matlab_wrapper_t(const algo_comm_t& iac,const std::string&,const std::string&);
-  /** Process callback for wave to wave processing */
-  mha_wave_t* process(mha_wave_t*);
-  /** Process callback for spec to spec processing currently unused */
-  mha_spec_t* process(mha_spec_t*);
+  /** Pure waveform processing
+   * @param sin input waveform signal
+   * @param sout output waveform signal */
+  void process(mha_wave_t* sin,mha_wave_t** sout);
+  /** Pure spectrum processing
+   * @param sin input spectrum signal
+   * @param sout output spectrum signal */
+  void process(mha_spec_t* sin,mha_spec_t** sout);
+  /** Signal processing with domain transformation from waveform to spectrum.
+   * @param sin input waveform signal
+   * @param sout output spectrum signal */
+  void process(mha_wave_t* sin,mha_spec_t** sout);
+  /** Signal processing with domain transformation from spectrum to waveform.
+   * @param sin input spectrum signal
+   * @param sout output waveform signal */
+  void process(mha_spec_t* sin,mha_wave_t** sout);
   /** Prepare callback
    * @param signal_info struct holding the input/output signal dimensions
    */
@@ -149,3 +218,5 @@ private:
   std::vector<callback> callbacks;
 };
 }
+
+#endif // MATLAB_WRAPPER_HH

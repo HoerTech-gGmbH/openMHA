@@ -2,9 +2,6 @@
 
 %% Create configuration object of class 'coder.CodeConfig'.
 cfg = coder.config('dll','ecoder',false);
-cfg.InlineBetweenUserFunctions='always';
-cfg.InlineBetweenMathWorksFunctions='always';
-cfg.InlineBetweenUserAndMathWorksFunctions='always';
 cfg.GenerateReport = true;
 cfg.ReportPotentialDifferences = false;
 cfg.SaturateOnIntegerOverflow = false;
@@ -88,7 +85,7 @@ ARGS_5_2.fragsize = coder.typeof(uint32(0));
 ARGS_5_2.wndlen = coder.typeof(uint32(0));
 ARGS_5_2.fftlen = coder.typeof(uint32(0));
 ARGS_5_2.srate = coder.typeof(0);
-ARGS{5}{2} = coder.typeof(ARGS_5_2);
+ARGS{5}{2} = coder.typeof(ARGS_4_2);
 ARGS{5}{2} = coder.cstructname(ARGS{5}{2},'signal_dimensions_t');
 ARGS_5_3 = struct;
 ARGS_5_3.name = coder.typeof('X',[1 Inf],[0 1]);
@@ -106,8 +103,8 @@ ARGS_6_2.fragsize = coder.typeof(uint32(0));
 ARGS_6_2.wndlen = coder.typeof(uint32(0));
 ARGS_6_2.fftlen = coder.typeof(uint32(0));
 ARGS_6_2.srate = coder.typeof(0);
-ARGS{6}{2} = coder.typeof(ARGS_6_2);
-ARGS{6}{2} = coder.cstructname(ARGS{6}{2},'signal_dimensions_t');
+ARGS{6}{2} = coder.typeof(ARGS_4_2);
+ARGS{6}{2} = coder.cstructname(ARGS{5}{2},'signal_dimensions_t');
 ARGS_6_3 = struct;
 ARGS_6_3.name = coder.typeof('X',[1 Inf],[0 1]);
 ARGS_6_3.value = coder.typeof(0,[Inf  Inf],[1 0]);
@@ -126,13 +123,13 @@ ARGS{6}{3} = coder.cstructname(ARGS{6}{3},'user_config_t');
 %     release
 
 %% Invoke MATLAB Coder. Comment out the unneeded processing callbacks
-codegen -config cfg ...
-    -o example_25 ...
-    init -args ARGS{1} ...
-    prepare -args ARGS{2} ...
-    process_ww -args ARGS{3} ...
+codegen -config cfg...
+    -o example_25...
+    init -args ARGS{1}...
+    prepare -args ARGS{2}...
+    process_ss -args ARGS{4}...
     release
 
 %% Optionally package the code for deployment elsewhere
-%load('codegen\dll\example_25\buildinfo.mat')
-%packNGo(buildInfo,'fileName','example_25.zip');
+%load('codegen\dll\example_27\buildinfo.mat')
+%packNGo(buildInfo,'fileName','example_27.zip');

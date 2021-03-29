@@ -17,6 +17,8 @@
 #include "emxAPI.h"
 #include "emxutil.h"
 #include "emxutil2.hh"
+#include "mha.hh"
+#include "mha_signal.hh"
 
 matlab_wrapper::callback::callback(matlab_wrapper_t* parent_,
                                    user_config_t* user_config_,
@@ -58,10 +60,19 @@ matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::wrapped_plugin_t(const char*
     library_handle(name_)
 {
     using namespace std::string_literals;
-    // Resolve functions. process and terminate are mandatory, throw if not found
-    fcn_process=( void (*) (const emxArray_real_T *, const signal_dimensions_t *,
+    // Resolve functions. process_** and terminate are mandatory, throw if not found
+    fcn_process_ww=( void (*) (const emxArray_real_T *, const signal_dimensions_t *,
                             emxArray_user_config_t*, emxArray_real_T *) )
-        library_handle.resolve_checked("process");
+        library_handle.resolve("process_ww");
+    fcn_process_ss=( void (*) (const emxArray_creal_T *, const signal_dimensions_t *,
+                               emxArray_user_config_t*, emxArray_creal_T *) )
+        library_handle.resolve("process_ss");
+    fcn_process_sw=( void (*) (const emxArray_creal_T *, const signal_dimensions_t *,
+                               emxArray_user_config_t*, emxArray_real_T *) )
+        library_handle.resolve("process_sw");
+    fcn_process_ws=( void (*) (const emxArray_real_T *, const signal_dimensions_t *,
+                               emxArray_user_config_t*, emxArray_creal_T *) )
+        library_handle.resolve("process_ws");
     fcn_init=( void (*) (emxArray_user_config_t *) )library_handle.resolve("init");
     fcn_prepare=( void (*)(signal_dimensions_t*,
                            emxArray_user_config_t *) ) library_handle.resolve("prepare");
@@ -79,7 +90,9 @@ matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::~wrapped_plugin_t(){
         (*fcn_terminate)();
 };
 
-mha_wave_t* matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process(mha_wave_t* s,emxArray_user_config_t* user_config_){
+mha_wave_t *matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process_ww(mha_wave_t *s,
+                                                                           emxArray_user_config_t *user_config_)
+{
     // Reorder input from row-major to column major
     auto idx=[&s](int fr,int ch){return fr+s->num_frames*ch;};
     for(unsigned ch=0;ch<s->num_channels;++ch){
@@ -87,7 +100,72 @@ mha_wave_t* matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process(mha_wave
             wave_in->data[idx(fr,ch)]=value(s,fr,ch);
         }
     }
-    (*fcn_process)(wave_in,&signal_dimensions,user_config_,wave_out);
+    (*fcn_process_ww)(wave_in,&signal_dimensions,user_config_,wave_out);
+    //Reorder back to mha convention
+    for(unsigned fr=0;fr<mha_wave_out->num_frames;++fr){
+        for(unsigned ch=0;ch<mha_wave_out->num_channels;++ch){
+            value(*mha_wave_out,fr,ch)=wave_out->data[idx(fr,ch)];
+        }
+    }
+    return mha_wave_out.get();
+}
+
+mha_spec_t *matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process_ss(mha_spec_t *s,
+                                                                           emxArray_user_config_t *user_config_)
+{
+    // Reorder input from row-major to column major
+    auto idx=[&s](int fr,int ch){return fr+s->num_frames*ch;};
+    for(unsigned ch=0;ch<s->num_channels;++ch){
+        for(unsigned fr=0;fr<s->num_frames;++fr){
+            spec_in->data[idx(fr,ch)].re=value(s,fr,ch).re;
+            spec_in->data[idx(fr,ch)].im=value(s,fr,ch).im;
+        }
+    }
+    (*fcn_process_ss)(spec_in,&signal_dimensions,user_config_,spec_out);
+    //Reorder back to mha convention
+    for(unsigned fr=0;fr<mha_spec_out->num_frames;++fr){
+        for(unsigned ch=0;ch<mha_spec_out->num_channels;++ch){
+            value(*mha_spec_out,fr,ch).re=spec_out->data[idx(fr,ch)].re;
+            value(*mha_spec_out,fr,ch).im=spec_out->data[idx(fr,ch)].im;
+        }
+    }
+    return mha_spec_out.get();
+}
+
+
+mha_spec_t *matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process_ws(mha_wave_t *s,
+                                                                           emxArray_user_config_t *user_config_)
+{
+    // Reorder input from row-major to column major
+    auto idx=[&s](int fr,int ch){return fr+s->num_frames*ch;};
+    for(unsigned ch=0;ch<s->num_channels;++ch){
+        for(unsigned fr=0;fr<s->num_frames;++fr){
+            wave_in->data[idx(fr,ch)]=value(s,fr,ch);
+        }
+    }
+    (*fcn_process_ws)(wave_in,&signal_dimensions,user_config_,spec_out);
+    //Reorder back to mha convention
+    for(unsigned fr=0;fr<mha_spec_out->num_frames;++fr){
+        for(unsigned ch=0;ch<mha_spec_out->num_channels;++ch){
+            value(*mha_spec_out,fr,ch).re=spec_out->data[idx(fr,ch)].re;
+            value(*mha_spec_out,fr,ch).im=spec_out->data[idx(fr,ch)].im;
+        }
+    }
+    return mha_spec_out.get();
+}
+
+mha_wave_t *matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process_sw(mha_spec_t *s,
+                                                                           emxArray_user_config_t *user_config_)
+{
+    // Reorder input from row-major to column major
+    auto idx=[&s](int fr,int ch){return fr+s->num_frames*ch;};
+    for(unsigned ch=0;ch<s->num_channels;++ch){
+        for(unsigned fr=0;fr<s->num_frames;++fr){
+            spec_in->data[idx(fr,ch)].re=value(s,fr,ch).re;
+            spec_in->data[idx(fr,ch)].im=value(s,fr,ch).im;
+        }
+    }
+    (*fcn_process_sw)(spec_in,&signal_dimensions,user_config_,wave_out);
     //Reorder back to mha convention
     for(unsigned fr=0;fr<mha_wave_out->num_frames;++fr){
         for(unsigned ch=0;ch<mha_wave_out->num_channels;++ch){
@@ -99,10 +177,20 @@ mha_wave_t* matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process(mha_wave
 
 void matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::prepare(mhaconfig_t& config){
     // Initialize input wave
-    wave_in=emxCreate_real_T(config.fragsize,config.channels);
-    for(int i=0; i<wave_in->allocatedSize;++i){
-        wave_in->data[i]=0.0;
+    if(config.domain==MHA_WAVEFORM){
+        wave_in=emxCreate_real_T(config.fragsize,config.channels);
+        for(int i=0; i<wave_in->allocatedSize;++i){
+            wave_in->data[i]=0.0;
+        }
     }
+    else if(config.domain==MHA_SPECTRUM){
+        spec_in=emxCreate_creal_T(config.fftlen/2+1,config.channels);
+        for(int i=0; i<spec_in->allocatedSize;++i){
+            spec_in->data[i].re=spec_in->data[i].im=0.0;
+        }
+    }
+    else
+        throw MHA_Error(__FILE__,__LINE__,"Unknown domain %u",config.domain);
     // Read mha's signal dimensions into matlab struct
     signal_dimensions.channels=config.channels;
     signal_dimensions.domain=[config](){
@@ -125,6 +213,14 @@ void matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::prepare(mhaconfig_t& co
     auto tmp=signal_dimensions;
     if(fcn_prepare)
         (*fcn_prepare)(&tmp,user_config);
+    if(tmp.domain=='W' and config.domain==MHA_WAVEFORM and !fcn_process_ww)
+        throw MHA_Error(__FILE__,__LINE__,"Processing callback not found!");
+    if(tmp.domain=='W' and config.domain==MHA_SPECTRUM and !fcn_process_sw)
+        throw MHA_Error(__FILE__,__LINE__,"Processing callback not found!");
+    if(tmp.domain=='S' and config.domain==MHA_WAVEFORM and !fcn_process_ws)
+        throw MHA_Error(__FILE__,__LINE__,"Processing callback not found!");
+    if(tmp.domain=='S' and config.domain==MHA_SPECTRUM and !fcn_process_ss)
+        throw MHA_Error(__FILE__,__LINE__,"Processing callback not found!");
     // And back again
     config.channels=tmp.channels;
     config.domain=[this,tmp](){
@@ -144,19 +240,32 @@ void matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::prepare(mhaconfig_t& co
     config.wndlen=tmp.wndlen;
     config.fftlen=tmp.fftlen;
     config.srate=tmp.srate;
-    wave_out=emxCreate_real_T(config.fragsize,config.channels);
-    mha_wave_out=std::make_unique<MHASignal::waveform_t>(config.fragsize, config.channels);
-    for(int i=0; i<wave_out->allocatedSize;++i){
-        wave_out->data[i]=0.0;
+    if(config.domain==MHA_WAVEFORM){
+        wave_out=emxCreate_real_T(config.fragsize,config.channels);
+        mha_wave_out=std::make_unique<MHASignal::waveform_t>(config.fragsize, config.channels);
+        for(int i=0; i<wave_out->allocatedSize;++i){
+            wave_out->data[i]=0.0;
+        }
     }
+    else if(config.domain==MHA_SPECTRUM){
+        spec_out=emxCreate_creal_T(config.fftlen/2+1,config.channels);
+        mha_spec_out=std::make_unique<MHASignal::spectrum_t>(config.fftlen/2+1, config.channels);
+        for(int i=0; i<spec_out->allocatedSize;++i){
+            spec_out->data[i].re=spec_out->data[i].im=0.0;
+        }
+    }
+    else // Currently already caught earlier, but harden against changes
+        throw MHA_Error(__FILE__,__LINE__,"Unknown domain %u",config.domain);
 }
 
 void matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::release(){
     if(fcn_release)
         (*fcn_release)();
     // Clean up input/output signal dimensions might change, we need to re-create anyway
-    emxDestroyArray_real_T(wave_in);
-    emxDestroyArray_real_T(wave_out);
+    if(wave_in) emxDestroyArray_real_T(wave_in);
+    if(wave_out) emxDestroyArray_real_T(wave_out);
+    if(spec_in) emxDestroyArray_creal_T(spec_in);
+    if(spec_out) emxDestroyArray_creal_T(spec_out);
 }
 
 matlab_wrapper::matlab_wrapper_t::matlab_wrapper_t(const algo_comm_t& iac,
@@ -186,13 +295,38 @@ void matlab_wrapper::matlab_wrapper_t::release()
     library_name.setlock(false);
 }
 
-mha_wave_t* matlab_wrapper::matlab_wrapper_t::process(mha_wave_t* s)
+void matlab_wrapper::matlab_wrapper_t::process(mha_wave_t* sin, mha_wave_t** sout)
 {
     poll_config();
     // Call wrappers process, provide real time configs user_config as we are guaranteed
     // That it will not change under us
-    return plug->process(s,cfg->user_config);
+    *sout=plug->process_ww(sin,cfg->user_config);
 }
+
+void matlab_wrapper::matlab_wrapper_t::process(mha_wave_t* sin, mha_spec_t** sout)
+{
+    poll_config();
+    // Call wrappers process, provide real time configs user_config as we are guaranteed
+    // That it will not change under us
+    *sout=plug->process_ws(sin,cfg->user_config);
+}
+
+void matlab_wrapper::matlab_wrapper_t::process(mha_spec_t* sin, mha_wave_t** sout)
+{
+    poll_config();
+    // Call wrappers process, provide real time configs user_config as we are guaranteed
+    // That it will not change under us
+    *sout=plug->process_sw(sin,cfg->user_config);
+}
+
+void matlab_wrapper::matlab_wrapper_t::process(mha_spec_t* sin, mha_spec_t** sout)
+{
+    poll_config();
+    // Call wrappers process, provide real time configs user_config as we are guaranteed
+    // That it will not change under us
+    *sout=plug->process_ss(sin,cfg->user_config);
+}
+
 
 void matlab_wrapper::matlab_wrapper_t::load_lib(){
     try{
@@ -242,7 +376,10 @@ void matlab_wrapper::matlab_wrapper_t::update(){
     push_config(new matlab_wrapper::matlab_wrapper_rt_cfg_t(plug->user_config));
 }
 
-MHAPLUGIN_CALLBACKS(matlab_wrapper,matlab_wrapper::matlab_wrapper_t,wave,wave)
+MHAPLUGIN_CALLBACKS(matlab_wrapper, matlab_wrapper::matlab_wrapper_t,wave,wave)
+MHAPLUGIN_PROC_CALLBACK(matlab_wrapper, matlab_wrapper::matlab_wrapper_t,spec,spec)
+MHAPLUGIN_PROC_CALLBACK(matlab_wrapper, matlab_wrapper::matlab_wrapper_t,wave,spec)
+MHAPLUGIN_PROC_CALLBACK(matlab_wrapper,matlab_wrapper::matlab_wrapper_t,spec,wave)
 
 MHAPLUGIN_DOCUMENTATION\
 (matlab_wrapper,
