@@ -1,4 +1,4 @@
-function [wave_out,user_config] = process(wave_in,signal_dimensions,user_config)
+function [wave_out,user_config,dummy] = process(wave_in,signal_dimensions,user_config,dummy)
 %PROCESS
 % Delay and sum algorithm. 
 %wave_in=real(wave_in);

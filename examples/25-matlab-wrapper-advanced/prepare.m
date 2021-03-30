@@ -1,4 +1,4 @@
-function [signal_dimensions, user_config]=prepare(signal_dimensions, user_config)
+function [signal_dimensions, user_config,state]=prepare(signal_dimensions, user_config,state)
 %PREPARE 
 % Check for correct input domain, set the correct initial size of 'delay'
 % and gain, set number of output channels to 1

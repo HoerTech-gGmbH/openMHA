@@ -1,12 +1,10 @@
-function [s_out,user_config] = process(s_in,signal_dimensions,user_config)
+function [s_out,user_config,state] = process(s_in,signal_dimensions,user_config,state)
 %PROCESS
 % A simple vocoder implementation. For every frequency in the frequency
 % vector adds a sinusoid proportional to the magitude of the corresponding 
 % frequency bin in the input spectrum
-
 % Shorthand for the frequency vector
 frequencies=user_config(1).value;
-
 % Initialize output signal
 s_out=zeros(signal_dimensions.fragsize,1);
 for f=1:size(frequencies,2)
@@ -17,6 +15,7 @@ for f=1:size(frequencies,2)
     % discontinuities.
     whole_periods_per_block=double(round(double(signal_dimensions.fragsize)*frequencies(f)/double(signal_dimensions.srate)));
     phase_advance_per_sample=double(whole_periods_per_block)*2*pi/double(signal_dimensions.fragsize);
+    state(1).value(f)=phase_advance_per_sample/2/pi*signal_dimensions.srate;
     phase=0.0;
     % Add the sine
     for i=1:signal_dimensions.fragsize

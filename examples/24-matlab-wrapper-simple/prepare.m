@@ -1,4 +1,4 @@
-function [signal_dimensions, user_config]=prepare(signal_dimensions, user_config)
+function [signal_dimensions, user_config,state]=prepare(signal_dimensions, user_config,state)
 %PREPARE 
 % Optional, prepare global data, check dimensions, etc..
 if(signal_dimensions.domain~='W')

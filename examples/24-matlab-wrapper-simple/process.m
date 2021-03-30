@@ -1,4 +1,4 @@
-function [wave_out,user_config] = process(wave_in,signal_dimensions,user_config)
+function [wave_out,user_config,state] = process(wave_in,signal_dimensions,user_config,state)
 %PROCESS
 % Function takes a 2 channel signal fragment and switches the channels,
 % applying a gain

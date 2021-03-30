@@ -133,27 +133,42 @@ class matlab_wrapper_t : public MHAPlugin::plugin_t<matlab_wrapper_rt_cfg_t>
     void release();
     /** Ptr to user config array */
     emxArray_user_config_t* user_config=nullptr;
+    /** Ptr to state array */
+    emxArray_user_config_t* state=nullptr;
     private:
     /** Handle to matlab generated shared library */
     dynamiclib_t library_handle;
     /** Handle to matlab generated cleanup function */
     void (*fcn_terminate)()=nullptr;
     /** Handle to matlab generated init function */
-    void (*fcn_init)(emxArray_user_config_t*)=nullptr;
+    void (*fcn_init)(emxArray_user_config_t*, emxArray_user_config_t *)=nullptr;
     /** Handle to matlab generated wave to wave process function */
-    void (*fcn_process_ww)(const emxArray_real_T *, const signal_dimensions_t *,
-                        emxArray_user_config_t*, emxArray_real_T *)=nullptr;
+    void (*fcn_process_ww)(const emxArray_real_T *,
+                           const signal_dimensions_t *,
+                           const emxArray_user_config_t *,
+                           emxArray_user_config_t *,
+                           emxArray_real_T *)=nullptr;
     /** Handle to matlab generated spectrum to spectrum process function */
-    void (*fcn_process_ss)(const emxArray_creal_T *, const signal_dimensions_t *,
-                        emxArray_user_config_t*, emxArray_creal_T *)=nullptr;
+    void (*fcn_process_ss)(const emxArray_creal_T *,
+                           const signal_dimensions_t *,
+                           const emxArray_user_config_t *,
+                           emxArray_user_config_t *,
+                           emxArray_creal_T *)=nullptr;
     /** Handle to matlab generated wave to spectrum process function */
-    void (*fcn_process_ws)(const emxArray_real_T *, const signal_dimensions_t *,
-                           emxArray_user_config_t*, emxArray_creal_T *)=nullptr;
+    void (*fcn_process_ws)(const emxArray_real_T *,
+                           const signal_dimensions_t *,
+                           const emxArray_user_config_t *,
+                           emxArray_user_config_t *,
+                           emxArray_creal_T *)=nullptr;
     /** Handle to matlab generated spectrum to wave process function */
-    void (*fcn_process_sw)(const emxArray_creal_T *, const signal_dimensions_t *,
-                           emxArray_user_config_t*, emxArray_real_T *)=nullptr;
+    void (*fcn_process_sw)(const emxArray_creal_T *,
+                           const signal_dimensions_t *,
+                           const emxArray_user_config_t *,
+                           emxArray_user_config_t *,
+                           emxArray_real_T *)=nullptr;
     /** Handle to matlab generated prepare function */
     void (*fcn_prepare)(signal_dimensions_t *,
+                        emxArray_user_config_t *,
                         emxArray_user_config_t *)=nullptr;
     void (*fcn_release)()=nullptr;
     /** Signal dimensions. Matlab-equivalent to mha_config_t */
@@ -200,6 +215,9 @@ public:
   /** Release callback */
   void release();
 private:
+  void insert_monitors();
+  void update_monitors();
+  void insert_config_vars();
   /** Configuration variable holding the file name of the matlab generated library */
   MHAParser::string_t library_name{"Name of matlab generated library",""};
   /** Patchbay for the interface plugins */
@@ -216,6 +234,8 @@ private:
   std::vector<MHAParser::mfloat_t> vars;
   /** Vector holding the callbacks for the user defined variables' write access */
   std::vector<callback> callbacks;
+  /** Vector holding the monitors corresponding to user state */
+  std::vector<MHAParser::mfloat_mon_t> monitors;
 };
 }
 

@@ -61,31 +61,24 @@ matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::wrapped_plugin_t(const char*
 {
     using namespace std::string_literals;
     // Resolve functions. process_** and terminate are mandatory, throw if not found
-    fcn_process_ww=( void (*) (const emxArray_real_T *, const signal_dimensions_t *,
-                            emxArray_user_config_t*, emxArray_real_T *) )
-        library_handle.resolve("process_ww");
-    fcn_process_ss=( void (*) (const emxArray_creal_T *, const signal_dimensions_t *,
-                               emxArray_user_config_t*, emxArray_creal_T *) )
-        library_handle.resolve("process_ss");
-    fcn_process_sw=( void (*) (const emxArray_creal_T *, const signal_dimensions_t *,
-                               emxArray_user_config_t*, emxArray_real_T *) )
-        library_handle.resolve("process_sw");
-    fcn_process_ws=( void (*) (const emxArray_real_T *, const signal_dimensions_t *,
-                               emxArray_user_config_t*, emxArray_creal_T *) )
-        library_handle.resolve("process_ws");
-    fcn_init=( void (*) (emxArray_user_config_t *) )library_handle.resolve("init");
-    fcn_prepare=( void (*)(signal_dimensions_t*,
-                           emxArray_user_config_t *) ) library_handle.resolve("prepare");
-    fcn_release=( void (*) () )library_handle.resolve("release");
-    fcn_terminate=(void(*)())library_handle.resolve_checked(std::string(name_)+"_terminate");
+    fcn_process_ww=(decltype(fcn_process_ww))library_handle.resolve("process_ww");
+    fcn_process_ss=(decltype(fcn_process_ss))library_handle.resolve("process_ss");
+    fcn_process_sw=(decltype(fcn_process_sw))library_handle.resolve("process_sw");
+    fcn_process_ws=(decltype(fcn_process_ws))library_handle.resolve("process_ws");
+    fcn_init=(decltype(fcn_init))library_handle.resolve("init");
+    fcn_prepare=(decltype(fcn_prepare))library_handle.resolve("prepare");
+    fcn_release=(decltype(fcn_release))library_handle.resolve("release");
+    fcn_terminate=(decltype(fcn_terminate))library_handle.resolve_checked(std::string(name_)+"_terminate");
     // Initialize empty user config array to be filled by library's init
     user_config=c_argInit_Unboundedx1_user_conf(0);
+    state=c_argInit_Unboundedx1_user_conf(0);
     if(fcn_init){
-        fcn_init(user_config);
+        fcn_init(user_config,state);
     }
 }
 matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::~wrapped_plugin_t(){
     emxDestroyArray_user_config_t(user_config);
+    emxDestroyArray_user_config_t(state);
     if(fcn_terminate)
         (*fcn_terminate)();
 };
@@ -100,7 +93,7 @@ mha_wave_t *matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process_ww(mha_w
             wave_in->data[idx(fr,ch)]=value(s,fr,ch);
         }
     }
-    (*fcn_process_ww)(wave_in,&signal_dimensions,user_config_,wave_out);
+    (*fcn_process_ww)(wave_in,&signal_dimensions,user_config_,state,wave_out);
     //Reorder back to mha convention
     for(unsigned fr=0;fr<mha_wave_out->num_frames;++fr){
         for(unsigned ch=0;ch<mha_wave_out->num_channels;++ch){
@@ -121,7 +114,7 @@ mha_spec_t *matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process_ss(mha_s
             spec_in->data[idx(fr,ch)].im=value(s,fr,ch).im;
         }
     }
-    (*fcn_process_ss)(spec_in,&signal_dimensions,user_config_,spec_out);
+    (*fcn_process_ss)(spec_in,&signal_dimensions,user_config_,state,spec_out);
     //Reorder back to mha convention
     for(unsigned fr=0;fr<mha_spec_out->num_frames;++fr){
         for(unsigned ch=0;ch<mha_spec_out->num_channels;++ch){
@@ -143,7 +136,7 @@ mha_spec_t *matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process_ws(mha_w
             wave_in->data[idx(fr,ch)]=value(s,fr,ch);
         }
     }
-    (*fcn_process_ws)(wave_in,&signal_dimensions,user_config_,spec_out);
+    (*fcn_process_ws)(wave_in,&signal_dimensions,user_config_,state,spec_out);
     //Reorder back to mha convention
     for(unsigned fr=0;fr<mha_spec_out->num_frames;++fr){
         for(unsigned ch=0;ch<mha_spec_out->num_channels;++ch){
@@ -165,7 +158,7 @@ mha_wave_t *matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::process_sw(mha_s
             spec_in->data[idx(fr,ch)].im=value(s,fr,ch).im;
         }
     }
-    (*fcn_process_sw)(spec_in,&signal_dimensions,user_config_,wave_out);
+    (*fcn_process_sw)(spec_in,&signal_dimensions,user_config_,state,wave_out);
     //Reorder back to mha convention
     for(unsigned fr=0;fr<mha_wave_out->num_frames;++fr){
         for(unsigned ch=0;ch<mha_wave_out->num_channels;++ch){
@@ -212,7 +205,7 @@ void matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::prepare(mhaconfig_t& co
     signal_dimensions.srate=config.srate;
     auto tmp=signal_dimensions;
     if(fcn_prepare)
-        (*fcn_prepare)(&tmp,user_config);
+        (*fcn_prepare)(&tmp,user_config,state);
     if(tmp.domain=='W' and config.domain==MHA_WAVEFORM and !fcn_process_ww)
         throw MHA_Error(__FILE__,__LINE__,"Processing callback not found!");
     if(tmp.domain=='W' and config.domain==MHA_SPECTRUM and !fcn_process_sw)
@@ -283,64 +276,57 @@ void matlab_wrapper::matlab_wrapper_t::prepare(mhaconfig_t& signal_dimensions)
         plug->prepare(signal_dimensions);
     else
         throw MHA_Error(__FILE__,__LINE__,"Library %s not loaded",library_name.data.c_str());
+    for(auto & m : monitors){
+        remove_item(&m);
+    }
+    insert_monitors();
     update();
     // Do not want to handle library reload during processing right now, so disable
-    // With the curent code structure, a reload would probably can probably not be done w/o
-    // a re-initialiation of the user user defined configuration variables
+    // With the curent code structure, a reload would probably probably not be done w/o
+    // a re-initialiation of the user defined configuration variables
     library_name.setlock(true);
 }
+
 void matlab_wrapper::matlab_wrapper_t::release()
 {
     plug->release();
     library_name.setlock(false);
 }
 
-void matlab_wrapper::matlab_wrapper_t::process(mha_wave_t* sin, mha_wave_t** sout)
-{
-    poll_config();
-    // Call wrappers process, provide real time configs user_config as we are guaranteed
-    // That it will not change under us
-    *sout=plug->process_ww(sin,cfg->user_config);
-}
-
-void matlab_wrapper::matlab_wrapper_t::process(mha_wave_t* sin, mha_spec_t** sout)
-{
-    poll_config();
-    // Call wrappers process, provide real time configs user_config as we are guaranteed
-    // That it will not change under us
-    *sout=plug->process_ws(sin,cfg->user_config);
-}
-
-void matlab_wrapper::matlab_wrapper_t::process(mha_spec_t* sin, mha_wave_t** sout)
-{
-    poll_config();
-    // Call wrappers process, provide real time configs user_config as we are guaranteed
-    // That it will not change under us
-    *sout=plug->process_sw(sin,cfg->user_config);
-}
-
-void matlab_wrapper::matlab_wrapper_t::process(mha_spec_t* sin, mha_spec_t** sout)
-{
-    poll_config();
-    // Call wrappers process, provide real time configs user_config as we are guaranteed
-    // That it will not change under us
-    *sout=plug->process_ss(sin,cfg->user_config);
-}
-
-
-void matlab_wrapper::matlab_wrapper_t::load_lib(){
-    try{
-        plug=std::make_unique<wrapped_plugin_t>(library_name.data.c_str());
+void matlab_wrapper::matlab_wrapper_t::insert_monitors(){
+    monitors.clear();
+    auto state=plug->state;
+    //NOTE: This call to reserve is *not* merely an optimization; they ensure that the vectors do
+    // not reallocate their internal buffer during the later calls to push_back, invalidating all
+    // pointers to elements. This would be fatal as the parser relies on valid ptrs
+    // to the vector elements. Do not remove!
+    monitors.reserve(state->size[0]);
+    for(int i=0;i<state->size[0];++i){
+        // We can not properly handle empty names
+        if(strncmp(state->data[i].name->data,"",state->data[i].name->allocatedSize)==0)
+            // We have no useful name, an index is all we can give the user
+            throw MHA_Error(__FILE__,__LINE__,"state(%i) has no name!",i+1);
+        else{
+            // Construct string from char array to ensure termination
+            auto name=std::string(state->data[i].name->data,state->data[i].name->size[1]);
+            // Handle all variables as matrices for generality
+            monitors.push_back(MHAParser::mfloat_mon_t(name));
+            // c=Linearized index
+            int c=0;
+            monitors.back().data.resize(state->data[i].value->size[0]);
+            for(int k=0;k<state->data[i].value->size[0];++k){
+                monitors.back().data[k].resize(state->data[i].value->size[1]);
+                for(int j=0;j<state->data[i].value->size[1];++j){
+                    monitors.back().data[k][j]=state->data[i].value->data[c++];
+                }
+            }
+            insert_item(name,&monitors.back());
+        }
     }
-    catch(std::exception& e){
-        throw MHA_Error(__FILE__,__LINE__,"Could not library %s: %s",library_name.data.c_str(),e.what());
-    }
-    catch(...){
-        throw MHA_Error(__FILE__,__LINE__,"Could not library %s: Unknown error",library_name.data.c_str());
-    }
-    // Parse user config and create/connect corresponding parsers
+}
+
+void matlab_wrapper::matlab_wrapper_t::insert_config_vars() {
     auto user_config=plug->user_config;
-
     //NOTE: These calls to reserve are *not* merely an optimization; they ensure that the vectors do
     // not reallocate their internal buffer during the later calls to push_back, invalidating the all
     // pointers to elements. This would be fatal as the parser and the patchbay rely on valid ptrs
@@ -368,6 +354,77 @@ void matlab_wrapper::matlab_wrapper_t::load_lib(){
             cb_patchbay.connect(&vars.back().writeaccess,&callbacks.back(),&callback::on_writeaccess);
         }
     }
+}
+
+void matlab_wrapper::matlab_wrapper_t::update_monitors(){
+    auto state=plug->state;
+    for(int i=0;i<state->size[0];++i){
+        // c=Linearized index
+        int c=0;
+        for(int k=0;k<state->data[i].value->size[0];++k){
+            for(int j=0;j<state->data[i].value->size[1];++j){
+                if(static_cast<unsigned>(state->data[i].value->size[0])!=monitors[i].data.size() or
+                   static_cast<unsigned>(state->data[i].value->size[1])!=monitors[i].data[k].size())
+                    throw MHA_Error(__FILE__,__LINE__,"Monitor variable %s has changed size from %zu x %zu to %i x %i",
+                                    monitors[i].fullname().c_str(),
+                                    monitors[i].data.size(),
+                                    monitors[i].data[k].size(),
+                                    state->data[i].value->size[0],
+                                    state->data[i].value->size[1]);
+                monitors[i].data[k][j]=state->data[i].value->data[c++];
+            }
+        }
+    }
+}
+
+void matlab_wrapper::matlab_wrapper_t::process(mha_wave_t* sin, mha_wave_t** sout)
+{
+    poll_config();
+    // Call wrappers process, provide real time configs user_config as we are guaranteed
+    // That it will not change under us
+    *sout=plug->process_ww(sin,cfg->user_config);
+    update_monitors();
+}
+
+void matlab_wrapper::matlab_wrapper_t::process(mha_wave_t* sin, mha_spec_t** sout)
+{
+    poll_config();
+    // Call wrappers process, provide real time configs user_config as we are guaranteed
+    // That it will not change under us
+    *sout=plug->process_ws(sin,cfg->user_config);
+    update_monitors();
+}
+
+void matlab_wrapper::matlab_wrapper_t::process(mha_spec_t* sin, mha_wave_t** sout)
+{
+    poll_config();
+    // Call wrappers process, provide real time configs user_config as we are guaranteed
+    // That it will not change under us
+    *sout=plug->process_sw(sin,cfg->user_config);
+    update_monitors();
+}
+
+void matlab_wrapper::matlab_wrapper_t::process(mha_spec_t* sin, mha_spec_t** sout)
+{
+    poll_config();
+    // Call wrappers process, provide real time configs user_config as we are guaranteed
+    // That it will not change under us
+    *sout=plug->process_ss(sin,cfg->user_config);
+    update_monitors();
+}
+
+void matlab_wrapper::matlab_wrapper_t::load_lib(){
+    try{
+        plug=std::make_unique<wrapped_plugin_t>(library_name.data.c_str());
+    }
+    catch(std::exception& e){
+        throw MHA_Error(__FILE__,__LINE__,"Could not library %s: %s",library_name.data.c_str(),e.what());
+    }
+    catch(...){
+        throw MHA_Error(__FILE__,__LINE__,"Could not library %s: Unknown error",library_name.data.c_str());
+    }
+    insert_config_vars();
+    insert_monitors();
 }
 
 void matlab_wrapper::matlab_wrapper_t::update(){

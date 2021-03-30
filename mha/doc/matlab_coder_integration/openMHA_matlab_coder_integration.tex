@@ -267,7 +267,7 @@ described in~\ref{subsec:writing_code} for the matlab\_wrapper plugin to
 properly resolve them.
 
 If configuration at run time is desired, the \texttt{user\_config}
-struct can be used (see subsection~\ref{subsec:writing_code} for details).
+struct can be used (see section~\ref{subsec:writing_code} for details).
 The plugin parses the entries of user configuration and creates an
 \mha{} configuration variable for every entry. These variables can be
 changed during processing without impeding real time safety.
@@ -283,23 +283,32 @@ i.e.\ their input and output parameters must be exactly as described in the foll
 
 \texttt{init()} is called when the user library is loaded. It must follow the form:
 \begin{lstlisting}[language=Matlab]
-  function user_config = init(user_config)
+  function [user_config,state] = init(user_config,state)
 \end{lstlisting}
 \texttt{user\_config} is a \texttt{1xInf} array of structs containing the following members:
 \begin{description}
 \item[name] A 1xInf char array, the name of 
 \item[value] An InfxInf doubles array
 \end{description}
+\texttt{state} has the same type as \texttt{user\_config}.
 If user defined configuration variables are desired, \texttt{user\_config} must
 be created within the \texttt{init()} function, e.g.:
 \begin{lstlisting}[language=Matlab]
-  function user_config = init(user_config)
-  user_config =[struct('name','gain', 'value',ones(1,1))];
+  function [user_config,state] = init(user_config,state)
+  user_config =[struct('name','writeable', 'value',ones(1,1))];
   end
 \end{lstlisting}
 The size of \texttt{user\_config} may not be changed after the call to \texttt{init()}. If the values of the
 elements of \texttt{user\_config} need to be changed depending on the signal dimensions,
-this can be done during the prepare call, where \texttt{signal\_dimensions} and \texttt{user\_config} are available.
+this can be done during the prepare call, where \texttt{signal\_dimensions} and
+\texttt{user\_config} are available.
+The \texttt{state} variable is initialized in the same way and used to keep
+state data in between calls to \texttt{process()}
+\begin{lstlisting}[language=Matlab]
+  function [user_config,state] = init(user_config,state)
+  state =[struct('name','rmslevel', 'value',ones(1,1))];
+  end
+\end{lstlisting}
 \texttt{prepare()} is called when the prepare command is issued. All
 initialization that depends on the form of the signal should be done here,
 furthermore the properties of the input signal can be checked, i.e., in case the 
@@ -321,14 +330,20 @@ inform the \mha{} framework of the change.
     \item[srate] A double containing the sampling frequency of the signal.
     \end{description}
   \item[user\_config] as above.
+  \item[state] as above.
   \end{description}
   Example:
 \begin{lstlisting}[language=Matlab]
-  function [signal_dimensions, user_config]=...
-           prepare(signal_dimensions, user_config)
+  function [signal_dimensions, user_config,state]=...
+           prepare(signal_dimensions, user_config,state )
   user_config(1).value(1,1)=2; % Assign a value to the
-                               % first element of user_config 
-  signal_dimensions.channels=1; % Output contains only one channel
+                               % first element of user_config
+
+  % Store the rmslevel per channel 
+  state(1).value=zeros(signal_dimensions.channels); 
+
+  % Output contains only one channel
+  signal_dimensions.channels=1; 
   end
 \end{lstlisting}
 All signal processing has to happen in the \texttt{process\_xy()} function. `XY' takes different values
@@ -336,11 +351,12 @@ depending on the input and output signal domains. Use `ww' for waveform to
 waveform processing,  `ss' for spectrum to spectrum processing,  `ws' for waveform
 to spectrum, and `sw' for spectrum to waveform processing. The function has the following signature:
 \begin{lstlisting}[language=Matlab]
-  function [s_out,user_config] = process_xy(s_in,...
+  function [s_out,user_config,state] = process_xy(s_in,...
                                             signal_dimensions,...
-                                            user_config)
+                                            user_config,state)
 \end{lstlisting}
-The parameters signal\_dimensions and user\_config are described above.
+The parameters \texttt{signal\_dimensions}, \texttt{user\_config}, and
+\texttt{state} are described above.
 \texttt{wave\_in} is a \texttt{InfxInf} array of doubles or complex numbers in
 the case of spectral processing.
 The \texttt{release} function is used to do final cleanup if necessary.
@@ -359,8 +375,23 @@ For every element of \texttt{user\_config}, an \mha{} configuration variable
 with the same name is created, allowing changes to the \texttt{user\_config} in
 a real-time safe way.
 A current limitation is that changes made to \texttt{user\_config} during \texttt{process()} are
-lost on configuration change from the parser side, so the user must be wary when using \texttt{user\_config} to store
-dynamic state like i.e.\ filter states.
+lost on configuration change from the parser side, so the \texttt{state}
+argument should be used to keep dynamic state like i.e.\ filter states.
+\subsection{State keeping}
+State keeping can be done in one of two ways. The quick option is to define the
+stateful variable as \texttt{persistent} or \texttt{global}. This has the
+downside that the variables are shared between all instances of the user
+library, making it unsafe to load the user library more than once at a time.
+The upside is that these variables may have any type and may change their size
+at any time, although changing their size may not be real-time safe. \\
+Alternatively, the \texttt{state} input/output variable may be used.
+It has the same type as the \texttt{user\_config} variable and follows similar rules.
+All elements of \texttt{state} must be initialized with name and initial value
+in \texttt{init()}. The size of the \texttt{value} member variable may only be changed
+during \texttt{init()} and \texttt{prepare()}. During \texttt{process()} only
+the elements of value may be changed, but not its size. Changing the size during
+\texttt{process()} is not real-time safe and leads to a crash. \mha{} parses the
+contents of \texttt{state} and makes the elements of available as monitor variables.
 \subsection{Deployment}
 \label{subsec:Deployment}
 In order to get a ready to use user library, the \Matlab{} Coder needs to be
@@ -391,7 +422,7 @@ Let's take a look at the contents of \texttt{init.m}. We know we want two
 configuration variables:
 The delay and the gain, so we need a vector of two structs:
 \begin{lstlisting}[language=Matlab]
-function user_config = init(user_config)
+function [user_config,state] = init(user_config,state)
 user_config =[struct('name','delay', 'value',ones(1,1)); ...
               struct('name','gain','value',ones(1,1))];
 end
@@ -401,12 +432,13 @@ The first element of \texttt{user\_config} is named \texttt{delay}, the second o
 member. As we want one entry per channel but do not yet know the number of input
 channels we just leave the initial value a $1\times1$ matrix of ones. Note that because of
 the fixed interface, \texttt{value} must always be a matrix of doubles, even if in this
-case we only want to support integer values for the \texttt{delay} configuration variable.
+case we only want to support integer values for the \texttt{delay} configuration
+variable. \texttt{state} is not used in this example.
 \subsubsection*{Prepare}
 The next function of interest is \texttt{prepare()}, found in \texttt{prepare.m}:
 \begin{lstlisting}[language=Matlab]
-function [signal_dimensions, user_config] = ...
-prepare(signal_dimensions, user_config)
+function [signal_dimensions, user_config,state] = ...
+prepare(signal_dimensions, user_config, state)
 if(signal_dimensions.domain~='W')
 fprintf('This plugin can only process signals in the time domain. ...
          Got %s\n',signal_dimensions.domain);assert(false);
@@ -440,9 +472,9 @@ with minimal changes, we introduce \texttt{process\_ww}, \texttt{process\_ss},
 as proxy for the real processing processing function and all contain the same
 code forwarding the call to the `real' processing function:
 \begin{lstlisting}[language=Matlab]
-function [s_out,user_config] = process_ss(s_in,...
+function [s_out,user_config,state] = process_ss(s_in,...
                                signal_dimensions,...
-                               user_config)
+                               user_config,state)
 % This function provides the entry point for spectrum to spectrum
 % processing and forwards the actual processing to process(...)
 % Do not touch unless you know what you are doing! 
@@ -454,8 +486,8 @@ This allows us to keep the code invoking the \Matlab{} mostly the same. More on
 that later. 
 \subsubsection*{Process}
 \begin{lstlisting}[language=Matlab]
-function [wave_out,user_config] = ...
-process(wave_in,signal_dimensions, user_config)
+function [wave_out,user_config,dummy] = ...
+process(wave_in,signal_dimensions, user_config, dummy)
 
 delay=user_config(1).value;
 gain=user_config(2).value;
@@ -504,14 +536,12 @@ independently we need to keep state for every channel. The state vector
 needs to be able to contain all incoming samples of a block in addition to the
 delayed samples from the past. Because we need to keep the state in between
 calls to process, we define the state matrix and the read and write indices as
-persistent. Alternatively we could use additional entries in \texttt{user\_config} to
-store them. This technique has upsides and downsides. The advantage is that we
-isolate the internal state from the configuration variable facing the outside
-world. As mentioned before, any change made to \texttt{user\_config} during processing
-is lost when a configuration variable is changed. Next, we loop over the input
-signal to fill our state vector, advancing the write pointer appropriately. In
-line 31 we initialize the output signal to zero and then loop over the state
-vector, adding the delayed samples from different channels together.
+persistent. Alternatively we could use entries in \texttt{state} to
+store them, as used in example 28.
+Next, we loop over the input signal to fill our state vector,
+advancing the write pointer appropriately. In line 31 we initialize the output
+signal to zero and then loop over the state vector, adding the delayed samples
+from different channels together.
 \subsubsection*{Release}
 The last function we can fill is \texttt{release()}:
 \begin{lstlisting}[language=Matlab]
@@ -522,6 +552,33 @@ We do not need to do any cleanup, so we leave it empty.
 \subsubsection*{Deployment}
 To generate the C code from our \Matlab{} code we can use \texttt{make.m}
 unchanged. Let's take a look:
+\begin{lstlisting}[language=Matlab]
+function make(iodomain,varargin)
+...
+end
+\end{lstlisting}
+The \texttt{make()} function takes several arguments, of which the first,
+\texttt{iodomain} is mandatory. \texttt{iodomain} determines the input and output
+domains of the generated code. It is a string and must take one of the following
+values:
+\begin{description}
+\item[ww] wave to wave 
+\item[ss] spectrum to spectrum
+\item[ws] spectrum to wave
+\item[sw] wave to spectrum
+\end{description}
+The optional parameters are
+\begin{description}
+\item[outputName] (string) The name of the generated library
+\item[packOutput] (logical) If the generated code should be packed in a
+  self-contained zip file
+\end{description}
+In this example, we invoke the coder with
+\begin{lstlisting}[language=Matlab]
+make('ww','outputName','example_25','packOutput',true);
+\end{lstlisting}
+At the beginning we initialize the \texttt{coder} configuration object to some
+sensible defaults:
 \begin{lstlisting}[language=Matlab]
 %% Create configuration object of class 'coder.CodeConfig'.
 cfg = coder.config('dll','ecoder',false);
@@ -537,8 +594,7 @@ cfg.HardwareImplementation.ProdHWDeviceType = ...
 cfg.HardwareImplementation.ProdLongLongMode = true;
 cfg.HardwareImplementation.TargetLongLongMode = true;
 \end{lstlisting}
-At the beginning we initialize the \texttt{coder} configuration object with some sensible
-defaults, like defining the target device, enabling run time checks, and so on.
+We define the target device, enable run time checks, and so on.
 A complete list can be found in the \Matlab{} coder documentation. Changing the
 settings should only be done after careful consideration and never without
 reason. \\
@@ -552,54 +608,37 @@ ARGS_1_1.name = coder.typeof('X',[1 Inf],[0 1]);
 ARGS_1_1.value = coder.typeof(0,[Inf Inf],[1 1]);
 ARGS{1}{1} = coder.typeof(ARGS_1_1,[Inf  1],[1 0]);
 ARGS{1}{1} = coder.cstructname(ARGS{1}{1},'user_config_t');
+ARGS{1}{2} = ARGS{1}{1};
 \end{lstlisting}
 Changing any of these required customization of the matlab\_wrapper plugin. If
 such customization seems necessary choosing the native compilation approach is
 recommended. \\
 The last section actually invokes the \Matlab{} coder:
 \begin{lstlisting}[language=Matlab]
-%% Example coder invocation. Remove the unneeded callbacks
-% codegen -config cfg ...
-% -o example_24 ...
-% init -args ARGS{1} ...
-% prepare -args ARGS{2} ...
-% process_ww -args ARGS{3} ...
-% process_ss -args ARGS{4} ...
-% process_ws -args ARGS{5} ...
-% process_sw -args ARGS{6} ...
-% release
-\end{lstlisting}
-We remove the processing
-callbacks that we do not need and arrive at the final coder invocation:
-\begin{lstlisting}[language=Matlab]
-[...]
-%% Invoke MATLAB Coder.
-codegen -config cfg -o example_25... 
-         init -args ARGS{1}...
-         prepare -args ARGS{2}...
-         process_ww -args ARGS{3}...
-         release
-
-[...]
+codegen('-config',cfg,...
+    '-o',outputName,...
+    'init','-args',ARGS{1},...
+    'prepare','-args',ARGS{2},...
+    process_name,'-args',ARGS{args_idx},...
+    'release');
 \end{lstlisting}
 The \texttt{-config} argument takes the configuration object we constructed
-earlier, \texttt{-o} takes the output file name(s). Change that argument to your liking.
+earlier, \texttt{-o} takes the output file name, which can be passed in as
+argument, otherwise defaults to the name of the first entry point function.
 The rest of the invocation defines the entry-point functions and their argument
-types pairwise. First \texttt{init} and the input arguments to \texttt{init},
-then prepare, etc\ldots
-If one or more functions are not needed the argument pair can be removed from
-this line. Note that the correct \texttt{process\_xy()} for the input and output
-domains set by \texttt{prepare()} is needed and the matlab\_wrapper
-plugin will refuse to start without it. \\
-If the generated code needs to be compiled by hand, we need to uncomment the
-last block in \texttt{make.m}:
+types pairwise. \texttt{process\_name} and \texttt{args\_idx} are determined by
+\texttt{iodomain}.
+If the generated code needs to be compiled by hand, we need to
+pass in \texttt{packOutput} as \texttt{true} to execute the last block in \texttt{make.m}:
 \begin{lstlisting}[language=Matlab]
 %% Optionally package the code for deployment elsewhere
-load('codegen\dll\example_25\buildinfo.mat')
-packNGo(buildInfo,'fileName','example_2.zip');
+if(packOutput)
+    buildInfo=load(['codegen/dll/' outputName '/buildInfo.mat']);
+    packNGo(buildInfo.buildInfo,'fileName',[outputName '.zip']);
+end
 \end{lstlisting}
-and rerun code generation. This makes the \texttt{packNGo} utility pack all
-source code needed to compile the plugin into \texttt{example\_2.zip}.
+This makes the \texttt{packNGo} utility compress all source code needed to compile
+the plugin into \texttt{OUTPUTNAME.zip}.
 We then can move the contents of the resulting zip file into a separate
 directory and compile them using Makefile provided in the example directory.
 Note that this also enables us to use the \Matlab{} Coder on one machine and deploy

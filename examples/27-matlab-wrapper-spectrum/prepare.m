@@ -1,4 +1,4 @@
-function [signal_dimensions, user_config]=prepare(signal_dimensions, user_config)
+function [signal_dimensions, user_config,state]=prepare(signal_dimensions, user_config,state)
 %PREPARE
 % Checks for correct input domain.
 if(signal_dimensions.domain~='S')
