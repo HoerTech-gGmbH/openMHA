@@ -27,11 +27,19 @@ function mha = test_runexample01d()
   dir = '../../examples/01-dynamic-compression/';
   cfg = 'dynamiccompression_live.cfg';
 
+  % on windows this may work around a failing connection to jack
+  if ispc()
+    pause(1);
+  end
   % start jack asynchronously
   jack_pid = system('jackd -d dummy -r 44100 -p 64', false, 'async');
   assert_all(jack_pid > 0);
   unittest_teardown(@waitpid,jack_pid);
-  unittest_teardown(@system, 'killall -9 jackd');
+  if ispc()
+    unittest_teardown(@system,['taskkill /F /IM jackd.exe']);
+  else
+    unittest_teardown(@system, 'killall -9 jackd');
+  end
   pause(1);
   assert_all(wait_for_jack(2));
   
@@ -40,31 +48,27 @@ function mha = test_runexample01d()
   unittest_teardown(@mha_set, mha, 'cmd', 'quit');
   mha_query(mha,'',['read:' dir cfg]);
   
-  expect_mha_jack_connections('');
-  mha_set(mha,'cmd','start');
-  expect_mha_jack_connections(sprintf(['MHA:in_1  system:capture_1\n' ...
-                                       'MHA:in_2  system:capture_2\n' ...
-                                       'MHA:out_1  system:playback_1\n' ...
-                                       'MHA:out_2  system:playback_2\n']));
+  assert_mha_jack_connections(1,'');
 
+  mha_set(mha,'cmd','start');
+  
+  if ispc()
+    assert_mha_jack_connections(0,sprintf(['system:capture_1  MHA:in_1\n' ...
+                                             'system:capture_2  MHA:in_2\n' ...
+                                             'system:playback_1  MHA:out_1\n' ...
+                                             'system:playback_2  MHA:out_2\n' ...
+                                             'MHA:in_1  system:capture_1\n' ...
+                                             'MHA:in_2  system:capture_2\n' ...
+                                             'MHA:out_1  system:playback_1\n' ...
+                                             'MHA:out_2  system:playback_2\n']));
+  else
+    assert_mha_jack_connections(0,sprintf(['MHA:in_1  system:capture_1\n' ...
+                                             'MHA:in_2  system:capture_2\n' ...
+                                             'MHA:out_1  system:playback_1\n' ...
+                                             'MHA:out_2  system:playback_2\n']));
+  end
   % TODO: now check that we can fit the MHA with some fitting rules and audiograms
  end 
-end
-
-function success = wait_for_jack(timeout)
-  success = false;
-  [status, output] = system(sprintf('jack_wait -w -t %d', timeout));
-  if (status == 0)
-    if isequal(output, sprintf('server is available\n'))
-      success = true;
-    end
-  end
-end
-
-function expect_mha_jack_connections(expected)
-  [status, actual] = ...
-    system('jack_lsp -c |sed -e :a -e ''$!N;s/\n //;ta'' -e "P;D" | grep ^MHA');
-  assert_equal(expected, actual);
 end
 
 % Local Variables:
