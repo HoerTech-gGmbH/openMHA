@@ -184,9 +184,9 @@ pipeline {
                     agent {label               "focal && x86_64 && mhadoc"}
                     steps {openmha_build_steps("focal && x86_64 && mhadoc")}
                 }
-                stage(                         "focal && x86_64 && mhadev") {
-                    agent {label               "focal && x86_64 && mhadev"}
-                    steps {openmha_build_steps("focal && x86_64 && mhadev")}
+                stage(                         "bionic && x86_64 && mhadev") {
+                    agent {label               "bionic && x86_64 && mhadev"}
+                    steps {openmha_build_steps("bionic && x86_64 && mhadev")}
                 }
                 stage(                         "xenial && x86_64 && mhadev") {
                     agent {label               "xenial && x86_64 && mhadev"}
