@@ -293,83 +293,83 @@ MHAParser::base_t::~base_t(  )
         parent->remove_item( this );
 }
 
-std::string MHAParser::base_t::query_readfile( const std::string & s )
+std::string MHAParser::base_t::query_readfile( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?read is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
-std::string MHAParser::base_t::query_savefile( const std::string & s )
+std::string MHAParser::base_t::query_savefile( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?save is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_savefile_compact( const std::string & s )
+std::string MHAParser::base_t::query_savefile_compact( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?saveshort is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_savemons( const std::string & s )
+std::string MHAParser::base_t::query_savemons( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?savemons is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_dump( const std::string & s )
+std::string MHAParser::base_t::query_dump( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ? is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_entries( const std::string & s )
+std::string MHAParser::base_t::query_entries( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?entries is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_perm( const std::string & s )
+std::string MHAParser::base_t::query_perm( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?perm is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_range( const std::string & s )
+std::string MHAParser::base_t::query_range( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?range is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_type( const std::string & s )
+std::string MHAParser::base_t::query_type( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?type is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_val( const std::string & s )
+std::string MHAParser::base_t::query_val( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?val is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_listids( const std::string & s )
+std::string MHAParser::base_t::query_listids( const std::string & )
 {
     throw MHA_Error( __FILE__, __LINE__,
                      "Query ?listid is not implemented"
                      " for parser objects of type %s", typeid(*this).name());
 }
 
-std::string MHAParser::base_t::query_help( const std::string & s )
+std::string MHAParser::base_t::query_help( const std::string & )
 {
     return help;
 }
@@ -390,7 +390,7 @@ std::string MHAParser::base_t::query_addsubst( const std::string & s )
     return "";
 }
 
-std::string MHAParser::base_t::query_subst( const std::string & s )
+std::string MHAParser::base_t::query_subst( const std::string & )
 {
     std::string r;
     repl_list_t::iterator q_it;
@@ -401,7 +401,7 @@ std::string MHAParser::base_t::query_subst( const std::string & s )
     return std::string( "[" ) + r + std::string( "]" );
 }
 
-std::string MHAParser::base_t::query_cmds( const std::string & s )
+std::string MHAParser::base_t::query_cmds( const std::string & )
 {
     std::string r;
     query_map_t::iterator q_it;
@@ -680,12 +680,12 @@ std::string MHAParser::parser_t::op_setval( expression_t & x )
     throw MHA_Error( __FILE__, __LINE__, "Invalid entry: \"%s\"", x.lval.c_str(  ) );
 }
 
-std::string MHAParser::parser_t::query_type( const std::string & s )
+std::string MHAParser::parser_t::query_type( const std::string & )
 {
     return "parser";
 }
 
-std::string MHAParser::parser_t::query_val( const std::string & s )
+std::string MHAParser::parser_t::query_val( const std::string & s)
 {
     prereadaccess(  );prereadaccess( s );
     std::string retv = cfg_dump_short(this, "");
@@ -774,7 +774,7 @@ std::string MHAParser::parser_t::query_readfile( const std::string & fname )
     }
 }
 
-std::string MHAParser::parser_t::query_entries( const std::string & s )
+std::string MHAParser::parser_t::query_entries( const std::string & )
 {
     std::string r;
     for( entry_map_t::iterator i = entries.begin(  ); i != entries.end(  ); ++i )
@@ -939,7 +939,7 @@ std::string MHAParser::all_dump( base_t * p, const std::string & pref )
     return r;
 }
 
-std::string MHAParser::parser_t::query_dump( const std::string & s )
+std::string MHAParser::parser_t::query_dump( const std::string & )
 {
     return all_dump( this, "" );
 }
@@ -1008,7 +1008,7 @@ std::string MHAParser::variable_t::op_setval( expression_t & x )
     return "";
 }
 
-std::string MHAParser::variable_t::query_perm( const std::string & s )
+std::string MHAParser::variable_t::query_perm( const std::string & )
 {
     return locked ? "locked" : "writable";
 }
@@ -1043,7 +1043,7 @@ std::string MHAParser::monitor_t::op_query( expression_t & x )
     throw MHA_Error( __FILE__, __LINE__, "Invalid query mode: \"%s\"", q.lval.c_str(  ) );
 }
 
-std::string MHAParser::monitor_t::query_dump( const std::string & s )
+std::string MHAParser::monitor_t::query_dump( const std::string & )
 {
     std::string cmds = parse( "?cmds" );
     std::string r = parse( "?help" ) + "\n" + parse( "?type" );
@@ -1056,7 +1056,7 @@ std::string MHAParser::monitor_t::query_dump( const std::string & s )
     return r;
 }
 
-std::string MHAParser::monitor_t::query_perm( const std::string & s )
+std::string MHAParser::monitor_t::query_perm( const std::string & )
 {
     return "monitor";
 }
@@ -1656,7 +1656,7 @@ std::string MHAParser::string_t::op_setval( expression_t & x )
     return "";
 }
 
-std::string MHAParser::string_t::query_type( const std::string & s )
+std::string MHAParser::string_t::query_type( const std::string & )
 {
     return "string";
 }
@@ -1712,7 +1712,7 @@ std::string MHAParser::int_t::query_val( const std::string & s)
     return tmp;
 }
 
-std::string MHAParser::int_t::query_type( const std::string & s )
+std::string MHAParser::int_t::query_type( const std::string & )
 {
     return "int";
 }
@@ -1739,7 +1739,7 @@ void MHAParser::kw_t::validate( const keyword_list_t & s )
     s.validate(  );
 }
 
-std::string MHAParser::kw_t::query_range( const std::string & s )
+std::string MHAParser::kw_t::query_range( const std::string & )
 {
     return StrCnv::val2str( data.get_entries(  ) );
 }
@@ -1775,7 +1775,7 @@ std::string MHAParser::kw_t::query_val( const std::string & s)
     return tmp;
 }
 
-std::string MHAParser::kw_t::query_type( const std::string & s )
+std::string MHAParser::kw_t::query_type( const std::string & )
 {
     return "keyword_list";
 }
@@ -1820,7 +1820,7 @@ std::string MHAParser::float_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::float_t::query_type( const std::string & s )
+std::string MHAParser::float_t::query_type( const std::string & )
 {
     return "float";
 }
@@ -1863,7 +1863,7 @@ std::string MHAParser::complex_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::complex_t::query_type( const std::string & s )
+std::string MHAParser::complex_t::query_type( const std::string & )
 {
     return "complex";
 }
@@ -1914,7 +1914,7 @@ std::string MHAParser::vint_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::vint_t::query_type( const std::string & s )
+std::string MHAParser::vint_t::query_type( const std::string & )
 {
     return "vector<int>";
 }
@@ -1965,7 +1965,7 @@ std::string MHAParser::vfloat_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::vfloat_t::query_type( const std::string & s )
+std::string MHAParser::vfloat_t::query_type( const std::string & )
 {
     return "vector<float>";
 }
@@ -2011,7 +2011,7 @@ std::string MHAParser::vcomplex_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::vcomplex_t::query_type( const std::string & s )
+std::string MHAParser::vcomplex_t::query_type( const std::string & )
 {
     return "vector<complex>";
 }
@@ -2066,7 +2066,7 @@ std::string MHAParser::mint_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::mint_t::query_type( const std::string & s )
+std::string MHAParser::mint_t::query_type( const std::string & )
 {
     return "matrix<int>";
 }
@@ -2117,7 +2117,7 @@ std::string MHAParser::mfloat_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::mfloat_t::query_type( const std::string & s )
+std::string MHAParser::mfloat_t::query_type( const std::string & )
 {
     return "matrix<float>";
 }
@@ -2163,7 +2163,7 @@ std::string MHAParser::mcomplex_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::mcomplex_t::query_type( const std::string & s )
+std::string MHAParser::mcomplex_t::query_type( const std::string & )
 {
     return "matrix<complex>";
 }
@@ -2209,7 +2209,7 @@ std::string MHAParser::vstring_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::vstring_t::query_type( const std::string & s )
+std::string MHAParser::vstring_t::query_type( const std::string & )
 {
     return "vector<string>";
 }
@@ -2256,7 +2256,7 @@ std::string MHAParser::bool_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::bool_t::query_type( const std::string & s )
+std::string MHAParser::bool_t::query_type( const std::string & )
 {
     return "bool";
 }
@@ -2341,7 +2341,7 @@ void MHAParser::range_var_t::set_range( const std::string & r )
         check_range = false;
 }
 
-std::string MHAParser::range_var_t::query_range( const std::string & s )
+std::string MHAParser::range_var_t::query_range( const std::string & )
 {
     if( !check_range )
         return "";
@@ -2693,7 +2693,7 @@ std::string MHAParser::int_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::int_mon_t::query_type( const std::string & s )
+std::string MHAParser::int_mon_t::query_type( const std::string & )
 {
     return "int";
 }
@@ -2706,7 +2706,7 @@ std::string MHAParser::vint_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::vint_mon_t::query_type( const std::string & s )
+std::string MHAParser::vint_mon_t::query_type( const std::string & )
 {
     return "vector<int>";
 }
@@ -2719,7 +2719,7 @@ std::string MHAParser::mint_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::mint_mon_t::query_type( const std::string & s )
+std::string MHAParser::mint_mon_t::query_type( const std::string & )
 {
     return "matrix<int>";
 }
@@ -2732,7 +2732,7 @@ std::string MHAParser::float_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::float_mon_t::query_type( const std::string & s )
+std::string MHAParser::float_mon_t::query_type( const std::string & )
 {
     return "float";
 }
@@ -2745,7 +2745,7 @@ std::string MHAParser::complex_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::complex_mon_t::query_type( const std::string & s )
+std::string MHAParser::complex_mon_t::query_type( const std::string & )
 {
     return "complex";
 }
@@ -2758,7 +2758,7 @@ std::string MHAParser::vcomplex_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::vcomplex_mon_t::query_type( const std::string & s )
+std::string MHAParser::vcomplex_mon_t::query_type( const std::string & )
 {
     return "vector<complex>";
 }
@@ -2771,7 +2771,7 @@ std::string MHAParser::vfloat_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::vfloat_mon_t::query_type( const std::string & s )
+std::string MHAParser::vfloat_mon_t::query_type( const std::string & )
 {
     return "vector<float>";
 }
@@ -2792,12 +2792,12 @@ std::string MHAParser::mcomplex_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::mfloat_mon_t::query_type( const std::string & s )
+std::string MHAParser::mfloat_mon_t::query_type( const std::string & )
 {
     return "matrix<float>";
 }
 
-std::string MHAParser::mcomplex_mon_t::query_type( const std::string & s )
+std::string MHAParser::mcomplex_mon_t::query_type( const std::string & )
 {
     return "matrix<complex>";
 }
@@ -2810,7 +2810,7 @@ std::string MHAParser::bool_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::bool_mon_t::query_type( const std::string & s )
+std::string MHAParser::bool_mon_t::query_type( const std::string & )
 {
     return "bool";
 }
@@ -2823,7 +2823,7 @@ std::string MHAParser::string_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::string_mon_t::query_type( const std::string & s )
+std::string MHAParser::string_mon_t::query_type( const std::string & )
 {
     return "string";
 }
@@ -2836,7 +2836,7 @@ std::string MHAParser::vstring_mon_t::query_val( const std::string & s )
     return tmp;
 }
 
-std::string MHAParser::vstring_mon_t::query_type( const std::string & s )
+std::string MHAParser::vstring_mon_t::query_type( const std::string & )
 {
     return "vector<string>";
 }
