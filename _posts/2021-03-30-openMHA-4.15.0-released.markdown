@@ -6,7 +6,7 @@ category: software
 tags: [release, 4.15.0]
 ---
 
-__openMHA 4.15.0__ provides a new tool set for using Matlab code with openMHA
+__openMHA 4.15.0__ extends the tool set for using Matlab code with openMHA
 
 In this release of openMHA, spectral domain support for the Matlab Coder integration, released with version 4.14.0, was added. This enables the utilization of openMHA's short-term Fourier Transform framework for the implementation of new plugins in Matlab in the spectral domain. The manual was updated accordingly and two new examples ([27](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/27-matlab-wrapper-spectrum) and [28](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/28-matlab-wrapper-spec2wave))  were added that demonstrate the functionality.
 Furthermore, state keeping capabilities in context with the application of the Matlab Coder integration were enhanced.
