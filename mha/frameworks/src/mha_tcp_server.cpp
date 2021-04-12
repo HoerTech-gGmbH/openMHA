@@ -57,6 +57,8 @@ namespace mha_tcp {
                                     const std::string & l)
     {
         // default implementation. To be overriden by derived classes.
+        (void) c; // Connection object is not used in default implementation.
+        (void) l; // Line of received text is not used in default implementation.
         return false;
         // return false means: read no more lines. Will cause this connection
         // to be closed because the shared pointer holding it in memory goes

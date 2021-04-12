@@ -207,7 +207,7 @@ void mhaserver_t::send_port_announcement()
     async_connect(*announcer, announce_endpoints,
                   [announcer,this,announcement]
                   (const asio::error_code & ec,
-                   const asio::ip::tcp::endpoint & endpoint) {
+                   const asio::ip::tcp::endpoint &) {
                       if (ec) {
                           logstring("announcement failed: "+ec.message()+"\n");
                           announcer->close();
