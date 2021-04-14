@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 2011 HörTech gGmbH
-// Copyright © 2012 2013 2014 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2012 2013 2014 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -147,7 +147,17 @@ namespace MHAParser {
     class base_t {
     public:
         base_t(const std::string&);
-        base_t(const base_t&);
+        // Copying a parser is not well defined, insertion in the configuration tree
+        // is not even possible under the same name. Keep for compatibility reasons, but
+        // deprecate
+        [[deprecated]] base_t(const base_t&);
+        // Defaulting the assignment operator does not produce the correct code,
+        // but we'd have to implement assignment for all derived classes. At the moment
+        // this works with the limited places where it's called, but do not use in new
+        // code!
+        [[deprecated]] base_t& operator=(const base_t &)=default;
+        base_t (base_t &&)=delete;
+        base_t& operator=(base_t &&)=delete;
         virtual ~base_t();
         virtual std::string parse(const std::string&);
         virtual void parse(const char*,char*,unsigned int);
@@ -318,7 +328,15 @@ namespace MHAParser {
     class monitor_t : public base_t {
     public:
         monitor_t(const std::string&);
-        monitor_t(const monitor_t&);
+        // Copying a parser is not well defined, insertion in the configuration tree
+        // is not even possible under the same name. Keep for compatibility reasons, but
+        // deprecate
+        [[deprecated]] monitor_t(const monitor_t&);
+        // Defaulting the assignment operator does not produce the correct code,
+        // but we'd have to implement assignment for all derived classes. At the moment
+        // this works with the limited places where it's called, but do not use in new
+        // code!
+        [[deprecated]] monitor_t& operator=(const monitor_t&)=default;
         std::string op_query(expression_t&);
         std::string query_dump(const std::string&);
         std::string query_perm(const std::string&);

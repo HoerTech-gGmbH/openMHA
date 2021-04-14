@@ -17,15 +17,18 @@
 #ifndef DC_H
 #define DC_H
 
-#include <limits>
-#include <algorithm>
 #include "mha.hh"
-#include "mha_algo_comm.hh"
+#include "mha_tablelookup.hh"
+// Override deprecated warning for base_t copy ctor
+// Usage here is okay because we only want the underlying
+// data of the configuration variables
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include "mha_filter.hh"
 #include "mha_plugin.hh"
-#include "mha_signal.hh"
-#include "mha_tablelookup.hh"
-
+#pragma GCC diagnostic pop
+#include <vector>
+#include <string>
 
 namespace dc {
 

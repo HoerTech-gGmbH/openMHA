@@ -14,11 +14,17 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #define MHAPLUGIN_OVERLOAD_OUTDOMAIN
+
+// Override deprecated warning because we use copy ctor, assignment operator
+// of base_t. It's okay because we take care to remove and (re)insert the
+// correct nodes manually
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include "mha_plugin.hh"
+#pragma GCC diagnostic pop
 #include "mhapluginloader.h"
 #include "mha_defs.h"
 #include <map>
-#include <algorithm>
 
 /** Single class implementing plugin altconfig.
  * altconfig loads another plugin and can send configuration commands to that plugin.

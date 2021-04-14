@@ -15,8 +15,9 @@
 
 #include "dc.hh"
 #include "mha_signal.hh"
-#include <iostream>
+#include "mha_algo_comm.hh"
 #include <gtest/gtest.h>
+#include <iostream>
 
 
 class dc_if_t_testing : public ::testing::Test {

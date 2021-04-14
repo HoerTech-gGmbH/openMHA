@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <limits>
-#include <algorithm>
 #include "dc.hh"
-#include "mha_plugin.hh"
-#include "mha_tablelookup.hh"
-#include "mha_filter.hh"
-
 
 using namespace dc;
 

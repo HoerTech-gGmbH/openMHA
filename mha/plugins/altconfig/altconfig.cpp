@@ -15,6 +15,7 @@
 
 #include "altconfig.hh"
 #include "mha_utils.hh"
+#include <algorithm>
 
 altconfig_t::altconfig_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<char>("Alternative configurations for a plugin",iac),

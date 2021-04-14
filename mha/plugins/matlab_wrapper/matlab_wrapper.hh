@@ -27,7 +27,7 @@
 
 #include <memory>
 #include <string>
-
+#include <deque>
 /** Namespace where all classes of the matlab wrapper plugin live*/
 namespace matlab_wrapper {
 
@@ -231,12 +231,15 @@ private:
   void load_lib();
   /** Create new real time safe user config from user config. Called by the custom callbacks.*/
   void update();
-  /** Vector holding the user defined configuration variables */
-  std::vector<MHAParser::mfloat_t> vars;
-  /** Vector holding the callbacks for the user defined variables' write access */
-  std::vector<callback> callbacks;
-  /** Vector holding the monitors corresponding to user state */
-  std::vector<MHAParser::mfloat_mon_t> monitors;
+  /** Deque holding the user defined configuration variables. Deque is used because we need
+   * an indexable container that does not invalidate pointers*/
+  std::deque<MHAParser::mfloat_t> vars;
+  /** Deque holding the callbacks for the user defined variables' write access. Deque is used because we need
+   * an indexable container that does not invalidate pointers */
+  std::deque<callback> callbacks;
+  /** Deque holding the monitors corresponding to user state. Deque is used because we need
+   * an indexable container that does not invalidate pointers. */
+  std::deque<MHAParser::mfloat_mon_t> monitors;
 };
 }
 

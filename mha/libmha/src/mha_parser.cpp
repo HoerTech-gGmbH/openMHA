@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 2011 HörTech gGmbH
-// Copyright © 2012 2013 2014 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2012 2013 2014 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -13,6 +13,10 @@
 //
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+// We use base_t's deprecated copy constructor and assignment operator internally.
+// Override warnings
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #include <stdio.h>
 #include <sstream>
@@ -233,13 +237,18 @@ MHAParser::base_t::base_t( const std::string & h )
     add_replace_pair( "PLATFORM", MHAPLATFORM );
 }
 
-MHAParser::base_t::base_t(const MHAParser::base_t& src)
-    : data_is_initialized( src.data_is_initialized ),
-      help( src.help ), 
-      id_str( src.id_str ), 
-      nested_lock( src.nested_lock ), 
-      parent( src.parent ), 
-      thefullname( src.thefullname )
+/** Copy constructor for base_t. Copies help text and id string, but does not
+ * insert the new node into the parser tree structure.
+ * @param src Source parser
+ * @deprecated Copying parser nodes makes little sense, avoid wherever possible
+ */
+MHAParser::base_t::base_t(const MHAParser::base_t &src)
+    : data_is_initialized(src.data_is_initialized),
+      help(src.help),
+      id_str(src.id_str),
+      nested_lock(false),
+      parent(nullptr),
+      thefullname("")
 {
     operators["?"] = &base_t::op_query;
     operators["="] = &base_t::op_setval;
@@ -1761,7 +1770,7 @@ MHAParser::kw_t::kw_t( const std::string & h, const std::string & v, const std::
 }
 
 MHAParser::kw_t::kw_t( const kw_t & src )
-    :variable_t( src ),
+    : variable_t( src ),
      data(src.data)
 {
     activate_query( "range", &base_t::query_range );

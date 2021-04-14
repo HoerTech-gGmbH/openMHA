@@ -295,11 +295,6 @@ void matlab_wrapper::matlab_wrapper_t::release()
 void matlab_wrapper::matlab_wrapper_t::insert_monitors(){
     monitors.clear();
     auto state=plug->state;
-    //NOTE: This call to reserve is *not* merely an optimization; they ensure that the vectors do
-    // not reallocate their internal buffer during the later calls to push_back, invalidating all
-    // pointers to elements. This would be fatal as the parser relies on valid ptrs
-    // to the vector elements. Do not remove!
-    monitors.reserve(state->size[0]);
     for(int i=0;i<state->size[0];++i){
         // We can not properly handle empty names
         if(strncmp(state->data[i].name->data,"",state->data[i].name->allocatedSize)==0)
@@ -309,7 +304,7 @@ void matlab_wrapper::matlab_wrapper_t::insert_monitors(){
             // Construct string from char array to ensure termination
             auto name=std::string(state->data[i].name->data,state->data[i].name->size[1]);
             // Handle all variables as matrices for generality
-            monitors.push_back(MHAParser::mfloat_mon_t(name));
+            monitors.emplace_back(name);
             // c=Linearized index
             int c=0;
             monitors.back().data.resize(state->data[i].value->size[0]);
@@ -326,13 +321,6 @@ void matlab_wrapper::matlab_wrapper_t::insert_monitors(){
 
 void matlab_wrapper::matlab_wrapper_t::insert_config_vars() {
     auto user_config=plug->user_config;
-    //NOTE: These calls to reserve are *not* merely an optimization; they ensure that the vectors do
-    // not reallocate their internal buffer during the later calls to push_back, invalidating the all
-    // pointers to elements. This would be fatal as the parser and the patchbay rely on valid ptrs
-    // to the vector elements. Do not remove!
-    vars.reserve(user_config->size[0]);
-    callbacks.reserve(user_config->size[0]);
-
     for(int i=0;i<user_config->size[0];++i){
         // We can not properly handle empty names
         if(strncmp(user_config->data[i].name->data,"",user_config->data[i].name->allocatedSize)==0)
@@ -340,7 +328,7 @@ void matlab_wrapper::matlab_wrapper_t::insert_config_vars() {
             throw MHA_Error(__FILE__,__LINE__,"user_config(%i) has no name!",i+1);
         else{
             // Handle all variables as matrices for generality
-            vars.push_back(MHAParser::mfloat_t(user_config->data[i].name->data,"[[0]]",""));
+            vars.emplace_back(user_config->data[i].name->data,"[[0]]","");
             // c=Linearized index
             int c=0;
             for(int k=0;k<user_config->data[i].value->size[0];++k){
@@ -349,12 +337,11 @@ void matlab_wrapper::matlab_wrapper_t::insert_config_vars() {
                 }
             }
             insert_item(user_config->data[i].name->data,&vars.back());
-            callbacks.push_back(callback(this,&user_config->data[i],&vars.back()));
+            callbacks.emplace_back(this,&user_config->data[i],&vars.back());
             cb_patchbay.connect(&vars.back().writeaccess,&callbacks.back(),&callback::on_writeaccess);
         }
     }
 }
-
 void matlab_wrapper::matlab_wrapper_t::update_monitors(){
     auto state=plug->state;
     for(int i=0;i<state->size[0];++i){
