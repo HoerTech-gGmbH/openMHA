@@ -22,7 +22,7 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &acConcat_wave::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-acConcat_wave_config::acConcat_wave_config(algo_comm_t &ac, const mhaconfig_t in_cfg, acConcat_wave *_concat):
+acConcat_wave_config::acConcat_wave_config(algo_comm_t &ac, acConcat_wave *_concat):
     ac(ac),
     strNames_AC(_concat->num_AC.data, _concat->prefix_names_AC.data)
 {
@@ -100,20 +100,8 @@ acConcat_wave::~acConcat_wave() {}
  *   Structure containing a description of the form of the signal (domain,
  *   number of channels, frames per block, sampling rate.
  */
-void acConcat_wave::prepare(mhaconfig_t & signal_info)
+void acConcat_wave::prepare(mhaconfig_t &)
 {
-    //good idea: restrict input type and dimension
-    /*
-    if (signal_info.channels != 2)
-        throw MHA_Error(__FILE__, __LINE__,
-                        "This plugin must have 2 input channels: (%d found)\n"
-                        "[Left, Right].", signal_info.channels);
-
-    if (signal_info.domain != MHA_SPECTRUM)
-        throw MHA_Error(__FILE__, __LINE__,
-                        "This plugin can only process spectrum signals.");
-                        */
-
     /* make sure that a valid runtime configuration exists: */
     update_cfg();
 }
@@ -125,7 +113,7 @@ void acConcat_wave::update_cfg()
         //when necessary, make a new configuration instance
         //possibly based on changes in parser variables
         acConcat_wave_config *config;
-        config = new acConcat_wave_config( ac, input_cfg(), this );
+        config = new acConcat_wave_config( ac, this );
         push_config( config );
     }
 }

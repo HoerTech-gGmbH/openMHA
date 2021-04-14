@@ -20,7 +20,10 @@
 #include "mha_events.h"
 #include "mha_defs.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
 #include "lsl_cpp.h"
+#pragma GCC diagnostic pop
 
 #include <memory>
 #include <map>

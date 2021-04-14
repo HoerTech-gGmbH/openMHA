@@ -80,7 +80,7 @@ acSteer_config::~acSteer_config() {}
 
 
 /** Constructs our plugin. */
-acSteer::acSteer(algo_comm_t iac, const std::string & configured_name)
+acSteer::acSteer(algo_comm_t iac, const std::string & )
     : MHAPlugin::plugin_t<acSteer_config>("Steering Vector Loading Plugin",iac)
     , steerFile("Name of the input file where the steering vectors are saved", "steerfile.bin")
     , acSteerName1("Name of the AC variable where the steering vectors of the first (left) reference microphone are saved", "acSteerLeft")

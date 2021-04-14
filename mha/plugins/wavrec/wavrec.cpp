@@ -110,7 +110,7 @@ mha_wave_t* wavrec_t::process(mha_wave_t* s)
     return s;
 }
 
-void wavrec_t::prepare(mhaconfig_t& cf)
+void wavrec_t::prepare(mhaconfig_t& )
 {
     start_new_session();
 }

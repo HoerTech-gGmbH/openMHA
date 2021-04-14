@@ -19,15 +19,11 @@
 #include <ctime>
 using namespace plugins::hoertech::acrec;
 TEST(to_iso8601,epoch){
-  // Semi-arbitrary date
-  std::tm tm = { /*.tm_sec  =*/ 0,
-                 /*.tm_min  =*/ 0,
-                 /*.tm_hour =*/ 0,
-                 /*.tm_mday =*/ 1,
-                 /*.tm_mon  =*/ 0,
-                 /*.tm_year =*/ 100,
-                 /*.tm_isdst=*/ 0
-  };
+  // Semi-arbitrary date, the {} ensure zero-initialization
+  std::tm tm = {};
+  tm.tm_mday=1;
+  tm.tm_year=100;
+
   auto expected=std::string("2000-01-01T000000");
   mktime(&tm);
   auto actual=to_iso8601(mktime(&tm)) ;

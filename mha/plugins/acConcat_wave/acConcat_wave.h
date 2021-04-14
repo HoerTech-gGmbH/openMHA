@@ -31,7 +31,7 @@ class acConcat_wave;
 class acConcat_wave_config {
 
 public:
-    acConcat_wave_config(algo_comm_t &ac, const mhaconfig_t in_cfg, acConcat_wave *_concat);
+    acConcat_wave_config(algo_comm_t &ac, acConcat_wave *_concat);
     ~acConcat_wave_config();
 
     mha_wave_t* process(mha_wave_t*);

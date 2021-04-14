@@ -136,7 +136,7 @@ namespace cpuload{
     return s;
   }
 
-  void cpuload_if_t::prepare(mhaconfig_t& cf)
+  void cpuload_if_t::prepare(mhaconfig_t&)
   {
   }
 }

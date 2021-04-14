@@ -17,8 +17,6 @@
 #include "mha_signal.hh"
 #include "mha_algo_comm.hh"
 #include <gtest/gtest.h>
-#include <iostream>
-
 
 class dc_if_t_testing : public ::testing::Test {
 protected:

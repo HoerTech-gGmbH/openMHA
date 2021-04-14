@@ -24,7 +24,7 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &acTransform_wave::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-acTransform_wave_config::acTransform_wave_config(algo_comm_t &ac, const mhaconfig_t in_cfg, acTransform_wave *_transform):
+acTransform_wave_config::acTransform_wave_config(algo_comm_t &ac, acTransform_wave *_transform):
     ac(ac),
     ang_name(_transform->ang_name.data),
     raw_p_name(_transform->raw_p_name.data),
@@ -126,7 +126,7 @@ void acTransform_wave::update_cfg()
         //when necessary, make a new configuration instance
         //possibly based on changes in parser variables
         acTransform_wave_config *config;
-        config = new acTransform_wave_config( ac, input_cfg(), this);
+        config = new acTransform_wave_config( ac, this);
         push_config( config );
     }
 }

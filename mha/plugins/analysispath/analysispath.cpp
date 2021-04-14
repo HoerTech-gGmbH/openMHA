@@ -28,7 +28,6 @@ class analysepath_t
 {
 public:
     analysepath_t(unsigned int nchannels_in,
-                  unsigned int outer_fragsize,
                   unsigned int inner_fragsize,
                   int priority,
                   MHAProc_wave2wave_t inner_proc_wave2wave,
@@ -138,7 +137,6 @@ int analysepath_t::svc()
 }
 
 analysepath_t::analysepath_t(unsigned int nchannels_in,
-                             unsigned int outer_fragsize,
                              unsigned int inner_fragsize,
                              int thread_priority,
                              MHAProc_wave2wave_t inner_proc_wave2wave,
@@ -318,7 +316,6 @@ void analysispath_if_t::prepare(mhaconfig_t& conf)
     acspace_template->insert(ac);
     // update the configuration, create an instance of the double buffer:
     push_config(new analysepath_t(conf.channels,
-                                  conf.fragsize,
                                   fragsize.data,
                                   priority.data,
                                   plug->get_process_wave(),

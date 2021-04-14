@@ -74,7 +74,7 @@ namespace mconv {
         MHAEvents::patchbay_t<MConv> patchbay;
     };
 
-    MConv::MConv(const algo_comm_t & iac, const std::string & algoname)
+    MConv::MConv(const algo_comm_t & iac, const std::string & )
         : MHAPlugin::plugin_t<MHAFilter::partitioned_convolution_t>
         ("FFT based FIR filter using partitioned convolution\n"
          "  This plugin filters its input channels using partitioned fast\n"

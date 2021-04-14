@@ -18,6 +18,9 @@
 include ../../../config.mk
 include ../../../magic.mk
 
+CXXFLAGS+=-Wextra
+CFLAGS+=-Wextra
+
 SOURCE_DIR=.
 PLUGINS = $(notdir $(abspath .))
 
@@ -188,6 +191,8 @@ CFLAGS += -I../../libmha/src
 LDFLAGS += -L../../libmha/$(BUILD_DIR)
 LDLIBS += -l$(MHATOOLBOX_NAME)
 
+CXXFLAGS += -Wextra
+CFLAGS += -Wextra
 # Library-dependent plugin artifact rule specific modifications of compiler
 # and linker flags need to have their own if statements because they must
 # come after the include ../../../rules.mk block and the dummy targets must come

@@ -19,7 +19,10 @@
 #include "mha_events.h"
 #include "mha_defs.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
 #include "lsl_cpp.h"
+#pragma GCC diagnostic pop
 
 #include <memory>
 #include <map>
@@ -262,7 +265,7 @@ ac2lsl::ac2lsl_t::ac2lsl_t(algo_comm_t iac, const std::string &)
     patchbay.connect(&vars.writeaccess,this,&ac2lsl_t::update);
 }
 
-void ac2lsl::ac2lsl_t::prepare(mhaconfig_t& cf)
+void ac2lsl::ac2lsl_t::prepare(mhaconfig_t&)
 {
     try {
         vars.setlock(true);

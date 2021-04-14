@@ -872,7 +872,7 @@ namespace MHAPlugin_Split {
      *   Space for algorithm communication variables.  Currently,
      *   These varialbes are not used by the split plugin, and the splitted
      *   pathways get their own, fresh AC namespaces. */
-    split_t::split_t(algo_comm_t iac, const std::string &)
+    split_t::split_t(algo_comm_t, const std::string & )
         : MHAParser::parser_t("Split audio signal into channel groups and have"
                               " them processed by different plugins in"
                               " parallel"),

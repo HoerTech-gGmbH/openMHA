@@ -29,7 +29,7 @@ std::string plugins::hoertech::acrec::to_iso8601(time_t tm){
     return std::string(buf);
 }
 
-acrec_t::acrec_t(algo_comm_t iac, const std::string & configured_name)
+acrec_t::acrec_t(algo_comm_t iac, const std::string & )
     : MHAPlugin::plugin_t<acwriter_t>("ac variable file recorder",iac),
       ac(iac)
 {
@@ -50,7 +50,7 @@ template <class mha_signal_t> mha_signal_t* acrec_t::process(mha_signal_t* s)
     return s;
 }
 
-void acrec_t::prepare(mhaconfig_t& cf)
+void acrec_t::prepare(mhaconfig_t&)
 {
     // Need to ensure there's a valid configuration after prepare()
     // If record has not been set, there is no configuration, so create one.

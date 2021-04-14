@@ -47,7 +47,7 @@ dropgen_t::dropgen_t(algo_comm_t iac, const std::string &)
     insert_item("chance",&chance);
 }
 
-void dropgen_t::prepare(mhaconfig_t& tf)
+void dropgen_t::prepare(mhaconfig_t&)
 {
 }
 

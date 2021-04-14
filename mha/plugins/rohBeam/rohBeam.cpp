@@ -883,7 +883,7 @@ namespace rohBeam {
     return a_ret;
   }
 
-  const MatrixXf rohBeam::compute_uncorr(float w) {
+  const MatrixXf rohBeam::compute_uncorr(float) {
 
     //this function just returns identity
     //allocate an eigen matrix

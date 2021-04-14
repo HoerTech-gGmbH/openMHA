@@ -197,7 +197,7 @@ lsl2ac::lsl2ac_t::lsl2ac_t(algo_comm_t iac, const std::string &)
     patchbay.connect(&available_streams.prereadaccess,this,&lsl2ac_t::get_all_stream_names);
 }
 
-void lsl2ac::lsl2ac_t::prepare(mhaconfig_t& cf)
+void lsl2ac::lsl2ac_t::prepare(mhaconfig_t&)
 {
     update();
     setlock(true);

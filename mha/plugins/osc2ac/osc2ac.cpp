@@ -114,8 +114,8 @@ osc_variable_t::osc_variable_t(const std::string& name, unsigned int size,
                                 this);
 }
 
-int osc_variable_t::handler(const char *path, const char *types,
-                            lo_arg **argv,int argc, lo_message msg,
+int osc_variable_t::handler(const char *, const char *types,
+                            lo_arg **argv,int argc, lo_message,
                             void *user_data)
 {
     return static_cast<osc_variable_t*>(user_data)->handler(types,argv,argc);
@@ -262,7 +262,7 @@ osc2ac_t::osc2ac_t(algo_comm_t iac, const std::string &)
     insert_member(size);
 }
 
-void osc2ac_t::prepare(mhaconfig_t& cf)
+void osc2ac_t::prepare(mhaconfig_t&)
 {
     setlock(true);
     try{

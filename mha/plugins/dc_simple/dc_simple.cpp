@@ -123,13 +123,8 @@ void dc_if_t::update_dc()
     gainrule.data = "";
     preset.data = "";
     if( prepared ){
-        float frate = tftype.srate;
-        if( tftype.domain == MHA_SPECTRUM )
-            frate = tftype.srate / not_zero(tftype.fragsize,"(dc_if_t::update_dc)");
         DC::push_config(new dc_t(static_cast<const dc_vars_t&>(*this),
-                                 frate,
-                                 tftype.channels,
-                                 tftype.fftlen));
+                                 tftype.channels));
     }
 }
 
@@ -224,9 +219,7 @@ level_smoother_t::level_smoother_t(const dc_vars_t& vars,
 }
 
 dc_t::dc_t(const dc_vars_t& vars,
-           mha_real_t filter_rate,
-           unsigned int nch,
-           unsigned int fftlen_)
+           unsigned int nch)
     : dc_vars_validator_t(vars, nch),
       expansion_threshold(force_resize(vars.expansion_threshold.data,nch,"expansion_threshold")),
       limiter_threshold(force_resize(vars.limiter_threshold.data,nch,"limiter_threshold")),

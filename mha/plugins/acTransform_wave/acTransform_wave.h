@@ -24,7 +24,7 @@ class acTransform_wave;
 class acTransform_wave_config {
 
 public:
-    acTransform_wave_config(algo_comm_t &ac, const mhaconfig_t in_cfg, acTransform_wave *_transform);
+    acTransform_wave_config(algo_comm_t &ac, acTransform_wave *_transform);
     ~acTransform_wave_config();
 
     mha_wave_t* process(mha_wave_t*);

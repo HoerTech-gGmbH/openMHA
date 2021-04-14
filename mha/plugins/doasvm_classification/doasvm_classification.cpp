@@ -24,7 +24,7 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &doasvm_classification::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-doasvm_classification_config::doasvm_classification_config(algo_comm_t &ac, const mhaconfig_t in_cfg, doasvm_classification *_doasvm):
+doasvm_classification_config::doasvm_classification_config(algo_comm_t &ac, doasvm_classification *_doasvm):
     ac(ac),
     doasvm(_doasvm),
     p(ac, _doasvm->p_name.data.c_str(), _doasvm->angles.data.size(), 1, true),
@@ -150,7 +150,7 @@ void doasvm_classification::update_cfg()
         //when necessary, make a new configuration instance
         //possibly based on changes in parser variables
         doasvm_classification_config *config;
-        config = new doasvm_classification_config( ac, input_cfg(), this );
+        config = new doasvm_classification_config( ac, this );
         push_config( config );
     }
 }

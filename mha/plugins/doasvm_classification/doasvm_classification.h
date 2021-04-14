@@ -24,7 +24,7 @@ class doasvm_classification;
 class doasvm_classification_config {
 
 public:
-    doasvm_classification_config(algo_comm_t &ac, const mhaconfig_t in_cfg, doasvm_classification *_doasvm);
+    doasvm_classification_config(algo_comm_t &ac, doasvm_classification *_doasvm);
     ~doasvm_classification_config();
 
     mha_wave_t* process(mha_wave_t*);

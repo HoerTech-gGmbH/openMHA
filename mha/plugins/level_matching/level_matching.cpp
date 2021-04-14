@@ -157,7 +157,7 @@ level_matching::level_matching_t::~level_matching_t() {}
  *   Structure containing a description of the form of the signal (domain,
  *   number of channels, frames per block, sampling rate.
  */
-void level_matching::level_matching_t::prepare(mhaconfig_t & signal_info)
+void level_matching::level_matching_t::prepare(mhaconfig_t &)
 {
   update_cfg();
 }

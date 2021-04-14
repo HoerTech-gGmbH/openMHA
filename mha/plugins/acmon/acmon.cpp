@@ -73,7 +73,7 @@ void acmon_t::update_recmode()
     b_snapshot = true;
 }
 
-void acmon_t::prepare(mhaconfig_t& tf)
+void acmon_t::prepare(mhaconfig_t&)
 {
     int get_entries_error_code;
     unsigned int cstr_len = 512;

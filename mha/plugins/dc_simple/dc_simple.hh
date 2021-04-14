@@ -89,7 +89,7 @@ namespace dc_simple {
     /// Runtime config class for dc_simple plugin.
     class dc_t : private dc_vars_validator_t {
     public:
-        dc_t(const dc_vars_t& vars, mha_real_t filter_ratem, unsigned int nch, unsigned int fftlen_);
+        dc_t(const dc_vars_t& vars, unsigned int nch);
         mha_spec_t* process(mha_spec_t* s, mha_wave_t* level_db);
         mha_wave_t* process(mha_wave_t* s, mha_wave_t* level_db);
     private:

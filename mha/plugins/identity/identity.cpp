@@ -31,7 +31,7 @@ identity_t::identity_t(algo_comm_t iac, const std::string &)
 {
 }
 
-void identity_t::prepare(mhaconfig_t& tf)
+void identity_t::prepare(mhaconfig_t&)
 {
 }
 
