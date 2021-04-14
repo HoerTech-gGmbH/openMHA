@@ -1,5 +1,5 @@
 // This file is part of the HörTech Master Hearing Aid (MHA)
-// Copyright © 2012 2013 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -28,8 +28,6 @@
 #include "mhasndfile.h"
 #define NDEBUG //supposed to speed up Eigen
 
-// Need to disable Wduplicated-branches via pragma as opposed to
-// command line because the unit test runner needs this disabled too
 #include <eigen3/Eigen/Dense>
 
 #include <cmath>

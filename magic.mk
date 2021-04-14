@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 2018 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 2021 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -57,7 +57,8 @@ MHATOOLBOX_NAME = openmha
 # Setup relative paths. This breaks if the path contains spaces.
 GIT_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 EXTERNAL_LIBS := $(GIT_DIR)/external_libs
-EXTERNAL_LIBS_INCLUDE = -I$(EXTERNAL_LIBS)/$(PLATFORM_CC)/include
+# Use -isystem instead of -I to silence warnings in external libs
+EXTERNAL_LIBS_INCLUDE = -isystem $(EXTERNAL_LIBS)/$(PLATFORM_CC)/include
 EXTERNAL_LIBS_LDFLAGS = -L$(EXTERNAL_LIBS)/$(PLATFORM_CC)/lib
 CFLAGS += $(EXTERNAL_LIBS_INCLUDE)
 CXXFLAGS += $(EXTERNAL_LIBS_INCLUDE)

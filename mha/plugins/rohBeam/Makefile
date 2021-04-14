@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 2019 2020 HörTech gGmbH
+# Copyright © 2018 2019 2020 2021 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -20,11 +20,14 @@ include ../plugin.mk
 
 # Eigen triggers Wduplicated-branches.  As we can not realistically do
 # anything about it, ignore it.  Apple clang-11.0.0 does not know
-# Wduplicated-branches, so we need to turn off the warning about
-# unknown warning options -funsafe-math-optimizations (included in
-# -ffast-math) in combination with -O3, is too aggressive for Eigen,
+# Wduplicated-branches, so we also need to turn off the warning about
+# unknown warning options. We can not simply surround the include directive
+# with a pragma because gcc-7 apparently does not use the state of the diagnostics stack at
+# inclusion but at the time of template instantiation to determine when to emit a warning.
+# -funsafe-math-optimizations (included in -ffast-math) in combination with -O3 is too aggressive for Eigen,
 # turn it off
-$(PLUGIN_AND_TEST_ARTIFACTS): CXXFLAGS += -Wno-unknown-warning-option    \
+$(PLUGIN_AND_TEST_ARTIFACTS): CXXFLAGS += \
+                                          -Wno-unknown-warning-option    \
                                           -Wno-duplicated-branches       \
                                           -fno-unsafe-math-optimizations
 

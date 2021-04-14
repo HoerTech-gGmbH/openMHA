@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2016 2017 2018 2019 2020 HörTech gGmbH
+# Copyright © 2013 2014 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -59,8 +59,6 @@ MHA_FFTW_OBJECTS = $(shell ar t $(FFTW_LIB) | grep -v _.SYMDEF)
 MHA_RFFTW_OBJECTS = $(shell ar t $(RFFTW_LIB) | grep -v _.SYMDEF)
 
 OBJECTS += $(MHA_FFTW_OBJECTS) $(MHA_RFFTW_OBJECTS)
-
-CXXFLAGS += -I../../external_libs/$(PLATFORM_CC)/include
 
 $(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT): $(OBJECTS:%.o=$(BUILD_DIR)/%.o)
 

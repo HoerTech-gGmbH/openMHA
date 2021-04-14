@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
+# Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -45,7 +45,6 @@ endif
 
 include ../../rules.mk
 
-CXXFLAGS += -I../../external_libs/$(PLATFORM_CC)/include
 CXXFLAGS += -I../libmha/src -DASIO_STANDALONE
 LDLIBS += -l$(MHATOOLBOX_NAME)
 LDFLAGS += -L../libmha/$(BUILD_DIR)
@@ -93,15 +92,6 @@ $(BUILD_DIR)/libMHAjava.so: src/fw_t_wrap.cxx $(BUILD_DIR)/libMHAfw.so
 
 $(BUILD_DIR)/mha_ruby.so: src/mha_ruby.cpp $(BUILD_DIR)/libMHAfw.so
 	$(CXX) $(CXXFLAGS) $< -L$(BUILD_DIR) $(LDFLAGS) $$(ruby -rrbconfig -e 'C=RbConfig::CONFIG;printf("-I%s -I%s -L%s %s",C["rubyhdrdir"],C["rubyarchhdrdir"],C["libdir"],C["LIBRUBYARG"])') -lMHAfw $(LDLIBS) -shared -o $@  -fno-strict-aliasing 
-
-# The asio library headers trigger this warning for timer object template
-# instantiations used in the mha_tcp_server.  Disable the
-# warning-as-error for duplicated branches.
-$(BUILD_DIR)/unit-test-runner $(BUILD_DIR)/mha_tcp_server.o: CXXFLAGS := \
-     $(patsubst \
-       -Wduplicated-branches,\
-       -Wduplicated-branches -Wno-error=duplicated-branches,\
-       $(CXXFLAGS))
 
 # Local Variables:
 # compile-command: "make"
