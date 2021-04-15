@@ -49,7 +49,8 @@ public:
   {
 #ifndef _WIN32
     // On Unix, we need to ignore sigpipe
-    struct sigaction ignore{{SIG_IGN}};
+      struct sigaction ignore={};
+      ignore.sa_handler=SIG_IGN;
     sigaction(SIGPIPE, &ignore, NULL);
 #else
     // On windows, we need to initialize and deinitialize the socket library
@@ -456,6 +457,7 @@ MHA_TCP::Sockread_Event::Sockread_Event(SOCKET s)
 MHA_TCP::Sockwrite_Event::Sockwrite_Event(SOCKET s)
 {
 #ifdef _WIN32
+    (void)s; // Silence Wunused-parameter. [[maybe_unused]] might be the better alternative as soon as we officially drop c++14 and older
     os_event = CreateEvent(0,TRUE,TRUE,0);
 #else
     os_event.fd = s;
@@ -467,6 +469,7 @@ MHA_TCP::Sockwrite_Event::Sockwrite_Event(SOCKET s)
 MHA_TCP::Sockaccept_Event::Sockaccept_Event(SOCKET s)
 {
 #ifdef _WIN32
+    (void)s; // Silence Wunused-parameter. [[maybe_unused]] might be the better alternative as soon as we officially drop c++14 and older
     os_event = CreateEvent(0,FALSE,FALSE,0);
     if (os_event == WSA_INVALID_EVENT)
         throw MHA_Error(__FILE__, __LINE__,

@@ -651,7 +651,7 @@ extern "C" {
         }
     }
 
-    const char* IOStrError(void* handle,int err)
+    const char* IOStrError(void*,int err)
     {
         switch( err ){
         case ERR_SUCCESS :

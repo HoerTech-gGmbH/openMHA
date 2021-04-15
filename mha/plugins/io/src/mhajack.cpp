@@ -742,7 +742,7 @@ int MHAJack::client_noncont_t::proc(void* handle,mha_wave_t* sIn,mha_wave_t** sO
     return 0;
 }
 
-void MHAJack::client_noncont_t::IOStoppedEvent(void* handle,int a,int b)
+void MHAJack::client_noncont_t::IOStoppedEvent(void* handle,int ,int)
 {
     if( handle )
         ((MHAJack::client_noncont_t*)(handle))->IOStoppedEvent();
@@ -893,7 +893,7 @@ int MHAJack::client_avg_t::proc(void* handle,mha_wave_t* sIn,mha_wave_t** sOut)
     return 0;
 }
 
-void MHAJack::client_avg_t::IOStoppedEvent(void* handle,int a,int b)
+void MHAJack::client_avg_t::IOStoppedEvent(void* handle,int,int)
 {
     if( handle )
         ((client_avg_t*)(handle))->IOStoppedEvent();

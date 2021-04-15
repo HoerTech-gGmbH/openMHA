@@ -402,9 +402,9 @@ extern "C"  int portaudio_callback(const void *input, void *output,
 
 int MHAIOPortAudio::io_portaudio_t::portaudio_callback
 (const void * input, void * output,
- unsigned long frame_count,
- const PaStreamCallbackTimeInfo * time_info,
- PaStreamCallbackFlags status_flags)
+ unsigned long,
+ const PaStreamCallbackTimeInfo *,
+ PaStreamCallbackFlags)
 {
   start_event(start_handle);
   memcpy(s_in->buf, input, sizeof(mha_real_t) * fragsize * nchannels_in);
@@ -655,7 +655,7 @@ extern "C" {
     }
   }
 
-  const char* IOStrError(void* handle,int err)
+  const char* IOStrError(void*,int err)
   {
     switch( err ){
     case ERR_SUCCESS :
