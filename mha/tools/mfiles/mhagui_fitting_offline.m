@@ -260,7 +260,7 @@ for soundfile_index = 1:numel(soundfiles_src)
   % time-reversed part and check for clipping
   [y,fs] = audioread(outfile);
   y = y(1+samples_file+samples_delay:end,:);
-  if any(abs(y)>1) && ~allow_clipping_all
+if any(abs(y(:))>1) && ~allow_clipping_all
     answer_clip = questdlg(sprintf('WARNING! File %s will contain samples > 1. Do you want to write anyway?',outfile),...
                            'Output File Warning',...
                            'Yes','Yes, for all','No','Abort','No');
