@@ -55,6 +55,45 @@ namespace MHAIOPortAudio {
 
   using MHAParser::parser_t;
 
+  class stream_info_t : public parser_t {
+  public:
+    MHAParser::float_mon_t paInputLatency;
+    MHAParser::float_mon_t paOutputLatency;
+    MHAParser::float_mon_t paSampleRate;
+    stream_info_t() :
+      parser_t("PortAudio stream info"),
+      paInputLatency("The input latency of the stream in seconds."
+                     " This value provides the most accurate estimate of input latency available to the implementation."
+                     " It may differ significantly from the suggestedLatency value passed to Pa_OpenStream()."
+                     " The value of this field will be zero (0.) for output-only streams."),
+      paOutputLatency("The output latency of the stream in seconds."
+                      " This value provides the most accurate estimate of output latency available to the implementation."
+                      " It may differ significantly from the suggestedLatency value passed to Pa_OpenStream()."
+                      " The value of this field will be zero (0.) for input-only streams."),
+      paSampleRate("The sample rate of the stream in Hertz (samples per second)."
+                   " In cases where the hardware sample rate is inaccurate and PortAudio is aware of it,"
+                   " the value of this field may be different from the sampleRate parameter passed to Pa_OpenStream()."
+                   " If information about the actual hardware sample rate is not available,"
+                   " this field will have the same value as the sampleRate parameter passed to Pa_OpenStream().")
+    {
+      insert_member(paInputLatency);
+      insert_member(paOutputLatency);
+      insert_member(paSampleRate);
+    }
+
+    void fill_info(PaStream* stream_){
+      auto* streamInfo = Pa_GetStreamInfo(stream_);
+        if(!streamInfo)
+          throw MHA_Error(__FILE__,__LINE__,"Could not get information about portaudio stream");
+        // Unit of latencies is seconds, while typical sound card latencies have
+        // values in the range of milliseconds. Storing such latencies in
+        // single-precision floating point numbers is fine.
+        paInputLatency.data=static_cast<float>(streamInfo->inputLatency);
+        paOutputLatency.data=static_cast<float>(streamInfo->outputLatency);
+        paSampleRate.data=static_cast<float>(streamInfo->sampleRate);
+    }
+  };
+
   class device_info_t : public parser_t {
   public:
     MHAParser::int_mon_t numDevices;
@@ -96,6 +135,7 @@ namespace MHAIOPortAudio {
       insert_member(defaultHighOutputLatency);
       insert_member(defaultSampleRate);
     }
+
     void fill_info() {
       int old_numDevices = numDevices.data;
       numDevices.data = Pa_GetDeviceCount();
@@ -212,6 +252,7 @@ namespace MHAIOPortAudio {
                         Pa_GetErrorText(err));
       device_info.fill_info();
       insert_member(device_info);
+      insert_member(stream_info);
       insert_member(device_name_in);
       insert_member(device_index_in);
       insert_member(device_name_out);
@@ -315,6 +356,7 @@ namespace MHAIOPortAudio {
                            PaStreamCallbackFlags status_flags);
   private:
     device_info_t device_info;
+    stream_info_t stream_info;
     // The input signal provided by portaudio needs to be copied into this
     // as portaudio callback signature declares the values const
     MHASignal::waveform_t * s_in;
@@ -399,7 +441,7 @@ void MHAIOPortAudio::io_portaudio_t::cmd_prepare(int nchannels_in,
   if (nchannels_in == 0 && nchannels_out == 0)
     throw MHA_Error(__FILE__,__LINE__,
                     "prepare called with 0 input channels and, at the same"
-                    " time, 0 output channels.  This is note permitted in"
+                    " time, 0 output channels.  This is not permitted in"
                     " portaudio");
   this->nchannels_in = nchannels_in;
   this->nchannels_out = nchannels_out;
@@ -424,6 +466,8 @@ void MHAIOPortAudio::io_portaudio_t::cmd_prepare(int nchannels_in,
     throw MHA_Error(__FILE__,__LINE__,
                     "Could not open portaudio stream: %s",
                     Pa_GetErrorText(err));
+  stream_info.fill_info(portaudio_stream);
+
   s_in = new MHASignal::waveform_t(fragsize, nchannels_in);
 
   device_name_in.setlock(true);
@@ -433,6 +477,7 @@ void MHAIOPortAudio::io_portaudio_t::cmd_prepare(int nchannels_in,
   #ifdef __linux__
   PaAlsa_EnableRealtimeScheduling(portaudio_stream, 1);
   #endif
+
 }
 
 void MHAIOPortAudio::io_portaudio_t::cmd_start()
