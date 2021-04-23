@@ -14,6 +14,7 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mha_io_ifc.h"
+#include "mha_parser.hh"
 #include "mha_toolbox.h"
 #include "mha_signal.hh"
 #include "mha_events.h"
@@ -225,7 +226,9 @@ namespace MHAIOPortAudio {
         device_index_out("Variable to load device by index.  Upon setting"
                      " device_index_out,\ndevice_name_out will be"
                      " updated to the full portaudio name of this device.",
-                     "0", "[0,32767]")
+                         "0", "[0,32767]"),
+        suggestedInputLatency("The desired input latency in seconds.", "0","[0,]"),
+        suggestedOutputLatency("The desired output latency in seconds.", "0","[0,]")
     {
       if (proc_event == NULL || start_event == NULL || stop_event == NULL)
         throw MHA_Error(__FILE__,__LINE__,
@@ -274,6 +277,9 @@ namespace MHAIOPortAudio {
           device_index_out_updated();
         }
       }
+
+      insert_item("suggested_input_latency", &suggestedInputLatency);
+      insert_item("suggested_output_latency", &suggestedOutputLatency);
       patchbay.connect(&device_name_in.writeaccess, this,
                        &io_portaudio_t::device_name_in_updated);
       patchbay.connect(&device_index_in.writeaccess, this,
@@ -378,6 +384,8 @@ namespace MHAIOPortAudio {
     MHAParser::int_t device_index_in;
     MHAParser::string_t device_name_out;
     MHAParser::int_t device_index_out;
+    MHAParser::float_t suggestedInputLatency;
+    MHAParser::float_t suggestedOutputLatency;
     MHAEvents::patchbay_t<io_portaudio_t> patchbay;
   };
 
@@ -446,15 +454,21 @@ void MHAIOPortAudio::io_portaudio_t::cmd_prepare(int nchannels_in,
   this->nchannels_in = nchannels_in;
   this->nchannels_out = nchannels_out;
 
-  PaStreamParameters outpar, inpar;
-  memset(&outpar, 0, sizeof(outpar));  memset(&inpar, 0, sizeof(inpar));
 
-  outpar.channelCount = nchannels_out;
-  inpar.channelCount = nchannels_in;
-  outpar.device = device_index_out.data;
-  inpar.device = device_index_in.data;
-  outpar.sampleFormat = inpar.sampleFormat = paFloat32;
-
+  PaStreamParameters outpar = {
+    .device = device_index_out.data,
+    .channelCount = nchannels_out,
+    .sampleFormat = paFloat32,
+    .suggestedLatency =  suggestedOutputLatency.data,
+    .hostApiSpecificStreamInfo = nullptr
+  }, inpar = {
+    .device = device_index_in.data,
+    .channelCount = nchannels_in,
+    .sampleFormat = paFloat32,
+    .suggestedLatency =  suggestedInputLatency.data,
+    .hostApiSpecificStreamInfo = nullptr
+  };
+  
   PaError err = Pa_OpenStream(&portaudio_stream,
                               &inpar, &outpar,
                               samplerate,
@@ -474,6 +488,8 @@ void MHAIOPortAudio::io_portaudio_t::cmd_prepare(int nchannels_in,
   device_index_in.setlock(true);
   device_name_out.setlock(true);
   device_index_out.setlock(true);
+  suggestedInputLatency.setlock(true);
+  suggestedOutputLatency.setlock(true);
   #ifdef __linux__
   PaAlsa_EnableRealtimeScheduling(portaudio_stream, 1);
   #endif
@@ -510,6 +526,8 @@ void MHAIOPortAudio::io_portaudio_t::cmd_release()
   device_index_in.setlock(false);
   device_name_out.setlock(false);
   device_index_out.setlock(false);
+  suggestedInputLatency.setlock(false);
+  suggestedOutputLatency.setlock(false);
 }
 
 

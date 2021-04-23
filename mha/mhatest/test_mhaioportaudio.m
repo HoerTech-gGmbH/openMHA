@@ -33,6 +33,28 @@ function test_mhaioportaudio
     assert_equal(0, paInputLatency);
     assert_equal(0, paOutputLatency);
     assert_equal(0, paSampleRate);
+
+    % Test existence of config vars added for T1586
+    mha_set(mha,"io.suggested_input_latency",1);
+    mha_set(mha,"io.suggested_output_latency",1);
+
+    % Test range
+    n_errors=0;
+    try
+      mha_set(mha,"io.suggested_input_latency", -1 );
+    catch e
+      n_errors++;
+      assert(~isempty(strfind(e.message,"range")));
+    end
+    assert_equal(n_errors,1);
+
+    try
+      mha_set(mha,"io.suggested_output_latency", -1 );
+    catch e
+      n_errors++;
+      assert(~isempty(strfind(e.message,"range")));
+    end
+    assert_equal(n_errors,2);
 end
 % Local Variables:
 % mode: octave
