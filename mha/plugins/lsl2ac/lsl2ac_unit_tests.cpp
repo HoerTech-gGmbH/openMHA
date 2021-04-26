@@ -23,6 +23,7 @@
 #include <thread>
 #include <atomic>
 #include <string>
+#include <random>
 using namespace std::chrono_literals;
 
 constexpr int NCHUNKS=12;
@@ -33,24 +34,33 @@ using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
 
-std::string to_string(lsl2ac::overrun_behavior ob_){
-  if(ob_==lsl2ac::overrun_behavior::Discard)
-    return "Discard";
-  else if(ob_==lsl2ac::overrun_behavior::Ignore)
-    return "Ignore";
-  else
-    throw std::invalid_argument("Unknown overrun behavior!");
+namespace{
+  std::string to_string(lsl2ac::overrun_behavior ob_){
+    if(ob_==lsl2ac::overrun_behavior::Discard)
+      return "Discard";
+    else if(ob_==lsl2ac::overrun_behavior::Ignore)
+      return "Ignore";
+    else
+      throw std::invalid_argument("Unknown overrun behavior!");
+  }
+  std::string random_string(){
+    std::string s(7,'a');
+    std::random_device r;
+    std::mt19937 g(r());
+    std::uniform_int_distribution<> d('a', 'z'); // Generate random integers from int('a') to int('z')
+    for (char & c : s) c = static_cast<char>(d(g));
+    return s;
+  }
 }
-
 class Test_save_var_t : public TestWithParam<::std::tuple<lsl2ac::overrun_behavior,int,int> > {
 protected:
   Test_save_var_t():
     /*  We need to use a unique name for the stream as sometimes the lsl background process does not close the
-     steam timely even if our stream_outlet is already destroyed. */
-    name([](){auto test_info =
-          testing::UnitTest::GetInstance()->current_test_info();
-        return std::string(test_info->test_suite_name())+"."+std::string(test_info->name());
-         }()),
+     steam timely even if our stream_outlet is already destroyed. Append random characters to ensure uniqueness
+     among concurrently running tests.
+    */
+    name([](){auto test_info=testing::UnitTest::GetInstance()->current_test_info();
+        return std::string(test_info->test_suite_name())+"."+std::string(test_info->name())+"_"+random_string();}()),
     info(name,"Audio",NCHANNELS,lsl::IRREGULAR_RATE,lsl::cf_float32,name),
     acspace(),
     ac(acspace.get_c_handle())
