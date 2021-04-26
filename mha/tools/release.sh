@@ -150,7 +150,9 @@ else
     git push origin development
     git push origin v$VER
 fi
-echo "Now the mac and windows installers need to be attached to the github release."
+echo "Now create a GitHub release and copy the release notes into the description field."
+echo "Sign macOS and Windows installers according to the instructions at"
+echo "https://dev.openmha.org/w/releaseprotocol/ and attach them to the GitHub release."
 echo "Answer yes when finished."
 ask_yes_no
 echo "Now the Linux installers need to be published to our apt repository."
@@ -187,3 +189,8 @@ else
 fi
 cd ../..
 rm -rf GHPAGES
+echo "Check that the Zenodo webhook has correctly created a new entry at https://zenodo.org/record/4650058"
+echo "Click on the DOI badge to copy the Markdown code and include the Zenodo DOI badge into the release."
+echo "Add the supplemental information to the release. Type 'yes' when finished"
+ask_yes_no
+echo "Release finished!"
