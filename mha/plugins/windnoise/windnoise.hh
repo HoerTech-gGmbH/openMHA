@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -164,9 +164,7 @@ namespace windnoise {
         const std::string lowpass_quotient_acname;
 
         /// Constructor instantiates one windnoise plugin
-        if_t(algo_comm_t ac,
-             const std::string & chain_name,
-             const std::string & algo_name);
+        if_t(algo_comm_t iac, const std::string & configured_name);
 
         /// Prepare windnoise plugin for signal processing
         /// @param signal_info signal dimensions, not changed by this plugin

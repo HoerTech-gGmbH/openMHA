@@ -32,7 +32,7 @@ class dc_simple_testing : public ::testing::Test {
     .wndlen   = 0, .fftlen = 0, .srate    = 16000
   };
   // Plugin instance
-  dc_simple::dc_if_t dc_simple{ac,"thread","algo"};
+  dc_simple::dc_if_t dc_simple{ac,"algo"};
 
   /// prepares the plugin for tests
   void prepare() {

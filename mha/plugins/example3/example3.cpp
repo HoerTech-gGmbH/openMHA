@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2009 2010 2013 2014 2015 2017 HörTech gGmbH
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -50,9 +50,7 @@ public:
      * variables and inserts them into the \mha configuration tree.
      * It connects the \mha Events triggered by these configuration variables
      * to the respective callbacks. */
-    example3_t(algo_comm_t & ac,
-               const std::string & chain_name,
-               const std::string & algo_name);
+    example3_t(algo_comm_t iac, const std::string & configured_name);
 
     /** Plugin preparation. This plugin checks that the input signal
      * has the waveform domain and contains enough channels.
@@ -78,11 +76,9 @@ public:
     mha_wave_t * process(mha_wave_t * signal);
 };
 
-example3_t::example3_t(algo_comm_t & ac,
-                       const std::string & chain_name,
-                       const std::string & algo_name)
+example3_t::example3_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<int>("This plugin multiplies the sound signal"
-                               " in one audio channel by a factor",ac),
+                               " in one audio channel by a factor",iac),
       scale_ch("Index of audio channel to scale. Indices start from 0."
                " Only channels with even indices may be scaled.",
                "0",

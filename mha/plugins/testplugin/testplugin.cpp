@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2018 HörTech gGmbH
+// Copyright © 2014 2015 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -225,9 +225,7 @@ namespace testplugin {
 
   class if_t : public MHAPlugin::plugin_t<int> {
   public:
-    if_t(const algo_comm_t& iac, 
-         const std::string & ith, 
-         const std::string & ial);
+    if_t(algo_comm_t iac, const std::string & configured_name);
     mha_spec_t* process(mha_spec_t * s_in) {return s_in;}
     mha_wave_t* process(mha_wave_t * s_in) {return s_in;}
     void prepare(mhaconfig_t&) {}
@@ -243,7 +241,7 @@ namespace testplugin {
     void test_process();
   };
 
-  if_t::if_t(const algo_comm_t& iac,const std::string& ith,const std::string& ial)
+  if_t::if_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<int>("loads a plugin for testing",iac),
       _prepare("for preparing/releasing the loaded plugin","no"),
       plug(*this, ac.get_c_handle())

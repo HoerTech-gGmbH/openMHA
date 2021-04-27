@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2010 2012 2013 2014 2015 2017 2018 2019 HörTech gGmbH
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -38,9 +38,7 @@ private:
 
 class matmix_t : public MHAPlugin::plugin_t<cfg_t> {
 public:
-    matmix_t(const algo_comm_t&,
-             const std::string&,
-             const std::string&);
+    matmix_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     mha_wave_t* process(mha_wave_t*);
     mha_spec_t* process(mha_spec_t*);
@@ -52,9 +50,7 @@ private:
     unsigned int co;
 };
 
-matmix_t::matmix_t(const algo_comm_t& iac,
-                   const std::string&,
-                   const std::string&)
+matmix_t::matmix_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<cfg_t>("Matrix mixer plugin, can mix multiple input"
                                  " channels into\n"
                                  "any number of output channels"

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2016 2017 2018 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -89,12 +89,11 @@ mha_wave_t *lpc_bl_predictor_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-lpc_bl_predictor::lpc_bl_predictor(algo_comm_t & ac,
-                                   const std::string & chain_name,
-                                   const std::string & algo_name)
+lpc_bl_predictor::lpc_bl_predictor(algo_comm_t iac,
+                                   const std::string &)
     : MHAPlugin::plugin_t<lpc_bl_predictor_config>(
           "This plugin performs forward and backward linear prediction using the Burg - Lattice algorithm for computing the next value of a given time series.\n\n"
-          "The estimated forward and backward linear predictionn parameters are saved in th AC space.\n",ac)
+          "The estimated forward and backward linear predictionn parameters are saved in th AC space.\n",iac)
     , lpc_order("LPC order defines the number of coffecients to be estimated", "21", "]0,]")
     , name_kappa("Name of the kappa parameter of the Burg-Lattice algorithm in the AC domain to be used for the joint estimation of more than one time series", "km")
     , name_lpc_f("Name of the forward LPC estimate of the Burg-Lattice algorithm in the AC domain", "name_lpc_f")

@@ -118,9 +118,7 @@ namespace dc_simple {
     /// interface class
     class dc_if_t : public DC, public LEVEL, public dc_vars_t {
     public:
-        dc_if_t(const algo_comm_t& ac_,
-                 const std::string& th_,
-                 const std::string& al_);
+        dc_if_t(algo_comm_t iac, const std::string & configured_name);
         void prepare(mhaconfig_t&);
         void release();
         mha_spec_t* process(mha_spec_t* s);

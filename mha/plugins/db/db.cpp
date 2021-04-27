@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2014 2015 2017 HörTech gGmbH
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -51,7 +51,7 @@ mha_wave_t* db_t::inner_process(mha_wave_t* s)
 
 class db_if_t : public MHAPlugin::plugin_t< db_t > {
 public:
-    db_if_t(algo_comm_t,std::string,std::string);
+    db_if_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
     void release();
@@ -60,17 +60,15 @@ private:
     MHAEvents::patchbay_t< db_if_t > patchbay;
     MHAParser::int_t fragsize;
     MHAParser::mhapluginloader_t plugloader;
-    std::string chain;
     std::string algo;
     bool bypass;
 };
 
-db_if_t::db_if_t(algo_comm_t iac,std::string th,std::string al)
+db_if_t::db_if_t(algo_comm_t iac, const std::string & configured_name)
     : MHAPlugin::plugin_t< db_t >("Synchronous double buffer plugin.",iac),
       fragsize("fragment size of client plugin","200","[0,]"), 
       plugloader(*this,iac),
-      chain(th),
-      algo(al),
+      algo(configured_name),
       bypass(false)
 {
     set_node_id("db");

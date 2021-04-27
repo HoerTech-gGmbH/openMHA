@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2011 2013 2014 2015 2016 HörTech gGmbH
-// Copyright © 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -40,9 +40,7 @@ private:
 class fftfb_interface_t : public MHAPlugin::plugin_t<fftfb_plug_t>,
                     public MHAOvlFilter::overlap_save_filterbank_t::vars_t {
 public:
-    fftfb_interface_t(const algo_comm_t& ac,
-                const std::string& th,
-                const std::string& al);
+    fftfb_interface_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_spec_t* process(mha_spec_t*);
@@ -64,14 +62,13 @@ Default values are set and MHA configuration variables registered into the parse
 \param th     chain name
 \param al     algorithm name
 */
-fftfb_interface_t::fftfb_interface_t(const algo_comm_t& ac,
-                         const std::string& th,
-                         const std::string& al)
-    : MHAPlugin::plugin_t<fftfb_plug_t>("FFT based filterbank with overlapping filters",ac),
+fftfb_interface_t::fftfb_interface_t(algo_comm_t iac,
+                                     const std::string & configured_name)
+    : MHAPlugin::plugin_t<fftfb_plug_t>("FFT based filterbank with overlapping filters",iac),
       MHAOvlFilter::overlap_save_filterbank_t::vars_t(static_cast<MHAParser::parser_t&>(*this)),
       return_imag("Return imaginary part? Results are stored in AC variable '<plugname>_imag'.","no"),
-      nchannels(ac,al+"_nchannels"),
-      algo(al),
+      nchannels(ac, configured_name + "_nchannels"),
+      algo(configured_name),
       prepared(false),
       nbands(0)
 {

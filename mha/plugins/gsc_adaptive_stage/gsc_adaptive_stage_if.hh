@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2013 2014 2018 2020 HörTech gGmbH
+// Copyright © 2013 2014 2018 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,8 +23,7 @@ namespace gsc_adaptive_stage {
 class gsc_adaptive_stage_if : public MHAPlugin::plugin_t<gsc_adaptive_stage> {
 
 public:
-  gsc_adaptive_stage_if(algo_comm_t & ac,const std::string &,
-                       const std::string &);
+  gsc_adaptive_stage_if(algo_comm_t iac, const std::string & configured_name);
   ~gsc_adaptive_stage_if()=default;
   mha_wave_t* process(mha_wave_t*);
   void prepare(mhaconfig_t&);

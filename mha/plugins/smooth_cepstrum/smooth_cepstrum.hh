@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2013 2014 2017 2018 2019 HörTech gGmbH
+// Copyright © 2013 2014 2017 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -142,8 +142,7 @@ namespace smooth_cepstrum {
     class smooth_cepstrum_if_t : public MHAPlugin::plugin_t<smooth_cepstrum_t> {
 
     public:
-        smooth_cepstrum_if_t(algo_comm_t & ac,const std::string & chain_name,
-                             const std::string & algo_name);
+        smooth_cepstrum_if_t(algo_comm_t iac, const std::string & configured_name);
         mha_spec_t* process(mha_spec_t*);
         void prepare(mhaconfig_t&);
         void release(void) {/* Do nothing in release */}

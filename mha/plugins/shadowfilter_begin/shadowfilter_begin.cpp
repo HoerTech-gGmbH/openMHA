@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -62,7 +63,7 @@ mha_spec_t* cfg_t::process(mha_spec_t* s)
 
 class shadowfilter_begin_t : public MHAPlugin::plugin_t<cfg_t> {
 public:
-    shadowfilter_begin_t(const algo_comm_t&,const std::string&,const std::string&);
+    shadowfilter_begin_t(algo_comm_t iac, const std::string & configured_name);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
 private:
@@ -71,12 +72,10 @@ private:
     MHAParser::int_t ntracks;
 };
 
-shadowfilter_begin_t::shadowfilter_begin_t(
-                                       const algo_comm_t& iac,
-                                       const std::string& ith,
-                                       const std::string& ial)
+shadowfilter_begin_t::shadowfilter_begin_t(algo_comm_t iac,
+                                           const std::string & configured_name)
     : MHAPlugin::plugin_t<cfg_t>("Save signal spectrum to AC variable",iac),
-      basename(ial),
+      basename(configured_name),
       nch("number of processing channels","1","[1,["),
       ntracks("number of input sources, each with nch audio channels","1","[1,[")
 {

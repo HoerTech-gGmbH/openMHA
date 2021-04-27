@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2014 2015 2017 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -134,11 +134,9 @@ mha_wave_t *lpc_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-lpc::lpc(algo_comm_t & ac,
-         const std::string & chain_name,
-         const std::string & algo_name)
-    : MHAPlugin::plugin_t<lpc_config>("This plugin implements the linear predictive coding analysis (LPC) by using the Levinson-Durbin recursion.",ac),
-      algo_name(algo_name), //copy algo name
+lpc::lpc(algo_comm_t iac, const std::string & configured_name)
+    : MHAPlugin::plugin_t<lpc_config>("This plugin implements the linear predictive coding analysis (LPC) by using the Levinson-Durbin recursion.",iac),
+      algo_name(configured_name), //copy algo name
       lpc_order("LPC filter order", "20", "[0,500]"),
       lpc_buffer_size("Size of the buffer in samples for which the autocorrelation matrix will be computed", "21", "]0,501]"),
       shift("Refill the LPC buffer completely with new input signal by ignoring the old samples (no) or shift the old buffer as large as the block size of the input signal and read in the current input signal (yes).", "yes"),

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2009 2010 2012 2013 2014 2015 HörTech gGmbH
-// Copyright © 2017 2018 2020 HörTech gGmbH
+// Copyright © 2017 2018 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -67,7 +67,7 @@ private:
 class acsave_t : public MHAPlugin::plugin_t<cfg_t> {
     typedef std::vector<save_var_t*> varlist_t;
 public:
-    acsave_t(const algo_comm_t&,const std::string&,const std::string&);
+    acsave_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_spec_t* process(mha_spec_t*);
@@ -82,7 +82,6 @@ private:
     MHAParser::float_t reclen;
     MHAParser::vstring_t variables;
     varlist_t varlist;
-    std::string chain;
     std::string algo;
     bool b_prepared;
     bool b_flushed;
@@ -212,7 +211,7 @@ void cfg_t::flush_data(const std::string& filename,unsigned int fmt)
 /*                                                            ***/
 /****************************************************************/
 
-acsave_t::acsave_t(const algo_comm_t& iac,const std::string& ith,const std::string& ial)
+acsave_t::acsave_t(algo_comm_t iac, const std::string & configured_name)
     : MHAPlugin::plugin_t<cfg_t>(
         "Save chain data to text or Matlab 4 files.\n\n"
         "Usage:\n\n"
@@ -232,8 +231,7 @@ acsave_t::acsave_t(const algo_comm_t& iac,const std::string& ith,const std::stri
       fname("output file name",""),
       reclen("maximal recording length in seconds","10","[0,]"),
       variables("list of variables to be saved (empty: save all)","[]"),
-      chain(ith),
-      algo(ial),
+      algo(configured_name),
       b_prepared(false),
       b_flushed(false)
 {

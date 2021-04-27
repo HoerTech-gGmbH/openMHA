@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2017 2018 2020 HörTech gGmbH
+// Copyright © 2017 2018 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -78,8 +78,8 @@ private:
 class adaptive_feedback_canceller : public MHAPlugin::plugin_t<adaptive_feedback_canceller_config> {
 
 public:
-    adaptive_feedback_canceller(algo_comm_t & ac,const std::string & chain_name,
-                     const std::string & algo_name);
+    adaptive_feedback_canceller(algo_comm_t ac,
+                                const std::string & configured_name);
     ~adaptive_feedback_canceller();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);

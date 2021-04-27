@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2008 2009 2010 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -94,7 +95,7 @@ mha_spec_t* smoothspec_wrap_t::proc_2(mha_spec_t* s)
 
 class overlapadd_if_t : public MHAPlugin::plugin_t<smoothspec_wrap_t> {
 public:
-    overlapadd_if_t(const algo_comm_t&,const std::string&,const std::string&);
+    overlapadd_if_t(algo_comm_t iac, const std::string & configured_name);
     ~overlapadd_if_t();
     void prepare(mhaconfig_t&);
     void release();
@@ -112,13 +113,14 @@ private:
     mhaconfig_t cf_in, cf_out;
 };
 
-overlapadd_if_t::overlapadd_if_t(const algo_comm_t& iac,const std::string&,const std::string& ialg)
+overlapadd_if_t::overlapadd_if_t(algo_comm_t iac,
+                                 const std::string & configured_name)
     : MHAPlugin::plugin_t<smoothspec_wrap_t>("Gain smoothing for reduction of filter length",iac),
       mode("Gain smoothing mode\n\nNote: Appropriate settings of window position are required (linear_phase: 0.5, minimal_phase: 0)\n","linear_phase","[off linear_phase minimal_phase]"),
       irswnd("Impulse response window function"),
       epsilon("Epsilon for safe division by zero (avoid inf)","1e-18","[1.1e-19,]"),
       plugloader(*this,iac),
-      algo(ialg),
+      algo(configured_name),
       cf_in(tftype),cf_out(tftype)
 {
     insert_item("mode",&mode);

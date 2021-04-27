@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2011 2014 2015 HörTech gGmbH
-// Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,12 +24,10 @@
 
 using namespace dc;
 
-dc_if_t::dc_if_t(const algo_comm_t& ac_,
-                 const std::string& th_,
-                 const std::string& al_)
-   : MHAPlugin::plugin_t<dc_t>("dynamic compression",ac_),
+dc_if_t::dc_if_t(algo_comm_t iac, const std::string & configured_name)
+   : MHAPlugin::plugin_t<dc_t>("dynamic compression",iac),
     dc_vars_t(static_cast<MHAParser::parser_t&>(*this)),
-    algo(al_)
+    algo(configured_name)
 {
     patchbay.connect(&writeaccess,this,&dc_if_t::update);
 }

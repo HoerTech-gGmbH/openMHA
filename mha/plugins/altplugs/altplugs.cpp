@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2007 2008 2009 2010 2011 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2007 2008 2009 2010 2011 2013 2014 2015 2018 2019 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -35,7 +36,7 @@ mhaplug_cfg_t::mhaplug_cfg_t(algo_comm_t iac,const std::string& libname,bool use
 class altplugs_t : public MHAPlugin::plugin_t<MHAWindow::fun_t>
 {
 public:
-    altplugs_t(algo_comm_t iac,const char* chain,const char* algo);
+    altplugs_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     void process(mha_wave_t*,mha_wave_t**);
@@ -75,7 +76,7 @@ private:
     unsigned int ramp_len;
 };
 
-altplugs_t::altplugs_t(algo_comm_t iac,const char* chain,const char* algo)
+altplugs_t::altplugs_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<MHAWindow::fun_t>("Configure alternative plugins.",iac),
       use_own_ac("Use own AC space for each plug (yes), or share parents space (no). Must be set before plugs.","no"),
       parser_plugs("List of plugins","[]"),

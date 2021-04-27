@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2017 2020 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2013 2017 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -64,9 +64,8 @@ public:
  */
 class complex_scale_channel_t : public MHAPlugin::plugin_t<cfg_t> {
 public:
-    complex_scale_channel_t(const algo_comm_t&,
-                    const std::string&,
-                    const std::string&);
+    complex_scale_channel_t(algo_comm_t iac,
+                            const std::string & configured_name);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
 private:
@@ -99,9 +98,8 @@ cfg_t::cfg_t(unsigned int ichannel,
 /*
  * Constructor of the simple signal processing class.
  */
-complex_scale_channel_t::complex_scale_channel_t(const algo_comm_t& iac,
-                                                 const std::string&,
-                                                 const std::string&)
+complex_scale_channel_t::complex_scale_channel_t(algo_comm_t iac,
+                                                 const std::string &)
     : MHAPlugin::plugin_t<cfg_t>("example plugin configuration structure",iac),
       scale_ch("index of channel to be scaled","0","[0,["),
       factor("complex scale factor","1.0","],[")

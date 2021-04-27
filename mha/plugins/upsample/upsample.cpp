@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2008 2010 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +19,7 @@
 
 class us_t : public MHAPlugin::plugin_t<MHASignal::waveform_t> {
 public:
-    us_t(algo_comm_t,std::string,std::string);
+    us_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
     void release();
@@ -27,7 +28,7 @@ private:
     MHAFilter::iir_filter_t antialias;
 };
 
-us_t::us_t(algo_comm_t iac,std::string,std::string)
+us_t::us_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<MHASignal::waveform_t>("Upsampling by integer fractions",iac),
       ratio("upsampling ratio","3","[1,]")
 {

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2011 2014 2015 HörTech gGmbH
-// Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -116,9 +116,7 @@ namespace dc {
 
   class dc_if_t : public MHAPlugin::plugin_t<dc_t>, public dc_vars_t {
     public:
-        dc_if_t(const algo_comm_t& ac_,
-                const std::string& th_,
-                const std::string& al_);
+        dc_if_t(algo_comm_t iac, const std::string & configured_name);
         void prepare(mhaconfig_t& tf);
         mha_wave_t* process(mha_wave_t*);
         mha_spec_t* process(mha_spec_t*);

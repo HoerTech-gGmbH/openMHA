@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2004 2005 2006 2009 2010 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2004 2005 2006 2009 2010 2013 2014 2015 2018 2019 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -29,9 +30,7 @@ public:
 
 class softclip_t : public MHAPlugin::plugin_t<cfg_t> {
 public:
-    softclip_t(const algo_comm_t&,
-               const std::string&,
-               const std::string&);
+    softclip_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
     void update();
@@ -44,9 +43,7 @@ private:
     MHAEvents::patchbay_t<softclip_t> patchbay;
 };
 
-softclip_t::softclip_t(const algo_comm_t& iac,
-                       const std::string& chain,
-                       const std::string& name)
+softclip_t::softclip_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<cfg_t>(
         "The softclipper implements a broad band dynamic\n"
         "compression above a given level (Compression limiting).",iac),

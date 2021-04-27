@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2014 2015 2018 HörTech gGmbH
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -100,7 +100,7 @@ mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)
     return &spec_in;
 }
 
-wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const std::string& ialg)
+wave2spec_if_t::wave2spec_if_t(algo_comm_t iac, const std::string & configured_name)
     : MHAPlugin::plugin_t<wave2spec_t>(
         "Waveform to spectrum overlap add and FFT method.\n\n"
         "Audio data is collected up to wndlen, then windowed by\n"
@@ -115,7 +115,7 @@ wave2spec_if_t::wave2spec_if_t(const algo_comm_t& iac,const std::string&,const s
       strict_window_ratio("Disallow window sizes that are not a multiple of the"
                           " hop size (fragsize) by power of two.","yes"),
       return_wave("return input waveform signal, store spectrum only to AC","no"),
-      algo(ialg)
+      algo(configured_name)
 {
     insert_item("fftlen",&nfft);
     insert_item("wndlen",&nwnd);

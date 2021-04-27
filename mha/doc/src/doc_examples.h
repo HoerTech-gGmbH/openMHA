@@ -41,9 +41,11 @@ implement an \mha Plugin.
 It attenuates the sound signal in the first channel by multiplying the sound
 samples with a factor.
 The plugin class MHAPlugin::plugin_t exports several methods, 
-but only two of them need a non-empty implementation: \c prepare() method 
-is a pure virtual function and \c process() is called when signal processing 
-starts.
+but only two of them need a non-empty implementation: 
+  - \c prepare()
+    - The \c prepare() method in the parent class \c mha_plugin_t<> is a pure virtual method and needs an implementation so that the plugin class can be instantiated.
+  - \c process()
+    - The \c process() method is called whenever a new block of audio arrives and needs signal processing by this plugin.
 
 \skip mha_plugin.hh
 \until Do nothing in release
@@ -53,13 +55,14 @@ file.  C++ helper classes for plugin development are declared in this
 header file, and most header files needed for plugin development are
 included by mha_plugin.hh. 
 
-The class plugin1_t inherits from the class MHAPlugin::plugin_t, which
-then inherits from MHAParser::parser_t -- the configuration language
-interface in the method "parse".  Our plugin class therefore exports
-the working "parse" method inherited from MHAParser::parser_t, and the
-plugin is visible in the \mha configuration tree.
+The class \c example1_t inherits from the class MHAPlugin::plugin_t, which
+in turn inherits from MHAParser::parser_t -- the configuration language
+interface in the method "parse".  Our plugin class therefore inherits the
+"parse" method from MHAParser::parser_t, which integrates the
+plugin into the global \mha configuration tree.
 
-The constructor has to accept 3 parameters of correct types.
+The constructor has to accept two parameters of types \c algo_comm_t and
+\c std::string, respectively.
 In this simple example, we do not make use of them.
 
 The \c release() method is used to free resources after signal processing.
@@ -69,11 +72,11 @@ free them.
 \subsection ex1_prepare The prepare method
 \skip prepare(
 \until }
-\param signal_info Contains information about the input signal's parameters,
+\param signal_info Contains information about the input signal's dimensions,
                   see \ref mhaconfig_t.
 
 The \c prepare() method of the plugin is called before the signal
-processing starts, when the input signal parameters like domain,
+processing starts, when the input signal dimensions like domain,
 number of channels, frames per block, and sampling rate are known.
 The \c prepare() method can check these values and raise an exception if the 
 plugin cannot cope with them, as is done here.
@@ -338,8 +341,8 @@ useful.
 \skip ::example3_t
 \until }
 
-The constructor of monitor variables does not take a parameter for setting
-the initial value. The single parameter here is the help text describing the
+The constructor of a monitor variable does not require a parameter for setting
+the initial value. The only parameter here is the help text describing the
 contents of the read-only variable. 
 If the initial value should differ from 0, then the .\c data member of the
 configuration variable has to be set to the initial value in the plugin
@@ -550,7 +553,7 @@ code and error message.
 \section ex6 example6.cpp
 \dontinclude example6.cpp
 
-This last example is the same as the previous one, but it additionally creates an
+This example is the same as the previous one, except that it additionally creates an
 'Algorithm Communication Variable' (AC variable). It calculates the
 RMS level of a given channel and stores it into this variable. The
 variable can be accessed by any other algorithm in the same chain. To
@@ -570,7 +573,7 @@ and other detailed informations please see \ref algocomm.
 \section DebuggingMHAplugins Debugging \mha plugins
 
 Suppose you would want to step through the code of your \mha plugin with a 
-debugger.  This example details how to use the linux gdb debugger to
+debugger.  This example details how to use the GDB debugger to
 inspect the \c example6_t::prepare() and \c example6_t::process() routines of
 \ref ex6
 example 6.
@@ -578,7 +581,7 @@ example 6.
 First, make sure that your plugin is compiled with the compiler option to
 include debugging symbols: Apply the -ggdb switch to all gcc, g++ invocations.
 
-Once the plugin is compiled, with debugging symbols, create a test
+Once the plugin is compiled with debugging symbols, create a test
 configuration. For example 6, assuming there is an audio file named 
 input.wav in your working directory, you could create a configuration 
 file named `debugexample6.cfg', with the following content:

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2009 2010 2013 2014 2015 2016 HörTech gGmbH
-// Copyright © 2018 2019 2020 HörTech gGmbH
+// Copyright © 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,7 @@ namespace equalize {
 
   class freqgains_t : public MHAPlugin::plugin_t<cfg_t> {
   public:
-    freqgains_t(const algo_comm_t& iac,const std::string&,const std::string&);
+    freqgains_t(algo_comm_t iac, const std::string & configured_name);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
   private:
@@ -50,8 +50,7 @@ namespace equalize {
 
   /********************************************************************/
 
-  freqgains_t::freqgains_t(
-                           const algo_comm_t& iac,const std::string&,const std::string&)
+  freqgains_t::freqgains_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<cfg_t>("Equalizer plugin applies configurable gains to all bins of the spectrum",iac),
       fftgains("gains in FFT resolution (FFT length/2+1 entries required per row)\n"
                " as linear factors, one row per audio channel","[[]]","[0,["),

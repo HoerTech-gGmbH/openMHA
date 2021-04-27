@@ -123,9 +123,7 @@ void fftfb_plug_t::insert()
 class interface_t : public MHAPlugin::plugin_t<fftfb_plug_t>,
                     public MHAOvlFilter::fftfb_vars_t {
 public:
-    interface_t(const algo_comm_t&,
-                const std::string&,
-                const std::string&);
+    interface_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_spec_t* process(mha_spec_t*);
@@ -147,13 +145,11 @@ private:
     \param th     chain name
     \param al     algorithm name
 */
-interface_t::interface_t(const algo_comm_t& ac_,
-                         const std::string& th,
-                         const std::string& al)
-    : MHAPlugin::plugin_t<fftfb_plug_t>("Multiband compressor framework based on level in overlapping filter bands.",ac_),
+interface_t::interface_t(algo_comm_t iac, const std::string & configured_name)
+    : MHAPlugin::plugin_t<fftfb_plug_t>("Multiband compressor framework based on level in overlapping filter bands.",iac),
       MHAOvlFilter::fftfb_vars_t(static_cast<MHAParser::parser_t&>(*this)),
-      num_channels(ac_, al + "_nch", 0),
-      algo(al),
+      num_channels(iac, configured_name + "_nch", 0),
+      algo(configured_name),
       plug(*this,ac),
       plug_sigs(NULL)
 {

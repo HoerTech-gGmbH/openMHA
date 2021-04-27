@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2010 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -83,7 +84,7 @@ mha_wave_t* ac2wave_t::process(mha_wave_t* s)
 
 class ac2wave_if_t : public MHAPlugin::plugin_t<ac2wave_t> {
 public:
-    ac2wave_if_t(const algo_comm_t&,const std::string&,const std::string&);
+    ac2wave_if_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_spec_t*);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
@@ -100,9 +101,7 @@ private:
     MHAEvents::patchbay_t<ac2wave_if_t> patchbay;
 };
 
-ac2wave_if_t::ac2wave_if_t(const algo_comm_t& iac,
-                           const std::string& ith,
-                           const std::string& ial)
+ac2wave_if_t::ac2wave_if_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<ac2wave_t>(
         "Mix the main input signal with a waveform stored into AC\n"
         "variables. Main and AC signal can be attenuated or delayed\n"

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2018 2019 2020 HörTech gGmbH
+// Copyright © 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -206,7 +206,7 @@ namespace ac2lsl{
     class ac2lsl_t : public MHAPlugin::plugin_t<cfg_t>
     {
     public:
-        ac2lsl_t(algo_comm_t iac,const char* chain, const char* algo);
+        ac2lsl_t(algo_comm_t iac, const std::string & configured_name);
         /** Prepare constructs the vector of bridge variables and locks
          * the configuration, then calls update(). */
         void prepare(mhaconfig_t&);
@@ -238,7 +238,7 @@ namespace ac2lsl{
     };
 }
 
-ac2lsl::ac2lsl_t::ac2lsl_t(algo_comm_t iac,const char* chain, const char* algo)
+ac2lsl::ac2lsl_t::ac2lsl_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<ac2lsl::cfg_t>("Send AC variables as"
                                          " LSL messages.",iac),
     vars("List of AC variables to be saved, empty for all.","[]"),

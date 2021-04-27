@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2008 2010 2012 2013 2014 2015 2016 2017 2018 2020 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -80,7 +81,7 @@ private:
 class nlms_t : public MHAPlugin::plugin_t<rt_nlms_t>
 {
 public:
-    nlms_t(algo_comm_t,const char*,const char*);
+    nlms_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_wave_t* process(mha_wave_t*);
@@ -102,10 +103,11 @@ private:
     MHAEvents::patchbay_t<nlms_t> patchbay;
 };
 
-nlms_t::nlms_t(algo_comm_t ac,const char*,const char* ialg)
+nlms_t::nlms_t(algo_comm_t iac, const std::string & configured_name)
     : MHAPlugin::plugin_t<rt_nlms_t>(
           "This plugin adaptively estimates the coefficients of a filter by means of the NLMS algorithm.\n\n"
-          "The estimated filter  is stored into an AC variable named by the algorithm configuration name or by the configuration variable name_f and the input signal is filtered by the current filter and returned as the output signal of the plugin.\n",ac),
+          "The estimated filter  is stored into an AC variable named by the algorithm configuration name or by the configuration variable name_f and the input signal is filtered by the current filter and returned as the output signal of the plugin.\n",
+          iac),
       rho("convergence coefficient","0.01","]0,2]"),
       c("stabilization parameter","1e-5","]0,]"),
       ntaps("number of taps in filter","32","]0,]"),
@@ -117,7 +119,7 @@ nlms_t::nlms_t(algo_comm_t ac,const char*,const char* ialg)
       name_e("Name of error signal E", ""),
       name_f("Name of the AC variable for saving the adapive filter", ""),
       n_no_update("Number of iterations without updating the filter coefficients", "0"),
-      algo(ialg)
+      algo(configured_name)
 {
     insert_member(rho);
     insert_member(c);
@@ -430,7 +432,7 @@ MHAPLUGIN_DOCUMENTATION\
 /*
  * Local Variables:
  * compile-command: "make"
- * c-basic-offset: 2
+ * c-basic-offset: 4
  * indent-tabs-mode: nil
  * End:
  */

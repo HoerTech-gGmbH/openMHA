@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -35,7 +35,7 @@ public:
     .srate = 44100.0f
   };
   /// Plugin wave2spec instance used during test
-  wave2spec_if_t w2s = {ac, "thread_name", "algo_name"};
+  wave2spec_if_t w2s = {ac, "algo_name"};
   /// Waveform input example used during process callbacks in tests
   MHASignal::waveform_t waveform = {fragsize,signal_dimensions.channels};
   /// Output parameter to process used during tests

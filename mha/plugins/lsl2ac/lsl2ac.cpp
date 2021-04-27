@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -179,7 +179,7 @@ void lsl2ac::save_var_t::insert_vars(){
     ac.insert_var_int(ac.handle, new_name.c_str(), &n_new_samples);
 }
 
-lsl2ac::lsl2ac_t::lsl2ac_t(algo_comm_t iac,const char* chain, const char* algo)
+lsl2ac::lsl2ac_t::lsl2ac_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<lsl2ac::cfg_t>("Receive LSL streams and copy"
                                          " them to AC variables.",iac)
 {

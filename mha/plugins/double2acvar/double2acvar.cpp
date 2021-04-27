@@ -1,5 +1,5 @@
 // This file is part of the HörTech open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2020 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -29,13 +29,10 @@ class double2acvar_t : public MHAParser::string_t,
                        public MHAPlugin::config_t<double> {
 public:
     /** Standard plugin constructor.
-     * @param ac    Algorithm communication variable space.
-     * @param chain Unused parameter.
-     * @param algo  Configured name of this plugin, also used as name of
-     *              the AC variable. */
-    double2acvar_t(algo_comm_t ac, 
-                   const std::string & chain, 
-                   const std::string & algo);
+     * @param iac             Algorithm communication variable space.
+     * @param configured_name Configured name of this plugin, also used as name
+     *                        of the AC variable. */
+    double2acvar_t(algo_comm_t iac, const std::string & configured_name);
     ~double2acvar_t() = default;
     /** process() does not alter the signal and has same implementation
      * regardless of signal domain.
@@ -67,18 +64,15 @@ private:
     bool is_prepared;
 };
 
-double2acvar_t::double2acvar_t(algo_comm_t ac,
-                               const std::string & chain,
-                               const std::string & algo) :
+double2acvar_t::double2acvar_t(algo_comm_t iac, const std::string & configured_name) :
     MHAParser::string_t("Converts configuration variable of type string\n"
                         "containing a decimal floating point number literal\n"
                         "to algorithm communication variable of type double.\n"
                         "Name of the AC variable is the configured algorithm\n"
                         "name.", "0"),
-    ac_double(ac, algo, 0.0),
+    ac_double(iac, configured_name, 0.0),
     is_prepared(false)
 {
-    (void) chain; // silence warning about unused parameter
     patchbay.connect(&writeaccess,this,
                      &double2acvar_t::on_configuration_update);
     // inserts AC variable immediately with default value.

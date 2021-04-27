@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2009 2010 2013 2014 2015 2018 2020 HörTech gGmbH
+// Copyright © 2009 2010 2013 2014 2015 2018 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -422,9 +422,7 @@ public:
 
 class gtfb_simd_t : public MHAPlugin::plugin_t<gtfb_simd_cfg_t> {
 public:
-    gtfb_simd_t(const algo_comm_t&,
-                    const std::string& thread_name,
-                    const std::string& algo_name);
+    gtfb_simd_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
 private:
@@ -453,9 +451,7 @@ void gtfb_simd_t::update_cfg()
     }
 }
 
-gtfb_simd_t::gtfb_simd_t(const algo_comm_t& iac,
-                         const std::string& thread_name,
-                         const std::string& algo_name)
+gtfb_simd_t::gtfb_simd_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<gtfb_simd_cfg_t>("Gammatone Filterbank Analyzer",
                                                iac),
       prepared(false),

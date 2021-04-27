@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2018 HörTech gGmbH
+// Copyright © 2018 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -60,8 +60,7 @@ namespace fshift{
   /** fshift plugin interface class */
   class fshift_t : public MHAPlugin::plugin_t<fshift_config_t> {
   public:
-    fshift_t(algo_comm_t & ac,const std::string & chain_name,
-             const std::string & algo_name);
+    fshift_t(algo_comm_t iac, const std::string & configured_name);
     ~fshift_t();
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);

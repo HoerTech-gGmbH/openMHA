@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
+// Copyright © 2009 2010 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
 #include "altconfig.hh"
 #include "mha_utils.hh"
 
-altconfig_t::altconfig_t(algo_comm_t iac,const char* ,const char* )
+altconfig_t::altconfig_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<char>("Alternative configurations for a plugin",iac),
       MHAParser::mhapluginloader_t(*this,iac),
       parser_algos("List of names for plugin configurations. Assigning names to algos creates"

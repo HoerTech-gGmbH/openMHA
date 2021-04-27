@@ -36,7 +36,7 @@ public:
       .srate = 44100.0f
       };
   //Plugin instance
-  example7_t ex7{ac,"thread","algo"};
+  example7_t ex7{ac,"algo"};
   MHASignal::waveform_t wave_input{signal_properties.fragsize,signal_properties.channels};
 };
 //! [first docu snippet]

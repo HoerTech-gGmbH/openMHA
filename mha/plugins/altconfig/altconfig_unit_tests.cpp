@@ -17,7 +17,7 @@
 #include <gtest/gtest.h>
 class altconfig_t_testing : public ::testing::Test {
 protected:
-  altconfig_t plug={algo_comm_t(),"",""};
+  altconfig_t plug={algo_comm_t(),""};
 };
 
 TEST_F(altconfig_t_testing,set_algos_success){

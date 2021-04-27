@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2013 2014 2015 2018 2019 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -40,10 +41,10 @@ namespace fftfbpow {
   class fftfbpow_interface_t : public MHAPlugin::plugin_t<fftfbpow_t>, public MHAOvlFilter::fftfb_vars_t {
   public:
     /** Constructor with standard MHA constructor parameters
-     * @param ac Handle to algorithm communication variable space
-     * @param algo_name Configured name of this plugin instance
+     * @param iac             Handle to algorithm communication variable space
+     * @param configured_name Configured name of this plugin instance
      */
-    fftfbpow_interface_t(const algo_comm_t& ac,const std::string&, const std::string& algo_name);
+    fftfbpow_interface_t(algo_comm_t iac, const std::string & configured_name);
     /** Standard MHA plugin prepare function.
      * Ensures that the input is in the frequency domain, calls update_cfg()
      * and inserts fbpow into the AC space.
@@ -66,12 +67,11 @@ namespace fftfbpow {
   };
 }
 
-fftfbpow::fftfbpow_interface_t::fftfbpow_interface_t(const algo_comm_t& ac,
-                                                     const std::string&,
-                                                     const std::string& algo_name)
-  : MHAPlugin::plugin_t<fftfbpow_t>("FFT based filterbank analysis with overlapping filters",ac),
+fftfbpow::fftfbpow_interface_t::fftfbpow_interface_t(algo_comm_t iac,
+                                                     const std::string & configured_name)
+  : MHAPlugin::plugin_t<fftfbpow_t>("FFT based filterbank analysis with overlapping filters",iac),
   MHAOvlFilter::fftfb_vars_t(static_cast<MHAParser::parser_t&>(*this)),
-  name(algo_name)
+  name(configured_name)
 {
   patchbay.connect(&writeaccess,this,&fftfbpow_interface_t::update_cfg);
 }

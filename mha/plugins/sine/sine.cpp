@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2009 2010 2013 2014 2015 2017 2018 2021 HörTech gGmbH
+// Copyright © 2005 2006 2009 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -49,10 +50,7 @@ struct sine_cfg_t {
 class sine_t : public MHAPlugin::plugin_t<sine_cfg_t> {
 public:
     /// Constructor initializes and connects configuration variables
-    sine_t(
-           const algo_comm_t&,
-           const std::string& chain_name,
-           const std::string& algo_name);
+    sine_t(algo_comm_t iac, const std::string & configured_name);
     /// Computes sinusoid and mixes/replaces input signal. If the amplitude
     /// has changed since the last process callback, spread out the amplitude
     /// change linearly across all samples of the buffer to avoid clicks.
@@ -81,9 +79,7 @@ void sine_t::update_cfg()
     push_config(c);
 }
 
-sine_t::sine_t(const algo_comm_t& iac,
-               const std::string& chain_name,
-               const std::string& algo_name)
+sine_t::sine_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<sine_cfg_t>("Sine wave generator.",iac),
       lev("sine RMS level in dB SPL FF","0"),
       frequency("Frequency in Hz", "0","[0,["),

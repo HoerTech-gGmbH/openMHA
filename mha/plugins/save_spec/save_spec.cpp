@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,18 +18,17 @@
 
 class save_spec_t : public MHAPlugin::plugin_t<MHA_AC::spectrum_t> {
 public:
-    save_spec_t(const algo_comm_t& iac,
-                const std::string& ith,
-                const std::string& ial)
+    save_spec_t(algo_comm_t iac, const std::string & configured_name)
         : MHAPlugin::plugin_t<MHA_AC::spectrum_t>("Save signal spectrum to AC variable",iac),
-          basename(ial){};
+          basename(configured_name)
+    {}
     mha_spec_t* process(mha_spec_t* s)
     {
         poll_config();
         cfg->copy(*s);
         cfg->insert();
         return s;
-    };
+    }
     void prepare(mhaconfig_t& tf)
     {
         if( tf.domain != MHA_SPECTRUM )

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2010 2013 2012 2014 2015 2016 2018 HörTech gGmbH
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -812,9 +812,7 @@ namespace MHAPlugin_Split {
     class split_t : public MHAParser::parser_t
     {
     public:
-        split_t(algo_comm_t iac,
-                const std::string & chain_name,
-                const std::string & algo_name);
+        split_t(algo_comm_t iac, const std::string & configured_name);
         ~split_t();
         void prepare_(mhaconfig_t&);
         void release_();
@@ -873,15 +871,8 @@ namespace MHAPlugin_Split {
     /* @param iac
      *   Space for algorithm communication variables.  Currently,
      *   These varialbes are not used by the split plugin, and the splitted
-     *   pathways get their own, fresh AC namespaces.
-     * @param chain_name
-     *   Historic parameter.
-     * @param algo_name
-     *   Configured name of the plugin. Accessible by this name in the 
-     *   configuration language tree. */
-    split_t::split_t(algo_comm_t iac,
-                     const std::string & chain_name,
-                     const std::string & algo_name)
+     *   pathways get their own, fresh AC namespaces. */
+    split_t::split_t(algo_comm_t iac, const std::string &)
         : MHAParser::parser_t("Split audio signal into channel groups and have"
                               " them processed by different plugins in"
                               " parallel"),

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2011 2012 2013 HörTech gGmbH
-// Copyright © 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -553,10 +553,10 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
 #define MHAPLUGIN_INIT_CALLBACKS_PREFIX(prefix,classname)               \
     extern "C" {                                                        \
-        __declspec(dllexport) int prefix ## MHAInit(algo_comm_t algo_comm,const char* chain, const char*algo,void** handle) \
+        __declspec(dllexport) int prefix ## MHAInit(algo_comm_t algo_comm, const char*algo_name,void** handle) \
         {                                                               \
             try{                                                        \
-                *handle = new classname(algo_comm,chain,algo);          \
+                *handle = new classname(algo_comm,algo_name);          \
                 return MHA_ERR_SUCCESS;                                 \
             }                                                           \
             catch(MHA_Error& e){                                        \

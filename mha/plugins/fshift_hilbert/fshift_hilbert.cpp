@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2008 2009 2010 2011 2013 2014 2015 2017 2018 2019 HörTech gGmbH
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -77,7 +77,7 @@ namespace fshift_hilbert {
 
     class frequency_translator_t : public MHAPlugin::plugin_t<hilbert_shifter_t> {
     public:
-        frequency_translator_t(const algo_comm_t&,const std::string&,const std::string&);
+        frequency_translator_t(algo_comm_t iac, const std::string & configured_name);
         mha_spec_t* process(mha_spec_t*);
         void prepare(mhaconfig_t&);
         void release();
@@ -200,9 +200,10 @@ void fshift_hilbert::hilbert_shifter_t::process(mha_spec_t* s)
     *s += *this;
 }
 
-fshift_hilbert::frequency_translator_t::frequency_translator_t(const algo_comm_t& iac,const std::string& ith,const std::string& ial)
+fshift_hilbert::frequency_translator_t::
+frequency_translator_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<hilbert_shifter_t>("Pitch shifter",iac),
-    df("frequency to shift the bins / Hz","40",""),
+    df("frequency shift to apply to the band [fmin,fmax] in Hz","40",""),
     fmin("lower boundary for frequency shifter","4000","[0,]"),
     fmax("upper boundary for frequency shifter","16000","[0,]"),
     irslen("Bandpass: maximum length of cut off filter response","1","[1,]"),

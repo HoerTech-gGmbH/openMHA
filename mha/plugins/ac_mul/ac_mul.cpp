@@ -15,11 +15,12 @@
 
 #include "ac_mul.hh"
 
-ac_mul_t::ac_mul_t(algo_comm_t iac,std::string chain,std::string ialgo)
-    : MHAParser::string_t("Element-wise multiplication expression in style \"a * b\",\n"
+ac_mul_t::ac_mul_t(algo_comm_t iac, const std::string & configured_name)
+    : MHAParser::string_t("Element-wise multiplication expression in style"
+                          " \"a * b\",\n"
                           "where \"a\" and \"b\" are AC variables.","a * b"),
       ac(iac),
-      algo(ialgo),
+      algo(configured_name),
       argt(ARG_RR),
       str_a(""),
       str_b(""),
@@ -27,8 +28,7 @@ ac_mul_t::ac_mul_t(algo_comm_t iac,std::string chain,std::string ialgo)
       res_c(NULL),
       num_frames(0),
       num_channels(0)
-{
-}
+{}
 
 void ac_mul_t::scan_syntax()
 {

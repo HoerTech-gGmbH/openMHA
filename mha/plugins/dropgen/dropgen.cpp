@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@
 class dropgen_t : public MHAPlugin::plugin_t<int>
 {
 public:
-    dropgen_t(const algo_comm_t&,const std::string&,const std::string&);
+    dropgen_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
@@ -34,9 +34,7 @@ public:
     std::uniform_real_distribution<> dis;
 };
 
-dropgen_t::dropgen_t(const algo_comm_t& iac,
-                     const std::string&,
-                     const std::string&)
+dropgen_t::dropgen_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<int>("",iac),
       min_sleep_time("minimum sleep time, in s","0","[0,["),
       max_sleep_time("minimum sleep time, in s","0","[0,["),

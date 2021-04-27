@@ -39,7 +39,7 @@ public:
   const std::string resultname = {"resultname"};
 
   // Plugin instance
-  ac_mul_t ac_mul = {ac, "thread", resultname};
+  ac_mul_t ac_mul = {ac, resultname};
 
   // some AC variables to use in tests
   MHA_AC::waveform_t a = {ac, "a", 32, 2, true};

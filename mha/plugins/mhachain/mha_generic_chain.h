@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2012 2013 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +31,6 @@ namespace mhachain {
                  bool do_prepare,
                  MHAParser::parser_t& p,
                  algo_comm_t iac,
-                 std::string ichain,
                  bool use_profiling);
         ~plugs_t();
         void prepare(mhaconfig_t&);
@@ -45,7 +45,6 @@ namespace mhachain {
         std::vector< PluginLoader::mhapluginloader_t* > algos;
         MHAParser::parser_t& parser;
         algo_comm_t ac;
-        std::string chain;
         MHAParser::parser_t profiling;
         MHAParser::vstring_mon_t prof_algos;
         MHAParser::vfloat_mon_t prof_init;
@@ -64,7 +63,7 @@ namespace mhachain {
 
     class chain_base_t : public MHAPlugin::plugin_t<mhachain::plugs_t> {
     public:
-        chain_base_t(algo_comm_t,const std::string &,const std::string &);
+        chain_base_t(algo_comm_t iac, const std::string & configured_name);
         void process(mha_wave_t*,mha_wave_t**);
         void process(mha_spec_t*,mha_wave_t**);
         void process(mha_wave_t*,mha_spec_t**);
@@ -81,7 +80,6 @@ namespace mhachain {
         MHAEvents::patchbay_t < mhachain::chain_base_t > patchbay;
         mhaconfig_t cfin, cfout;
         bool b_prepared;
-        std::string chain;
     };
 
 }

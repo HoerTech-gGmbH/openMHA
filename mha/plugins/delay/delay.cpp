@@ -17,7 +17,7 @@
 #include "delay.hh"
 namespace delay {
 
-interface_t::interface_t(const algo_comm_t& iac,const std::string&,const std::string&)
+interface_t::interface_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<MHASignal::delay_t>("Delay line",iac),
       delays("delay in samples, one entry for each channel","[0 0]","[0,[")
 {

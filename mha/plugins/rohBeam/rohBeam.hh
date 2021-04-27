@@ -140,8 +140,7 @@ namespace rohBeam {
   class rohBeam : public MHAPlugin::plugin_t<rohConfig> {
 
   public:
-    rohBeam(algo_comm_t & ac,const std::string & chain_name,
-            const std::string & algo_name);
+    rohBeam(algo_comm_t iac, const std::string & configured_name);
     ~rohBeam();
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);

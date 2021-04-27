@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2015 2016 2018 2019 2020 HörTech gGmbH
+// Copyright © 2015 2016 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -180,10 +180,8 @@ mha_wave_t *acPooling_wave_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-acPooling_wave::acPooling_wave(algo_comm_t & ac,
-                               const std::string & chain_name,
-                               const std::string & algo_name)
-    : MHAPlugin::plugin_t<acPooling_wave_config>("Pooling of several consecutive time frames",ac)
+acPooling_wave::acPooling_wave(algo_comm_t iac, const std::string & configured_name)
+    : MHAPlugin::plugin_t<acPooling_wave_config>("Pooling of several consecutive time frames",iac)
     , numsamples("This parameter determines the length of the wave to be pooled in samples", "37", "]0,]")
     , pooling_wndlen("This parameter determines the length of the pooling window in msec.", "300", "]0,]")
     , pooling_type("This parameter determines the pooling method applied to the pooling window.", "mean", "[max sum mean]")
@@ -198,11 +196,8 @@ acPooling_wave::acPooling_wave(algo_comm_t & ac,
     , like_ratio_name("The name of the AC variable for the likelihood ratios of the averaged frames", "like_ratio")
     , prob_bias("A multiplicative probability bias", "[1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]")
 {
-    //add parser variables and connect them to methods here
-    //INSERT_PATCH(foo_parser);
-
     // make the plug-in findable via "?listid"
-    set_node_id(algo_name);
+    set_node_id(configured_name);
 
     INSERT_PATCH(numsamples);
     INSERT_PATCH(pooling_wndlen);

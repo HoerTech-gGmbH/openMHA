@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -116,7 +116,7 @@ public:
     void release();
     /// Plugin interface constructor.
     /// @param iac Algorithm communication variable space.
-    acrec_t(const algo_comm_t& iac, const std::string&, const std::string&);
+    acrec_t(algo_comm_t iac, const std::string & configured_name);
 private:
     /// Configuration callback called whenever configuaration variable "record"
     /// is written to.

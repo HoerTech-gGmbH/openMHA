@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,7 @@ std::string plugins::hoertech::acrec::to_iso8601(time_t tm){
     return std::string(buf);
 }
 
-acrec_t::acrec_t(const algo_comm_t& iac,const std::string&,const std::string&)
+acrec_t::acrec_t(algo_comm_t iac, const std::string & configured_name)
     : MHAPlugin::plugin_t<acwriter_t>("ac variable file recorder",iac),
       ac(iac)
 {

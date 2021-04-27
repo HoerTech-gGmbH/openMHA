@@ -36,7 +36,7 @@ protected:
       },
     acspace{},
     ac{acspace.get_c_handle()},
-    dc_if_handle{ac, "thread", "algo"}
+    dc_if_handle{ac, "algo"}
   {
     dc_if_handle.parse("gtdata=[[20 40 40]]");
     dc_if_handle.parse("gtmin=[50]");

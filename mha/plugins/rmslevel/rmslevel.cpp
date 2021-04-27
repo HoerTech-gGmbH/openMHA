@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -103,7 +103,7 @@ namespace rmslevel {
      */
     class rmslevel_if_t : public MHAPlugin::plugin_t<rmslevel_t> {
     public:
-        rmslevel_if_t(const algo_comm_t&,const std::string&,const std::string&);
+        rmslevel_if_t(algo_comm_t iac, const std::string & configured_name);
         mha_spec_t* process(mha_spec_t*);
         mha_wave_t* process(mha_wave_t*);
         void prepare(mhaconfig_t&);
@@ -144,8 +144,7 @@ namespace rmslevel {
         }
     }
 
-    rmslevel_if_t::rmslevel_if_t(const algo_comm_t &iac, const std::string &ith,
-                                 const std::string &ial)
+    rmslevel_if_t::rmslevel_if_t(algo_comm_t iac, const std::string & configured_name)
         : plugin_t<rmslevel_t>(
               "This algorithm displays block based RMS level informations.\n"
               "Results are stored in these AC variables (replace 'rmslevel'\n"
@@ -157,7 +156,8 @@ namespace rmslevel {
               " The \'peak\' variables are only"
               " available during waveform processing.",
               iac),
-          name(ial), unit("Use dB(SPL) or dB(HL)", "spl", "[spl hl]")
+          name(configured_name),
+          unit("Use dB(SPL) or dB(HL)", "spl", "[spl hl]")
     {
       insert_item("unit", &unit);
       patchbay.connect(&unit.writeaccess, this, &rmslevel_if_t::update);

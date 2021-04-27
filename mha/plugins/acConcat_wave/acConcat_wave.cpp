@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2015 2016 2018 2019 HörTech gGmbH
+// Copyright © 2015 2016 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -77,19 +77,14 @@ mha_wave_t *acConcat_wave_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-acConcat_wave::acConcat_wave(algo_comm_t & ac,
-                             const std::string & chain_name,
-                             const std::string & algo_name)
-    : MHAPlugin::plugin_t<acConcat_wave_config>("Concatenating two or more waveforms into one", ac)
+acConcat_wave::acConcat_wave(algo_comm_t iac, const std::string &)
+    : MHAPlugin::plugin_t<acConcat_wave_config>("Concatenating two or more waveforms into one", iac)
     , num_AC("Number of waveforms to be concatenated", "15", "[1, 28]")
     , prefix_names_AC("Prefix of the names of the waveforms to be concatenated", "vGCC_ac")
     , samples_AC("Lengths of the waveforms to be concatenated", "[]")
     , name_con_AC("Name of the concatenated waveform", "vGCC_con_AC")
     , numchannels("Number of channels in each waveform to be concatenated", "1", "[1,[")
 {
-    //add parser variables and connect them to methods here
-    //INSERT_PATCH(foo_parser);
-
     INSERT_PATCH(num_AC);
     INSERT_PATCH(prefix_names_AC);
     INSERT_PATCH(samples_AC);

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2016 2018 2019 2020 HörTech gGmbH
+// Copyright © 2014 2015 2016 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -80,10 +80,9 @@ mha_wave_t *doasvm_classification_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-doasvm_classification::doasvm_classification(algo_comm_t & ac,
-                                             const std::string & chain_name,
-                                             const std::string & algo_name)
-    : MHAPlugin::plugin_t<doasvm_classification_config>("Support vector machine (SVM) plugin for computing the direction of arrival (DOA) probabilities",ac)
+doasvm_classification::doasvm_classification(algo_comm_t iac,
+                                             const std::string & configured_name)
+    : MHAPlugin::plugin_t<doasvm_classification_config>("Support vector machine (SVM) plugin for computing the direction of arrival (DOA) probabilities",iac)
     , angles("The angles for which the SVM model has been trained", "[]")
     , w("The separation planes of the model.", "[[]]")
     , b("The model bias.", "[]")
@@ -94,7 +93,7 @@ doasvm_classification::doasvm_classification(algo_comm_t & ac,
     , vGCC_name("The name of the AC variable for the GCC matrix, which is computed by another plugin", "vGCC_ac")
 {
     // make the plug-in findable via "?listid"
-    set_node_id(algo_name);
+    set_node_id(configured_name);
 
     //add parser variables and connect them to methods here
     //INSERT_PATCH(foo_parser);

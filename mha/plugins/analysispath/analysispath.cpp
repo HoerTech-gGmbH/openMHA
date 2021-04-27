@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -217,7 +217,7 @@ analysepath_t::~analysepath_t()
 
 class plug_t : private MHAKernel::algo_comm_class_t, public PluginLoader::mhapluginloader_t  {
 public:
-    plug_t(const std::string& libname,const std::string& chain,const std::string& algo);
+    plug_t(const std::string& libname);
     ~plug_t() throw () {}
     MHAProc_wave2wave_t get_process_wave();
     MHAProc_wave2spec_t get_process_spec();
@@ -227,7 +227,7 @@ public:
 
 class analysispath_if_t : public MHAPlugin::plugin_t< analysepath_t > {
 public:
-    analysispath_if_t(algo_comm_t,std::string,std::string);
+    analysispath_if_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
     void release();
@@ -241,12 +241,12 @@ private:
     MHAParser::int_t priority;
     MHAParser::vstring_t vars;
     plug_t* plug;
-    std::string chain;
     std::string algo;
     MHA_AC::acspace2matrix_t* acspace_template;
 };
 
-analysispath_if_t::analysispath_if_t(algo_comm_t iac,std::string th,std::string al)
+analysispath_if_t::analysispath_if_t(algo_comm_t iac,
+                                     const std::string & configured_name)
     : MHAPlugin::plugin_t<analysepath_t>(
         "Split-up of signal analysis and filtering, with asychronous processing of filter path and thread-safe exchange of filter parameters as AC variables.",iac),
       libname("inner plugin name, receives adapted fragment size",""),
@@ -255,8 +255,7 @@ analysispath_if_t::analysispath_if_t(algo_comm_t iac,std::string th,std::string 
       priority("SCHED_FIFO priority (<0 for no real-time scheduling)","-1"),
       vars("Names of AC variables to be copied back to processing thread (empty: all)","[]"),
       plug(NULL),
-      chain(th),
-      algo(al),
+      algo(configured_name),
       acspace_template(NULL)
 {
     insert_item("plugname",&libname);
@@ -274,7 +273,7 @@ void analysispath_if_t::loadlib()
         delete plug;
         plug = NULL;
     }
-    plug = new plug_t(libname.data,chain,algo);
+    plug = new plug_t(libname.data);
     try{
         if( !plug->has_process(MHA_WAVEFORM,MHA_WAVEFORM) )
             throw MHA_Error(__FILE__,__LINE__,
@@ -361,7 +360,7 @@ void* plug_t::get_handle()
     return lib_data;
 }
 
-plug_t::plug_t(const std::string& libname,const std::string& chain,const std::string& algo)
+plug_t::plug_t(const std::string& libname)
     : PluginLoader::mhapluginloader_t(get_c_handle(),libname)
 {
 }

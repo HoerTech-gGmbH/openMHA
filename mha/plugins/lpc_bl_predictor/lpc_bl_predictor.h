@@ -55,8 +55,7 @@ public:
 class lpc_bl_predictor : public MHAPlugin::plugin_t<lpc_bl_predictor_config> {
 
 public:
-    lpc_bl_predictor(algo_comm_t & ac,const std::string & chain_name,
-                     const std::string & algo_name);
+    lpc_bl_predictor(algo_comm_t iac, const std::string & configured_name);
     ~lpc_bl_predictor();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);

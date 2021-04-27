@@ -214,7 +214,7 @@ osc_server_t::~osc_server_t()
 class osc2ac_t : public MHAPlugin::plugin_t<int>
 {
 public:
-    osc2ac_t(algo_comm_t iac,const char* chain, const char* algo);
+    osc2ac_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_wave_t* process(mha_wave_t* s) {process();return s;};
@@ -238,7 +238,7 @@ void osc2ac_t::setlock(bool b)
     size.setlock(b);
 }
 
-osc2ac_t::osc2ac_t(algo_comm_t iac,const char* chain, const char* algo)
+osc2ac_t::osc2ac_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<int>("Receive OSC messages and convert them to AC variables.\n"
                                "Only data type float can be received."
                                ,iac),

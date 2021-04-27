@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2013 2014 2015 2017 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -156,7 +156,8 @@ namespace noise_psd_estimator {
 
     class noise_psd_estimator_if_t : public MHAPlugin::plugin_t<noise_psd_estimator_t> {
     public:
-        noise_psd_estimator_if_t(const algo_comm_t&,const std::string&,const std::string&);
+        noise_psd_estimator_if_t(algo_comm_t iac,
+                                 const std::string & configured_name);
         mha_spec_t* process(mha_spec_t*);
         void prepare(mhaconfig_t&);
     private:
@@ -170,14 +171,15 @@ namespace noise_psd_estimator {
         MHAEvents::patchbay_t<noise_psd_estimator_if_t> patchbay;
     };
 
-    noise_psd_estimator_if_t::noise_psd_estimator_if_t(const algo_comm_t & iac, const std::string &,
-                                                       const std::string & iname)
+    noise_psd_estimator_if_t::
+    noise_psd_estimator_if_t(algo_comm_t iac,
+                             const std::string & configured_name)
         : MHAPlugin::plugin_t<noise_psd_estimator_t>("Noise power estimator after Gerkmann (2012).",iac),
         alphaPH1mean("low pass filter coefficient for PH1mean","0.9","[0,1["),
         alphaPSD("low pass filter coefficient for PSD","0.8","[0,1["),
         q("a priori probability of speech presence","0.5","[0,1]"),
         xiOptDb("optimal fixed a priori SNR for SPP estimation","15"),
-        name(iname)
+        name(configured_name)
     {
         insert_member(alphaPH1mean);
         insert_member(alphaPSD);

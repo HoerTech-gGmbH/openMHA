@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -148,7 +148,7 @@ namespace lsl2ac{
   class lsl2ac_t : public MHAPlugin::plugin_t<cfg_t>
   {
   public:
-    lsl2ac_t(algo_comm_t iac,const char* chain, const char* algo);
+    lsl2ac_t(algo_comm_t iac, const std::string & configured_name);
     /** Prepare constructs the vector of bridge variables and locks
      * the configuration, then calls update(). */
     void prepare(mhaconfig_t&);

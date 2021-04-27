@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2015 2018 2019 2020 HörTech gGmbH
+// Copyright © 2015 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -77,10 +77,8 @@ mha_wave_t *acTransform_wave_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-acTransform_wave::acTransform_wave(algo_comm_t & ac,
-                                   const std::string & chain_name,
-                                   const std::string & algo_name)
-    : MHAPlugin::plugin_t<acTransform_wave_config>("Transform Plugin Between Coordinate Systems for Waveforms",ac)
+acTransform_wave::acTransform_wave(algo_comm_t iac, const std::string & configured_name)
+    : MHAPlugin::plugin_t<acTransform_wave_config>("Transform Plugin Between Coordinate Systems for Waveforms",iac)
     , ang_name("This parameter has the name of the AC variable having the rotation angle", "head_ang")
     , raw_p_name("This parameter has the name of the AC variable having the waveform to be rotated", "p")
     , raw_p_max_name("This parameter has the name of the AC variable having the maximum of the waveform to be rotated", "p_max")
@@ -89,10 +87,8 @@ acTransform_wave::acTransform_wave(algo_comm_t & ac,
     , numsamples("This parameter determines the length of the wave to be pooled in samples.", "73", "]0, 360]")
     , to_from("This parameter tells whether the rotation will be performed to the given angle or from it", "yes")
 {
-    //add parser variables and connect them to methods here
-
     // make the plug-in findable via "?listid"
-    set_node_id(algo_name);
+    set_node_id(configured_name);
 
     INSERT_PATCH(ang_name);
     INSERT_PATCH(raw_p_name);

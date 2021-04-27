@@ -60,10 +60,8 @@ dc_t::line_t::line_t(mha_real_t x1,mha_real_t y1,mha_real_t m_)
 {
 }
 
-dc_if_t::dc_if_t(const algo_comm_t& ac_,
-                 const std::string& th_,
-                 const std::string& al_)
-    : DC("Simple dynamic compression scheme",ac_),
+dc_if_t::dc_if_t(algo_comm_t iac, const std::string &)
+    : DC("Simple dynamic compression scheme",iac),
       dc_vars_t(static_cast<MHAParser::parser_t&>(*this)),
       clientid("Client ID of last fit",""),
       gainrule("Gain rule of last fit",""),

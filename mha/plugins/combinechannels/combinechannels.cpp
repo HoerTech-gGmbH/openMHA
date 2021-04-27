@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2013 2014 2015 HörTech gGmbH
-// Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -115,9 +115,7 @@ mha_spec_t* combc_t::process(mha_spec_t* s)
 
 class combc_if_t : public MHAPlugin::plugin_t<combc_t> {
 public:
-    combc_if_t(const algo_comm_t&,
-               const std::string&,
-               const std::string&);
+    combc_if_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     mha_wave_t* process(mha_wave_t*);
     mha_spec_t* process(mha_spec_t*);
@@ -128,9 +126,7 @@ private:
     MHAParser::string_t element_gain_name;
 };
 
-combc_if_t::combc_if_t(const algo_comm_t& iac,
-                       const std::string&,
-                       const std::string&)
+combc_if_t::combc_if_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<combc_t>("Channel combiner",iac),
       outchannels("Number of output channels","1","[1,]"),
       interleaved("Input signal has interleaved channel order?","no"),

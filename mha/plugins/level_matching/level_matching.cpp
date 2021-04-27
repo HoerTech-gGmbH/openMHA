@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -139,10 +139,9 @@ mha_spec_t *level_matching::level_matching_config_t::process(mha_spec_t *s)
 /** Plugin interface ctor
  * @param ac 
  */
-level_matching::level_matching_t::level_matching_t(algo_comm_t & ac,
-                                                   const std::string &,
+level_matching::level_matching_t::level_matching_t(algo_comm_t iac,
                                                    const std::string &)
-  : MHAPlugin::plugin_t<level_matching_config_t>("Input level matching",ac)
+  : MHAPlugin::plugin_t<level_matching_config_t>("Input level matching",iac)
 {
   INSERT_PATCH(channels);
   INSERT_PATCH(lp_signal_fpass);

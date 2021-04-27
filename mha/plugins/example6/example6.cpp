@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2010 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -92,7 +92,7 @@ public:
  */
 class example6_t : public MHAPlugin::plugin_t<cfg_t> {
 public:
-    example6_t(const algo_comm_t&,const std::string&,const std::string&);
+    example6_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
 private:
@@ -131,8 +131,7 @@ cfg_t::cfg_t(unsigned int ichannel,
 /*
  * Constructor of the simple signal processing class.
  */
-example6_t::example6_t(const algo_comm_t& iac,
-                       const std::string&,const std::string&)
+example6_t::example6_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<cfg_t>("Example rms level meter plugin",iac),
       /* initialzing variable 'channel_no' with MHAParser::int_t(char* name, .... ) */
       channel_no("channel in which the RMS level is measured","0","[0,[")

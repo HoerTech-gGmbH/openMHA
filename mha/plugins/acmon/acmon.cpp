@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2008 2009 2010 2013 2014 2015 HörTech gGmbH
-// Copyright © 2017 2018 HörTech gGmbH
+// Copyright © 2017 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +23,7 @@
 namespace acmon {
 class acmon_t : public MHAPlugin::plugin_t<int> {
 public:
-    acmon_t(const algo_comm_t&,const std::string&,const std::string&);
+    acmon_t(algo_comm_t, const std::string & configured_name);
     ~acmon_t();
     void prepare(mhaconfig_t&);
     void release() {};
@@ -39,21 +39,19 @@ private:
     MHAParser::kw_t recmode;
     std::vector<ac_monitor_t*> vars;
     MHAEvents::patchbay_t<acmon_t> patchbay;
-    std::string chain;
     std::string algo;
     bool b_cont;
     bool b_snapshot;
 };
 
-acmon_t::acmon_t(const algo_comm_t& iac,const std::string& ith,const std::string& ial)
+acmon_t::acmon_t(algo_comm_t iac, const std::string& configured_name)
     : MHAPlugin::plugin_t<int>("This algorithm converts AC variables into parsable monitor variables.",iac),
       ac(iac),
       varlist("complete list of variables"),
       dimensions("variable dimensions in AC space"),
       dispmode("display mode of variables","vector","[vector matrix]"),
       recmode("record mode","cont","[cont snapshot]"),
-      chain(ith),
-      algo(ial),
+      algo(configured_name),
       b_cont(true),
       b_snapshot(false)
 {

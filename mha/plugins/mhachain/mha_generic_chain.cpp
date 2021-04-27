@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2010 2012 2013 2014 2015 2016 2017 HörTech gGmbH
-// Copyright © 2018 2019 2020 HörTech gGmbH
+// Copyright © 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
 
 #include "mha_generic_chain.h"
 
-mhachain::chain_base_t::chain_base_t(algo_comm_t iac,const std::string& ichain,const std::string & ialgo)
+mhachain::chain_base_t::chain_base_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<mhachain::plugs_t>("MHA Chain",iac),
       bprofiling("Profile the loaded plugins. Needs to be set to true before setting algos.",
                  "no"),
@@ -24,8 +24,7 @@ mhachain::chain_base_t::chain_base_t(algo_comm_t iac,const std::string& ichain,c
             "are separated by spaces and given in the order of the signal processing.\n"
             "Please refer to the detailed description of this plugin in the plugin manual\n"
             "for more details.", "[]"),
-      b_prepared(false),
-      chain(ialgo)
+      b_prepared(false)
 {
     set_node_id( "mhachain" );
     patchbay.connect(&algos.writeaccess,this,&chain_base_t::update);
@@ -47,7 +46,7 @@ void mhachain::chain_base_t::update()
                             b_prepared,
                             *this,
                             ac,
-                            chain,bprofiling.data));
+                            bprofiling.data));
     if( !b_prepared )
         poll_config();
 }
@@ -104,12 +103,10 @@ mhachain::plugs_t::plugs_t(std::vector<std::string> algos,
                            bool do_prepare,
                            MHAParser::parser_t& p,
                            algo_comm_t iac,
-                           std::string ichain,
                            bool use_profiling)
     : b_prepared(false),
       parser(p),
       ac(iac),
-      chain(ichain),
       profiling("sub-plugin profiling information"),
       prof_algos("names of algorithms"),
       prof_init("time of init callback / seconds"),

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2012 2013 2014 2015 2018 HörTech gGmbH
+// Copyright © 2012 2013 2014 2015 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -89,7 +89,7 @@ namespace MHAPlugin_Resampling {
 
     class resampling_if_t : public MHAPlugin::plugin_t< resampling_t > {
     public:
-        resampling_if_t(algo_comm_t,std::string,std::string);
+        resampling_if_t(algo_comm_t iac, const std::string & configured_name);
         mha_wave_t* process(mha_wave_t*);
         void prepare(mhaconfig_t&);
         void release();
@@ -99,13 +99,11 @@ namespace MHAPlugin_Resampling {
         MHAParser::float_t nyquist_ratio;
         MHAParser::float_t irslen_outer2inner, irslen_inner2outer;
         MHAParser::mhapluginloader_t plugloader;
-        std::string chain;
         std::string algo;
     };
 
     resampling_if_t::resampling_if_t(algo_comm_t iac,
-                                     std::string th,
-                                     std::string al)
+                                     const std::string & configured_name)
         : MHAPlugin::plugin_t<resampling_t>("Synchronous resampling plugin.",
                                             iac),
           srate("sampling rate of client plugin","44100","]0,]"),
@@ -114,8 +112,7 @@ namespace MHAPlugin_Resampling {
           irslen_outer2inner("filter lenth 1st resampling / sec","7e-4","]0,]"),
           irslen_inner2outer("filter lenth 2nd resampling / sec","7e-4","]0,]"),
           plugloader(*this, iac),
-          chain(th),
-          algo(al)
+          algo(configured_name)
     {
         set_node_id("resampling");
         insert_item("srate",&srate);

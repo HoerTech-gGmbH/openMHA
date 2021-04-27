@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2009 2010 2011 2012 2013 2014 2015 2018 HörTech gGmbH
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -238,7 +238,7 @@ namespace addsndfile {
     class addsndfile_if_t : public wave_reader, private level_adaptor
     {
     public:
-        addsndfile_if_t(algo_comm_t,const char*,const char*);
+        addsndfile_if_t(algo_comm_t iac, const std::string & configured_name);
         mha_wave_t* process(mha_wave_t*);
         void prepare(mhaconfig_t&);
         void release();
@@ -267,7 +267,7 @@ namespace addsndfile {
         MHAEvents::patchbay_t<addsndfile_if_t> patchbay;
     };
 
-    addsndfile_if_t::addsndfile_if_t(algo_comm_t iac,const char*,const char*)
+    addsndfile_if_t::addsndfile_if_t(algo_comm_t iac, const std::string &)
         : MHAPlugin::plugin_t<sndfile_t>
         (
          "Add sound data from a sound file to the MHA audio channels.\n\n"

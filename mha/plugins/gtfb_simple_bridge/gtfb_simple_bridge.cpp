@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2009 2010 2012 2013 2014 2015 2018 2020 HörTech gGmbH
+// Copyright © 2009 2010 2012 2013 2014 2015 2018 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -266,9 +266,7 @@ public:
      * @param ac    Algorithm Communication Variable space
      * @param chain chain name
      * @param algo  configured name of this plugin instance */
-    gtfb_simple_t(algo_comm_t ac,
-                  const std::string& chain,
-                  const std::string& algo);
+    gtfb_simple_t(algo_comm_t iac, const std::string & configured_name);
 
     /** Prepare contained plugin for signal processing.  Allocates the runtime
      * configuration instance.  Locks all variables. */
@@ -325,9 +323,10 @@ private:
     std::string name_;
 };
 
-gtfb_simple_t::gtfb_simple_t(algo_comm_t ac,const std::string& chain,const std::string& algo)
-    : MHAPlugin::plugin_t<gtfb_simple_rt_t>("Simple gammatone filterbank",ac),
-      plug(*this,ac),
+gtfb_simple_t::gtfb_simple_t(algo_comm_t iac,
+                             const std::string & configured_name)
+    : MHAPlugin::plugin_t<gtfb_simple_rt_t>("Simple gammatone filterbank",iac),
+      plug(*this,iac),
       fscale(*this),
       order("Filterbank order","4","[1,]"),
       prestages("Number of stages to be processed before the plugin","3","[0,]"),
@@ -339,7 +338,7 @@ gtfb_simple_t::gtfb_simple_t(algo_comm_t ac,const std::string& chain,const std::
        "into each band of the gammatone filterbank"),
       resynthesis_gain("Linear gains for resynthesis."),
       gf_internals("internal coefficients of the gammatone filterbank"),
-      name_(algo)
+      name_(configured_name)
 {
     insert_member(order);
     insert_member(prestages);

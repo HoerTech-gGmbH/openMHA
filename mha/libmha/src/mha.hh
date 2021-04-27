@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
-// Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 HörTech gGmbH
+// Copyright © 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -300,8 +300,7 @@ typedef struct algo_comm_t {
 typedef unsigned int (*MHAGetVersion_t)(void);
 
 typedef int (*MHAInit_t)(algo_comm_t algo_comm,
-                         const char* chain,
-                         const char* algo,
+                         const char* algo_name,
                          void** h);
 
 typedef int (*MHAPrepare_t)(void* h,

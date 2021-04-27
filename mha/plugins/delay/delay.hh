@@ -20,7 +20,7 @@
 namespace delay {
     class interface_t : public MHAPlugin::plugin_t<MHASignal::delay_t> {
         public:
-            interface_t(const algo_comm_t&,const std::string&,const std::string&);
+            interface_t(algo_comm_t iac, const std::string & configured_name);
             void prepare(mhaconfig_t&);
             mha_wave_t* process(mha_wave_t*);
         private:

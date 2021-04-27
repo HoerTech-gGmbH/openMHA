@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -110,9 +111,7 @@ struct gtfb_analyzer_cfg_t {
 /// Gammatone Filterbank Analyzer Plugin
 class gtfb_analyzer_t : public MHAPlugin::plugin_t<gtfb_analyzer_cfg_t> {
 public:
-    gtfb_analyzer_t(const algo_comm_t&,
-                    const std::string& thread_name,
-                    const std::string& algo_name);
+    gtfb_analyzer_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
 private:
@@ -141,10 +140,8 @@ void gtfb_analyzer::gtfb_analyzer_t::update_cfg()
     }
 }
 
-gtfb_analyzer::gtfb_analyzer_t::gtfb_analyzer_t(
-                                 const algo_comm_t& iac,
-                                 const std::string& thread_name,
-                                 const std::string& algo_name)
+gtfb_analyzer::
+gtfb_analyzer_t::gtfb_analyzer_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<gtfb_analyzer_cfg_t>("Gammatone Filterbank Analyzer",
                                                iac),
     prepared(false),

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -277,10 +277,10 @@ void adaptive_feedback_canceller_config::insert()
 }
 
 /** Constructs our plugin. */
-adaptive_feedback_canceller::adaptive_feedback_canceller(algo_comm_t & ac,
-                                   const std::string & chain_name,
-                                   const std::string & algo_name)
-    : MHAPlugin::plugin_t<adaptive_feedback_canceller_config>("Prediction error method for adaptive feedback cancellation",ac),
+adaptive_feedback_canceller::adaptive_feedback_canceller(algo_comm_t iac,
+                                   const std::string & configured_name)
+    : MHAPlugin::plugin_t<adaptive_feedback_canceller_config>
+    ("Prediction error method for adaptive feedback cancellation",iac),
     rho("Step size","0.01","]0,2]"),
     c("Regularization parameter","1e-5","]0,]"),
     ntaps("Length of the feedback path filter in taps","32","]0,]"),
@@ -295,10 +295,8 @@ adaptive_feedback_canceller::adaptive_feedback_canceller(algo_comm_t & ac,
     n_no_update("Number of iterations without updating the filter coefficients", "0", "[0,1024[")
 {
     // make the plug-in findable via "?listid"
-    set_node_id(algo_name);
+    set_node_id(configured_name);
 
-    //add parser variables and connect them to methods here
-    //INSERT_PATCH(foo_parser);
     insert_member(rho);
     insert_member(c);
     INSERT_PATCH(ntaps);

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -34,7 +34,7 @@ public:
 
   /// constructor creates plugin instance but does not prepare it
   windnoise_testing()
-    : windnoise(ac.get_c_handle(), "thread_name", "algo_name")
+    : windnoise(ac.get_c_handle(), "algo_name")
   {
   }
 

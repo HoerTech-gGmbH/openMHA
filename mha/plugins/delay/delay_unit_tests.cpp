@@ -31,7 +31,7 @@ class delay_testing : public ::testing::Test {
     .wndlen   = 0, .fftlen = 0, .srate    = 16000
   };
   // Plugin instance
-  delay::interface_t delay{ac,"thread","algo"};
+  delay::interface_t delay{ac,"algo"};
   // Three MHASignal type waveform declared
   MHASignal::waveform_t wave_original{signal_properties.fragsize, signal_properties.channels};
   MHASignal::waveform_t wave_processed{signal_properties.fragsize, signal_properties.channels};

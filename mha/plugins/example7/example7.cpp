@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2007 2009 2010 2012 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,11 +24,9 @@
 #include "example7.hh"
 #include "mha_plugin.hh"
 
-example7_t::example7_t(algo_comm_t & ac,
-                       const std::string & chain_name,
-                       const std::string & algo_name)
-    : MHAPlugin::plugin_t<int>("",ac)
-  {}
+example7_t::example7_t(algo_comm_t iac, const std::string & configured_name)
+    : MHAPlugin::plugin_t<int>("",iac)
+  {(void)configured_name;}
 
 void example7_t::release(void)
   {}

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2010 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -48,7 +48,7 @@ scaler_t::scaler_t(const unsigned int& channels,
 class gain_if_t : public MHAPlugin::plugin_t<scaler_t> 
 {
 public:
-    gain_if_t(const algo_comm_t&,const std::string&,const std::string&);
+    gain_if_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
@@ -62,9 +62,7 @@ private:
     MHAParser::float_t vmax;
 };
 
-gain_if_t::gain_if_t(const algo_comm_t& iac,
-                     const std::string&,
-                     const std::string&)
+gain_if_t::gain_if_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<scaler_t>("Gain plugin:\n\nApply a gain to each channel",iac),
       gains("Gain in dB","[0]","[-16,16]"),
       vmin("Minimal gain in dB","-16","[,0]"),

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2010 2011 2012 2013 2014 2015 2016 2018 2019 2020 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -55,7 +56,7 @@ public:
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t& cf);
     void release();
-    wavrec_t(const algo_comm_t& iac,const std::string&,const std::string&);
+    wavrec_t(algo_comm_t iac, const std::string & configured_name);
 private:
     void start_new_session();
     MHAParser::bool_t record;
@@ -67,8 +68,7 @@ private:
     MHAEvents::patchbay_t<wavrec_t> patchbay;
 };
 
-wavrec_t::wavrec_t(const algo_comm_t &iac, const std::string &,
-                   const std::string &algo_name)
+wavrec_t::wavrec_t(algo_comm_t iac, const std::string & configured_name)
     : MHAPlugin::plugin_t<wavwriter_t>("wav file recorder", iac),
       record("Record session. Each write access with argument \"yes\" will "
              "start a\n"
@@ -80,9 +80,10 @@ wavrec_t::wavrec_t(const algo_comm_t &iac, const std::string &,
       prefix("Path (including path delimiter) and file prefix", ""),
       use_date("Use date and time (yes), or only prefix (no)", "yes"),
       output_sample_format("Output sample format", "32_bit_float",
-                           "[32_bit_float]") {
+                           "[32_bit_float]")
+{
   // make the plug-in findable via "?listid"
-  set_node_id(algo_name);
+  set_node_id(configured_name);
 
   insert_member(fifolen);
   insert_member(minwrite);

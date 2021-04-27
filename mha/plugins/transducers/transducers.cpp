@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2009 2010 2011 2014 2015 2016 2017 2018 HörTech gGmbH
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -431,7 +431,7 @@ void calibrator_t::update()
 class bbcalib_interface_t : public MHAPlugin::plugin_t<int> 
 {
 public:
-    bbcalib_interface_t(const algo_comm_t&,const std::string&,const std::string&);
+    bbcalib_interface_t(algo_comm_t iac, const std::string & configured_name);
     ~bbcalib_interface_t();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
@@ -442,9 +442,7 @@ private:
     MHAParser::mhapluginloader_t plugloader;
 };
 
-bbcalib_interface_t::bbcalib_interface_t(const algo_comm_t& iac,
-                                         const std::string&,
-                                         const std::string&)
+bbcalib_interface_t::bbcalib_interface_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<int>(
         "Signal level calibration plugin.",iac),
       calib_in(iac,true),calib_out(iac,false),

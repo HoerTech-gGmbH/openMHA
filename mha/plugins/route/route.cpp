@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2010 2012 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -39,7 +40,7 @@ namespace route {
     class interface_t : public MHAPlugin::plugin_t<route::process_t>
     {
     public:
-        interface_t(algo_comm_t iac,const std::string&,const std::string&);
+        interface_t(algo_comm_t iac, const std::string & configured_name);
         void prepare(mhaconfig_t&);
         void release();
         mha_wave_t* process(mha_wave_t*);
@@ -59,7 +60,8 @@ namespace route {
 
 }
 
-route::interface_t::interface_t(algo_comm_t iac,const std::string&,const std::string& ialg)
+route::interface_t::interface_t(algo_comm_t iac,
+                                const std::string & configured_name)
     : MHAPlugin::plugin_t<route::process_t>(
         "Signal router plugin.\n\n"
         "Arguments are the input signal source names (AC variables)\n"
@@ -75,7 +77,7 @@ route::interface_t::interface_t(algo_comm_t iac,const std::string&,const std::st
       route_ac("AC output","[]"),
       prepared(false), 
       stopped(true),
-      algo(ialg)
+      algo(configured_name)
 {
     insert_item("out",&route_out);
     insert_item("ac",&route_ac);

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2015 2018 2019 HörTech gGmbH
+// Copyright © 2015 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -28,9 +28,7 @@
 namespace ac_proc {
     class interface_t : public MHAPlugin::plugin_t<int> {
     public:
-        interface_t(const algo_comm_t&,
-                    const std::string&,
-                    const std::string&);
+        interface_t(algo_comm_t iac, const std::string & configured_name);
         void prepare(mhaconfig_t&);
         void release();
         void process();
@@ -51,15 +49,13 @@ namespace ac_proc {
 
         Default values are set and MHA configuration variables registered into the parser.
 
-        \param ac_     algorithm communication handle
-        \param th     chain name
-        \param al     algorithm name
+        \param iac                 algorithm communication handle
+        \param configured_name     algorithm name
     */
-    interface_t::interface_t(const algo_comm_t& ac_,
-                             const std::string& th,
-                             const std::string& al)
-        : MHAPlugin::plugin_t<int>("AC variable processor.",ac_),
-        algo(al),
+    interface_t::interface_t(algo_comm_t iac,
+                             const std::string & configured_name)
+        : MHAPlugin::plugin_t<int>("AC variable processor.",iac),
+        algo(configured_name),
         plug(*this,ac),
         input("Name of AC variable to use as input (must exist during prepare)",""),
         permute("Permute AC variable?","no"),

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2008 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
+// Copyright © 2008 2009 2010 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -51,7 +51,7 @@ spec_fader_t::spec_fader_t(unsigned int ch,mha_real_t _fr,
 class fader_if_t : public MHAPlugin::plugin_t<spec_fader_t> 
 {
 public:
-    fader_if_t(const algo_comm_t&,const std::string&,const std::string&);
+    fader_if_t(algo_comm_t iac, const std::string & configured_name);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
 private:
@@ -62,7 +62,7 @@ private:
     mha_real_t* actgains;
 };
 
-fader_if_t::fader_if_t(const algo_comm_t& iac,const std::string&,const std::string&)
+fader_if_t::fader_if_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<spec_fader_t>("fader",iac),
       tau("fader duration in seconds","1","[0,["),
       newgains("","[1 1]"),

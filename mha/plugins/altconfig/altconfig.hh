@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
+// Copyright © 2009 2010 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -34,9 +34,10 @@ class altconfig_t : public MHAPlugin::plugin_t<char>, public MHAParser::mhaplugi
 {
 public:
     /** Constructor initializes an instance of the altconfig plugin.
-     * @param iac Algorithm communication variable space, not used by this plugin except to initialize base class.
-     * @param algo Configured name of this plugin. */
-    altconfig_t(algo_comm_t iac,const char* chain,const char* algo);
+     * @param iac             Algorithm communication variable space, not used
+     *                        by this plugin except to initialize base class.
+     * @param configured_name Configured name of this plugin. */
+    altconfig_t(algo_comm_t iac, const std::string & configured_name);
 
     /** Invoked by MHA when this plugin should prepare for signal processing.
      * altconfig delegates to the loaded plugin and does not need to do more work to prepare.
@@ -94,3 +95,10 @@ private:
      */
   void restore_state(std::map<std::string,MHAParser::string_t>& state,std::map<std::string,MHAParser::string_t>& failed_state);
 };
+
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

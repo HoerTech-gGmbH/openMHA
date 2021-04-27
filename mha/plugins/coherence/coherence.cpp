@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2013 2014 2015 HörTech gGmbH
-// Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -101,9 +101,7 @@ private:
 
 class cohflt_if_t : public MHAPlugin::plugin_t<cohflt_t> {
 public:
-    cohflt_if_t(const algo_comm_t&,
-                const std::string&,
-                const std::string&);
+    cohflt_if_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_spec_t* process(mha_spec_t*);
@@ -164,12 +162,10 @@ cohflt_t::cohflt_t(vars_t& v,
     c_min = v.mapping.data[0];
 }
 
-cohflt_if_t::cohflt_if_t(const algo_comm_t& ac,
-                         const std::string& th,
-                         const std::string& al)
-    : MHAPlugin::plugin_t<cohflt_t>("Coherence filter",ac),
+cohflt_if_t::cohflt_if_t(algo_comm_t iac, const std::string& configured_name)
+    : MHAPlugin::plugin_t<cohflt_t>("Coherence filter",iac),
       vars(this),
-      algo(al)
+      algo(configured_name)
 {
     patchbay.connect(&writeaccess,this,&cohflt_if_t::update);
 }

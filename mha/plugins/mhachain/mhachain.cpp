@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2010 2013 2014 2015 2016 2017 2018 HörTech gGmbH
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,13 +21,13 @@ namespace mhachain {
     class mhachain_t : public mhachain::chain_base_t
     {
     public:
-        mhachain_t(algo_comm_t iac,const std::string& ichain,const std::string & ialgo);
+        mhachain_t(algo_comm_t iac, const std::string & configured_name);
     };
 
 }
 
-mhachain::mhachain_t::mhachain_t(algo_comm_t iac,const std::string& ichain,const std::string & ialgo)
-    : mhachain::chain_base_t(iac,ichain,ialgo)
+mhachain::mhachain_t::mhachain_t(algo_comm_t iac, const std::string & configured_name)
+    : mhachain::chain_base_t(iac, configured_name)
 {
     insert_item("use_profiling",&bprofiling);
     insert_item("algos",&algos);

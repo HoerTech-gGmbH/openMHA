@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
+// Copyright © 2014 2015 2016 2017 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -73,10 +73,8 @@ mha_spec_t *steerbf_config::process(mha_spec_t *inSpec)
 }
 
 /** Constructs our plugin. */
-steerbf::steerbf(algo_comm_t & ac,
-                 const std::string & chain_name,
-                 const std::string & algo_name)
-    : MHAPlugin::plugin_t<steerbf_config>("Steerable Beamformer",ac),
+steerbf::steerbf(algo_comm_t iac, const std::string &)
+    : MHAPlugin::plugin_t<steerbf_config>("Steerable Beamformer",iac),
       bf_src("Provides the beamforming filters encoded as a block matrix: [chanXnangle,nfreq].", ""),
       angle_ind("Sets the steering angle in filtering.", "0", "[0,1000]"),
       angle_src("If initialized, provides an int-AC variable of steering index.","")

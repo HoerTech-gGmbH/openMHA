@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2016 2017 2018 HörTech gGmbH
+// Copyright © 2016 2017 2018 2019 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -92,12 +92,11 @@ mha_wave_t *lpc_burglattice_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-lpc_burglattice::lpc_burglattice(algo_comm_t & ac,
-                                   const std::string & chain_name,
-                                   const std::string & algo_name)
+lpc_burglattice::lpc_burglattice(algo_comm_t iac,
+                                 const std::string &)
     : MHAPlugin::plugin_t<lpc_burglattice_config>(
           "This plugin estimates the linear predictive coding coefficients for estimating the next sample value of a time series using the Burg-Lattice approach.\n\n"
-          "The estimated parameters are saved in the AC space.\n",ac)
+          "The estimated parameters are saved in the AC space.\n",iac)
     , lpc_order("LPC order defines the number of coffecients to be estimated", "21", "]0,]")
     , name_kappa("Name of the kappa parameter of the Burg-Lattice algorithm in the AC domain to be used for the joint estimation of more than one time series", "km")
     , name_f("Name of the forward linear prediction parameter", "")

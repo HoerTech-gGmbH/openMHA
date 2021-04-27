@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2018 HörTech gGmbH
+// Copyright © 2014 2015 2018 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -41,8 +41,7 @@ public:
 class doasvm_classification : public MHAPlugin::plugin_t<doasvm_classification_config> {
 
 public:
-    doasvm_classification(algo_comm_t & ac,const std::string & chain_name,
-                          const std::string & algo_name);
+    doasvm_classification(algo_comm_t iac, const std::string & configured_name);
     ~doasvm_classification();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);

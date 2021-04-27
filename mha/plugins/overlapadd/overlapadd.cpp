@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -154,7 +154,7 @@ mha_wave_t* overlapadd_t::spec2wave(mha_spec_t* s)
     return &write_buf;
 }
 
-overlapadd_if_t::overlapadd_if_t(const algo_comm_t& iac,const std::string&,const std::string& ialg)
+overlapadd_if_t::overlapadd_if_t(algo_comm_t iac, const std::string & configured_name)
     : MHAPlugin::plugin_t<overlapadd_t>(
         "Waveform to spectrum overlap add and FFT method.\n\n"
         "Audio data is collected up to wndlen, then windowed by\n"
@@ -174,7 +174,7 @@ overlapadd_if_t::overlapadd_if_t(const algo_comm_t& iac,const std::string&,const
       plugloader(*this,iac),
       prescale("scaling factor (pre-scaling)"),
       postscale("scaling factor (post-scaling)"),
-      algo(ialg),
+      algo(configured_name),
       cf_in(tftype),cf_out(tftype)
 {
     zerowindow.parse("type=rect");

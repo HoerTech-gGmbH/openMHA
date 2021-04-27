@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2014 2015 2016 2018 2019 2020 HörTech gGmbH
+// Copyright © 2014 2015 2016 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -132,17 +132,16 @@ mha_wave_t *doasvm_feature_extraction_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-doasvm_feature_extraction::doasvm_feature_extraction(algo_comm_t & ac,
-                                                     const std::string & chain_name,
-                                                     const std::string & algo_name)
-    : MHAPlugin::plugin_t<doasvm_feature_extraction_config>("Plugin for computing the generalized cross correlation with phase transform (GCC-PHAT)",ac)
+doasvm_feature_extraction::doasvm_feature_extraction(algo_comm_t iac,
+                                                     const std::string & configured_name)
+    : MHAPlugin::plugin_t<doasvm_feature_extraction_config>("Plugin for computing the generalized cross correlation with phase transform (GCC-PHAT)",iac)
     , fftlen("The length of the FFT window", "160", "[0,[")
     , max_lag("Maximum lag in samples between microphones (setup-dependent)", "20", "[0,[")
     , nupsample("The amount the GCC-PHAT spectrum is oversampled", "4", "[0,[")
     , vGCC_name("The name of the AC variable for saving the GCC matrix in", "vGCC_ac")
 {
     // make the plug-in findable via "?listid"
-    set_node_id(algo_name);
+    set_node_id(configured_name);
 
     //add parser variables and connect them to methods here
     //INSERT_PATCH(foo_parser);

@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2013 2014 2015 2018 2020 HörTech gGmbH
+// Copyright © 2013 2014 2015 2018 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,11 +22,11 @@
 /** Constructs the interface to the adaptive filter plugin.
  * @param ac Handle to the ac space
  */
-gsc_adaptive_stage::gsc_adaptive_stage_if::gsc_adaptive_stage_if(algo_comm_t & ac,
-                                           const std::string &,
-                                           const std::string &)
+gsc_adaptive_stage::
+gsc_adaptive_stage_if::gsc_adaptive_stage_if(algo_comm_t iac,
+                                             const std::string &)
   : MHAPlugin::plugin_t<gsc_adaptive_stage>("Frequency-domain block-adaptive filter"
-                                            " specialised for usage as gsc adaptive stage",ac),
+                                            " specialised for usage as gsc adaptive stage",iac),
     lenOldSamps("how many old samples to buffer", "1024", "[0,5000]"),
     doCircularComp("whether to compensate for circular convolution", "no"),
     mu("step size for gradient computation", "0.2", "[0,2]"),

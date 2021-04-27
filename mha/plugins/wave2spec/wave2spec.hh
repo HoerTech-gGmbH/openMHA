@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2014 2015 2018 HörTech gGmbH
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -116,7 +116,7 @@ public:
      * @param iac algorithm communication storage accessor
      * @param ialg configured name of this plugin, used to name the AC 
      *             variables published by wave2spec */
-    wave2spec_if_t(const algo_comm_t&iac,const std::string&,const std::string&ialg);
+    wave2spec_if_t(algo_comm_t iac, const std::string & configured_name);
     /** prepare for signal processing
      * @param[in,out] t signal dimenstions, modified by prepare as determined by
      *                  the STFT configuration */

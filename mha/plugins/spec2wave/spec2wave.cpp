@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -72,7 +72,7 @@ private:
 
 class spec2wave_if_t : public MHAPlugin::plugin_t<spec2wave_t> {
 public:
-    spec2wave_if_t(const algo_comm_t&,const std::string&,const std::string&);
+    spec2wave_if_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_wave_t* process(mha_spec_t*);
@@ -151,7 +151,7 @@ mha_wave_t* spec2wave_t::process(mha_spec_t* spec_in)
     return &write_buf;
 }
 
-spec2wave_if_t::spec2wave_if_t(const algo_comm_t& iac,const std::string&,const std::string&)
+spec2wave_if_t::spec2wave_if_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<spec2wave_t>("spectrum to waveform iFFT plugin\n"
                                        "Performs inverse FFT, postwindowing,\n"
                                        "hanning ramps at zero-padding,\n"

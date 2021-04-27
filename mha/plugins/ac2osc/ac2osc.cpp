@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2011 2012 2013 2014 2015 2018 2019 2020 HörTech gGmbH
+// Copyright © 2011 2012 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,7 @@ class ac2osc_t : public MHAPlugin::plugin_t<int>
 {
 public:
     /** C'tor of plugin class. */
-    ac2osc_t(algo_comm_t iac,const char* chain, const char* algo);
+    ac2osc_t(algo_comm_t iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     /** Processing fct for waveforms. Calls process(void). */
     mha_wave_t* process(mha_wave_t* s) {process();return s;};
@@ -68,7 +68,7 @@ private:
     bool is_first_run;
 };
 
-ac2osc_t::ac2osc_t(algo_comm_t iac,const char* chain, const char* algo)
+ac2osc_t::ac2osc_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<int>("Send AC variables as OSC messages over udp.",iac),
     host("OSC server host name","localhost"),
     port("OSC server port","7777"),
