@@ -50,6 +50,12 @@ done
 # Wo do not want to redistribute libjack - See D191
 rm -f lib/openmha/*libjack*dylib
 
+# Codesign our stuff
+for file in bin/* lib/openmha/*
+do
+    codesign --force --options runtime --timestamp --entitlements entitlements.plist --sign "Developer ID Application: HoerTech gGmbH (W9PR6SQ68S)" $file
+done
+
 # make sure there is no local/opt leftover reference (regression)
 if grep -r local/opt lib
 then exit 1

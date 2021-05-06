@@ -11,7 +11,12 @@ PACKAGE_VERSION=4.15.0
 TITLE=openMHA
 REVERSE_DOMAIN=org.openmha
 
-all: pkg
+all: sign
+ 
+sign: pkg
+	productsign --sign "Developer ID Installer: HoerTech gGmbH (W9PR6SQ68S)" openMHA-${PACKAGE_VERSION}.pkg openMHA-${PACKAGE_VERSION}.signed.pkg
+	mv openMHA-${PACKAGE_VERSION}.signed.pkg openMHA-${PACKAGE_VERSION}.pkg
+
 # pkg is a target within luggage.make and depends on payload.
 # payload is the target where luggage does the final file arrangement before
 # packaging the installer. Our build target copies all exes and libs into a
@@ -34,7 +39,7 @@ PAYLOAD= \
 UTIL=openMHA-installer
 
 build:
-	@./find_and_copy_dependencies.sh
+	./find_and_copy_dependencies.sh
 
 usr-local-bin: l_usr_local_bin
 	@${CP} ./bin/* ${WORK_D}/usr/local/bin/
