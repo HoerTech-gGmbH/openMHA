@@ -194,8 +194,10 @@ wavwriter_t::~wavwriter_t()
 
 void wavwriter_t::process(mha_wave_t* s)
 {
-    if( act_ )
-        fifo.write(s->buf,std::min(fifo.get_available_space(),size(s)));
+    if( act_ ){
+        auto nSamps=(fifo.get_available_space()/cf_.channels)*cf_.channels; // only write multiples of channels
+        fifo.write(s->buf,std::min(nSamps,size(s)));
+    }
 }
 
 void wavwriter_t::exit_request(){
