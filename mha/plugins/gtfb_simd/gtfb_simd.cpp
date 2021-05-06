@@ -47,6 +47,21 @@
 #include <time.h>
 #include "mha_events.h"
 
+// The clang documentation (https://clang.llvm.org/compatibility.html#vector_builtins)
+// suggests using these api calls instead of the builtins and links to a script to 
+// perform the migration. Use the replacements that would be done by the script.
+#ifdef __clang__
+#include <xmmintrin.h>
+// abbreviations for SIMD arithmetic operations
+#define add4f(a,b) _mm_add_ps(a,b)
+#define sub4f(a,b) _mm_sub_ps(a,b)
+#define mul4f(a,b) _mm_mul_ps(a,b)
+#else
+#define add4f(a,b) __builtin_ia32_addps(a,b)
+#define sub4f(a,b) __builtin_ia32_subps(a,b)
+#define mul4f(a,b) __builtin_ia32_mulps(a,b)
+#endif
+
 // Setting these bits in the MXCSR register avoids problems with denormals
 #define MXCSR_DAZ (1 << 6)      /* Enable denormals are zero mode */
 #define MXCSR_FTZ (1 << 15)     /* Enable flush to zero mode */
@@ -234,11 +249,6 @@ void filter_simd(const unsigned bands, const unsigned order,
 
   // data type grouping 4 floats for SIMD operations
   typedef float v4sf __attribute__ ((vector_size(4*sizeof(float))));
-
-  // abbreviations for SIMD arithmetic operations
-#define add4f(a,b) __builtin_ia32_addps(a,b)
-#define sub4f(a,b) __builtin_ia32_subps(a,b)
-#define mul4f(a,b) __builtin_ia32_mulps(a,b)
 
   // SIMD data used during computation
   v4sf rtmp, itmp, *rstate, *istate;

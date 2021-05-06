@@ -14,8 +14,6 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 EXCLUDE_FROM_ARM_COMPILATION = yes
-EXCLUDE_FROM_WINDOWS_COMPILATION = yes
-EXCLUDE_FROM_CLANG_COMPILATION = yes
 
 include ../plugin.mk
 
