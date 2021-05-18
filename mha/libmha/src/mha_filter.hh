@@ -87,7 +87,12 @@ namespace MHAFilter {
         */
         filter_t(unsigned int ch,const std::vector<mha_real_t>& vA, const std::vector<mha_real_t>& vB);
 
+        /** Copy constructor. */
         filter_t(const MHAFilter::filter_t& src);
+
+        /** Assignment operator is not implemented.
+            Use copy constructor instead. */
+        filter_t & operator=(const MHAFilter::filter_t&) = delete;
 
         ~filter_t();
         /** \brief Filter all channels in a waveform structure. 
