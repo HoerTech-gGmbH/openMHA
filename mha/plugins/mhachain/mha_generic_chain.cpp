@@ -168,7 +168,6 @@ void mhachain::plugs_t::alloc_plugs(std::vector<std::string> algonames)
         if( b_use_profiling )
             mha_platform_tic(&tictoc);
         algos.push_back(new PluginLoader::mhapluginloader_t(ac,algonames[k]));
-        parser.force_remove_item(algos.back()->get_configname());
         if( algos.back()->has_parser() )
             parser.insert_item(algos.back()->get_configname(),algos.back());
         if( b_use_profiling )
