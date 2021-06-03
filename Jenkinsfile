@@ -27,7 +27,7 @@ def windows_bash(command) {
 
 // Encapsulation of the build steps to perform when compiling openMHA
 // @param stage_name the stage name is "system && arch" where system is bionic,
-//                   xenial, windows, or mac, and arch is x86_64, i686, aarch64,
+//                   windows, or mac, and arch is x86_64, i686, aarch64,
 //                   or armv7.  Both are separated by an && operator and spaces.
 //                   This string is also used as a valid label expression for
 //                   jenkins.  The appropriate nodes have the respective labels.
@@ -176,10 +176,6 @@ pipeline {
                     agent {label               "bionic && x86_64 && mhadev"}
                     steps {openmha_build_steps("bionic && x86_64 && mhadev")}
                 }
-                stage(                         "xenial && x86_64 && mhadev") {
-                    agent {label               "xenial && x86_64 && mhadev"}
-                    steps {openmha_build_steps("xenial && x86_64 && mhadev")}
-                }
                 stage(                         "bionic && armv7 && mhadev") {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
@@ -215,7 +211,6 @@ pipeline {
                 // receive all deb packages from openmha build
                 unstash "x86_64_bionic"
                 unstash "x86_64_focal"
-                unstash "x86_64_xenial"
                 unstash "armv7_bionic"
                 unstash "aarch64_bionic"
 
