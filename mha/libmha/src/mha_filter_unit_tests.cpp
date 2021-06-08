@@ -14,6 +14,8 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
+#include <limits>
+#include "mha.hh"
 #include "mha_signal.hh"
 #include "mha_filter.hh"
 
@@ -115,4 +117,9 @@ TEST(fir_lp,ctor){
   for(unsigned i=0U; i<actual.size();i++){
     EXPECT_NEAR(expected[i],actual[i],1e-2);
   }
+}
+
+TEST(polyphase_resampling_t, buffer_space) {
+  unsigned frames=std::numeric_limits<unsigned>::max();
+  EXPECT_THROW(MHAFilter::blockprocessing_polyphase_resampling_t b(48000,frames,32000,1U,0.85f,7e-4,1,false),MHA_Error);
 }

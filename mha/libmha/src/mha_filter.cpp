@@ -16,6 +16,7 @@
 
 #include "mha_defs.h"
 #include "mha_filter.hh"
+#include <cmath>
 #include <math.h>
 #include <limits>
 #include <valarray>
@@ -1187,41 +1188,67 @@ blockprocessing_polyphase_resampling_t(float source_srate,
       fragsize_in(source_fragsize), fragsize_out(target_fragsize),
       num_channels(nchannels)
 {
-    std::pair<unsigned, unsigned> factors = 
-        resampling_factors(source_srate, target_srate);
-    unsigned & upsampling_factor = factors.first;
-    unsigned & downsampling_factor = factors.second;
+    auto sub_or_throw=[](unsigned a, unsigned b){
+        unsigned tmp;
+        if(!__builtin_sub_overflow(a,b,&tmp))
+            return tmp;
+        else
+            throw MHA_Error(__FILE__,__LINE__,"%u - %u cannot be represented in type unsigned int",a,b);
+    };
+
+    auto add_or_throw=[](unsigned a, unsigned b){
+        unsigned tmp;
+        if(!__builtin_add_overflow(a,b,&tmp))
+            return tmp;
+        else
+            throw MHA_Error(__FILE__,__LINE__,"%u * %u cannot be represented in type unsigned int",a,b);
+    };
+
+    auto mul_or_throw=[](unsigned a, unsigned b){
+        unsigned tmp;
+        if(!__builtin_mul_overflow(a,b,&tmp))
+            return tmp;
+        else
+            throw MHA_Error(__FILE__,__LINE__,"%u * %u cannot be represented in type unsigned int",a,b);
+    };
+
+    auto [upsampling_factor, downsampling_factor] = resampling_factors(source_srate,target_srate);
     float interpolation_srate = source_srate * upsampling_factor;
-    unsigned irslen_samples = 
+    if(ceilf(irslen*interpolation_srate) > static_cast<float>(std::numeric_limits<unsigned>::max()))
+        throw MHA_Error(__FILE__,__LINE__,"%f * %f can not be represented in type 'unsigned int'",irslen, interpolation_srate);
+    unsigned irslen_samples =
         static_cast<unsigned>(ceilf(irslen * interpolation_srate));
     unsigned interpolation_source_fragsize =
-        source_fragsize * upsampling_factor;
+        mul_or_throw(source_fragsize, upsampling_factor);
     unsigned interpolation_target_fragsize =
-        target_fragsize * downsampling_factor;
+        mul_or_throw(target_fragsize, downsampling_factor);
     unsigned interpolation_minimum_delay;
-    if (add_delay) // Delay necessary to prevent underruns
+    if (add_delay){ // Delay necessary to prevent underruns
         interpolation_minimum_delay = 
             interpolation_target_fragsize - 
             MHAFilter::gcd(interpolation_target_fragsize,
                            interpolation_source_fragsize);
-    else
+    }
+    else {
         interpolation_minimum_delay =
             interpolation_source_fragsize -
             MHAFilter::gcd(interpolation_source_fragsize,
                            interpolation_target_fragsize);
+    }
     unsigned source_minimum_delay = 0U;
     if (interpolation_minimum_delay > 0U)
         source_minimum_delay = 
-            (interpolation_minimum_delay - 1U) / upsampling_factor + 1U;
+            add_or_throw(sub_or_throw(interpolation_minimum_delay,1U) / upsampling_factor, 1U);
+
+    unsigned prod=mul_or_throw(source_minimum_delay,upsampling_factor);
+    unsigned m=mul_or_throw(2U,std::max(interpolation_source_fragsize,
+                                        interpolation_target_fragsize));
+
     unsigned sufficient_interpolation_ringbuffer_size =
-        source_minimum_delay * upsampling_factor +
-        2U * std::max(interpolation_source_fragsize,
-                      interpolation_target_fragsize) +
-        irslen_samples + 1U;
+        add_or_throw(add_or_throw(add_or_throw(prod, m), irslen_samples),1U);
     unsigned sufficient_source_ringbuffer_size =
-        (sufficient_interpolation_ringbuffer_size - 1U) / upsampling_factor
-        + 1U; 
-    unsigned source_prefill = (irslen_samples - 1U) / upsampling_factor + 1U;
+        add_or_throw(sub_or_throw(sufficient_interpolation_ringbuffer_size, 1U) / upsampling_factor, 1U);
+    unsigned source_prefill = add_or_throw(sub_or_throw(irslen_samples, 1U) / upsampling_factor, 1U);
     resampling = new MHAFilter::
         polyphase_resampling_t(upsampling_factor, downsampling_factor,
                                nyquist_ratio,
