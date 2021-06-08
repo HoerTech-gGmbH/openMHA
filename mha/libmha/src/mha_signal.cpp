@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
-// Copyright © 2013 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2013 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +18,7 @@
 #include "mha_error.hh"
 #include "mha_defs.h"
 #include <limits>
+#include <new>
 #include <string.h>
 #include <float.h>
 #include "mha_signal_fft.h"
@@ -110,7 +111,11 @@ waveform_t::waveform_t( const unsigned int &frames,
         alloc_size *= num_channels;
     if( num_frames )
         alloc_size *= num_frames;
-    buf = new mha_real_t[alloc_size];
+    try {
+        buf = new mha_real_t[alloc_size];
+    } catch(std::bad_alloc& e){
+        throw MHA_Error(__FILE__,__LINE__,"Could not allocate memory for %u samples",alloc_size);
+    }
     memset( buf, 0, alloc_size * sizeof ( mha_real_t ) );
     channel_info = NULL;
 }
@@ -128,7 +133,11 @@ waveform_t::waveform_t( const mhaconfig_t& cf )
         alloc_size *= num_channels;
     if( num_frames )
         alloc_size *= num_frames;
-    buf = new mha_real_t[alloc_size];
+    try {
+        buf = new mha_real_t[alloc_size];
+    } catch(std::bad_alloc& e){
+        throw MHA_Error(__FILE__,__LINE__,"Could not allocate memory for %u samples",alloc_size);
+    }
     memset( buf, 0, alloc_size * sizeof ( mha_real_t ) );
     channel_info = NULL;
 }
@@ -145,8 +154,11 @@ waveform_t::waveform_t(const mha_wave_t& src )
         alloc_size *= num_channels;
     if( num_frames )
         alloc_size *= num_frames;
-    buf = new mha_real_t[alloc_size];
-
+    try {
+        buf = new mha_real_t[alloc_size];
+    } catch(std::bad_alloc& e){
+        throw MHA_Error(__FILE__,__LINE__,"Could not allocate memory for %u samples",alloc_size);
+    }
     channel_info = NULL;
     copy(src);
     // \todo allocate channel descriptor if src has a valid channel descriptor!
@@ -167,8 +179,11 @@ waveform_t::waveform_t(const std::vector<mha_real_t>& src )
         alloc_size *= num_channels;
     if( num_frames )
         alloc_size *= num_frames;
-    buf = new mha_real_t[alloc_size];
-
+    try {
+     buf = new mha_real_t[alloc_size];
+    } catch(std::bad_alloc& e){
+        throw MHA_Error(__FILE__,__LINE__,"Could not allocate memory for %u samples",alloc_size);
+    }
     channel_info = NULL;
     for(unsigned int k=0;k<num_frames;k++)
         buf[k] = src[k];
@@ -186,8 +201,11 @@ waveform_t::waveform_t(const MHASignal::waveform_t& src )
         alloc_size *= num_channels;
     if( num_frames )
         alloc_size *= num_frames;
-    buf = new mha_real_t[alloc_size];
-
+    try {
+        buf = new mha_real_t[alloc_size];
+    } catch(std::bad_alloc& e){
+        throw MHA_Error(__FILE__,__LINE__,"Could not allocate memory for %u samples",alloc_size);
+    }
     channel_info = NULL;
     copy(src);
     // \todo allocate channel descriptor if src has a valid channel descriptor!
@@ -631,7 +649,11 @@ spectrum_t::spectrum_t( const unsigned int& frames,
         alloc_size *= num_channels;
     if( num_frames )
         alloc_size *= num_frames;
-    buf = new mha_complex_t[alloc_size];
+    try {
+        buf = new mha_complex_t[alloc_size];
+    } catch(std::bad_alloc& e){
+        throw MHA_Error(__FILE__,__LINE__,"Could not allocate memory for %u fft bins",alloc_size);
+    }
     memset( buf, 0, alloc_size * sizeof ( mha_complex_t ) );
     channel_info = NULL;
 }
@@ -648,7 +670,11 @@ spectrum_t::spectrum_t(const mha_spec_t& src)
         alloc_size *= num_channels;
     if( num_frames )
         alloc_size *= num_frames;
-    buf = new mha_complex_t[alloc_size];
+    try {
+        buf = new mha_complex_t[alloc_size];
+    } catch(std::bad_alloc& e){
+        throw MHA_Error(__FILE__,__LINE__,"Could not allocate memory for %u fft bins",alloc_size);
+    }
     memset( buf, 0, alloc_size * sizeof ( mha_complex_t ) );
     channel_info = NULL;
     copy(src);
@@ -666,7 +692,11 @@ spectrum_t::spectrum_t(const MHASignal::spectrum_t& src)
         alloc_size *= num_channels;
     if( num_frames )
         alloc_size *= num_frames;
-    buf = new mha_complex_t[alloc_size];
+    try {
+        buf = new mha_complex_t[alloc_size];
+    } catch(std::bad_alloc& e){
+        throw MHA_Error(__FILE__,__LINE__,"Could not allocate memory for %u fft bins",alloc_size);
+    }
     memset( buf, 0, alloc_size * sizeof ( mha_complex_t ) );
     channel_info = NULL;
     copy(src);
