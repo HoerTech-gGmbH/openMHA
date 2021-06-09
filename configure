@@ -19,7 +19,7 @@ chkhdr(){
     echo "#include <$1>" | cc -E -x c++ - $MACINCLUDES -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 chklib(){
-    echo "int main(){return 0;}"| cc -x c++ - $MACLDFLAGS -l$1 -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+    echo "int main(){return 0;}"| cc -x c++ - $MACLDFLAGS -l$1 -o /tmp/tmp.openmha.config.out.exe 2>/dev/null 1>/dev/null && true || false;
 }
 gccver(){
     gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'
