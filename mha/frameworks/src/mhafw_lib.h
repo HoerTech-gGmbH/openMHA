@@ -55,6 +55,8 @@ public:
     void stop();
     void release();
     std::string lib_str_error(int err);
+    std::string get_documentation() const {return plugin_documentation;};
+    std::vector<std::string> get_categories() const {return plugin_categories;};
 protected:
     void test_error();
     int lib_err;
@@ -69,6 +71,8 @@ protected:
     IOSetVar_t IOSetVar_cb;
     IOStrError_t IOStrError_cb;
     IODestroy_t IODestroy_cb;
+    std::string plugin_documentation;
+    std::vector<std::string> plugin_categories;
 };
 
 class fw_vars_t {
@@ -125,7 +129,6 @@ private:
     MHAParser::string_t inst_name;
     MHAKernel::algo_comm_class_t ac;
     PluginLoader::mhapluginloader_t* proc_lib;
-    io_lib_t* io_lib;
     mhaconfig_t cfin, cfout;
     enum state_t {
         fw_unprepared, fw_stopped, fw_starting, fw_running, fw_stopping, fw_exiting
@@ -133,6 +136,7 @@ private:
     state_t state;
     bool b_exit_request;
 protected:
+    io_lib_t* io_lib;
     int proc_error;
     int io_error;
 private:

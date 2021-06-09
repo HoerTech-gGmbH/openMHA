@@ -98,9 +98,9 @@ fw_t::fw_t()
       dump_mha("dump the current configuration of the mha into a text file", "no"),
       inst_name("Name of this mha instance","mha"),
       proc_lib(NULL),
-      io_lib(NULL),
       state(fw_unprepared),
       b_exit_request(false),
+      io_lib(NULL),
       proc_error(0),
       io_error(0),
       proc_error_string("last error in asynchronous callback")
@@ -438,7 +438,8 @@ io_lib_t::io_lib_t(int fragsize,
       IORelease_cb(NULL),
       IOSetVar_cb(NULL),
       IOStrError_cb(NULL),
-      IODestroy_cb(NULL)
+      IODestroy_cb(NULL),
+      plugin_documentation("")
 {
     MHA_RESOLVE_CHECKED((&lib_handle),IOInit);
     MHA_RESOLVE_CHECKED((&lib_handle),IOPrepare);
@@ -451,6 +452,18 @@ io_lib_t::io_lib_t(int fragsize,
     lib_err = IOInit_cb(fragsize,samplerate,proc_event,proc_handle,start_event,start_handle,stop_event,stop_handle,&lib_data);
     test_error();
     set_parse_cb(IOSetVar_cb,IOStrError_cb,lib_data);
+
+    MHAPluginDocumentation_t MHAPluginDocumentation_cb;
+    MHAPluginCategory_t MHAPluginCategory_cb;
+    MHA_RESOLVE((&lib_handle), MHAPluginDocumentation);
+    MHA_RESOLVE((&lib_handle), MHAPluginCategory);
+    if( MHAPluginDocumentation_cb )
+        plugin_documentation = MHAPluginDocumentation_cb();
+    if( MHAPluginCategory_cb ){
+        std::string tmp_categories = MHAPluginCategory_cb();
+        tmp_categories = "["+tmp_categories+"]";
+        MHAParser::StrCnv::str2val(tmp_categories,plugin_categories);
+    }
 }
 
 std::string io_lib_t::lib_str_error(int err)

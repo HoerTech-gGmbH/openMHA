@@ -430,6 +430,29 @@ extern "C" {
     }
 }
 
+MHAIO_DOCUMENTATION(MHAIOFile,"io",
+                        "The plugin ’MHAIOFile’ provides file to file processing with \\mha{}. "
+                        " It uses libsndfile to read from and write to sound files."
+                        " Input and output file name can be configured."
+                        " After the openMHA host application is started (cmd=start),"
+                        " the whole input file will be processed and the processed data"
+                        " will be written to the output file."
+                        " The start command will block until the processing is finished."
+                        " The files are opened when preparing the \\mha{} host application"
+                        " and closed when releasing the openMHA host application. "
+                        " The output file format is inherited from the input file and the data format of the"
+                        " output file is set by the output\\_sample\\_format. "
+                        " By default the format of the input file is also used for the output file,"
+                        " e.g. if the input file is a 32 bit WAVE file,"
+                        " the output file will also be 32-bit WAVE."
+                        " The plugin supports most commonly used file formats."
+                        " Nota bene: When writing to WAVE files in integer formats, MHAIOFile"
+                        " clips all values above +1.0 and below -1.0."
+                        " To avoid clipping use floating point WAVE files.")
+
+
+
+
 
 /*
  * Local Variables:

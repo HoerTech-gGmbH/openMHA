@@ -75,8 +75,18 @@ typedef const char* (*IOStrError_t)(void* handle, int err);
 
 typedef void (*IODestroy_t)(void* handle);
 
-#endif
+#define MHAIO_DOCUMENTATION_PREFIX(prefix,cat,doc)                  \
+extern "C" const char* prefix ## MHAPluginDocumentation(){MHA_CALLBACK_TEST_PREFIX(prefix,MHAPluginDocumentation);return doc;} \
+extern "C" const char* prefix ## MHAPluginCategory(){MHA_CALLBACK_TEST_PREFIX(prefix,MHAPluginCategory);return cat;}
 
+#ifdef MHA_STATIC_PLUGINS
+#define MHAIO_DOCUMENTATION(plugname,cat,doc) \
+  MHAIO_DOCUMENTATION_PREFIX(MHA_STATIC_ ## plugname ## _,cat,doc)
+#else
+#define MHAIO_DOCUMENTATION(plugname,cat,doc) \
+  MHAIO_DOCUMENTATION_PREFIX(MHA_DYNAMIC_,cat,doc)
+#endif // MHA_STATIC_PLUGINS
+#endif //MHA_IO_IFC_H
 /*
  * Local Variables:
  * compile-command: "make -C .."

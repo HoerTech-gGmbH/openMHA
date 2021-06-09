@@ -49,7 +49,9 @@ public:
         fw_t::parse("iolib="+libname);
     };
     virtual ~io_wrapper()=default;
-    virtual std::vector<std::string> get_categories(){return {"io"};};
+    virtual std::vector<std::string> get_categories(){
+        return (io_lib->get_categories().size() ? io_lib->get_categories() : std::vector<std::string>(1,"io"));
+    };
     virtual std::string parse(const std::string& str){
         if(str.front()=='?')
             return fw_t::parse("io"+str);
@@ -59,7 +61,9 @@ public:
             return fw_t::parse("io."+str);
     };
     virtual bool has_parser(){return true;};
-    virtual std::string get_documentation(){return fw_t::parse("io?help");};
+    virtual std::string get_documentation(){
+        return (io_lib->get_documentation().empty() ? fw_t::parse("io?help") : io_lib->get_documentation());
+    };
     virtual bool has_process(mha_domain_t in,mha_domain_t out){
         if(in==MHA_WAVEFORM and out==MHA_WAVEFORM)
             return true;
