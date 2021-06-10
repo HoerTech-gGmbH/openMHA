@@ -31,6 +31,9 @@ endif
 
 include ../../../rules.mk
 
+CXXFLAGS +=-I../../libmha/src
+CFLAGS +=-I../../libmha/src
+
 LDFLAGS += -L../../libmha/$(BUILD_DIR) -L../../../external_libs/$(PLATFORM_CC)/lib
 LDLIBS += -l$(MHATOOLBOX_NAME)
 
