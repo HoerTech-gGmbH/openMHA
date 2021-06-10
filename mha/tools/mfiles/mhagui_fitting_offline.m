@@ -1,12 +1,24 @@
-% This function temporarily starts an openMHA instance and has it process test
-% data. Your Octave/Matlab session needs to be set up to call mha_start, mha_set
-% etc. Please refer to the getting started guide for examples how to do this:
-% http://www.openmha.org/docs/openMHA_starting_guide.pdf
-% The function plots the input-output characteristic that it measures in a new
-% figure.
-
+% -------------------------------------------------------------------------------------------------------
+% MHAGUI_FITTING_OFFLINE Start a GUI to apply individual dynamic compression derived from hearing aid fitting rules to soundfiles.
+%
+% After executing the script dialogue windows will appear and guide you through the whole
+% process. At the end 'mhagui_fitting' is called and lets you choose your prefered fitting algorithm
+% and finetuning.
+% The steps that this function will process are described as follows:
+%  - Select the .wav-files that shall be processed. Only files with a 44100Hz sampling rate and
+%    2 channels are allowed.
+%  - For calibration purposes, enter the acoustic level in dBSPL that corresponds to 0 dBFS.
+%  - Select an output directory for the processed files. Note, that an additional directory will be
+%    created in the chosen directory which is named after the hearing loss ID. The processed files
+%    will then be stored in the ID-directory.
+%  - A GUI will open that allows you to create entries for participants including their hearing loss.
+%    The participants' ID will be the name of the directory the processed files will be stored in.
+%  - Finally, the fitting GUI will open where you can choose between different established fitting rules
+%    and adjust finetuning.
+% -------------------------------------------------------------------------------------------------------
+%
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2019 2020 HörTech gGmbH
+% Copyright © 2019 2020 2021 HörTech gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -21,8 +33,6 @@
 % version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 
-% Matlab skript performs hearing aid dynamic compression on a set of audio files
-
 % This setup is restricted to work with audiofiles with 44100Hz sampling rate
 sampling_rate = 44100;
 num_channels = 2;
@@ -31,7 +41,7 @@ amplification_headroom = 50;
 %% Load files from folder
 select_new_files = true;
 while select_new_files
-  [soundfiles,audiofiles_directory] = uigetfile('*.wav','Select .wav Files','MultiSelect', 'on');
+  [soundfiles,audiofiles_directory] = uigetfile('*.wav','Select .wav-files for compression','MultiSelect', 'on');
 
 % If only one file is selected, the variable soundfiles will be of type
 % char instead of a cell array -> convert soundfiles to cell array
@@ -86,24 +96,23 @@ while select_new_files
     input_levels_re_fullscale(i,:) = 10*log10(mean(y.^2));
   end
 end
-%% Processing
 
-% Get and check peaklevel
+% Get and check acoustic level
 get_new_peaklvl = true;
 while get_new_peaklvl
-  peaklevel = inputdlg('Peaklevel / dB SPL:', 'Type in the Peaklevel in dB SPL that corresponds to 0 dB FS');
+  peaklevel = inputdlg('Acoustic level / dB SPL:', 'Acoustic level corresponding to 0 dB FS');
   if isempty(peaklevel)
     error('Aborted by user.');
   end
   peaklevel = str2double(peaklevel);
   if (~isequal(class(peaklevel),'double') || (numel(peaklevel) ~= 1) || ~isreal(peaklevel) || isnan(peaklevel))
-    errordlg('Expected a single, real number for peaklevel');
+    errordlg('Expected a single, real number for acoustic level');
     continue;
   end
 
 
-  listdlg_msg = {sprintf('You have selected an input peaklevel of %.1f dB SPL.' , peaklevel)};
-  listdlg_msg = [listdlg_msg, sprintf('The corresponding output peaklevel will be %.1f dB SPL (for %.1f dB amplification headroom).', ...
+  listdlg_msg = {sprintf('You have selected an input level of %.1f dB SPL.' , peaklevel)};
+  listdlg_msg = [listdlg_msg, sprintf('The corresponding output level will be %.1f dB SPL (for %.1f dB amplification headroom).', ...
                                       peaklevel + amplification_headroom, amplification_headroom)];
   listdlg_msg = [listdlg_msg, sprintf('Please check all input levels below and proceed only if they are correct.')];
   listdlg_msg = [listdlg_msg,'LEFT RIGHT Soundfile Input Levels / dB SPL'];
@@ -113,7 +122,7 @@ while get_new_peaklvl
     list_items = [list_items, sprintf('%5.1f %5.1f   %s', l(1,1), l(1,2), soundfiles{index})];
   end
   [~,lvl_corr] = listdlg('PromptString',listdlg_msg,'ListString',list_items, ...
-                         'Name','Check Input Levels','OKString','Next','CancelString','Enter new peak level', ...
+                         'Name','Check Input Levels','OKString','Next','CancelString','Enter new level', ...
                          'SelectionMode','single','ListSize',[500 300]);
   switch lvl_corr
     case 1
@@ -125,7 +134,9 @@ end
 % Get output directory
 get_dir = true;
 while get_dir
-  outdir = uigetdir('.');
+  % All files processed with this script will be stored in a folder for each ID, here you select the place to
+  % store the folder.
+  outdir = uigetdir('.','Select an output directory');
   if ~ischar(outdir)
     answer_outdir = questdlg('Do you want to abort the program?','Output Directory Error','Try Again','Abort','Abort');
     switch answer_outdir
@@ -218,11 +229,9 @@ if any(all_durations > 10)
   end
 end
 
-
+% Process all files sequentially
 overwrite_all = false;
 allow_clipping_all = false;
-
-% Process all files sequentially
 w_bar = waitbar(0,'Start processing of your sound files ...');
 for soundfile_index = 1:numel(soundfiles_src)
 
