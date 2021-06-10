@@ -218,8 +218,8 @@ gccver(){
     fi
 
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
-    echo 'CXXFLAGS+=-Wall -Wnon-virtual-dtor -Wformat -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
-    echo 'CFLAGS+=-Wall -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
+    echo 'CXXFLAGS+=-Wall -Wextra -Wnon-virtual-dtor -Wformat -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
+    echo 'CFLAGS+=-Wall -Wextra -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
     if [[ $(type -P octave) ]] ; then
         echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval"\
              "\"set_environment;exit(~run_mha_tests())\"";

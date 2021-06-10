@@ -111,7 +111,7 @@ public:
     template <class mha_signal_t> mha_signal_t* process(mha_signal_t* s);
     /// Prepare callback.  acrec does not modify the signal parameters.
     /// @param cf The signal parameters.
-    void prepare(mhaconfig_t&);
+    void prepare(mhaconfig_t& cf);
     /// Ensure recorded data is flushed to disk.
     void release();
     /// Plugin interface constructor.
