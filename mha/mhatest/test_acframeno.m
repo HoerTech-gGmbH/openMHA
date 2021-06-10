@@ -23,7 +23,7 @@ function test_acframeno()
   desc.mhalib = 'mhachain';
   desc.iolib = 'MHAIOParser';
 
-  desc.mha.algos = {'acframeno','acmon'};
+  desc.mha.algos = {'proc_counter','acmon'};
 
   mha = mha_start();
   mha_set(mha,'',desc);
@@ -32,7 +32,7 @@ function test_acframeno()
   mha_set(mha,'cmd','start');
   mha_set(mha,'io.input',expected');
   mha_set(mha,'cmd','release');
-  actual = mha_set(mha,'mha.acmon.acframeno');
+  actual = mha_get(mha,'mha.acmon.proc_counter');
   expected = 1;
   assert_equal(expected, actual);
 end
