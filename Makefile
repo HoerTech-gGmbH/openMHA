@@ -184,7 +184,7 @@ mha/doc: mha/plugins
 # aptdev.hoertech.de. BRANCH_NAME is set by Jenkins
 #
 # SYSTEMs:
-# xenial, bionic, jessie, etc. Available SYSTEMs that
+# bionic, focal, jessie, etc. Available SYSTEMs that
 # contain packages are detected automatically with $(wildcard)
 
 # There will by $SYSTEM subdirectories below this directory.

@@ -17,12 +17,6 @@ In Ubuntu 18.04:
     wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
     sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de bionic universe'
 
-In Ubuntu 16.04:
-
-    wget -qO- https://apt.hoertech.de/openmha-packaging.pub | sudo apt-key add -
-    sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de xenial universe'
-    sudo apt update
-
 On Computers with an ARM CPU running a recent variant of Debian, Ubuntu,
 Raspberry Pi OS, Armbian, or similar:  The following instructions work for
 both, 32 and 64 bit ARM systems.  A requirement for 32 bit ARM systems is that
