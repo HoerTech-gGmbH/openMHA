@@ -1,1 +1,1 @@
-libopenmha (VERSION), libasound2, lsl-liblsl, jackd, liblo7, libportaudio2
+libopenmha (VERSION), libasound2, liblsl (>> 1.14), jackd, liblo7, libportaudio2
