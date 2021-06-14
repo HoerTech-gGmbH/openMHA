@@ -329,7 +329,6 @@ std::string mhaserver_t::on_received_line(const std::string& cmd)
 " --fail-ack=str | -f str   set failure acknowledgement string\n"\
 " --log=logfile             activate logging to logfile\n"\
 " --help | -h               show this help screen\n"\
-" --lockstr=str | -l str    create a port lockfile with content 'str'\n"\
 
 #ifndef NORELEASE_WARNING // This is not a release build. Add warning to output.
 #define NORELEASE_WARNING "\n" \
@@ -352,22 +351,6 @@ MHA_RELEASE_VERSION_STRING    VERSION_EXTENSION    "\n" \
 "under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3; \n"\
 "for details see file COPYING.\n\n"
 
-void create_lock(unsigned int p,const std::string& s)
-{
-    std::string fname("locks/"+MHAParser::StrCnv::val2str((int)p));
-    std::ofstream lockfile(fname.c_str());
-    if( lockfile.fail() )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Unable to create lock file \"%s\".",fname.c_str());
-    lockfile << s;
-}
-
-void remove_lock(unsigned int p)
-{
-    std::string fname("locks/"+MHAParser::StrCnv::val2str((int)p));
-    remove(fname.c_str());
-}
-
 extern "C" int mhamain(int argc, char* argv[])
 {
     unsigned short port(33337);
@@ -380,9 +363,7 @@ extern "C" int mhamain(int argc, char* argv[])
         std::string ack_fail("(MHA:failure)\n");
         unsigned short announce_port(0);
         std::string interface_("127.0.0.1");
-        std::string lock_str("");
         std::string logfile("");
-        bool b_create_lock(false);
         // command line interface...
         int option;
         static struct option long_options[] = {
@@ -394,7 +375,6 @@ extern "C" int mhamain(int argc, char* argv[])
             {"interface",  1, NULL, 'i'},
             {"ok-ack",     1, NULL, 'o'},
             {"fail-ack",   1, NULL, 'f'},
-            {"lockstr",    1, NULL, 'l'},
             {"log",        1, NULL, 'm'},
             {"daemon",     0, NULL, 'd'},
             {NULL,         0, NULL, 0  }
@@ -432,10 +412,6 @@ extern "C" int mhamain(int argc, char* argv[])
         }
 #endif
                 break;
-            case 'l' :
-                lock_str = optarg;
-                b_create_lock = true;
-                break;
             case 'q' :
                 b_quiet = true;
                 break;
@@ -460,8 +436,6 @@ extern "C" int mhamain(int argc, char* argv[])
         do{
             server = new mhaserver_t(ack_ok,ack_fail,logfile,b_interactive);
             server->set_announce_port(announce_port);
-            if( b_create_lock )
-                create_lock(port,lock_str);
             if( !b_quiet )
                 for(int k=optind;k<argc;k++){
                     server->logstring("Parsing command line argument \""+std::string(argv[k])+"\", please wait.\n");
@@ -482,14 +456,11 @@ extern "C" int mhamain(int argc, char* argv[])
                 rval = server->run(port, interface_);
             else
                 b_daemon = false;
-            if( b_create_lock )
-                remove_lock(port);
             delete server;
         }while( b_daemon );
         return rval;
     }
     catch(std::exception& e){
-        remove_lock(port);
         std::cerr << "Error: " << e.what() << std::endl;
     }
     return 1;
