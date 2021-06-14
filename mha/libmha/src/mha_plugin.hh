@@ -124,16 +124,16 @@ namespace MHAPlugin {
        \image html config_fifo_3.png "Schematic drawing of runtime configuration update: configuration in use."
        \image latex config_fifo_3.pdf "Schematic drawing of runtime configuration update: configuration in use." width=0.8\linewidth
 
-       To ensure lock-free thread safety, we use C++11 atomics and rely on the
-       C++11 memory model. We only use store-release and load-acquire operations
-       by using C++11 atomics with the default memory ordering.  The semantics
+       To ensure lock-free thread safety, we use C++ atomics and rely on the
+       C++ memory model. We only use store-release and load-acquire operations
+       by using C++ atomics with the default memory ordering.  The semantics
        of these are:
 
        The store-release operation atomically writes to an atomic variable,
        while the load-acquire operation atomically reads from an atomic
        variable.
 
-       The C++11 memory model guarantees that all previous writes to memory
+       The C++ memory model guarantees that all previous writes to memory
        performed by the thread doing the store-release are visible to other
        threads when they see the new value in the shared atomic variable when
        that value is read by the other thread with a load-acquire operation.

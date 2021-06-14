@@ -19,34 +19,17 @@ using namespace Eigen;
 
 using MHAUtils::is_denormal;
 
-
-  //In C++17, the spherical bessel function is in namespace std.
-  // Before C++17, the spherical bessel function was in namespace std::tr1
-  // libc++, clang's std implementation does not have the bessel fcts at all
-#if __cplusplus >= 201703L and !defined(__clang__)// We are using C++17 are not using clang
-#include <cmath>
-double rohBeam::j0(double x){
-    return std::cyl_bessel_j(0,x);
-  }
-#elif defined(__clang__)  // Clang has the POSIX implementation of the bessel function
+#ifdef __clang__ // Clang has the POSIX implementation of the bessel function
 #include <cmath>
 double rohBeam::j0(double x){
     return ::j0(x);
-  }
-#elif __has_include(<tr1/cmath>) // We are on an older not-clang compiler and can use the tr1 headers
-#include <tr1/cmath>
+}
+#else // GCC has the spherical bessel function in namespace std.
+#include <cmath>
 double rohBeam::j0(double x){
-    return std::tr1::cyl_bessel_j(0,x);
-  }
-#elif __has_include(<boost/math/special_functions/bessel.hpp>) // Use boot as last resort
-#include <boost/math/special_functions/bessel.hpp>
-double rohBeam::j0(double x) {
-    return boost::math::cyl_bessel_j(0,x);
-  }
-#else
-#error "No implementation of cyl_bessel_j is available!"
+    return std::cyl_bessel_j(0,x);
+}
 #endif
-
 
 namespace rohBeam {
 

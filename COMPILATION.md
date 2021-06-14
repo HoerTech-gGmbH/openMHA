@@ -13,7 +13,7 @@ This guide describes how to compile openMHA from sources for developers.
 or a Beaglebone Black running Debian Buster.
 
 ... with the following software packages installed:
-- g++
+- g++ (minimum version: g++ 7)
 - make
 - libsndfile1-dev
 - libjack-jackd2-dev
@@ -202,7 +202,7 @@ Linux recommended for document regeneration.
 Please install all dependencies for openMHA compilation first, along 
 with the following prerequisites for recreating the documents (optional!):
 
-- Ubuntu 18.04
+- Ubuntu 20.04
 - doxygen
 - xfig
 - graphviz
