@@ -1,4 +1,6 @@
-function l = LTASS_speech_level_in_frequency_bands(edge_frequencies, targetlevel)
+function [l,portions,LTASS_freq] = LTASS_speech_level_in_frequency_bands(edge_frequencies, targetlevel)
+% [l,portions,LTASS_freq] = LTASS_speech_level_in_frequency_bands(edge_frequencies, targetlevel)
+% 
 % Compute the physical levels of filterbank frequency bands for a broadband
 % LTASS signal with broadband level targetlevel / dB
 %
@@ -17,9 +19,19 @@ function l = LTASS_speech_level_in_frequency_bands(edge_frequencies, targetlevel
 %   The computed narrow-band levels for each of the filterbank bands.
 %   Band levels are computed by distributing the third-octave LTASS intensities
 %   across the filterbank bands with intensity summation.
-%
+% - portions [25 x num_bands]
+%   Indicates for each filterbank band and for each LTASS third-orctave band,
+%   how much each LTASS band overlaps with each filterbank band. Examples:
+%   - portions(i,j)==1: LTASS band i is completely contained in filterbank band j
+%   - portions(i,j)==0: LTASS band i lies completely outside filterbank band j
+%   - portions(i,j)==0.5: LTASS band i and filterbank band j intersect so that
+%                         half of the LTASS band i's intensity falls into
+%                         filterbank band j
+% - LTASS_freq [1x25]
+%   The LTASS center frequencies in Hz
+% 
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
-% Copyright © 2007 2009 2011 2013 2015 2017 2018 2019 2020 HörTech gGmbH
+% Copyright © 2007 2009 2011 2013 2015 2017 2018 2019 2020 2021 HörTech gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -76,6 +88,7 @@ function l = LTASS_speech_level_in_frequency_bands(edge_frequencies, targetlevel
   % dB SPL and contain the partial SPL of a /targetlevel/ dB SPL LTASS signal
   % that falls into that respective fitmodel frequency band.
   l = zeros(1, num_bands);
+  portions = zeros(length(LTASS_freq), num_bands);
 
   % Loop over all fitmodel frequency bands
   for band = 1:num_bands
@@ -95,6 +108,7 @@ function l = LTASS_speech_level_in_frequency_bands(edge_frequencies, targetlevel
         % Compute what part of the current LTASS third-octave band overlaps
         % with the current fitmodel frequency band
         portion = diff(intersection) / diff(ltass_range);
+        portions(ltass_band,band) = portion;
         % Add this part to the intensity sum for the current fitmodel
         % frequency band
         intensity_sum = intensity_sum + LTASS_intensity(ltass_band) * portion;
