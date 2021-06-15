@@ -1,0 +1,5 @@
+This wrapper for the NAL-NL2 commercial hearing aid prescription rule is
+provided as is and without any warranty.  In order to use it, you will need
+to purchase a license for the NAL-NL2 DLL and store the DLL in the same
+directory as the nalnl2wrapper.exe file.  The NAL-NL2 DLL is not included in
+this distribution.
