@@ -144,6 +144,7 @@ function sGt = gainrule_NAL_NL2(sAud,sFitmodel)
             end
         end
     end
+    sGt; % Set breakpoint here to inspect gain table
 
 
     function dateOfBirth = date_of_birth_from_client_id(client_id)
