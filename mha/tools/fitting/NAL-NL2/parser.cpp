@@ -131,7 +131,7 @@ std::pair<Client,Fitmodel> parser(int argc, char **argv) {
         {
           auto arg=parseSingle<int>(optarg,option_index);
           if(arg<20 or arg>100)
-            throw std::invalid_argument("Invalid bilateral: Expected: 20-100. Got: "+std::to_string(arg));
+            throw std::invalid_argument("Invalid wbct: Expected: 20-100. Got: "+std::to_string(arg));
           fitmodel.WBCT=arg;
         }
         break;
@@ -139,7 +139,7 @@ std::pair<Client,Fitmodel> parser(int argc, char **argv) {
         {
           auto arg=parseSingle<int>(optarg,option_index);
           if(arg!=0 and arg!=1)
-            throw std::invalid_argument("Invalid bilateral: Expected: 0 or 1. Got: "+std::to_string(arg));
+            throw std::invalid_argument("Invalid bandwidth: Expected: 0 or 1. Got: "+std::to_string(arg));
           fitmodel.bandwidth=arg;
         }
         break;
