@@ -1,0 +1,8 @@
+Section: non-free/utils
+Maintainer: openMHA Packaging Team <packaging@openmha.org>
+Homepage: http://www.openmha.org/
+Description: Wrapper for the NAL-NL2 hearing aid prescription rule.
+ MHA and openMHA users who have bought the NAL-NL2 prescription rule
+ from the National Acoustics Laboratories can use this wrapper in
+ order to fit MHA and openMHA according to the NAL-NL2 prescription
+ rule.

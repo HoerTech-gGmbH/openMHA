@@ -7,8 +7,19 @@ We provide installers for Windows and Linux. These installers install the
 wrapper so that NAL NL2 can be used by the MHA fitting GUIs, mhagui_fitting
 and mhagui_fitting_offline.
 
-Linux: ...
-Windows: ...
+Linux: 
+  1) Install closed-source MHA or openMHA as documented
+  2) sudo apt install nl2-wrapper
+  3) Store a licensed copy of NAL-NL2.dll in directory 
+     /usr/share/nalnl2wrapper
+
+Windows:
+  1) Install closed-source MHA or openMHA as documented
+  2) Download and install
+     http://mha.hoertech.de/fitting/nalnl2wrapper-2021.06-installer.exe
+  3) Store a licensed copy of NAL-NL2.dll in directory 
+     C:\Program Files\nalnl2wrapper\bin
+
 
 COMPILATION
 

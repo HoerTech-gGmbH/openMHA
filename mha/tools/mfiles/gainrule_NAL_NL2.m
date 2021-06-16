@@ -131,12 +131,14 @@ function sGt = gainrule_NAL_NL2(sAud,sFitmodel)
                           cmd_venting, cmd_userecdh, cmd_acother);
                           %, cmd_crossover);
             if (~ispc() && ~ismac()) % linux
-                cmd=['wine /tmp/' cmd];
+                cmd=['wine /usr/share/nalnl2wrapper/' cmd];
             end
 
             [status, output] = system(cmd);
             insertion_gains = sscanf(output, '%f', [19,inf])';
-            assert(isequal([length(sFitmodel.levels),19], size(insertion_gains)))
+            if (~isequal([length(sFitmodel.levels),19], size(insertion_gains)))
+                abort_nal_nl2_missing()
+            end
 
             best_ltass_index = floor(mean(find(LTASS_portions(:,band))));
             if ~isnan(best_ltass_index)
@@ -188,4 +190,34 @@ function sGt = gainrule_NAL_NL2(sAud,sFitmodel)
         end
     end
 
+    function abort_nal_nl2_missing()
+      % Function called when invoking the nalnl2wrapper.exe did not produce
+      % the expected output. Fail with suitable error message.
+      detail = '';
+      if ispc()
+        if exist('c:\Program Files\nalnl2wrapper\bin\nalnl2wrapper.exe','file')
+          if exist('c:\Program Files\nalnl2wrapper\bin\NAL-NL2.dll','file')
+            detail=['Could not execute c:\Program Files\nalnl2wrapper\bin\n' ...
+                   'alnl2wrapper.exe. Make sure you have required permissions'];
+          else
+            detail='Could not find c:\Program Files\nalnl2wrapper\bin\NAL-NL2.dll';
+          end
+        else
+          detail = 'The NAL NL2 command line wrapper is not installed.';
+        end
+      else
+        if exist('/usr/share/nalnl2wrapper/nalnl2wrapper.exe','file')
+          if exist('/usr/share/nalnl2wrapper/NAL-NL2.dll')
+            detail=['Could not execute /usr/share/nalnl2wrapper/nalnl2wrapp' ...
+                   'er.exe with wine. Make sure you have required permissions'];
+          else
+            detail='Could not find /usr/share/nalnl2wrapper/NAL-NL2.dll';
+          end
+        else
+          detail = 'The NAL NL2 command line wrapper is not installed.';
+        end
+      end
+      error('Could not invoke NAL NL2 wrapper to compute insertion gains\n%s', detail);
+    end
+    
 end

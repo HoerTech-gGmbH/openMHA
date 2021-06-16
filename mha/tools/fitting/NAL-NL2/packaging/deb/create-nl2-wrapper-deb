@@ -1,0 +1,5 @@
+#!/bin/bash -ex
+VERSION=$(cat version)
+mkdir -p debs
+mhamakedeb nl2-wrapper.csv $VERSION all
+mv *.deb debs
