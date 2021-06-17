@@ -107,7 +107,7 @@ function sGt = gainrule_NAL_NL2(sAud,sFitmodel)
             cmd_date_of_birth = sprintf('--date_of_birth=%d', date_of_birth);
             cmd_gender = '--gender=0';
             cmd_tonal = '--tonal=0';
-            cmd_experience = '--experience=1';
+            cmd_experience = '--experience=0';
             cmd_adult = '--adultChild=0';
             cmd_speed = '--compSpeed=1';
             cmd_bilateral = sprintf('--bilateral=%d', bilateral);
@@ -217,7 +217,11 @@ function sGt = gainrule_NAL_NL2(sAud,sFitmodel)
           detail = 'The NAL NL2 command line wrapper is not installed.';
         end
       end
-      error('Could not invoke NAL NL2 wrapper to compute insertion gains\n%s', detail);
+      error('Could not invoke NAL NL2 wrapper to compute insertion gains\n%s\n%s', ...
+            detail, ...
+            ['Please see file README.md on the GitHub repository ', ...
+             'https://github.com/HoerTech-gGmbH/openMHA for information about', ...
+             'how to obtain the DSLmio5 wrapper.']);
     end
     
 end

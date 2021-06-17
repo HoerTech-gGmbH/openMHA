@@ -52,4 +52,5 @@ find ./reference_algorithms -name ".*" -exec rm {} \;
 # Documentation
 mkdir -p doc
 cp ../../../../*pdf doc/.
+cp ../../../../*md doc/.
 cp ../../../../COPYING doc/.

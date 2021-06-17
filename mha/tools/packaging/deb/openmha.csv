@@ -1,4 +1,4 @@
-README.md,usr/share/doc/openmha/
+README*.md,usr/share/doc/openmha/
 COPYING,usr/share/doc/openmha/
 mha/frameworks/${BUILD_DIR}/analysemhaplugin,usr/bin/
 mha/frameworks/${BUILD_DIR}/browsemhaplugins,usr/bin/

@@ -69,6 +69,7 @@ docfiles:
 	@mkdir -p ${WORK_D}/usr/local/doc/openmha/
 	@${CP} ${REPO}/COPYING ${WORK_D}/usr/local/doc/openmha/
 	@${CP} ${REPO}/*.pdf ${WORK_D}/usr/local/doc/openmha/
+	@${CP} ${REPO}/*.md ${WORK_D}/usr/local/doc/openmha/
 
 clean:
 	@rm -rf tmp/

@@ -1,0 +1,8 @@
+Section: non-free/utils
+Maintainer: openMHA packaging team <packaging@openmha.org>
+Homepage: http://www.openmha.org/
+Description: Wrapper for the DSL hearing aid prescription rule.
+ MHA and openMHA users who have bought the DSL prescription rule
+ from the University of Western Ontario can use this wrapper
+ in order to fit MHA and openMHA according to the DSL prescription
+ rule.

@@ -56,6 +56,12 @@ http://www.openmha.org/docs/openMHA_starting_guide.pdf
 ### macOS
 * There are some known issues with Octave under macOS. The openMHA GUI may not work correctly with octave. As an alternative Matlab can be used.
 
+## Proprietary fitting rules
+openMHA supports the DSLmio5 and NAL-NL2 fitting rules. The software libraries
+implementing these rules must be obtained from their respective authors. The openMHA
+team provides wrappers around these libraries which for legal reasons are not 
+distributed as part of openMHA but as optional extras. Please the README_NALNL2.md and README_DSLmio5.md for more information
+
 ## Reference algorithms
 
 A collection of openMHA configuration files that implement signal

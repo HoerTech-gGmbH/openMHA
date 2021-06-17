@@ -294,6 +294,21 @@ rule.
 
 \MHAfigure[][\linewidth]{Fitting dialog.}{mhacontrol_fitting_tool.png}
 
+\subsubsection*{Using commercial fitting rules}
+
+Dynamic compressors in \mha{} can be fitted with commercial prescription rules. At
+the time of this writing, these are DSLmio5 (\url{https://www.dslio.com/}) by
+the University of Western Ontario and NAL-NL2 by the National Acoustics
+Laboratory of Australia (\url{https://www.nal.gov.au}). The software libraries
+implementing these rules must be obtained from their respective authors.
+
+The \mha{} Fitting dialogs call wrappers around these libraries to obtain the
+fitting results. For legal reasons these wrappers are not distributed as part of
+\mha{} but need to be installed as an optional extra. The method of distribution
+for these wrappers is subject to change. Please see README.md on the \mha{}
+GitHub repository (\url{https://github.com/HoerTech-gGmbH/openMHA})
+for information about how to obtain the wrappers.
+
 \subsection{Level meter}\label{sec:levels}\index{level meter}\index{broadband level}\index{gain}\index{input level}\index{output level}
 
 The level meter (\figref{mhacontrol_levels.png}) contains two areas.
