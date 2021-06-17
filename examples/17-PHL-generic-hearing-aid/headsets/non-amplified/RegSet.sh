@@ -1,38 +1,67 @@
 #!/bin/bash
 set -e
 
+function invoke_amixer {
+amixer set "$C Input 1" -- "$LINPG"
+amixer set "$C Input 3" -- "$RINPG"
+amixer set "$C Input 2" -- "$LINNG"
+amixer set "$C Input 4" -- "$RINNG"
+# MX1EN and MX2EN are enabled by DAPM when PCM starts
+amixer set "$C PGA Boost" -- "$LDBOOST,$RDBOOST"
+amixer set "$C Aux" -- "$MX1AUXG,$MX2AUXG"
+amixer set "$C" -- "$LDVOL,$RDVOL"
+amixer cset name="$C Capture Switch" -- "$LDMUTE,$RDMUTE"
+amixer set "$C Capture Differential" -- "$LDEN,$RDEN"
+amixer set "$C Headphone" -- "$LHPVOL,$RHPVOL"
+amixer cset name="$C Headphone Playback Switch" -- "$LHPM,$RHPM"
+# HPEN and HPMODE are set by the driver
+}
 
-# NON-APLIFIED Headset (PGA = 30.5)
+# Values for C0. "unmute" does not work, use "on" instead.
 
-#INPUT
-sudo i2cset -f -y 2 0x38 0x40 0x0a 0x01 i
-sudo i2cset -f -y 2 0x38 0x40 0x0b 0x08 i
-sudo i2cset -f -y 2 0x38 0x40 0x0e 0xe7 i
+C=C0      # First Codec, Left Headset
+LINPG=0   # Mute
+RINPG=0   # Mute
+LINNG=0   # Mute
+RINNG=0   # Mute
+LDBOOST=0dB
+RDBOOST=0dB
+MX1AUXG=0 # Mute
+MX2AUXG=0 # Mute
+LDVOL=30.75dB
+RDVOL=30.75dB
+LDMUTE=on # Unmute
+RDMUTE=on # Unmute
+LDEN=on   # Enable differential path
+RDEN=on   # Enable differential path
+LHPVOL=-10dB
+RHPVOL=0dB
+LHPM=on   # Unmute
+RHPM=on   # Unmute
 
-sudo i2cset -f -y 2 0x38 0x40 0x0c 0x01 i
-sudo i2cset -f -y 2 0x38 0x40 0x0d 0x08 i
-sudo i2cset -f -y 2 0x38 0x40 0x0f 0xe7 i
+invoke_amixer
 
-sudo i2cset -f -y 2 0x39 0x40 0x0a 0x01 i
-sudo i2cset -f -y 2 0x39 0x40 0x0b 0x08 i
-sudo i2cset -f -y 2 0x39 0x40 0x0e 0xe7 i
+C=C1 # same settings as for C0
+invoke_amixer
 
-sudo i2cset -f -y 2 0x39 0x40 0x0c 0x01 i
-sudo i2cset -f -y 2 0x39 0x40 0x0d 0x08 i
-sudo i2cset -f -y 2 0x39 0x40 0x0f 0xe7 i
+C=C2
+LINPG=0   # Mute
+RINPG=0   # Mute
+LINNG=0   # Mute
+RINNG=0   # Mute
+LDBOOST=0dB
+RDBOOST=0dB
+MX1AUXG=0 # Mute
+MX2AUXG=0 # Mute
+LDVOL=15.75dB
+RDVOL=15.75dB
+LDMUTE=on # Unmute differential path
+RDMUTE=on # Unmute differential path
+LDEN=on   # Enable differential path
+RDEN=on   # Enable differential path
+LHPVOL=0dB
+RHPVOL=0dB
+LHPM=on   # Unmute
+RHPM=on   # Unmute
 
-sudo i2cset -f -y 2 0x3a 0x40 0x0a 0x01 i
-sudo i2cset -f -y 2 0x3a 0x40 0x0b 0x08 i
-sudo i2cset -f -y 2 0x3a 0x40 0x0e 0x97 i
-
-sudo i2cset -f -y 2 0x3a 0x40 0x0c 0x01 i
-sudo i2cset -f -y 2 0x3a 0x40 0x0d 0x08 i
-sudo i2cset -f -y 2 0x3a 0x40 0x0f 0x97 i
-
-#OUTPUT
-sudo i2cset -f -y 2 0x38 0x40 0x23 0xBF i
-sudo i2cset -f -y 2 0x39 0x40 0x23 0xBF i
-sudo i2cset -f -y 2 0x3A 0x40 0x23 0xE7 i
-sudo i2cset -f -y 2 0x38 0x40 0x24 0xE7 i
-sudo i2cset -f -y 2 0x39 0x40 0x24 0xE7 i
-sudo i2cset -f -y 2 0x3A 0x40 0x24 0xE7 i
+invoke_amixer

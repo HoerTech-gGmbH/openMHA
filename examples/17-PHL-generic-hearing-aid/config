@@ -1,22 +1,16 @@
-# mahalia settings
-MAHALIA_LED="/sys/class/leds/beaglebone:green:heartbeat"
-
-# wifi settings
-# $SERIAL_NUMBER is replaced with the device serial number
-WIFI_SSID="Mahalia_\$SERIAL_NUMBER"
-
 # jack settings
-JACK_PRIORITY=90
-JACK_SOUNDCARD=hw:boneaudioext
-JACK_SAMPLERATE=16000
-JACK_BUFFER=24
-JACK_FRAMES=2
-JACK_OPTS=""
+JACK_PRIORITY=90               # argument to parameter -P
+JACK_SOUNDCARD=hw:boneaudioext # argument to alsa parameter -d
+JACK_SAMPLERATE=16000          # argument to alsa parameter -r
+JACK_BUFFER=24                 # argument to alsa parameter -p
+JACK_FRAMES=2                  # argument to alsa parameter -n
+JACK_OPTS=""                   # additional arguments at end of command line
+JACK_FRONT_OPTS="-S"           # additional arguments directly after "jackd"
+NOJACK=1                       # jack will only be started when this is empty
 
 # openMHA settings
 OPENMHA_INTERFACE="0.0.0.0"
 OPENMHA_PORT="33337"
 OPENMHA_OPTS="--daemon ?read:/etc/mahalia/generic-hearing-aid/index.cfg"
 
-HEADSET=non-amplified
-NOJACK=1
+HEADSET=amplified # select headset type for which alsa settings will be loaded 
