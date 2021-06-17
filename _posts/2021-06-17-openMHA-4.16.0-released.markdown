@@ -12,7 +12,7 @@ In this release of openMHA, the openMHA fitting tools (mhagui_fitting.m and mhag
 [NAL-NL2](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README_DSLmio5.md) [DSLMio5](https://github.com/HoerTech-gGmbH/openMHA/blob/master/README_DSLmio5.md).
 Further, a [template file](https://github.com/HoerTech-gGmbH/openMHA/blob/master/mha/tools/mfiles/gainrule_template.m) for the implementation of own fitting rules was added to the tool set.
 
-Another extension of the openMHA tool set is a new graphical user interface for Matlab that can be used to control the generic hearing aid setup provided with the [Mahalia](http://mahalia.openmha.org/) operating system for the Portable Hearing Laboratory (see [hardware](/Hardware)).
+Another extension of the openMHA tool set is a new graphical user interface for Matlab that can be used to control the generic hearing aid setup provided with the [Mahalia](http://mahalia.openmha.org/) operating system for the Portable Hearing Laboratory (see [Hardware](/hardware)).
 
 The PortAudio audio IO-library was made more flexible in order to extend audio interface support, in particular for portable hardware platforms.
        
