@@ -5,6 +5,10 @@ permalink: /about/
 menu: main
 ---
 
+#### User forum
+
+[https://forum.openmha.org/](https://forum.openmha.org/)
+
 #### Contact
 
 <info@openMHA.org>
