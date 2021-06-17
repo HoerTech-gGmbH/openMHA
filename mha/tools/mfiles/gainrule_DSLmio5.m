@@ -1,5 +1,5 @@
-function [sGt] = gainrule_DSL(sAud,sFitmodel)
-    % function sGt = gainrule_DSL(sAud,sFitmodel)
+function [sGt] = gainrule_DSLmio5(sAud,sFitmodel)
+    % function sGt = gainrule_DSLmio5(sAud,sFitmodel)
     %
     % DSL gainrule for MHA dynamic compressors. This function requires that a
     % global variable RECD exists as a struct with fields f and dB, where both
@@ -66,7 +66,7 @@ function [sGt] = gainrule_DSL(sAud,sFitmodel)
 
     % load dsl.oct file which interfaces the DLSmio 5 DLL
 
-    if ispc() or ismac()
+    if ispc() || ismac()
       abort_dsl_missing();
     end
 
@@ -224,14 +224,17 @@ function abort_dsl_missing()
 % Function called when invoking the dsl5 wrapper did not produce
 % expected output. Fail with suitable error message.
   detail = '';
-  if ispc() or ismac()
+  if ispc() || ismac()
     detail = 'The DSL5 wrapper at the moment only supports Linux.';
   else
     detail = 'The dslmio file could not be found in directory /usr/lib/. Please place it there and repeat.'
-  endif
+  end
+  if ~isoctave()
+    detail = sprintf('%s\n%s', detail, 'The DSL5 wrapper is not compatible with Matlab. It requires Octave');
+  end
   error('Could not invoke DSLmio5 wrapper to compute insertion gains\n%s\n%s', ...
         detail, ...
         ['Please see file README.md on the GitHub repository ', ...
          'https://github.com/HoerTech-gGmbH/openMHA for information about', ...
-         'how to obtain the DSLmio5 wrapper.']);
+         ' how to obtain the DSLmio5 wrapper.']);
 end

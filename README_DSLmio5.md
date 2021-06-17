@@ -20,6 +20,7 @@ In order to fit openMHA with *DSLmio 5*, you need to
    - libDSLmio-core.so.5
    - libDSLmio-core.so.<Version>+build.<BuildNo>
    - dslmio.dat
+
    into the directory `/usr/lib` of the Linux computer.
 3) Install openMHA on this computer.  See file INSTALLATION.md for instructions.
 4) Install the dsl wrapper with `apt install dsl-wrapper`. This will also
@@ -33,7 +34,7 @@ In order to fit openMHA with *DSLmio 5*, you need to
 
 Please check the DSLmio 5 fitting that you apply before using it for your
 research. You can find how we compute the DSLmio 5 insertion gains for openMHA
-dynamic compressors in file `/usr/lib/openmha/mfiles/gainrule_DSL.m`.  Please
+dynamic compressors in file `gainrule_DSLmio5.m`.  Please
 check if these computations match your expectation, and if you find any errors
 or inaccuracies, please report them by filing an issue with the openMHA project
 on github: https://github.com/HoerTech-gGmbH/openMHA/issues

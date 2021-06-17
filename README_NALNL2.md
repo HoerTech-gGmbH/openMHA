@@ -32,3 +32,10 @@ needs to be purchased from the National Acoustic Laboratories independently.
      http://mha.hoertech.de/fitting/nalnl2wrapper-2021.06-installer.exe
   3) Store a licensed copy of NAL-NL2.dll in directory 
      C:\Program Files\nalnl2wrapper\bin
+
+Please check the NAL NL2 fitting that you apply before using it for your
+research. You can find how we compute the NAL NL2 insertion gains for openMHA
+dynamic compressors in file `gainrule_NAL_NL2.m`.  Please
+check if these computations match your expectation, and if you find any errors
+or inaccuracies, please report them by filing an issue with the openMHA project
+on github: https://github.com/HoerTech-gGmbH/openMHA/issues
