@@ -208,8 +208,8 @@ while launch_gui
   launch_gui = false;
 end
 
-if ~exist([outdir,'/',clientid])
-  mkdir([outdir,'/',clientid]);
+if ~exist(fullfile(outdir,clientid))
+  mkdir(fullfile(outdir,clientid));
 end
 
 % Check soundfile duration for possible timeout error
@@ -237,7 +237,7 @@ for soundfile_index = 1:numel(soundfiles_src)
 
   infile = soundfiles_src{soundfile_index};
   soundfile = soundfiles{soundfile_index};
-  outfile = [outdir,'/',clientid,'/',soundfile];
+  outfile = fullfile(outdir,clientid,soundfile);
   if ~overwrite_all && exist(outfile)
     answer_outfile = questdlg(sprintf('Soundfile %s already exists, do you want to overwrite it?',outfile),...
                               'Output File Conflict', ...
@@ -254,13 +254,14 @@ for soundfile_index = 1:numel(soundfiles_src)
   pause(0.01); % allow output above to become visible
   [y,fs] = audioread(infile);
   samples_file = size(y,1);
-  % file twice, first time-reversed
+  % file twice, first time-reversed to initialize compressor states
+  temp_snd_file_name = 'temp_compressor_input_signal.wav';
   y = [flipud(y);y;zeros(samples_delay,num_channels)];
-  audiowrite([outdir,'/',clientid,'/input.wav'],y,fs,'BitsPerSample',32);
+  audiowrite(fullfile(outdir,clientid,temp_snd_file_name),y,fs,'BitsPerSample',32);
 
   % trigger MHA
   mha_set(mha,'cmd','release');
-  mha_set(mha,'io.in',[outdir,'/',clientid,'/input.wav']);
+  mha_set(mha,'io.in',fullfile(outdir,clientid,temp_snd_file_name));
   mha_set(mha,'io.out',outfile);
   mha_set(mha,'cmd','start');
   mha_set(mha,'cmd','release');
@@ -269,7 +270,7 @@ for soundfile_index = 1:numel(soundfiles_src)
   % time-reversed part and check for clipping
   [y,fs] = audioread(outfile);
   y = y(1+samples_file+samples_delay:end,:);
-if any(abs(y(:))>1) && ~allow_clipping_all
+  if any(abs(y(:))>1) && ~allow_clipping_all
     answer_clip = questdlg(sprintf('WARNING! File %s will contain samples > 1. Do you want to write anyway?',outfile),...
                            'Output File Warning',...
                            'Yes','Yes, for all','No','Abort','No');
@@ -288,4 +289,5 @@ if any(abs(y(:))>1) && ~allow_clipping_all
           sprintf('%i of %i files processed.',soundfile_index,numel(soundfiles_src)));
 end
 close(w_bar);
+delete(temp_snd_file_name);
 mha_set(mha,'cmd','quit');
