@@ -52,6 +52,9 @@ sound card here: http://mahalia.openmha.org/.
 Please follow our getting-started guide:
 http://www.openmha.org/docs/openMHA_starting_guide.pdf
 
+Our user forum is found here:
+https://forum.openmha.org/
+
 ## Known issues
 ### macOS
 * There are some known issues with Octave under macOS. The openMHA GUI may not work correctly with octave. As an alternative Matlab can be used.
