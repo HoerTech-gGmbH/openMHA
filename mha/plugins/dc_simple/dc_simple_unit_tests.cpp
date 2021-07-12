@@ -16,7 +16,6 @@
 #include <gtest/gtest.h>
 #include "dc_simple.hh"
 #include "mha_algo_comm.hh"
-#include <iostream>
 
 class dc_simple_testing : public ::testing::Test {
   public:
@@ -34,9 +33,9 @@ class dc_simple_testing : public ::testing::Test {
   // Plugin instance
   dc_simple::dc_if_t dc_simple{ac,"algo"};
 
-  /// prepares the plugin for tests
-  void prepare() {
-    dc_simple.prepare_(signal_properties);
+  /// prepares the plugin for tests for either waveform or spectrum domain
+  void prepare(){
+        dc_simple.prepare_(signal_properties);
   }
 };
 
@@ -205,3 +204,269 @@ TEST_F(dc_simple_testing, test_variable_validator)
   EXPECT_NO_THROW(dc_simple.parse("g50 = [50]"));
 
 }
+
+/** Test Fixture for the level_smoother_t class*/
+class level_smoother_t_testing : public ::testing::Test {
+  public:
+  // Example input to create MHASignal
+  mhaconfig_t signal_properties_wav =  {
+    .channels = 2,  .domain = MHA_WAVEFORM, .fragsize = 32,
+    .wndlen   = 0,  .fftlen = 0,            .srate    = 16000
+  };
+
+  // Using smaller fftlen as buffer beyond fragsize are not available
+  mhaconfig_t signal_properties_spec =  {
+    .channels = 2,  .domain = MHA_SPECTRUM, .fragsize = 32,
+    .wndlen  = 8,  .fftlen = 16,          .srate    = 16000
+  };
+
+  MHASignal::waveform_t wave{signal_properties_wav.fragsize, signal_properties_wav.channels};
+  MHASignal::spectrum_t spec{signal_properties_spec.fragsize, signal_properties_spec.channels};
+
+  // Instantiate default dc_vars_t for level_smoother_t constructor
+  MHAParser::parser_t p;
+  dc_simple::dc_vars_t vars{p};
+  mha_real_t filter_rate = signal_properties_wav.srate;
+
+  float db0spl = 20.0f * log10f(5e+4f * 1e-10f);
+};
+
+
+/** Test class level_smoother_t waveform process method with attack and 
+ * release filters to 0 and waveform to 0 */
+TEST_F(level_smoother_t_testing, test_level_smoother_t_wave0_attack0_decay0)
+{
+  p.parse("tau_attack = [0 0]");
+  p.parse("tau_decay = [0 0]");
+
+  // Set up instance of level_smoother with default waveform configuration
+  dc_simple::level_smoother_t level_smoother_wav{vars, filter_rate,
+                              signal_properties_wav};
+  
+  // Test if tauattack was registered by parser to level_smoother correctly
+  const std::vector<float> tauattack = {0, 0};
+  EXPECT_EQ(tauattack, vars.tauattack.data);
+  
+  // Process a 0 Pa waveform signal
+  wave.assign(0.0f);
+  mha_wave_t *level_wav =  level_smoother_wav.process(&wave);
+
+  // Compare the output to expectation
+  // Expect it to return -106.021 since pa2dbspl eps is set to 1e-10f
+  for (unsigned ch = 0; ch < level_wav->num_channels; ++ch) {
+    for (unsigned frame = 0; frame < level_wav->num_frames; ++frame) {
+      EXPECT_FLOAT_EQ(db0spl, value(level_wav, frame, ch));
+    }
+  }
+}
+
+/** Test class level_smoother_t waveform process method with attack and 
+ * release filters to 0 and waveform to 1 */
+TEST_F(level_smoother_t_testing, test_level_smoother_t_wave1_attack0_decay0)
+{ 
+  p.parse("tau_attack = 0");
+  p.parse("tau_decay = 0");
+
+  // Set up instance of level_smoother with default waveform configuration
+  // and above defined attack and release
+  dc_simple::level_smoother_t level_smoother_wav{vars, filter_rate,
+                              signal_properties_wav};
+  
+  // Process a 1 Pa waveform signal
+  wave.assign(1.0f);
+  mha_wave_t *level_wav =  level_smoother_wav.process(&wave);
+
+  // Expect it to return 93.9794 dB (1 Pa)
+  for (unsigned ch = 0; ch < level_wav->num_channels; ++ch) {
+    for (unsigned frame = 0; frame < level_wav->num_frames; ++frame) {
+      EXPECT_FLOAT_EQ(93.979400086720374929, value(level_wav, frame, ch));
+    }
+  }
+}
+
+/** Test class level_smoother_t spectrum process method with attack and 
+ * release filters to 0 and spectrum 0+0i */
+TEST_F(level_smoother_t_testing, test_level_smoother_t_spec0_attack0_decay0)
+{
+  p.parse("tau_attack = [0 0]");
+  p.parse("tau_decay = [0 0]");
+
+  // Set up instance of level_smoother with default spectrum configuration
+  dc_simple::level_smoother_t level_smoother_spec{vars, filter_rate,
+                              signal_properties_spec};
+  
+  // Assign spectrum to be 0+0i
+  mha_complex_t complex{0.0f, 0.0f};
+  for (unsigned ch = 0; ch < spec.num_channels; ++ch) {
+    for( unsigned int k = 0; k < spec.num_frames; ++k ){
+        spec.buf[spec.num_channels * k + ch] = complex;
+  }}
+  // Process the spectrum signal
+  mha_wave_t *level_spec =  level_smoother_spec.process(&spec);
+  
+  // Expect it to return -106.021 since pa2dbspl eps is set to 1e-10f, where rmslevel should return 0
+  for (unsigned k = 0; k < level_spec->num_channels; ++k) {
+    EXPECT_FLOAT_EQ(db0spl, value(level_spec, k));
+  }
+}
+
+/** Inehrit from the level_smoother_t_testing and google parameter testing class (for int) */
+class level_smoother_t_filter_parametric_testing : public level_smoother_t_testing,
+                public testing::WithParamInterface<int> {};
+
+/** Test for the expected behavior of the maximum tracker decay filter */
+TEST_P(level_smoother_t_filter_parametric_testing, test_level_smoother_t_max_tracker)
+{ 
+  // Parse data with correct channel count as force_resize is not used
+  p.parse("tau_attack = [0 0]");
+  // large 1 hour decay time constant set so the filter can be tested
+  p.parse("tau_decay = [3600 3600]"); 
+
+  // Set up instance of level_smoother with default waveform configuration
+  dc_simple::level_smoother_t level_smoother_wav{vars, filter_rate,
+                              signal_properties_wav};
+ 
+  // Set the wave to given dB value
+  wave.assign(MHASignal::dbspl2pa(GetParam()));
+  // Process level_smoother
+  mha_wave_t *level_wav =  level_smoother_wav.process(&wave);
+
+  // decay filter is a maximum tracker, so it should return the maximum from 
+  // the set filter_level and the signal level 
+  for (unsigned ch = 0; ch < level_wav->num_channels; ++ch) {
+    for (unsigned frame = 0; frame < level_wav->num_frames; ++frame) {
+      EXPECT_NEAR(std::max(GetParam(), 65), value(level_wav, frame, ch), 1e-3);
+    }
+  }
+}
+
+/** Test for the expected behavior of the decay filter time constant */
+TEST_P(level_smoother_t_filter_parametric_testing, test_level_smoother_t_decay_timeconstant)
+{ 
+  // Parse data with correct channel count as force_resize is not used
+  p.parse("tau_attack = [0 0]");
+  // 1 s decay time constant set
+  p.parse("tau_decay = [1 1]"); 
+
+  // Set up instance of level_smoother with default waveform configuration
+  dc_simple::level_smoother_t level_smoother_wav{vars, filter_rate,
+                              signal_properties_wav};
+
+  // Set the wave to parameteric dB value
+  wave.assign(MHASignal::dbspl2pa(GetParam()));
+
+  // Process level_smoother for 1 second
+  unsigned repeat = (signal_properties_wav.srate/signal_properties_wav.fragsize) - 1 ;
+  mha_wave_t *level_wav = level_smoother_wav.process(&wave);
+
+  for (unsigned i = 0; i<repeat; ++i){
+    level_wav = level_smoother_wav.process(&wave);
+  }
+  
+  // computed the smoothed signal level, which is the initial difference 
+  // divided by e and added to the input signal level
+  float smoothed_level = GetParam()+((65-GetParam())/expf(1));
+
+  // Below 65, the value should be equal to smoothed level. 
+  // Above 65, it is tested in the previous test.
+  if (GetParam() < 65){
+    for (unsigned ch = 0; ch < level_wav->num_channels; ++ch) {
+      for (unsigned frame = 0; frame < level_wav->num_frames; ++frame) {
+          EXPECT_NEAR(smoothed_level, value(level_wav, frame, ch), 5e-2);
+      }
+    }
+  }
+}
+
+/** Test for the low pass attack filter is neither a maximum or minimum tracker */
+TEST_P(level_smoother_t_filter_parametric_testing, test_level_smoother_t_attack_not_max_min_tracker)
+{ 
+  // Set attack value but decay to 0
+  p.parse("tau_attack = [1 1]");
+  p.parse("tau_decay = [0 0]"); 
+
+  // Set up instance of level_smoother with default waveform configuration
+  dc_simple::level_smoother_t level_smoother_wav{vars, filter_rate,
+                              signal_properties_wav};
+ 
+  // Set the wave to given dB value
+  wave.assign(MHASignal::dbspl2pa(GetParam()));
+  // Process level_smoother
+  mha_wave_t *level_wav =  level_smoother_wav.process(&wave);
+
+  // Expect the attack filter to be neither a maximum or minimum filter
+  // on values other than 65 
+  if (GetParam() != 65){
+    for (unsigned ch = 0; ch < level_wav->num_channels; ++ch) {
+      for (unsigned frame = 0; frame < level_wav->num_frames; ++frame) {
+        EXPECT_NE(std::max(GetParam(), 65), value(level_wav, frame, ch));
+        EXPECT_NE(std::min(GetParam(), 65), value(level_wav, frame, ch));
+      }
+    }
+  }
+}
+
+/** Test the low pass attack filter with long time constant */
+TEST_P(level_smoother_t_filter_parametric_testing, test_level_smoother_t_attack_low_pass)
+{ 
+  // Set attack value but decay to 0
+  p.parse("tau_attack = [3600 3600]");
+  p.parse("tau_decay = [0 0]"); 
+
+  // Set up instance of level_smoother with default waveform configuration
+  dc_simple::level_smoother_t level_smoother_wav{vars, filter_rate,
+                              signal_properties_wav};
+ 
+  // Set the wave to given dB value
+  wave.assign(MHASignal::dbspl2pa(GetParam()));
+  // Process level_smoother
+  mha_wave_t *level_wav =  level_smoother_wav.process(&wave);
+
+  // Expect the predefined 65 dB value to be there after processing once, with long time constant
+  for (unsigned ch = 0; ch < level_wav->num_channels; ++ch) {
+    for (unsigned frame = 0; frame < level_wav->num_frames; ++frame) {
+      EXPECT_EQ(65, value(level_wav, frame, ch));
+    }
+  }
+}
+
+
+/** Test for the expected behavior of the attack filter time constant */
+TEST_P(level_smoother_t_filter_parametric_testing, test_level_smoother_t_attack_timeconstant)
+{ 
+  // Parse data with correct channel count as force_resize is not used
+  p.parse("tau_attack = [1 1]");
+  // 1 s decay time constant set
+  p.parse("tau_decay = [0 0]"); 
+
+  // Set up instance of level_smoother with default waveform configuration
+  dc_simple::level_smoother_t level_smoother_wav{vars, filter_rate,
+                              signal_properties_wav};
+
+  // Set the wave to parameteric dB value
+  wave.assign(MHASignal::dbspl2pa(GetParam()));
+
+  // Process level_smoother for 1 second
+  unsigned repeat = (signal_properties_wav.srate/signal_properties_wav.fragsize) - 1 ;
+  mha_wave_t *level_wav = level_smoother_wav.process(&wave);
+
+  for (unsigned i = 0; i<repeat; ++i){
+    level_wav = level_smoother_wav.process(&wave);
+  }
+  
+  // computed the smoothed signal level, which is the initial difference 
+  // divided by e and added to the input signal level
+  float smoothed_level = GetParam()+((65-GetParam())/expf(1));
+
+  // Expect an exponential decay similar to the max tracker filter, but
+  // not a max or min tracker
+  for (unsigned ch = 0; ch < level_wav->num_channels; ++ch) {
+    for (unsigned frame = 0; frame < level_wav->num_frames; ++frame) {
+        EXPECT_NEAR(smoothed_level, value(level_wav, frame, ch), 5e-2);
+    }
+  }
+}
+
+/** Instantiate the parametric tests for the delay filter being fed signals with different levels */
+INSTANTIATE_TEST_SUITE_P(30dB_40dB_65dB_85dB, 
+  level_smoother_t_filter_parametric_testing,::testing::Values(30, 40, 65, 85));

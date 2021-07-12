@@ -123,3 +123,34 @@ TEST(polyphase_resampling_t, buffer_space) {
   unsigned frames=std::numeric_limits<unsigned>::max();
   EXPECT_THROW(MHAFilter::blockprocessing_polyphase_resampling_t b(48000,frames,32000,1U,0.85f,7e-4,1,false),MHA_Error);
 }
+TEST(o1flt_maxtrack_t, pass_max) {
+  // rising values are passed, regardless of time constants
+  MHAFilter::o1flt_maxtrack_t maxtrack({1.0f}, 48000, 0);
+  ASSERT_FLOAT_EQ(0.0f, maxtrack(0,0.0f));
+  ASSERT_FLOAT_EQ(1.0f, maxtrack(0,1.0f));
+  ASSERT_FLOAT_EQ(1.0f, maxtrack(0,1.0f));
+  ASSERT_FLOAT_EQ(2.0f, maxtrack(0,2.0f));
+}
+
+TEST(o1flt_maxtrack_t, decay_one_sample) {
+  // Check time constant with single sample
+  MHAFilter::o1flt_maxtrack_t maxtrack({1.0f}, 1, 1);
+  ASSERT_FLOAT_EQ(1.0f, maxtrack(0,1.0f));
+  ASSERT_FLOAT_EQ(1/expf(1), maxtrack(0,0.0f));
+}
+
+TEST(o1flt_maxtrack_t, decay_some_samples) {
+  // Check time constant with three samples
+  MHAFilter::o1flt_maxtrack_t maxtrack({1.0f}, 3, 1);
+  ASSERT_FLOAT_EQ(1.0f, maxtrack(0,1.0f));
+  ASSERT_FLOAT_EQ(1/expf(1), (maxtrack(0,0),maxtrack(0,0),maxtrack(0,0)));
+}
+
+TEST(o1flt_maxtrack_t, decay_many_samples) {
+  // Check time constant with 48000 samples
+  MHAFilter::o1flt_maxtrack_t maxtrack({1.0f}, 48000, 1);
+  ASSERT_FLOAT_EQ(1.0f, maxtrack(0,1.0f));
+  for (int i = 1; i < 48000; ++i)
+    maxtrack(0,0);
+  ASSERT_NEAR(1/expf(1), maxtrack(0,0), 0.001);
+}

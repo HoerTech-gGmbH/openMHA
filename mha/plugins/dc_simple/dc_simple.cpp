@@ -245,7 +245,7 @@ mha_wave_t* level_smoother_t::process(mha_wave_t* s)
     unsigned int t, k;
     for(k=0;k<nbands;k++)
         for(t=0;t<s->num_frames;t++)
-            level_wave(t,k) = decay(k,MHASignal::pa2dbspl(attack(k,fabsf(value(s,t,k)))));
+            level_wave(t,k) = decay(k,attack(k,MHASignal::pa2dbspl(fabsf(value(s,t,k)),1e-10f)));
     return &level_wave;
 }
 
@@ -277,7 +277,7 @@ mha_wave_t* dc_t::process(mha_wave_t* s, mha_wave_t* level_db)
 mha_wave_t* level_smoother_t::process(mha_spec_t* s)
 {
     for(unsigned int k=0;k<s->num_channels;k++)
-        level_spec.buf[k] = decay(k,attack(k,MHASignal::pa2dbspl(std::max(1e-10f,MHASignal::rmslevel(*s,k,fftlen)))));
+        level_spec.buf[k] = decay(k,attack(k,MHASignal::pa2dbspl(MHASignal::rmslevel(*s,k,fftlen), 1e-10f)));
     return &level_spec;
 }
 

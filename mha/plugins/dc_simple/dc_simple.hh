@@ -68,18 +68,30 @@ namespace dc_simple {
         dc_vars_validator_t(const dc_vars_t& v,unsigned int s);
     };
 
-    // Not clear about level_smoother class and dc_t. They have different constructors, 
-    // where dc_t has an additional parameter level_db in constructor but I can't figure out what this does
+    /** Class which computes smoothed input levels on individual bands, using an
+     * attack and release filter, which are a first order low pass filter and a
+     * maximum tracker filter, respectively */
     class level_smoother_t : private dc_vars_validator_t {
     public:
         level_smoother_t(const dc_vars_t& vars,
                                 mha_real_t filter_rate,
                                 mhaconfig_t buscfg);
+        /** Process callback. Computes smoothed levels from the input mha type spectrum 
+         * by applying a lowpass and maximum tracker filter
+         * @return smoothed input levels in dB SPL
+         * @param s input signal */
         mha_wave_t* process(mha_spec_t* s);
+        /** Process callback. Computes smoothed levels from the input mha type waveform 
+         * over individual bands by applying a lowpass and maximum tracker filter
+         * @return smoothed input levels in dB SPL
+         * @param s input/output signal */
         mha_wave_t* process(mha_wave_t* s);
     private:
-        MHAFilter::o1flt_lowpass_t attack;
+        /** first order low pass attack filter */
+        MHAFilter::o1flt_lowpass_t attack; 
+        /** maximum tracker decay filter */
         MHAFilter::o1flt_maxtrack_t decay;
+        /** Total number of frequency bands of this compressor */
         unsigned int nbands;
         unsigned int fftlen;
         MHASignal::waveform_t level_wave;
@@ -89,47 +101,102 @@ namespace dc_simple {
     /// Runtime config class for dc_simple plugin.
     class dc_t : private dc_vars_validator_t {
     public:
+        /** Constructor */
         dc_t(const dc_vars_t& vars, unsigned int nch);
+
+        /** Process callback. Compresses, expands or limits depending on the gain settings and 
+         * filtered signal levels.
+         * Compresses the spectrum input signal in individual bands.
+         * @param s input/output signal 
+         * @param level_db smoothed levels of input signal in dB SPL 
+         * @return s. The input signal is modified in place.*/
         mha_spec_t* process(mha_spec_t* s, mha_wave_t* level_db);
+
+        /** Process callback. Compresses, expands or limits depending on the gain settings and 
+         * filtered signal levels.
+         * Compresses the waveform input signal in individual bands.
+         * @param s input/output signal
+         * @param level_db smoothed levels of input signal in dB SPL 
+         * @return s. The input signal is modified in place.*/
         mha_wave_t* process(mha_wave_t* s, mha_wave_t* level_db);
+
     private:
+        /** Helper class for usage in computing compression, expansion and limiting. */
         class line_t {
         public:
+            /** Constructor used for compression which takes two x and y coordinates each to find m and y0  */
             line_t(mha_real_t x1,mha_real_t y1,mha_real_t x2,mha_real_t y2);
+
+            /** Constructor used for expansion and limiting which takes x and y coordinates and a gradient, giving y0*/
             line_t(mha_real_t x1,mha_real_t y1,mha_real_t m_);
+
+            /** Operator overload which returns 
+             * @param x
+             * @return y values mapped to x by a linear equation with gradient m and intercept y0 */
             inline mha_real_t operator()(mha_real_t x){return m*x+y0;};
+
         private:
-            mha_real_t m, y0;
+            /** The gradient and y-intercept */
+            mha_real_t m, y0; 
         };
-        std::vector<mha_real_t> expansion_threshold;
-        std::vector<mha_real_t> limiter_threshold;
-        std::vector<line_t> compression;
-        std::vector<line_t> expansion;
-        std::vector<line_t> limiter;
-        std::vector<mha_real_t> maxgain;
-        unsigned int nbands;
+        std::vector<mha_real_t> expansion_threshold;    //!< Threshold below which to apply expansion
+        std::vector<mha_real_t> limiter_threshold;      //!< Threshold below which to compress
+        std::vector<line_t> compression;                //!< The linear function for applying compression
+        std::vector<line_t> expansion;                  //!< The linear function for applying expansion
+        std::vector<line_t> limiter;                    //!< The linear function for applying limiting
+        std::vector<mha_real_t> maxgain;                //!< Gain should not exceed this value
+        unsigned int nbands;                            //!< Number of bands
+        
     public:
+        // monitor level and monitor gain
         std::vector<float> mon_l, mon_g;
     };
 
+    /** Define alternate name for runtime_cfg_t */
     typedef MHAPlugin::plugin_t<dc_t> DC;
+
+    /** Define alternate name for config_t */
     typedef MHAPlugin::config_t<level_smoother_t> LEVEL;
     
-    /// interface class
+    /// interface class for dc_simple
     class dc_if_t : public DC, public LEVEL, public dc_vars_t {
     public:
-        dc_if_t(algo_comm_t iac, const std::string & configured_name);
-        void prepare(mhaconfig_t&);
+        /** Constructor instantiates one dc_simple plugin */
+        dc_if_t(algo_comm_t iac, 
+                const std::string & configured_name);
+
+        /** Prepare dc_simple plugin for signal processing
+         *   @param tf signal_dimensions */
+        void prepare(mhaconfig_t& tf);
+
+        /** Sets prepared back to False */
         void release();
+
+        /** Main process callback. Takes mhatype spectrum input and 
+         * calls type DC and LEVEL process methods, returning mhatype spectrum.
+         * @param s input/output signal */
         mha_spec_t* process(mha_spec_t* s);
+
+        /** Main process callback. Takes mhatype wave input and 
+         * calls type DC and LEVEL process methods, returning mhatype wave.
+         * @param s input/output signal */
         mha_wave_t* process(mha_wave_t* s);
     private:
+        /** Update dc_t runtime config when configuration parameters have changed */
         void update_dc();
+
+        /** Update level_smoother_t runtime config when configuration parameters have changed */
         void update_level();
         void has_been_modified(){modified.data = 1;};
         void read_modified(){modified.data = 0;};
+
+        /** Updates the data of variable mon_l in dc_t */
         void update_level_mon();
+
+        /** Updates the data of variable mon_g in dc_t */
         void update_gain_mon();
+
+        /** MHA Parser variables */
         MHAParser::string_t clientid;
         MHAParser::string_t gainrule;
         MHAParser::string_t preset;
