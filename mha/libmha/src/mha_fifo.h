@@ -373,6 +373,7 @@ public:
 };
 
 #ifdef _WIN32
+#include <winsock2.h>
 #include <windows.h>
 class mha_fifo_win32_threads_t : public mha_fifo_thread_platform_t {
     CRITICAL_SECTION mutex;
