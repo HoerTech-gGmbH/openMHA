@@ -27,11 +27,11 @@
 #include <stdio.h>
 #include <iostream>
 #include <assert.h>
+#include "mha_errno.h"
+#include "mha_defs.h"
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include "mha_errno.h"
-#include "mha_defs.h"
 
 #ifdef _MSC_VER
         #define vsnprintf _vsnprintf
