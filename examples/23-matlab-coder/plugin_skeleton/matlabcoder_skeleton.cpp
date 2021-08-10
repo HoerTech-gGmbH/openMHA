@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2020 HörTech gGmbH
+// Copyright © 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -34,11 +34,10 @@ class matlabcoder_skeleton_t : public MHAPlugin::plugin_t<int> {
   matlab::emxArray_real_T *matlab_input = nullptr;
   matlab::emxArray_real_T *matlab_output = nullptr;
 public:
-  /** The constructor has to take these three
+  /** The constructor has to take these two
    * arguments, but it does not have to use them.
    * process_initialize from namespace matlab is called in the construtor*/
   matlabcoder_skeleton_t(algo_comm_t & ac,
-            const std::string&,
             const std::string&)
       : MHAPlugin::plugin_t<int>("",ac)
   {matlab::process_initialize();}
