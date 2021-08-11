@@ -102,7 +102,13 @@ function [mha_handle, mha_process] = mha_start( port, pre_binary, post_binary )
   if ispc() && isoctave()
     PATH_backup = getenv('PATH');
     remove_octave_directories_from_windows_path()
+  elseif ~ispc() && ~ismac() && ~isoctave()
+    % alter LD_LIBRARY_PATH before executing javaruntime.exec(command)
+    % because Matlab might use outdated libraries, reset the path afterwards
+    ldlibpath = getenv('LD_LIBRARY_PATH');
+    setenv('LD_LIBRARY_PATH',regexprep(ldlibpath,'MATLAB',''));
   end
+
 
   octave_version = ver('Octave');
   % octave 4.0.0 did not translate cellstrings correctly to Java string arrays.
@@ -125,9 +131,12 @@ function [mha_handle, mha_process] = mha_start( port, pre_binary, post_binary )
     mha_process = javaruntime.exec(command);
   end
 
+  
   % restore PATH
   if ispc() && isoctave()
     setenv('PATH', PATH_backup);
+  elseif ~ispc() && ~ismac() && ~isoctave()
+    setenv('LD_LIBRARY_PATH',ldlibpath);
   end
 
   connection = acceptor.accept();
