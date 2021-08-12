@@ -36,10 +36,8 @@ typedef unsigned __int8 uint8_t;
  *
  */
 
-#include <windows.h>
-#ifdef __BORLANDC__
 #include <winsock2.h>
-#endif
+#include <windows.h>
 #define mha_loadlib(x) LoadLibrary(x)
 #define mha_freelib(x) FreeLibrary(x)
 #define mha_freelib_success(x) (x != 0)

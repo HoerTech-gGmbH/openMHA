@@ -34,6 +34,7 @@ typedef struct {
     float t;
 } mha_tictoc_t;
 
+#include <winsock2.h>
 #include <windows.h>
 typedef struct {
     LARGE_INTEGER tv1;

@@ -27,6 +27,7 @@
 #include <atomic>
 
 #if _WIN32
+#include <winsock2.h>
 #include <windows.h>
 #else
 // define dummy __declspec(dllexport) and others for non-windows OS

@@ -13,18 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-// On the 2019 windows build server, we cannot use the sh step anymore.
-// This workaround invokes the msys2 bash, sets the required environment
-// variables, and executes the desired command.
-def windows_bash(command) {
-  bat ('C:\\msys64\\usr\\bin\\bash -c "source /jenkins.environment && set -ex && ' + command + ' "')
-  // This will probably fail if command contains multiple lines, quotes, or
-  // similar.  Currently all our shell commands are simple enough for this
-  // simple solution to work.  Should this no longer be sufficient, then we
-  // could write the shell command to a temporary file and execute this file
-  // after sourcing the enviroment.
-}
-
 // Encapsulation of the build steps to perform when compiling openMHA
 // @param stage_name the stage name is "system && arch" where system is bionic,
 //                   windows, or mac, and arch is x86_64, i686, aarch64,
@@ -54,28 +42,25 @@ def openmha_build_steps(stage_name) {
 
   def additional_cpus_for_docs = 7
 
-  // workaround to invoke unix shell on all systems
-  def bash = { command -> windows ? windows_bash(command) : sh(command) }
-
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
   checkout scm
 
   // Avoid that artifacts from previous builds influence this build
-  bash "git reset --hard && git clean -ffdx"
+  sh "git reset --hard && git clean -ffdx"
 
   // Save time by using precompiled external libs if possible.
   // Install pre-compiled external libraries for the common branches
-  copyArtifacts(projectName: "openMHA/external_libs/external_libs_development",
-                selector:    lastSuccessful())
-  bash "tar xvzf external_libs.tgz"
+  //copyArtifacts(projectName: "openMHA/external_libs/external_libs_development",
+  //                selector:    lastSuccessful())
+  //sh "tar xvzf external_libs.tgz"
 
   // if we notice any differences between the sources of the precompiled
   // dependencies and the current sources, we cannot help but need to recompile
-  bash "git diff --exit-code || (git reset --hard && git clean -ffdx)"
+  sh "git diff --exit-code || (git reset --hard && git clean -ffdx)"
 
   // Autodetect libs/compiler
-  bash "./configure"
+  sh "./configure"
 
   if (docs) {
     // Create the cross-platform artifacts (PDFs and debs).
@@ -83,21 +68,21 @@ def openmha_build_steps(stage_name) {
     // All other platforms have to wait for the documents to be created and
     // published here, therefore we give this task additional cpus to create
     // the docs.
-    bash ("make -j ${cpus + additional_cpus_for_docs} doc")
+    sh ("make -j ${cpus + additional_cpus_for_docs} doc")
 
     // Store generated PDF documents as Jenkins artifacts
     stash name: "docs", includes: '*.pdf'
-    bash ("echo stashed docs on $system $arch at \$(date -R)")
+    sh ("echo stashed docs on $system $arch at \$(date -R)")
     archiveArtifacts 'pdf-*.zip'
 
     // The docker slave that builds the docs also builds the architecture
     // independent debian packages.  Again, all linux build jobs have to
     // wait for these debs created here, hence the additional cpus again.
-    bash ("make -j ${cpus + additional_cpus_for_docs} deb")
+    sh ("make -j ${cpus + additional_cpus_for_docs} deb")
 
     // make deb leaves copies of the platform-independent debs in base directory
     stash name: "debs", includes: '*.deb'
-    bash ("echo stashed debs on $system $arch at \$(date -R)")
+    sh ("echo stashed debs on $system $arch at \$(date -R)")
     archiveArtifacts '*.deb'
 
     // Doxygen generates html version of developer documentation.  Publish.
@@ -105,7 +90,7 @@ def openmha_build_steps(stage_name) {
   }
 
   // Build executables, plugins, execute tests
-  bash ("make -j $cpus test")
+  sh ("make -j $cpus test")
 
   // Retrieve the documents, wait if they are not ready yet
   def wait_time = 1 // short sleep time for first iteration
@@ -114,7 +99,7 @@ def openmha_build_steps(stage_name) {
     sleep(wait_time)
     wait_time = 15 // longer sleep times for subsequent iterations
     attempt = attempt + 1
-    bash ("echo unstash docs attempt $attempt on $system $arch at \$(date -R)")
+    sh ("echo unstash docs attempt $attempt on $system $arch at \$(date -R)")
     unstash "docs"
   }
 
@@ -127,12 +112,12 @@ def openmha_build_steps(stage_name) {
         sleep(wait_time)
         wait_time = 15
         attempt = attempt + 1
-        bash ("echo unstash debs attempt $attempt on $system $arch at \$(date -R)")
+        sh ("echo unstash debs attempt $attempt on $system $arch at \$(date -R)")
         unstash "debs"
-        bash ("touch *.deb")
+        sh ("touch *.deb")
       }
 
-      bash ("make -j $cpus deb")
+      sh ("make -j $cpus deb")
     }
     // Store debian packages
     stash name: (arch+"_"+system), includes: 'mha/tools/packaging/deb/hoertech/'
@@ -140,19 +125,19 @@ def openmha_build_steps(stage_name) {
   }
 
   if (windows) {
-    bash ("make -j $cpus exe")
+    sh ("make -j $cpus exe")
     // Store windows installer
     archiveArtifacts 'mha/tools/packaging/exe/*.exe'
   }
 
   if (mac) {
-    bash ("make -j $cpus pkg")
+    sh ("make -j $cpus pkg")
     // Store mac installer
     archiveArtifacts 'mha/tools/packaging/pkg/*.pkg'
   }
 
   // Check reproducibility: No package should contain "modified" in its name
-  bash ('if find mha/tools/packaging | grep modified;' +
+  sh ('if find mha/tools/packaging | grep modified;' +
         'then echo error: Some installation packages have \"modified\" as part'+
         '          of their file name, which means that some git-controlled' +
         '          files contained modifications when these installation' +
@@ -164,7 +149,7 @@ def openmha_build_steps(stage_name) {
 }
 
 pipeline {
-    agent {label "jenkinsmaster"}
+    agent any
     stages {
         stage("build") {
             parallel {
@@ -188,6 +173,10 @@ pipeline {
                     agent {label               "windows && x86_64 && mhadev"}
                     steps {openmha_build_steps("windows && x86_64 && mhadev")}
                 }
+                //stage(                         "mac && x86_64 && mhadev") {
+                //    agent {label               "mac && x86_64 && mhadev"}
+                //    steps {openmha_build_steps("mac && x86_64 && mhadev")}
+                //}
             }
         }
         stage("debian packages for apt") {

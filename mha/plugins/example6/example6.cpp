@@ -29,34 +29,7 @@
  * configuration will be changed at runtime.
  */
 
-#include <stdio.h>
 #include <math.h>
- 
-#ifdef _WIN32
-#include <windows.h>
-/*
- * On some MS Windows compilers, the function "snprintf" is defined as
- * "_snprintf": 
- */
-#define snprintf _snprintf
-#else
-/*
- * On MS Windows functions have to be exported with
- * __declspec(dllexport) so we define a dummy for other OS (like
- * Linux)
- */
-#define __declspec(p)
-#endif
-
-// MicroSoft Visual C++ has problems with it's own min and max macros...
-#ifdef min
-#undef min
-#endif
-#ifdef max
-#undef max
-#endif
-
-
 #include "mha_plugin.hh"
 #include "mha_events.h"
 
