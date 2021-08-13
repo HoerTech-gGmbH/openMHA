@@ -39,6 +39,9 @@ def openmha_build_steps(stage_name) {
   if (arch == "armv7" || arch == "aarch64") {
     cpus = 5
   }
+  if (system == "windows") {
+    cpus = 5
+  }
 
   def additional_cpus_for_docs = 7
 
