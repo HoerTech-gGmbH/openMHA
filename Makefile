@@ -227,7 +227,7 @@ updated-storage-$(BRANCH_NAME):
 	@echo Begin updating storage...
 	@echo nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
 	mkdir -p $(STORAGE_DIR)
-	cp -anv $(SUPPLY_DIR)* $(STORAGE_DIR)
+	cp -rnv $(SUPPLY_DIR)* $(STORAGE_DIR)
 	cd $(SUPPLY_DIR) && find . -name \*.deb -exec touch $(STORAGE_DIR){} \;
 	@echo uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
 	@echo Storage update finished.
