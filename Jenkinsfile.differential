@@ -200,6 +200,10 @@ pipeline {
                     agent {label               "windows && x86_64 && mhadev"}
                     steps {openmha_build_steps("windows && x86_64 && mhadev")}
                 }
+                stage(                         "mac && x86_64 && mhadev") {
+                    agent {label               "mac && x86_64 && mhadev"}
+                    steps {openmha_build_steps("mac && x86_64 && mhadev")}
+                }
             }
         }
     }
