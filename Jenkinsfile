@@ -210,6 +210,8 @@ pipeline {
             }
         }
         stage("push updates in development branch to github when build successful") {
+            // This stage needs an agent that has the git-switch command
+            agent {label "focal && x86_64 && mhadev"}
 
             // This stage is only executed if all prevous stages were successful
             when { branch 'development' } // and only for branch development
