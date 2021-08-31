@@ -228,7 +228,8 @@ pipeline {
                 sh "git switch --force-create temporary-branch-name-for-jenkins"
 
                 // push this state here to branch development to github
-                sh "git push git@github.com:HoerTech-gGmbH/openMHA.git temporary-branch-name-for-jenkins:development"
+                // Next line temporarily disabled while Jenkins migration is ongoing
+                //sh "git push git@github.com:HoerTech-gGmbH/openMHA.git temporary-branch-name-for-jenkins:development"
             }
         }
     }
