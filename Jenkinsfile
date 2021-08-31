@@ -204,7 +204,7 @@ pipeline {
 
                 // Copies the new debs to the stash of existing debs,
                 sh "make storage"
-                build job:         "/hoertech-aptly/$BRANCH_NAME",
+                build job:         "/Packaging/hoertech-aptly/$BRANCH_NAME",
                       quietPeriod: 300,
                       wait:        false
             }
