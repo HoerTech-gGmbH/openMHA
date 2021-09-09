@@ -1,5 +1,5 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
-// Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,8 +20,41 @@ pipeline {
     stages {
         stage("update-external_libs-branch-if-necessary") {
             steps {
-                // This shell skript uses command line git push and pull.
-                sh("external_libs/update_branch_if_needed.sh")
+                withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'git', \
+                                             keyFileVariable: 'GIT_SSH_KEY', \
+                                             passphraseVariable: '', \
+                                             usernameVariable: 'GIT_SSH_USER')]) {
+                    sh 'echo $GIT_SSH_KEY'
+                    sh 'echo $GIT_SSH_USER'
+                    sh 'git checkout $BRANCH_NAME'
+                    sh 'GIT_SSH_COMMAND="ssh -i $GIT_SSH_KEY -o IdentitiesOnly=yes" git pull'
+                    // A shell script that determines if the external_libs branch needs an update
+                    // and if yes, updates it
+                    sh '''
+                    git checkout $BRANCH_NAME
+                    GIT_SSH_COMMAND="ssh -i $GIT_SSH_KEY -o IdentitiesOnly=yes" git pull
+
+                    if ! git checkout external_libs_$BRANCH_NAME
+                    then       
+                      echo no external_libs version of this branch, nothing to do
+                      exit 0
+                    fi
+                    GIT_SSH_COMMAND="ssh -i $GIT_SSH_KEY -o IdentitiesOnly=yes" git pull
+                    '''
+                    // If we are still here, then we are on branch $branch_name, and both branches,
+                    // $branch_name and external_libs_$branch_name do exist.
+                    // We need to determine if the external_libs directory (this is the directory
+                    // that contains this script) has any content differences between these two.
+                    sh '''
+                    if ! git diff --exit-code --quiet external_libs_"$BRANCH_NAME" "$BRANCH_NAME" -- external_libs
+                    then
+                        echo There are differences, we need to fast-forward the external_libs branch
+                        git merge --ff-only "$BRANCH_NAME"
+                        echo And publish the new external_libs_$BRANCH_NAME branch to the repository
+                        GIT_SSH_COMMAND="ssh -i $GIT_SSH_KEY -o IdentitiesOnly=yes" git push
+                    fi
+                    '''
+               }
             }
         }
     }
@@ -31,7 +64,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,m.zimmermann@hoertech.de',
+            mail to: 't.herzke@hoertech.de,m.zimmermann@hoertech.de',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }
