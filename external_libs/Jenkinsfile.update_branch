@@ -16,7 +16,7 @@
 pipeline {
     // Cannot execute on Docker nodes because it calls git pull/push in
     // a shell skript. Restrict to Jenkins master where it executes fine.
-    agent {label "jenkinsmaster"}
+    agent any
     stages {
         stage("update-external_libs-branch-if-necessary") {
             steps {

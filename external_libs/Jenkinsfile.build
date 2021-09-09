@@ -79,7 +79,7 @@ def depndcy_build_steps(stage_name) {
 }
 
 pipeline {
-    agent {label "jenkinsmaster"}
+    agent any
     stages {
         stage("build") {
             parallel {
