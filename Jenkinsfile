@@ -54,9 +54,9 @@ def openmha_build_steps(stage_name) {
 
   // Save time by using precompiled external libs if possible.
   // Install pre-compiled external libraries for the common branches
-  //copyArtifacts(projectName: "openMHA/external_libs/external_libs_development",
-  //                selector:    lastSuccessful())
-  //sh "tar xvzf external_libs.tgz"
+  copyArtifacts(projectName: "MHA/external_libs/external_libs_development",
+                  selector:    lastSuccessful())
+  sh "tar xvzf external_libs.tgz"
 
   // if we notice any differences between the sources of the precompiled
   // dependencies and the current sources, we cannot help but need to recompile
@@ -242,7 +242,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-            mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,m.zimmermann@hoertech.de',
+            mail to: 't.herzke@hoertech.de,m.zimmermann@hoertech.de',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }

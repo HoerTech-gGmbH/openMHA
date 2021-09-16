@@ -75,7 +75,7 @@ def openmha_build_steps(stage_name) {
 
   // Save time by using precompiled external libs if possible.
   // Install pre-compiled external libraries for the common branches
-  copyArtifacts(projectName: "openMHA/external_libs/external_libs_development",
+  copyArtifacts(projectName: "MHA/external_libs/external_libs_development",
                 selector:    lastSuccessful())
   bash "tar xvzf external_libs.tgz"
 

@@ -13,18 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-// On the 2019 windows build server, we cannot use the sh step anymore.
-// This workaround invokes the msys2 bash, sets the required environment
-// variables, and executes the desired command.
-def windows_bash(command) {
-  bat ('C:\\msys64\\usr\\bin\\bash -c "source /jenkins.environment && set -ex && ' + command + ' "')
-  // This will probably fail if command contains multiple lines, quotes, or
-  // similar.  Currently all our shell commands are simple enough for this
-  // simple solution to work.  Should this no longer be sufficient, then we
-  // could write the shell command to a temporary file and execute this file
-  // after sourcing the enviroment.
-}
-
 // Encapsulation of the build steps to perform when compiling openMHA
 // dependencies
 // @param stage_name the stage name is "system && arch" where system is bionic,
@@ -52,27 +40,24 @@ def depndcy_build_steps(stage_name) {
     cpus = 5
   }
 
-  // workaround to invoke unix shell on all systems
-  def bash = { command -> windows ? windows_bash(command) : sh(command) }
-
   // checkout openMHA from version control system, the exact same revision that
   // triggered this job on each build slave
   checkout scm
 
   // Avoid that artifacts from previous builds influence this build
-  bash "git reset --hard && git clean -ffdx"
+  sh "git reset --hard && git clean -ffdx"
 
   // Autodetect libs/compiler
-  bash "./configure"
+  sh "./configure"
 
   // Compile and install dependencies
-  bash ("make -j $cpus external_libs googletest")
+  sh ("make -j $cpus external_libs googletest")
 
   // Place dependency sources in tar file so we can manipulate their timestamp
-  bash ("tar cvzf sources.tgz --exclude=.git external_libs")
+  sh ("tar cvzf sources.tgz --exclude=.git external_libs")
   
   // Place installed dependencies in tar file to preserve their timestamps
-  bash ("tar cvzf installation.tgz external_libs/*-*-*/")
+  sh ("tar cvzf installation.tgz external_libs/*-*-*/")
 
   // Store compiled/installed dependencies for this job's build artifact
   stash name: (arch+"_"+system), includes: '*.tgz'
@@ -147,7 +132,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-                 mail to: 't.herzke@hoertech.de,p.maanen@hoertech.de,m.zimmermann@hoertech.de',
+                 mail to: 't.herzke@hoertech.de,m.zimmermann@hoertech.de',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }
