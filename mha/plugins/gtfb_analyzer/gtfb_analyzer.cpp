@@ -114,6 +114,7 @@ public:
     gtfb_analyzer_t(algo_comm_t iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
+    void release();
 private:
     void update_cfg();
     MHAEvents::patchbay_t<gtfb_analyzer_t> patchbay;
@@ -168,7 +169,10 @@ void gtfb_analyzer::gtfb_analyzer_t::prepare(mhaconfig_t& tf)
     prepared = true;
     update_cfg();
 }
-
+void gtfb_analyzer::gtfb_analyzer_t::release()
+{
+    prepared = false;
+}
 /**
  * Filters a complex input sample with the given filter coefficient.
  * No normalization takes place. The implementation is
@@ -296,6 +300,13 @@ MHAPLUGIN_DOCUMENTATION\
  " ch0\\_b0\\_real, ch0\\_b0\\_imag, ch0\\_b1\\_real, ch0\\_b1\\_imag,"
  " ch0\\_b2\\_real, ch0\\_b2\\_imag, ch1\\_b0\\_real, ch1\\_b1\\_imag,"
  " ch1\\_b1\\_real, ch1\\_b1\\_imag, ch1\\_b2\\_real, ch1\\_b2\\_imag"
+ "\n\n\n"
+ "\\textbf{Attention:}\n\n"
+ "The recursive low-pass filters in this plugin have no protection against"
+ " subnormals.  In real-time processing tasks, input signal of absolute"
+ " silence (amplitude 0.0) must therefore be avoided.  The \\texttt{noise}"
+ " plugin can be used for this purpose, by adding inaudible noise"
+ " to the signal that enters this plugin."
  )
 
 
