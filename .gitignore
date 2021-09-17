@@ -65,6 +65,7 @@ examples/09-localizer-steering-beamformer/Output/*
 
 # from patching
 *.rej
+*.orig
 
 # debian packages leave intermediate make targets in repository base directory
 *.deb
