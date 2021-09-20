@@ -102,7 +102,7 @@ def openmha_build_steps(stage_name) {
   // Build executables, plugins, execute tests
   sh ("make -j $cpus test")
 
-  // Retrieve the documents, wait if they are not ready yet
+  // Retrieve the documents and matlab coder, wait if they are not ready yet
   def wait_time = 1 // short sleep time for first iteration
   def attempt = 0
   retry(45){
@@ -111,6 +111,7 @@ def openmha_build_steps(stage_name) {
     attempt = attempt + 1
     sh ("echo unstash docs attempt $attempt on $system $arch at \$(date -R)")
     unstash "docs"
+    unstash "MatlabCoderGeneration"
   }
 
   if (linux) {
@@ -168,6 +169,16 @@ pipeline {
     stages {
         stage("build") {
             parallel {
+                stage("Matlab Coder Generation") {
+                    agent {label "matlabcoder"}
+                    steps {
+                        dir('mha/mhatest') {
+                            sh "matlab -nodisplay -r 'generate_matlab_coder_native;quit'"
+                        }
+                        stash name: "MatlabCoderGeneration",
+                              includes: 'mha/plugins/matlabcoder_skeleton/'
+                    }
+                }
                 stage(                         "focal && x86_64 && mhadoc") {
                     agent {label               "focal && x86_64 && mhadoc"}
                     steps {openmha_build_steps("focal && x86_64 && mhadoc")}
