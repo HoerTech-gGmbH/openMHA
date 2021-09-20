@@ -26,31 +26,46 @@
  * SOFTCLIP
  */
 
+/// Parser aggregate of all configuration variables for the output soft clipper
 class softclipper_variables_t : public MHAParser::parser_t {
 public:
+    /// Constructor, initializes all variables and inserts them into *this
     softclipper_variables_t();
-    MHAParser::float_t tau_attack;
-    MHAParser::float_t tau_decay;
-    MHAParser::float_t tau_clip;
-    MHAParser::float_t threshold;
-    MHAParser::float_t hardlimit;
-    MHAParser::float_t slope;
-    MHAParser::bool_t linear;
-    MHAParser::float_mon_t clipped;
-    MHAParser::float_t max_clipped;
+    MHAParser::float_t tau_attack; //< Attack filter time constant
+    MHAParser::float_t tau_decay;  //< Decay filter time constant
+    MHAParser::float_t tau_clip;   //< Clipping meter time constant
+    MHAParser::float_t threshold;  //< Amplitude threshold of softclipper
+    MHAParser::float_t hardlimit;  //< Maximum output amplitude
+    MHAParser::float_t slope;      //< Compression factor
+    MHAParser::bool_t linear;      //< Compression on linear or log scale
+    MHAParser::float_mon_t clipped;//< Clipping meter
+    MHAParser::float_t max_clipped;//< Maximum allowed clipped ratio
 };
 
+/// Soft clipper signal processing implementation
 class softclipper_t {
 public:
-    softclipper_t(const softclipper_variables_t& v,const mhaconfig_t&);
-    mha_real_t process(mha_wave_t*);
+    /// Constructor, copies information from parameters and initializes state
+    /// @param v Configuration variables of the softclipper
+    /// @param tf Signal dimensions
+    softclipper_t(const softclipper_variables_t& v,const mhaconfig_t&tf);
+    /// Process one block of audio signal
+    /// @param[inout] s Input signal which is modified in-place
+    mha_real_t process(mha_wave_t*s);
 private:
+    /// Attack filter
     MHAFilter::o1flt_lowpass_t attack;
+    /// Decay filter
     MHAFilter::o1flt_maxtrack_t decay;
+    /// Clipping ratio filter
     MHAFilter::o1flt_lowpass_t clipmeter;
+    /// Compression onset value
     mha_real_t threshold;
+    /// Maximum output amplitude of softclipper
     mha_real_t hardlimit;
+    /// Compression slope
     mha_real_t slope;
+    /// Is compression done on linear or log scale
     bool linear;
 };
 
@@ -232,6 +247,7 @@ private:
     MHAFilter::fftfilter_t fir;
     MHASignal::quantizer_t quant;
     MHASignal::waveform_t gain;
+    /// The softclipper, only used when b_is_input == false
     softclipper_t softclip;
     bool b_is_input;
     bool b_use_fir;
@@ -416,6 +432,8 @@ calibrator_t::calibrator_t(algo_comm_t iac,bool is_input)
     patchbay.connect(&vars.nbits.writeaccess,this,&calibrator_t::update);
     patchbay.connect(&vars.tau_level.writeaccess,this,&calibrator_t::update_tau_level);
     patchbay.connect(&vars.rmslevel.prereadaccess,this,&calibrator_t::read_levels);
+    if (not is_input)
+        patchbay.connect(&vars.softclip.writeaccess,this,&calibrator_t::update);
 }
 
 void calibrator_t::update()
