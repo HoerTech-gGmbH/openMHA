@@ -108,7 +108,7 @@ git commit -a -m"Increase version number to $VER"
 git clean -fdx . 2>/dev/null 1>/dev/null;
 echo "Testing regeneration of documentation..."
 # This will locally generate PDFs and pdf-$VER.zip.
-./configure 1>/dev/null && make -j doc 1>/dev/null 2>/dev/null
+./configure 1>/dev/null && make -j9 doc 1>/dev/null 2>/dev/null
 printf "Documentation generated correctly? [yes/no]"
 ask_yes_no;
 
