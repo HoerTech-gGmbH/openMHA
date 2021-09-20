@@ -2,7 +2,7 @@
 
 Open Master Hearing Aid (openMHA) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4569575.svg)](https://doi.org/10.5281/zenodo.4569575)
 
-## Content of the openMHA release 4.16.0 (2021-06-17)
+## Content of the openMHA release 4.16.1 (2021-09-20)
 
 The software contains the source code of the openMHA Toolbox library, of the
 openMHA framework and command line application, and of a selection of algorithm
