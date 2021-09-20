@@ -32,9 +32,9 @@ public:
   int experience=1;
   /// Air conduction thresholds in dB HL
   std::vector<double> ac = {0,0,0,0,0,0,0,0,0};
-  // Bone conduction thresholds in dB HL
+  /// Bone conduction thresholds in dB HL
   std::vector<double> bc = {0,0,0,0,0,0,0,0,0};
-  // Air conduction thresholds of contraleteral ear
+  /// Air conduction thresholds of contralateral ear
   std::vector<double> acOther = {0,0,0,0,0,0,0,0,0};
 };
 
@@ -44,7 +44,7 @@ struct Fitmodel {
   int compSpeed=1;
   /// input level / dB to compute gains for
   std::vector<double> level={60};
-  /// 0	Unilateral; 1	Bilateral
+  /// 0 Unilateral; 1   Bilateral
   bool bilateral=true;
   /// 0 - Undisturbed field; 1 - Head Surface
   int mic=1;
@@ -70,13 +70,13 @@ struct Fitmodel {
   std::vector<int> calcCh={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
   /// compression threshold per third-octave band
   std::vector<double> ct = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-  /// 0	REIG; 1	REAG
+  /// 0 REIG; 1 REAG
   int targetType=0;
-  /// 0	Libby 4; 1	Libby 3; 2	#13; 3 Thin-tube; 4 RITC; 5 None (CIC,ITC,ITE)
+  /// 0 Libby 4; 1      Libby 3; 2      #13; 3 Thin-tube; 4 RITC; 5 None (CIC,ITC,ITE)
   int tubing=2;
-  /// 0	Tight; 1	Occluded; 2	Closed Dome; 3	1mm; 4	2mm; 5	3mm; 6	Open Dome
+  /// 0 Tight; 1        Occluded; 2     Closed Dome; 3  1mm; 4  2mm; 5  3mm; 6  Open Dome
   int venting=0;
-  /// RECD Measurement Method: 0	Predicted Values; 1	Measured
+  /// RECD Measurement Method: 0        Predicted Values; 1     Measured
   int useRECDh=0;
   /// Center Frequencies
   std::vector<int> centerF={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};

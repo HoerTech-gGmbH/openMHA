@@ -81,8 +81,12 @@ function [sGt] = gainrule_DSLmio5(sAud,sFitmodel)
       abort_dsl_missing();
     end
 
-    % Compute the age of this client in months.
-    % ((from the difference between the client id (birthdate) and the current date))
+    % Compute the age of this client in months from the difference between the
+    % client id (birthdate) and the current date.  
+    % Because the year of birth is stored with only two digits, this
+    % will not work correctly for people older than 100 years.
+    % Researchers working with people older than 100 years
+    % need to modify this computation before using it.
     clock_now = clock;
     year_now = clock_now(1);
     month_now = clock_now(2);
