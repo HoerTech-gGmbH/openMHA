@@ -1,0 +1,15 @@
+---
+layout: post
+title:  "openMHA 4.16.1 released"
+date:   2021-09-20 08:00:00
+category: software
+tags: [release, 4.16.1]
+---
+
+__openMHA 4.16.1__ is a bugfix release
+
+- fix: `mha_start()` in newer Matlab versions on Linux throws error
+- fix: `gtfb_analyzer` throws error if `prepare()` is called after `release()`
+- fix: changes of softclipper configuration variables during runtime are not effective
+- documentation: `gtfb_analyzer` will run into subnormal processing in case of perfect silence
+- documentation: extended inline documentation for commercial fitting rule wrappers and .m-files
