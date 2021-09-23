@@ -197,4 +197,18 @@ echo "Check that the Zenodo webhook has correctly created a new entry at https:/
 echo "Click on the DOI badge to copy the Markdown code and include the Zenodo DOI badge into the release."
 echo "Add the supplemental information to the release. Type 'yes' when finished"
 ask_yes_no
-echo "Release finished!"
+
+echo "After openMHA is now released, we need to create a new Mahalia image for"
+echo "the PHL that contains the new openMHA packages and reflects the new openMHA"
+echo "version number in its name. This process may begin only after the deb"
+echo "packages have been successfully published in our apt repository."
+echo "Type 'yes' when ready to begin."
+ask_yes_no
+git clone git@github.com:mahalia-dependencies/mahalia-dependencies
+pushd mahalia-dependencies
+echo "$VER"-r0 >version
+git add version
+git commit -m "Release Mahalia $VER"-r0
+git push
+popd
+rm -rf mahalia-dependencies
