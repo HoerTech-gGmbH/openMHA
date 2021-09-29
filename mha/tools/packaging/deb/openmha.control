@@ -1,6 +1,6 @@
 Section: contrib/sound
 Suggests: qjackctl
-Conflicts: lsl-liblsl
+Recommends: liblsl (= ${LIBLSLVERSION})
 Maintainer: openMHA Packaging Team <packaging@openmha.org>
 Description: HoerTech openMHA
   openMHA is an open community platform for hearing aid algorithm research.

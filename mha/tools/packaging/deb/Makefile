@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2018 2019 2020 HörTech gGmbH
+# Copyright © 2018 2019 2020 2021 HörTech gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -92,6 +92,12 @@ NATIVE_DEBS=$(patsubst %.control,hoertech/$(CODENAME)/%_$(FULLVERSIONGCC)_$(DEBA
 # List of all architecture independent debian packages in their final location
 # to be packaged by this Makefile
 NOARCH_DEBS=$(patsubst %.control,hoertech/$(CODENAME)/%_$(FULLVERSIONALL)_all.deb,$(NOARCH_CONTROL_FILES))
+
+# The generated openmha .deb recommends installation of liblsl, the exact same
+# liblsl version that was installed during compilation.  Find out what version
+# that is:
+LIBLSLVERSION = $(shell dpkg-query --show --showformat='$${Version}' liblsl)
+export LIBLSLVERSION
 
 # Pre-dependency to ensure before packaging starts.  Here that openMHA is
 # compiled.  Main openMHA Makefile ensures this itself and invokes target pack.
