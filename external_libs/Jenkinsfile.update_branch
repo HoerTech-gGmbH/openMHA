@@ -22,7 +22,9 @@
 // "external_libs_development".
 pipeline {
     agent any // This job needs git and a shell.  All our agents qualify.
-
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '7', artifactDaysToKeepStr: '7'))
+    }
     stages {
         stage("update-external_libs-branch-if-necessary") {
             when {branch "development"} // restrict job to branch development

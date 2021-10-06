@@ -166,6 +166,9 @@ pipeline {
         string(name: 'PHID', defaultValue: 'invalidDefault', description: '')
         string(name: 'DIFF_ID', defaultValue: 'invalidDefault', description: '')
     }
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '7', artifactDaysToKeepStr: '7'))
+    }
     stages {
         stage("build") {
             parallel {
