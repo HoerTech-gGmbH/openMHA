@@ -446,9 +446,19 @@ template < class runtime_cfg_t > void MHAPlugin::config_t < runtime_cfg_t >::rem
 
 
 /**
-   \brief Constructor of plugin template
+   \brief Constructor of plugin template base class.
 
-   \param help Help comment to provide some general information about the plugin.
+   Plugin classes inherit from MHAPlugin::plugin_t<> and will call this
+   base class constructor in their constructor's initialization list.
+
+   The constructor of a plugin is called each time a plugin is loaded
+   into MHA: Multiple instances of the same plugin can be loaded and
+   for each plugin instance, a new instance of the plugin class will
+   be created.
+
+   \param help Short help text that provides some general information about the
+               plugin.  This text is returned in response to configuration
+               language query command "?help".
    \param iac AC space handle (will be stored into the member variable ac).
 */
 template < class runtime_cfg_t > MHAPlugin::plugin_t < runtime_cfg_t >::plugin_t( const std::string & help,
@@ -464,6 +474,18 @@ template < class runtime_cfg_t > MHAPlugin::plugin_t < runtime_cfg_t >::plugin_t
     insert_member(mhaconfig_out);
 }
 
+/** Destructor of plugin template base class.
+ * 
+ * Plugin class instances are deleted and the destructor of the instance is
+ * called when unloading a plugin instance from the MHA. Typically this
+ * happens just before the MHA process terminates, e.g. in response to
+ * cmd=quit, but some plugins also have the capability of replacing loaded
+ * plugins during runtime of the MHA, in which case the destructor of the
+ * active instances is called before the unloading.
+ * 
+ * In some exceptional cases, e.g. when an error occurs during initializing
+ * the MHA, the MHA process may terminate without ever calling the destructors
+ * of all existing plugin instances. */
 template < class runtime_cfg_t > MHAPlugin::plugin_t < runtime_cfg_t >::~plugin_t(  )
 {
 }
