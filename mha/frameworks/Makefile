@@ -16,12 +16,15 @@
 include ../../config.mk
 include ../../magic.mk
 
+# Compile git commit hash into executables.
+CXXFLAGS += $(GITCOMMITHASHCFLAGS)
+
 ifeq "x${BRANCH_NAME}" "xmaster" # If we are in a Jenkins build of branch master
 ifeq "x" "x$(findstring modified,$(GITCOMMITHASH))" # and if git is unmodified,
 # then this is is a relase build, do not output a non-release warning.
 CXXFLAGS += -DNORELEASE_WARNING='""'
 # and also add git commit hash to version output for a relase build
-CXXFLAGS += $(GITCOMMITHASHCFLAGS) -DVERSION_EXTENSION='" (" GITCOMMITHASH ")"'
+CXXFLAGS += -DVERSION_EXTENSION='" (" GITCOMMITHASH ")"'
 endif
 endif
 
@@ -67,13 +70,15 @@ ifneq "$(TOOLSET)" "clang"
 $(BUILD_DIR)/mha: LDFLAGS+=-Wl,--dynamic-list=export_fw_t.list
 endif
 
-$(BUILD_DIR)/analysemhaplugin: $(BUILD_DIR)/mhafw_lib.o
+$(BUILD_DIR)/analysemhaplugin: $(BUILD_DIR)/mhafw_lib.o $(BUILD_DIR)/frameworks_mha_git_commit_hash.o
 
-$(BUILD_DIR)/generatemhaplugindoc: $(BUILD_DIR)/mhafw_lib.o
+$(BUILD_DIR)/generatemhaplugindoc: $(BUILD_DIR)/mhafw_lib.o $(BUILD_DIR)/frameworks_mha_git_commit_hash.o
 
-$(BUILD_DIR)/mha: $(OBJECTS:%.o=$(BUILD_DIR)/%.o)
+$(BUILD_DIR)/mha: $(OBJECTS:%.o=$(BUILD_DIR)/%.o) $(BUILD_DIR)/frameworks_mha_git_commit_hash.o
 
 $(BUILD_DIR)/testalsadevice: LDLIBS += -lasound
+$(BUILD_DIR)/testalsadevice: $(BUILD_DIR)/testalsadevice.o  $(BUILD_DIR)/frameworks_mha_git_commit_hash.o
+$(BUILD_DIR)/browsemhaplugins: $(BUILD_DIR)/browsemhaplugins.o  $(BUILD_DIR)/frameworks_mha_git_commit_hash.o
 
 $(BUILD_DIR)/MHAjava.jar: fw_t.class MHA.class MHAJNI.class
 	jar cfv $@ $^
@@ -84,14 +89,14 @@ $(BUILD_DIR)/MHAjava.jar: fw_t.class MHA.class MHAJNI.class
 src/fw_t.java src/MHA.java src/MHAJNI.java src/fw_t_wrap.cxx: src/fw_t.ii
 	swig3.0 -c++ -java src/fw_t.ii
 
-$(BUILD_DIR)/libMHAfw.so: src/mhafw_lib.cpp
+$(BUILD_DIR)/libMHAfw.so: src/mhafw_lib.cpp $(BUILD_DIR)/frameworks_mha_git_commit_hash.o
 	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) $(LDLIBS) -shared -o $@ -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -fno-strict-aliasing
 
-$(BUILD_DIR)/libMHAjava.so: src/fw_t_wrap.cxx $(BUILD_DIR)/libMHAfw.so
-	$(CXX) $(CXXFLAGS) $< -L$(BUILD_DIR) $(LDFLAGS) -lMHAfw $(LDLIBS) -shared -o $@ -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -fno-strict-aliasing 
+$(BUILD_DIR)/libMHAjava.so: src/fw_t_wrap.cxx $(BUILD_DIR)/frameworks_mha_git_commit_hash.o $(BUILD_DIR)/libMHAfw.so
+	$(CXX) $(CXXFLAGS) $< $(BUILD_DIR)/frameworks_mha_git_commit_hash.o -L$(BUILD_DIR) $(LDFLAGS) -lMHAfw $(LDLIBS) -shared -o $@ -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -fno-strict-aliasing 
 
-$(BUILD_DIR)/mha_ruby.so: src/mha_ruby.cpp $(BUILD_DIR)/libMHAfw.so
-	$(CXX) $(CXXFLAGS) $< -L$(BUILD_DIR) $(LDFLAGS) $$(ruby -rrbconfig -e 'C=RbConfig::CONFIG;printf("-I%s -I%s -L%s %s",C["rubyhdrdir"],C["rubyarchhdrdir"],C["libdir"],C["LIBRUBYARG"])') -lMHAfw $(LDLIBS) -shared -o $@  -fno-strict-aliasing 
+$(BUILD_DIR)/mha_ruby.so: src/mha_ruby.cpp $(BUILD_DIR)/frameworks_mha_git_commit_hash.o $(BUILD_DIR)/libMHAfw.so
+	$(CXX) $(CXXFLAGS) $< $(BUILD_DIR)/frameworks_mha_git_commit_hash.o -L$(BUILD_DIR) $(LDFLAGS) $$(ruby -rrbconfig -e 'C=RbConfig::CONFIG;printf("-I%s -I%s -L%s %s",C["rubyhdrdir"],C["rubyarchhdrdir"],C["libdir"],C["LIBRUBYARG"])') -lMHAfw $(LDLIBS) -shared -o $@  -fno-strict-aliasing 
 
 # Local Variables:
 # compile-command: "make"

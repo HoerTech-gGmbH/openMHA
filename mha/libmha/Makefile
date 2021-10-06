@@ -40,6 +40,10 @@ OBJECTS = \
 	mha_fifo.o \
 	pluginbrowser.o \
 	mha_utils.o \
+	mha_git_commit_hash.o \
+
+# Compile git commit hash into libopenmha.
+CXXFLAGS += $(GITCOMMITHASHCFLAGS)
 
 LDFLAGS += -L../../external_libs/$(PLATFORM_CC)/lib
 

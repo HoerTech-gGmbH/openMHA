@@ -1,0 +1,21 @@
+#!/bin/bash
+# Store and remove git commit hash from command line
+HASH="$1"
+shift
+
+# Fail if list of files to check is empty
+if [ "$#" -eq 0 ]
+then
+    echo "$0: list of files to check is empty" 1>&2
+    exit 1
+fi
+
+# Loop over all files and check each individually
+for f in "$@"
+do
+    if ! grep -q "MHA_GIT_COMMIT_HASH=$HASH" "$f"
+    then
+        echo "File $f does not contain expected MHA_GIT_COMMIT_HASH=$HASH" 1>&2
+        exit 1
+    fi
+done

@@ -14,6 +14,7 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 include ../../config.mk
+include ../../magic.mk
 
 ifeq "$(findstring arm, $(ARCH))" "arm"
 all: paralleloctavetests reproducibilitytest
@@ -52,8 +53,14 @@ endif
 endif
 
 reproducibilitytest:
+	# Fail if there are any modifications not checked into git
 	@if [ -n "`git status --porcelain -uno`" ]; then (echo; echo "*******************************************************************"; echo "***" The following files have been modified since git check-out: "***";  echo "*******************************************************************"; git status --porcelain -uno; exit 1); fi
-	@if [ -n "`find ../plugins -type f -exec grep -- -modified '{}' ';'`" ] ; then (echo; echo "***********************************************************************"; echo "***" The following files carry a modified-since-git-check-out stamp: "***";  echo "***********************************************************************"; find ../plugins -type f -exec grep -- -modified '{}' ';'; exit 1); fi
+	# Fail if during compilation there were any modifications not checked into git
+	@if [ -n "`find ../plugins ../frameworks ../libmha -type f -exec grep -- -modified '{}' ';'`" ] ; then (echo; echo "***********************************************************************"; echo "***" The following files carry a modified-since-git-check-out stamp: "***";  echo "***********************************************************************"; find ../plugins ../frameworks ../libmha -type f -exec grep -- -modified '{}' ';'; exit 1); fi
+	# Fail if any compiled artifact is missing the git commit hash or has a wrong git commit hash
+	find ../plugins -type f -name "*"$(DYNAMIC_LIB_EXT) | xargs ./check_git_commit_hash $(GITCOMMITHASH)
+	find ../frameworks -type f -executable | grep -v unit-test-runner | xargs ./check_git_commit_hash $(GITCOMMITHASH)
+	./check_git_commit_hash $(GITCOMMITHASH) ../libmha/*/*$(DYNAMIC_LIB_EXT)
 
 install: all
 
