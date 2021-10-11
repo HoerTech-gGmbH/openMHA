@@ -14,15 +14,12 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 // Encapsulation of the build steps to perform when compiling openMHA
-// @param stage_name the stage name is "system && arch" where system is bionic,
-//                   windows, or mac, and arch is x86_64, i686, aarch64,
-//                   or armv7.  Both are separated by an && operator and spaces.
+// @param stage_name the stage name is "system && arch && devenv" where system
+//                   is bionic, focal, windows, or mac, arch is x86_64, aarch64,
+//                   or armv7, and devenv is either mhadev or mhadoc.
+//                   All parts are separated by an && operator and spaces.
 //                   This string is also used as a valid label expression for
 //                   jenkins.  The appropriate nodes have the respective labels.
-//                   We might need to extend this in future to include the
-//                   "mhadev" label, to differentiate build environments
-//                   for the same system and architecture but with different
-//                   library / tool dependencies.
 def openmha_build_steps(stage_name) {
   // Extract components from stage_name:
   def system, arch, devenv
@@ -224,11 +221,11 @@ pipeline {
             }
         }
         stage("push updates in development branch to github when build successful") {
-            // This stage needs an agent that has the git-switch command
-            agent {label "focal && x86_64 && mhadev"}
+            // This stage needs an agent that has the git-switch command.
+            agent {label "focal && mhadev"}
 
             // This stage is only executed if all prevous stages were successful
-            when { branch 'development' } // and only for branch development
+            when { branch 'development' } // and only for branch development!
 
             steps {
                 // Make sure we have a git checkout
@@ -236,16 +233,32 @@ pipeline {
 
                 // Make sure branch development is not shallow in this clone
                 sh "git fetch --unshallow || true"
-
-                // Generate some status output
-                sh "git status && git remote -v && git branch -a"
-
-                // We are in detached head mode. Create a temporary branch here
+                
+                // Jenkins builds work in detached head mode, because when you
+                // have git commits to the same branch in quick succession,
+                // this Jenkins build may not build the latest state of branch
+                // development, but an earlier state.  Furthermore, there can
+                // be situations where this build of the earlier state is
+                // successful, but the build on the latest state of branch
+                // development will later fail.  Because of this possibility,
+                // we may only push the current git commit to github and not
+                // the tip of branch develpment.  We must not checkout branch
+                // development here, but create a new branch here at the
+                // detached head and push the new branch to github as branch
+                // development there.
                 sh "git switch --force-create temporary-branch-name-for-jenkins"
 
-                // push this state here to branch development to github
-                // Next line temporarily disabled while Jenkins migration is ongoing
-                //sh "git push git@github.com:HoerTech-gGmbH/openMHA.git temporary-branch-name-for-jenkins:development"
+                // Push this state here to branch development on github. For
+                // details about the ssh key, see https://dev.openmha.org/K36
+                withCredentials(bindings: [sshUserPrivateKey(                  \
+                                             credentialsId: 'K36',             \
+                                             keyFileVariable: 'GIT_SSH_KEY')]) {
+                    sh '''
+                    GIT_SSH_COMMAND="ssh -i $GIT_SSH_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" \
+                    git push git@github.com:HoerTech-gGmbH/openMHA.git          \
+                        temporary-branch-name-for-jenkins:development
+                    '''
+                }
             }
         }
     }
