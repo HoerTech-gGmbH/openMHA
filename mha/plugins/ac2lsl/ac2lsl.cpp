@@ -49,12 +49,11 @@ namespace ac2lsl{
     /** Interface for ac to lsl bridge variable*/
     class save_var_base_t{
     public:
-        virtual void send_frame()=0;
+        virtual void send_frame(unsigned num_entries)=0;
         virtual void* get_buf_address() const noexcept = 0;
         virtual void set_buf_address(void* data) = 0;
         virtual lsl::stream_info info() const noexcept = 0;
         virtual unsigned data_type() const noexcept = 0;
-        virtual unsigned num_entries() const noexcept=0;
         virtual ~save_var_base_t()=default;
     };
 
@@ -68,10 +67,10 @@ namespace ac2lsl{
          * @param data_type Type id of the stream, in mha convention.
          Should be set to one if not a vector.
         */
-        save_var_t(const std::string& name_,const std::string& type_, unsigned num_entries_,
+        save_var_t(const std::string& name_,const std::string& type_, unsigned num_channels_,
                    const mha_real_t rate_, const lsl::channel_format_t format_, const std::string& source_id_,
                    void* data_, const unsigned data_type_):
-            stream(lsl::stream_info(name_, type_, num_entries_, rate_, format_, source_id_)),
+            stream(lsl::stream_info(name_, type_, num_channels_, rate_, format_, source_id_)),
             //AC variables hold the addresses as void ptr, we find out the type from
             //metadata and call templated constructor.
             buf(static_cast<T*>(data_)),
@@ -93,17 +92,13 @@ namespace ac2lsl{
         virtual lsl::stream_info info() const noexcept override {
             return stream.info();
         };
-        /** Get number of entries in the stream object*/
-        virtual unsigned num_entries() const noexcept override {
-            return stream.info().channel_count();
-        };
         /** Get data type id according MHA convention*/
         virtual unsigned data_type() const noexcept override{
             return data_type_;
         }
         virtual ~save_var_t()=default;
         /** Send a frame to lsl. */
-        virtual void send_frame() override {stream.push_sample(buf);};
+        virtual void send_frame(unsigned num_entries) override {stream.push_chunk_multiplexed(buf,num_entries);};
     private:
         /** LSL stream outlet. Interface to lsl */
         lsl::stream_outlet stream;
@@ -124,10 +119,10 @@ namespace ac2lsl{
     public:
         /** C'tor of specialization for complex types.
          * See generic c'tor for details. */
-        save_var_t(const std::string& name_,const std::string& type_, const unsigned num_entries_,
+        save_var_t(const std::string& name_,const std::string& type_, unsigned num_channels_,
                    const mha_real_t rate_, const lsl::channel_format_t format_, const std::string& source_id_,
                    void* data_):
-            stream(lsl::stream_info(name_, type_, 2*num_entries_, rate_, format_, source_id_)),
+            stream(lsl::stream_info(name_, type_, num_channels_*2, rate_, format_, source_id_)),
             //AC variables hold the addresses as void ptr, we find out the type from
             //metadata and call templated constructor.
             buf(static_cast<mha_complex_t*>(data_))
@@ -144,10 +139,6 @@ namespace ac2lsl{
         virtual lsl::stream_info info() const noexcept override {
             return stream.info();
         };
-        /** Get number of entries in the stream object*/
-        virtual unsigned num_entries() const noexcept override {
-            return stream.info().channel_count()/2;
-        };
         /** Cast the input pointer to the appropriate type and set the buffer address
          * @param data New buffer address
          */
@@ -161,8 +152,8 @@ namespace ac2lsl{
          * vector of real numbers that correspond to real and imaginary parts.
          * LSL does not support complex types directly. Send one vector
          * containing {buf[0].re,buf[0].im,buf[1].re,buf[1].im,...} instead. */
-        virtual void send_frame() override {
-            stream.push_sample(&buf[0].re);
+        virtual void send_frame(unsigned num_entries) override {
+            stream.push_chunk_multiplexed(&buf[0].re,num_entries*2);
         };
     private:
         /** LSL stream outlet. Interface to lsl */
@@ -174,8 +165,7 @@ namespace ac2lsl{
     /** Runtime configuration class of the ac2lsl plugin */
     class cfg_t {
         void create_or_replace_var(const std::string& name, const comm_var_t& v);
-        void check_vars();
-        void update_varlist();
+        void check_and_send();
         /** Maps variable name to unique ptr's of ac to lsl bridges. */
         std::map<std::string, std::unique_ptr<save_var_base_t>> varlist;
         /** Counter of frames to skip */
@@ -373,11 +363,8 @@ ac2lsl::cfg_t::cfg_t(const algo_comm_t& ac_, unsigned skip_, const std::string& 
 }
 
 void ac2lsl::cfg_t::process(){
-    update_varlist();
     if(!skipcnt){
-        for(auto& var : varlist){
-            var.second->send_frame();
-        }
+        check_and_send();
         skipcnt=skip;
     }
     else{
@@ -385,53 +372,54 @@ void ac2lsl::cfg_t::process(){
     }
 }
 
-void ac2lsl::cfg_t::update_varlist() {
+void ac2lsl::cfg_t::check_and_send() {
     for(auto& var : varlist){
         comm_var_t v;
         if( ac.get_var(ac.handle,var.first.c_str(),&v) )
             throw MHA_Error(__FILE__,__LINE__,
                             "No such variable: \"%s\"",var.first.c_str());
         if( var.second->get_buf_address()!=v.data and
-            static_cast<unsigned>(var.second->info().channel_count()) == v.num_entries and
+            // static_cast is safe b/c LSL stores channel count as uint32_t
+            static_cast<unsigned>(var.second->info().channel_count()) == v.stride and
             var.second->data_type()==v.data_type){
             var.second->set_buf_address(v.data);
-            continue;
         }
         if( var.second->data_type()!=v.data_type) {
             create_or_replace_var(var.first,v);
-            continue;
         }
-        if( var.second->num_entries()!=v.num_entries){
+        // static_cast is safe b/c LSL stores channel count as uint32_t
+        if(static_cast<unsigned>(var.second->info().channel_count()) != v.stride){
             create_or_replace_var(var.first,v);
-            continue;
         }
+        var.second->send_frame(v.num_entries);
     }
 }
 
 void ac2lsl::cfg_t::create_or_replace_var(const std::string& name, const comm_var_t& v) {
+    unsigned channel_count = v.stride ? v.stride : 1;
     switch( v.data_type ){
     case MHA_AC_INT :
-        varlist[name]=std::make_unique<save_var_t<int>>(name,types.at(MHA_AC_INT).name,v.num_entries,
+        varlist[name]=std::make_unique<save_var_t<int>>(name,types.at(MHA_AC_INT).name,channel_count,
                                                         srate,types.at(MHA_AC_INT).format,source_id,
                                                         v.data,v.data_type);
         break;
     case MHA_AC_FLOAT :
-        varlist[name]=std::make_unique<save_var_t<float>>(name,types.at(MHA_AC_FLOAT).name,v.num_entries,
+        varlist[name]=std::make_unique<save_var_t<float>>(name,types.at(MHA_AC_FLOAT).name,channel_count,
                                                           srate,types.at(MHA_AC_FLOAT).format,source_id,
                                                           v.data,v.data_type);
         break;
     case MHA_AC_DOUBLE :
-        varlist[name]=std::make_unique<save_var_t<double>>(name,types.at(MHA_AC_DOUBLE).name,v.num_entries,
+        varlist[name]=std::make_unique<save_var_t<double>>(name,types.at(MHA_AC_DOUBLE).name,channel_count,
                                                            srate,types.at(MHA_AC_DOUBLE).format,source_id,
                                                            v.data,v.data_type);
         break;
     case MHA_AC_MHAREAL :
-        varlist[name]=std::make_unique<save_var_t<mha_real_t>>(name,types.at(MHA_AC_MHAREAL).name,v.num_entries,
+        varlist[name]=std::make_unique<save_var_t<mha_real_t>>(name,types.at(MHA_AC_MHAREAL).name,channel_count,
                                                                srate,types.at(MHA_AC_MHAREAL).format,source_id,
                                                                v.data,v.data_type);
         break;
     case MHA_AC_MHACOMPLEX :
-        varlist[name]=std::make_unique<save_var_t<mha_complex_t>>(name,types.at(MHA_AC_MHACOMPLEX).name,v.num_entries,
+        varlist[name]=std::make_unique<save_var_t<mha_complex_t>>(name,types.at(MHA_AC_MHACOMPLEX).name,channel_count,
                                                                   srate,types.at(MHA_AC_MHACOMPLEX).format,source_id,
                                                                   v.data);
         break;
