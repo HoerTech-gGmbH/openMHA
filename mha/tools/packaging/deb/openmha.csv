@@ -11,3 +11,4 @@ mha/tools/mfiles/mhactl_java.jar,usr/lib/openmha/mfiles/
 mha/tools/mfiles/*.cfg,usr/share/openmha/
 *.pdf,usr/share/doc/openmha/
 mha/plugins/**/*.so,/usr/lib
+mha/tools/packaging/deb/java.opts,/usr/share/octave/5.2.0/m/java/

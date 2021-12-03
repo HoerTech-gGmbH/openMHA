@@ -109,28 +109,7 @@ function [mha_handle, mha_process] = mha_start( port, pre_binary, post_binary )
     setenv('LD_LIBRARY_PATH',regexprep(ldlibpath,'MATLAB',''));
   end
 
-
-  octave_version = ver('Octave');
-  % octave 4.0.0 did not translate cellstrings correctly to Java string arrays.
-  if( isoctave() && strcmp(octave_version.Version,'4.0.0') )
-    mha_process = javaruntime.exec(strjoin(command,' ')); % workaround
-  % octave 5.2.0 with openjdk11 raised a meaningless error after runtime.exec
-  elseif (isoctave() && strcmp(octave_version.Version,'5.2.0'))
-    try
-      mha_process = javaruntime.exec(command);
-    catch exception
-      if ~isempty(strcmp(exception.message, ...
-                '[java] java.lang.OutOfMemoryError: unable to create '))
-        disp(['expected exception for this octave version, ', ...
-              'does not affect functionality'])
-      else
-        rethrow(exception);
-      end
-    end
-  else
-    mha_process = javaruntime.exec(command);
-  end
-
+  mha_process = javaruntime.exec(command);
   
   % restore PATH
   if ispc() && isoctave()
