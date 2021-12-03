@@ -306,8 +306,8 @@ MHAKernel::algo_comm_class_t::algo_comm_class_t()
       algo_comm_id_string_len(strlen(ALGO_COMM_ID_STR)+1)
 {
     algo_comm_id_string = new char[algo_comm_id_string_len];
-    memset(algo_comm_id_string,0,algo_comm_id_string_len);
-    strncpy(algo_comm_id_string,ALGO_COMM_ID_STR,algo_comm_id_string_len-1);
+    strncpy(algo_comm_id_string,ALGO_COMM_ID_STR,algo_comm_id_string_len);
+    algo_comm_id_string[algo_comm_id_string_len-1] = 0;
     ac = algo_comm_default;
     ac.handle = this;
     vars.clear();

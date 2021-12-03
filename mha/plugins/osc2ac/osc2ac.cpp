@@ -14,6 +14,9 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <memory>
+#if defined(_WIN32) && !defined(WIN32)
+#define WIN32 _WIN32 // help liblo to detect windows
+#endif
 #include <lo/lo.h>
 #include "mha_parser.hh"
 #include "mha_plugin.hh"
