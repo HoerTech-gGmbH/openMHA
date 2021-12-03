@@ -41,6 +41,12 @@ public:
   /// prepares the plugin for tests
   void prepare() {
     windnoise.prepare_(signal_info);
+    ac.set_prepared(true);
+  }
+  /// releases the plugin after tests
+  void release() {
+    ac.set_prepared(false);
+    windnoise.release_();
   }
 };
 
@@ -151,6 +157,7 @@ TEST_F(windnoise_testing, cannot_be_prepared_for_waveform_processing)
 TEST_F(windnoise_testing, can_be_prepared_for_spectral_processing)
 {
   EXPECT_NO_THROW(prepare());
+  release();
 }
 
 TEST_F(windnoise_testing, all_configuration_variables_are_registered) {
@@ -188,6 +195,7 @@ TEST_F(windnoise_testing, all_configuration_variables_are_registered) {
     windnoise.parse(name + "=" + windnoise.parse(name + query_val));
     EXPECT_NE(old_cfg, windnoise.poll_config()) << "should have been updated";
   }
+  release();
 }
 
 // Test for the runtime configuration
@@ -225,6 +233,8 @@ TEST_F(windnoise_testing, runtime_parameters_from_default_values) {
   EXPECT_EQ(powf(10, windnoise.LowPassWindGain.data/20), cfg->LowPassWindGain);
   // same as previous line but precomputed in Octave with default values
   EXPECT_FLOAT_EQ(0.316227766f, cfg->LowPassWindGain);
+
+  release();
 }
 
 // Local Variables:

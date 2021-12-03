@@ -26,11 +26,27 @@ class mhaplug_cfg_t : private MHAKernel::algo_comm_class_t, public PluginLoader:
 public:
     mhaplug_cfg_t(algo_comm_t iac,const std::string& libname,bool use_own_ac);
     ~mhaplug_cfg_t() throw () {};
+    void prepare(mhaconfig_t&) override;
+    void release() override;
 };
 
 mhaplug_cfg_t::mhaplug_cfg_t(algo_comm_t iac,const std::string& libname,bool use_own_ac)
     : PluginLoader::mhapluginloader_t((use_own_ac?get_c_handle():iac),libname)
 {
+}
+void mhaplug_cfg_t::prepare(mhaconfig_t & signal_dimensions)
+{
+    // baseclass implementation in mhapluginloader_t prepares the loaded plugin
+    PluginLoader::mhapluginloader_t::prepare(signal_dimensions);
+    // tell the AC space that we are now prepared (needed for use_own_ac = yes)
+    set_prepared(true);
+}
+void mhaplug_cfg_t::release()
+{
+    // tell the AC space that we are no longer prepared (for use_own_ac = yes)
+    set_prepared(false);
+    // baseclass implementation in mhapluginloader_t releases the loaded plugin
+    PluginLoader::mhapluginloader_t::release();
 }
 
 class altplugs_t : public MHAPlugin::plugin_t<MHAWindow::fun_t>

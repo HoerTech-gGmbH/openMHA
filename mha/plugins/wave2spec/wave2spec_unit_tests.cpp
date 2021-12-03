@@ -47,9 +47,11 @@ public:
     w2s.parse("wndtype=hanning");
     w2s.prepare_(signal_dimensions);
     waveform.assign(1.0f);
+    acspace.set_prepared(true);
   }
   /// Test teardown releases plugin
   void TearDown() override {
+    acspace.set_prepared(false);
     w2s.release();
   }
 };

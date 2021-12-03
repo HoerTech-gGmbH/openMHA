@@ -56,6 +56,7 @@ protected:
 TEST_F(dc_if_t_testing,lin_interp){
   dc_if_handle.parse("log_interp=no");
   dc_if_handle.prepare(signal_properties);
+  acspace.set_prepared(true);
 
   // 0dBSPL - extrapolated linearly (to -InfdB gain)
   MHASignal::waveform_t wave0db{genWaveInput(0.0f)};
@@ -109,11 +110,14 @@ TEST_F(dc_if_t_testing,lin_interp){
   mha_real_t sample100db{value(wave100db,99,0)};
   dc_if_handle.process(&wave100db);
   EXPECT_FLOAT_EQ(sample100db*100.0f,value(wave100db,99,0));
+
+  acspace.set_prepared(false);
 }
 
 TEST_F(dc_if_t_testing,log_interp){
   dc_if_handle.parse("log_interp=yes");
   dc_if_handle.prepare(signal_properties);
+  acspace.set_prepared(true);
 
   // -Inf dBSPL (extrapolated logarithmically to -InfdB gain)
   MHASignal::waveform_t wave_infdb{genWaveInput(-std::numeric_limits<float>::infinity())};
@@ -161,6 +165,8 @@ TEST_F(dc_if_t_testing,log_interp){
   mha_real_t sample100db{value(wave100db,99,0)};
   dc_if_handle.process(&wave100db);
   EXPECT_FLOAT_EQ(sample100db*MHASignal::db2lin(40.0f),value(wave100db,99,0));
+
+  acspace.set_prepared(false);
 }
 
 

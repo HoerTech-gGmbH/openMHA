@@ -221,6 +221,8 @@ public:
     MHAProc_wave2spec_t get_process_spec();
     void* get_handle();
     algo_comm_t get_ac() { return get_c_handle();};
+    void prepare(mhaconfig_t&) override;
+    void release() override;
 };
 
 class analysispath_if_t : public MHAPlugin::plugin_t< analysepath_t > {
@@ -360,6 +362,22 @@ void* plug_t::get_handle()
 plug_t::plug_t(const std::string& libname)
     : PluginLoader::mhapluginloader_t(get_c_handle(),libname)
 {
+}
+
+void plug_t::prepare(mhaconfig_t & signal_dimensions)
+{
+    // baseclass implementation in mhapluginloader_t prepares the loaded plugin
+    PluginLoader::mhapluginloader_t::prepare(signal_dimensions);
+    // tell the AC space that we are now prepared (needed for use_own_ac = yes)
+    set_prepared(true);
+}
+
+void plug_t::release()
+{
+    // tell the AC space that we are no longer prepared (for use_own_ac = yes)
+    set_prepared(false);
+    // baseclass implementation in mhapluginloader_t releases the loaded plugin
+    PluginLoader::mhapluginloader_t::release();
 }
 
 MHAPLUGIN_CALLBACKS(analysispath,analysispath_if_t,wave,wave)

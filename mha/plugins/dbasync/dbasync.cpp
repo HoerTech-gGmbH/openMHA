@@ -305,10 +305,12 @@ void db_if_t::prepare(mhaconfig_t& conf)
                               worker_thread_priority.data,
                               plugloader));
     conf.fragsize = outer_fragsize;
+    sub_ac.set_prepared(true);
 }
 
 void db_if_t::release()
 {
+    sub_ac.set_prepared(false);
     plugloader.release();
 }
 

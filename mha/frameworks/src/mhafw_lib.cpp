@@ -303,6 +303,7 @@ void fw_t::prepare()
             proc_lib->release();
             throw;
         }
+        ac.set_prepared(true);
         state = fw_stopped;
         break;
     case fw_stopped :
@@ -383,6 +384,7 @@ void fw_t::release()
         case fw_stopping :
             if( !io_lib )
                 throw MHA_ErrorMsg("No IO library loaded.");
+            ac.set_prepared(false);
             io_lib->release();
             proc_lib->release();
             state = fw_unprepared;

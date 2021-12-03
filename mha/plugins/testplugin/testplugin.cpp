@@ -260,7 +260,9 @@ namespace testplugin {
       plug.prepare(signal_params);
       config_out.set(signal_params);
       config_in.setlock(true);
+      ac.set_prepared(true);
     } else {
+      ac.set_prepared(false);
       plug.release();
       config_in.setlock(false);
     }

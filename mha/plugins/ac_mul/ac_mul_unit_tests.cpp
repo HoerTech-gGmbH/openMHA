@@ -124,12 +124,14 @@ TEST_F(test_ac_mul_t, test_state_after_constructor) {
 TEST_F(test_ac_mul_t, prepare_does_not_change_signal_dimensions) {
     mhaconfig_t copied_properties = signal_properties;
     ac_mul.prepare_(signal_properties);
+    acspace.set_prepared(true);
     ASSERT_EQ(copied_properties.channels, signal_properties.channels);
     ASSERT_EQ(copied_properties.domain,   signal_properties.domain);
     ASSERT_EQ(copied_properties.fragsize, signal_properties.fragsize);
     ASSERT_EQ(copied_properties.wndlen,   signal_properties.wndlen);
     ASSERT_EQ(copied_properties.fftlen,   signal_properties.fftlen);
     ASSERT_EQ(copied_properties.srate,    signal_properties.srate);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
@@ -155,36 +157,48 @@ TEST_F(test_ac_mul_t, prepare_with_invalid_expression_fails) {
 
 TEST_F(test_ac_mul_t, prepare_real_real_succeeds) {
     ASSERT_NO_THROW(ac_mul.prepare_(signal_properties));
+    acspace.set_prepared(true);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, prepare_real_squaring_succeeds) {
     ac_mul.parse("= a * a");
     ASSERT_NO_THROW(ac_mul.prepare_(signal_properties));
+    acspace.set_prepared(true);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, prepare_real_complex_succeeds) {
     ac_mul.parse("= a * A");
     ASSERT_NO_THROW(ac_mul.prepare_(signal_properties));
+    acspace.set_prepared(true);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, prepare_complex_real_succeeds) {
     ac_mul.parse("= A * a");
     ASSERT_NO_THROW(ac_mul.prepare_(signal_properties));
+    acspace.set_prepared(true);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, prepare_complex_complex_succeeds) {
     ac_mul.parse("= C * D");
     ASSERT_NO_THROW(ac_mul.prepare_(signal_properties));
+    acspace.set_prepared(true);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, prepare_complex_squaring_succeeds) {
     ac_mul.parse("= C * C");
     ASSERT_NO_THROW(ac_mul.prepare_(signal_properties));
+    acspace.set_prepared(true);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
@@ -193,11 +207,14 @@ TEST_F(test_ac_mul_t, prepare_multiply_nonfloat_fails) {
     MHA_AC::int_t integer1(ac, "integer1", 1);
     MHA_AC::int_t integer2(ac, "integer2", 2);
     ASSERT_THROW(ac_mul.prepare_(signal_properties), MHA_Error);
+    acspace.set_prepared(true);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, process_real_real) {
     ac_mul.prepare_(signal_properties);
+    acspace.set_prepared(true);
     fill(a,0);
     fill(b,-5);
     ac_mul.process(&timesignal);
@@ -206,6 +223,7 @@ TEST_F(test_ac_mul_t, process_real_real) {
     // process() should fail when dimension of first parameter changes
     MHA_AC::waveform_t new_a(ac,"a",1,2,true);
     ASSERT_THROW(ac_mul.process(&timesignal), MHA_Error);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
@@ -213,6 +231,7 @@ TEST_F(test_ac_mul_t, process_real_squaring) {
     ac_mul.parse("= a * a");
     signal_properties.domain = MHA_SPECTRUM; // have one test using spec2spec
     ac_mul.prepare_(signal_properties);
+    acspace.set_prepared(true);
     fill(a,-2);
     ac_mul.process(&specsignal);
     // check result
@@ -220,12 +239,14 @@ TEST_F(test_ac_mul_t, process_real_squaring) {
     // process() should fail when dimensions of both parameters change
     MHA_AC::waveform_t new_a(ac,"a",10,2,true);
     ASSERT_THROW(ac_mul.process(&timesignal), MHA_Error);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, process_real_complex) {
     ac_mul.parse("= a * A");
     ac_mul.prepare_(signal_properties);
+    acspace.set_prepared(true);
     fill(a,-2);
     fill(A,-4);
     ac_mul.process(&timesignal);
@@ -234,6 +255,7 @@ TEST_F(test_ac_mul_t, process_real_complex) {
     // process() should fail when dimension of second parameter changes
     MHA_AC::spectrum_t new_A(ac,"A",129,1,true);
     ASSERT_THROW(ac_mul.process(&timesignal), MHA_Error);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
@@ -242,18 +264,21 @@ TEST_F(test_ac_mul_t, process_complex_real) {
     fill(A,2);
     fill(a,-0.5f);
     ac_mul.prepare_(signal_properties);
+    acspace.set_prepared(true);
     ac_mul.process(&timesignal);
     // check result
     check_cr(2,-0.5f);
     // process() should fail when dimension of second parameter changes
     MHA_AC::waveform_t new_a(ac,"a",1,1,true);
     ASSERT_THROW(ac_mul.process(&timesignal), MHA_Error);
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, process_complex_complex) {
     ac_mul.parse("= C * D");
     ac_mul.prepare_(signal_properties);
+    acspace.set_prepared(true);
     fill(C, 0);
     fill(D, -5);
     ac_mul.process(&timesignal);
@@ -262,12 +287,14 @@ TEST_F(test_ac_mul_t, process_complex_complex) {
     // process() should fail when domain of second parameter changes
     MHA_AC::waveform_t new_D(ac,"D",129,2,true);
     ASSERT_THROW(ac_mul.process(&timesignal), MHA_Error);
-        ac_mul.release_();
+    acspace.set_prepared(false);
+    ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, process_complex_squaring) {
     ac_mul.parse("= C * C");
     ac_mul.prepare_(signal_properties);
+    acspace.set_prepared(true);
     fill(C, 0);
     ac_mul.process(&timesignal);
     // check result
@@ -280,11 +307,13 @@ TEST_F(test_ac_mul_t, process_complex_squaring) {
     fill(newest_C, -1);
     ASSERT_NO_THROW(ac_mul.process(&timesignal));
     check_cc(-1,-1); // check result
+    acspace.set_prepared(false);
     ac_mul.release_();
 }
 
 TEST_F(test_ac_mul_t, process_reinserts_result_acvariable) {
     ac_mul.prepare_(signal_properties);
+    acspace.set_prepared(true);
     fill(a,0);
     fill(b,-5);
     ac_mul.process(&timesignal);
@@ -299,5 +328,6 @@ TEST_F(test_ac_mul_t, process_reinserts_result_acvariable) {
     ac_mul.process(&timesignal);
     // check result
     check_rr(0,-5); // not using ASSERT_NO_THROW because check_rr ASSERTs itself
+    acspace.set_prepared(false);
     ac_mul.release_();
 }

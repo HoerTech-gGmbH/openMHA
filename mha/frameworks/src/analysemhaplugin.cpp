@@ -81,8 +81,10 @@ int document_plugin(MHAKernel::algo_comm_class_t& ac, PluginLoader::mhapluginloa
   try {
     print_ac(ac, "before prepare");
     load.prepare(sample_cf_wave);
+    ac.set_prepared(true);
     std::cout << "Successfully prepared for waveform processing." << std::endl;
     print_ac(ac, "after prepare");
+    ac.set_prepared(false);
     load.release();
     print_ac(ac, "after release");
   } catch (MHA_Error &e) {
@@ -94,9 +96,11 @@ int document_plugin(MHAKernel::algo_comm_class_t& ac, PluginLoader::mhapluginloa
   try {
     print_ac(ac, "before prepare");
     load.prepare(sample_cf_spec);
+    ac.set_prepared(true);
     std::cout << "Successfully prepared for spectrum processing." << std::endl
               << std::endl;
     print_ac(ac, "after prepare");
+    ac.set_prepared(false);
     load.release();
     print_ac(ac, "after release");
   } catch (MHA_Error &e) {

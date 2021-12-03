@@ -36,6 +36,13 @@ class dc_simple_testing : public ::testing::Test {
   /// prepares the plugin for tests for either waveform or spectrum domain
   void prepare(){
         dc_simple.prepare_(signal_properties);
+        acspace.set_prepared(true);
+  }
+
+  /// releases the plugin after tests
+  void release(){
+        acspace.set_prepared(false);
+        dc_simple.release_();
   }
 };
 
@@ -89,9 +96,11 @@ TEST_F(dc_simple_testing, can_be_prepared_for_spectral_and_waveform_processing)
   // Plugin should accept signal in waveform or spectrum domain
   signal_properties.domain = MHA_SPECTRUM;
   EXPECT_NO_THROW(prepare());
-  dc_simple.release_();
+  release();
+
   signal_properties.domain = MHA_WAVEFORM;
   EXPECT_NO_THROW(prepare());
+  release();
 }
 
 /** Section of tests that check configuration parameter existence, 
@@ -191,18 +200,18 @@ TEST_F(dc_simple_testing, test_variable_validator)
   signal_properties.channels = 4;
   prepare();
   EXPECT_THROW(dc_simple.parse("g50 = [50 50]"), MHA_Error);
-  dc_simple.release_();
+  release();
 
   // Expect no throw if channel count and parsed variable dimension are equal
   prepare();
   EXPECT_NO_THROW(dc_simple.parse("g50 = [50 50 50 50]"));
-  dc_simple.release_(); 
+  release(); 
 
   // Expect no throw if channel count and parsed variable dimension
   // are different, but parsed variable has only 1 dimension
   prepare();
   EXPECT_NO_THROW(dc_simple.parse("g50 = [50]"));
-
+  release();
 }
 
 /** Test Fixture for the level_smoother_t class*/

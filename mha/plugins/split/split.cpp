@@ -793,12 +793,14 @@ namespace MHAPlugin_Split {
         else
             thread =
                 new dummy_threads_t(domain, thread_scheduler, thread_priority);
+        set_prepared(true);
     }
 
     /// Release the loaded plugin.
     /** Plugin release. */
     void splitted_part_t::release()
     {
+        set_prepared(false);
         delete thread; thread = 0;
         delete domain; domain = 0;
         plug->release();

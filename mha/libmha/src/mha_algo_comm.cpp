@@ -244,6 +244,134 @@ in plugins using AC variables:
        process() before accessing their values.
 */
 
+void MHAKernel::comm_var_map_t::insert(const char * name, const comm_var_t & var)
+{
+    // If we are not replacing an entry, then we must be creating a new entry.
+    const bool creating_new_entry = not has_key(name);
+
+    // Creating new entry is not permitted when MHA is prepared.
+    if (is_prepared && creating_new_entry)
+        throw MHA_Error(__FILE__,__LINE__,"Attempt to create AC variable %s "
+                        "during live signal processing.  The plugin that "
+                        "tried to do this is misbehaving and should be fixed.",
+                        name);
+    // Create or replace.
+    map[name] = var;
+
+    // Update the list of entries if we have just extended it.
+    if (creating_new_entry)
+        update_entries();
+}
+
+void MHAKernel::comm_var_map_t::erase_by_name(const char * name)
+{
+    // Removing AC variables is not permitted while MHA is prepared.
+    if (is_prepared)
+        throw MHA_Error(__FILE__,__LINE__,"Attempt to remove AC variable %s "
+                        "during live signal processing.  The plugin that "
+                        "tried to do this is misbehaving and should be fixed.",
+                        name);
+    // When not perpared, it is permitted, do it.
+    map.erase(name);
+    update_entries();
+}
+
+void MHAKernel::comm_var_map_t::erase_by_pointer(void * ptr)
+{
+    std::map<std::string,comm_var_t>::iterator current_iterator, next_iterator;
+
+    // The same pointer may be used by multiple AC variables.  Collect
+    // the names of all AC variables here in case we have to throw an exception
+    // so that we can give the user some information from which they may be
+    // able to deduce which plugin misbehaved.
+    std::string erased_variables;
+
+    // This counter is used for both cases, removal permitted or not permitted,
+    // but variables will not actually be erased when not permitted, they are
+    // only counted.
+    size_t num_erased_variables = 0U;
+
+    // The following loop finds all AC variables that point to the same address
+    // as ptr.  When variable removal is not permitted, then it collects the
+    // names of the AC variables that would be erased, otherwise it performs
+    // the erasure but does not collect the names.
+    for(current_iterator = map.begin();
+        current_iterator != map.end();
+        current_iterator = next_iterator) 
+    {
+        // We may invalidate the current iterator later, better get next now
+        next_iterator = current_iterator;
+        ++next_iterator;
+
+        if( current_iterator->second.data == ptr ) { // Found a match
+            ++num_erased_variables;   // Increase counter.
+            if (is_prepared)  // operation forbidden, add info to error message
+                erased_variables += current_iterator->first + ", ";
+            else              // operation allowed, delete AC variable entry
+                map.erase(current_iterator);
+        }
+    }
+    if (is_prepared) { // Operation forbidden while MHA prepared, raise error.
+        if (erased_variables.size()) // remove ", " after last entry
+            erased_variables.resize(erased_variables.size() - 2U);
+        switch (num_erased_variables) {
+        case 1: 
+            throw MHA_Error(__FILE__,__LINE__,"Attempt to remove AC variable "
+                            "%s by address %p during live signal processing.  "
+                            "The plugin that tried to do this is misbehaving "
+                            "and should be fixed.",
+                            erased_variables.c_str(), ptr);
+        case 0:
+            throw MHA_Error(__FILE__,__LINE__,"Attempt to remove unknown AC "
+                            "variable by address %p during live signal process"
+                            "ing. The plugin that tried to do this is "
+                            "misbehaving and should be fixed.", ptr);
+        default:
+            throw MHA_Error(__FILE__,__LINE__,"Attempt to remove AC variables "
+                            "%s by address %p during live signal processing.  "
+                            "The plugin that tried to do this is misbehaving "
+                            "and should be fixed.",
+                            erased_variables.c_str(), ptr);
+        }
+    }
+    if (num_erased_variables)
+        update_entries();
+}
+
+const comm_var_t & MHAKernel::comm_var_map_t::retrieve(const char * name) const
+{
+    if (has_key(name)) 
+        return map.at(name);
+    else
+        throw MHA_Error(__FILE__,__LINE__,
+                        "No algorithm communication variable \"%s\".",
+                        name);
+}
+
+const std::string & MHAKernel::comm_var_map_t::get_entries() const
+{
+    return entries;
+}
+
+void MHAKernel::comm_var_map_t::update_entries()
+{
+    if (is_prepared == true) {
+        // Should not happen, this is a private method, the caller should make
+        // sure that the object is in correct state when this method is called.
+        throw MHA_Error(__FILE__, __LINE__, "Internal error: comm_var_map_t::"
+                        "update_entries was called while is_prepared == true");
+    }
+    std::string r(""); //  build list of all entries in this string
+    for(const auto & pair : map) { // loop over all AC space entries
+        r += pair.first; // append name of current AC variable
+        r += ' '; // append space as separator after each entry
+    }
+    // Remove space after last entry
+    if(r.size()) // but only if there is at least one entry (there may be zero)
+        r.resize(r.size() - 1U);
+    entries = r; // replace member variable "entries" with updated list
+}
+
 #define AC_SUCCESS 0
 #define AC_INVALID_HANDLE -1
 #define AC_INVALID_NAME -2
@@ -310,7 +438,6 @@ MHAKernel::algo_comm_class_t::algo_comm_class_t()
     algo_comm_id_string[algo_comm_id_string_len-1] = 0;
     ac = algo_comm_default;
     ac.handle = this;
-    vars.clear();
 }
 
 algo_comm_t MHAKernel::algo_comm_class_t::get_c_handle()
@@ -334,7 +461,7 @@ void MHAKernel::algo_comm_class_t::local_insert_var(const char* name,comm_var_t 
     if (strchr(name, ' ') != 0)
         throw MHA_ErrorMsg("algo_comm variable name " \
                          "may not contain space character");
-    vars[name] = var;
+    vars.insert(name, var);
 }
 
 void MHAKernel::algo_comm_class_t::local_remove_var(const char* name)
@@ -343,7 +470,7 @@ void MHAKernel::algo_comm_class_t::local_remove_var(const char* name)
         throw MHA_ErrorMsg("String pointer for variable name must not be NULL");
     }
     if (vars.has_key(name))
-        vars.erase(name);
+        vars.erase_by_name(name);
     else
         throw MHA_Error(__FILE__,__LINE__,
                         "A variable of name \"%s\" was not found.",name);
@@ -351,19 +478,11 @@ void MHAKernel::algo_comm_class_t::local_remove_var(const char* name)
 
 void MHAKernel::algo_comm_class_t::local_remove_ref(void* addr)
 {
-    comm_var_map_t::iterator current_iterator, next_iterator;
-    for(current_iterator=vars.begin();
-        current_iterator != vars.end();
-        current_iterator = next_iterator){
-        next_iterator = current_iterator;
-        ++next_iterator;
-        if( current_iterator->second.data == addr ){
-            vars.erase(current_iterator);
-        }
-    }
+    vars.erase_by_pointer(addr);
 }
 
-void MHAKernel::algo_comm_class_t::local_get_var(const char* name,comm_var_t* var)
+void MHAKernel::algo_comm_class_t::local_get_var(const char* name,
+                                                 comm_var_t* var) const
 {
     if( !var ){
         throw MHA_ErrorMsg("Invalid variable pointer.");
@@ -371,33 +490,21 @@ void MHAKernel::algo_comm_class_t::local_get_var(const char* name,comm_var_t* va
     if (name == 0) {
         throw MHA_ErrorMsg("String pointer for variable name must not be NULL");
     }
-    if (vars.has_key(name)) 
-        *var = vars[name];
-    else
-        throw MHA_Error(__FILE__,__LINE__,
-                        "No algorithm communication variable \"%s\".",
-                        name);
+    *var = vars.retrieve(name);
 }
 
-bool MHAKernel::algo_comm_class_t::local_is_var(const char* name)
+bool MHAKernel::algo_comm_class_t::local_is_var(const char* name) const
 {
     if (name == 0) return false;
     return vars.has_key(name);
 }
 
-std::string MHAKernel::algo_comm_class_t::local_get_entries()
+const std::string & MHAKernel::algo_comm_class_t::local_get_entries() const
 {
-    std::string r("");
-    comm_var_map_t::iterator it;
-    for(it=vars.begin();it != vars.end();++it){
-        r += it->first + " ";
-    }
-    if( r.rfind(" ") < r.size() )
-        r.erase(r.rfind(" "),1);
-    return r;
+    return vars.get_entries();
 }
 
-MHAKernel::comm_var_map_t::size_type MHAKernel::algo_comm_class_t::size() const
+size_t MHAKernel::algo_comm_class_t::size() const
 {
     return vars.size();
 }
@@ -645,6 +752,11 @@ int MHAKernel::algo_comm_class_t::is_var(void* handle,const char* name)
     if(!p)
         return 0;
     return p->local_is_var(name);
+}
+
+void MHAKernel::algo_comm_class_t::set_prepared(bool prepared)
+{
+    vars.is_prepared = prepared;
 }
 
 mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)

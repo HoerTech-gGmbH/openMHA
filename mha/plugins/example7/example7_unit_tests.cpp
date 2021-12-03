@@ -45,7 +45,9 @@ public:
 TEST_F(example7_testing,test_state_methods){
   EXPECT_FALSE(ex7.is_prepared());
   ex7.prepare_(signal_properties);
+  acspace.set_prepared(true);
   EXPECT_TRUE(ex7.is_prepared());
+  acspace.set_prepared(false);
   ex7.release_();
   EXPECT_FALSE(ex7.is_prepared());
 }
@@ -54,6 +56,7 @@ TEST_F(example7_testing,test_state_methods){
 //! [third docu snippet]
 TEST_F(example7_testing,test_functionality){
   ex7.prepare_(signal_properties);
+  acspace.set_prepared(true);
   wave_input.assign(1.0f);
   EXPECT_FLOAT_EQ(1.0f,value(wave_input,4,0));
   EXPECT_FLOAT_EQ(1.0f,value(wave_input,5,0));
@@ -64,6 +67,7 @@ TEST_F(example7_testing,test_functionality){
   EXPECT_FLOAT_EQ(0.1f,value(wave_input,5,0));
   EXPECT_FLOAT_EQ(1.0f,value(wave_input,4,1));
   EXPECT_FLOAT_EQ(1.0f,value(wave_input,5,1));
+  acspace.set_prepared(false);
   ex7.release_();
 }
 //! [third docu snippet]

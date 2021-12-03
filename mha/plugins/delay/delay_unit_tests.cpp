@@ -46,6 +46,12 @@ class delay_testing : public ::testing::Test {
           wave_original.assign(k, ch, k + ch * 0.5);
       }
     }
+    acspace.set_prepared(true);
+  }
+  // Releases plugin after tests
+  void release() {
+    acspace.set_prepared(false);
+    delay.release_();
   }
 };
 
@@ -135,6 +141,5 @@ TEST_F(delay_testing, test_delay)
                           wave_processed.buf[nchannels * (frame + ndelay) + ch2]);
   }
 
-  // Release 
-  delay.release_();
+  release();
 }
