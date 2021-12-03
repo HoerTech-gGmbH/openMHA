@@ -15,140 +15,121 @@
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mha_plugin.hh"
-#include "mha_signal.hh"
-#include "mha_parser.hh"
-#include "mha_defs.h"
-#include "mha_tablelookup.hh"
 #include "mha_utils.hh"
-#include <math.h>
-#include <unordered_map>
-#include <memory>
-#include <utility>
-#include <string>
-#include <vector>
-#include <algorithm>
 
 namespace rmslevel {
 
     enum class UNIT {SPL=0, HL=1};
 
-    class mon_t : public MHA_AC::waveform_t, private MHAParser::vfloat_mon_t {
-    public:
-        mon_t(unsigned int nch,const std::string& name, algo_comm_t ac,const std::string& base,
-              MHAParser::parser_t& p, const std::string& help);
-        mon_t(const mon_t&)=delete;
-        mon_t(mon_t &&)=delete;
-
-        mon_t& operator=(const mon_t&) = delete;
-        mon_t& operator=(mon_t&&) = delete;
-        void store();
-    };
-
-    mon_t::mon_t(unsigned int nch,const std::string& name,algo_comm_t ac,const std::string& base,
-                 MHAParser::parser_t& p,const std::string& help)
-        : MHA_AC::waveform_t(ac,base+"_"+name,1,nch,false),
-          MHAParser::vfloat_mon_t(help)
-    {
-        p.force_remove_item(name);
-        p.insert_item(name,this);
-       
-        data.resize(nch);
-    }
-
-    void mon_t::store()
-    {
-        for(unsigned int k=0;k<get_size();k++)
-            data[k] = buf[k];
-    }
-
     /**
-     * Run-time configuration class of the rmslevel plugin
+     * Rmslevel plugin. Measures sound for each block and publishes
+     * measured result in monitor variables and AC variables.
      */
-    class rmslevel_t {
+    class rmslevel_if_t : public MHAPlugin::plugin_t<UNIT> {
     public:
-        /**
-         * C'tor of the runtime configuration class
-         * @param tf Input signal configuration
-         * @param ac AC space, needed to publish ac variables
-         * @param name Configured name of the plugin within the parser structure
-         * @param p Instance of the parent interface class, needed to publish monitor variables
-         * @param unit_ Configured dB scale
-         * @param num_channels_ Number of monitor channels if channel summation shall be used, zero otherwise
-         */
-        rmslevel_t(const mhaconfig_t& tf ,algo_comm_t ac,const std::string& name,MHAParser::parser_t& p,
-                   UNIT unit_);
-        ~rmslevel_t(){};
-        mha_spec_t* process(mha_spec_t*);
-        mha_wave_t* process(mha_wave_t*);
-        void fill(mha_spec_t*);
-        void sum_and_fill(mha_spec_t*);
-        void fill(mha_wave_t*);
-        void sum_and_fill(mha_wave_t*);
-        void insert();
+
+        /** Constructor of rmslevel plugin
+         * \param iac Algorithm communication variable space, used to store
+         *            extracted levels
+         * \param configured_name Configured name of this plugins: either
+         *            "rmslevel" or the name explicitly given after the colon.
+         *            Used as prefix for all published AC variables. */
+        rmslevel_if_t(algo_comm_t iac, const std::string & configured_name);
+
+        /** Extract level from current STFT spectrum.
+         * \param s input spectrum, not modified by this method. */
+        mha_spec_t* process(mha_spec_t*s);
+
+        /** Extract level from current time signal block.
+         * \param s input audio block, not modified by this method. */
+        mha_wave_t* process(mha_wave_t*s);
+
+        /** Prepare rmslevel plugin for signal processing: Resize and
+         * reinitialize monitor variables according to number of audio
+         * channels specified in parameter, publish applicable monitor
+         * variables as AC variables (depends on signal domain).
+         * \param signal_dimensions: Audio signal metadata, not modified by
+         *        this method. */
+        void prepare(mhaconfig_t & signal_dimensions) override;
+
+        /** Release removes published AC variables from AC space. */
+        void release() override;
     private:
-        // A map is potentially slower but leads to better code readability.
-        std::unordered_map<std::string,std::unique_ptr<mon_t> > monitors;
-        unsigned int fftlen;
-        UNIT unit;
-        mha_domain_t domain;
+
+        /** Called on write access to the configuration variable \c unit. */
+        void update();
+
+        /** Configuration language event dispatcher. */
+        MHAEvents::patchbay_t<rmslevel_if_t> patchbay;
+
+        /** Sound power. */
+        MHAParser::vfloat_mon_t level = {"RMS level in W/m^2"};
+
+        /** Sound pressure level. */
+        MHAParser::vfloat_mon_t level_db = {"RMS level in dB"};
+
+        /** Peak amplitude. */
+        MHAParser::vfloat_mon_t peak = {"peak amplitude in Pa"};
+
+        /** dB value corresponding to peak amplitude. */
+        MHAParser::vfloat_mon_t peak_db = {"peak amplitude in dB"};
+
+        /** AC variable name for \c level. */
+        const std::string level_acname;
+
+        /** AC variable name for \c level_db. */
+        const std::string level_db_acname;
+
+        /** AC variable name for \c peak. */
+        const std::string peak_acname;
+
+        /** AC variable name for \c peak_db. */
+        const std::string peak_db_acname;
+
+        /** Configuration variable for selecting result dB scale */
+        MHAParser::kw_t unit = {
+          "Compute measured levels in dB(SPL) or dB(HL).\n"
+          "When processing time domain signal, only dB(SPL) is supported.",
+          "spl", "[spl hl]"
+        };
+
         /** freq_offsets provides the conversion of dB(SPL) to dB(HL)
          * for every frequency bin in the stft used by coloured_intensity.
          * Unused when not in spectral domain and unit=hl.
          */
         std::vector<mha_real_t> freq_offsets;
+
+        /** (Re-)insert AC variables for spectral processing into AC space.
+         * Needs to be called during prepare() and at the end of every
+         * invocation of process() when signal domain is MHA_SPECTRUM. */
+        void insert_ac_variables_levels();
+
+        /** (Re-)insert AC variables for waveform processing into AC space.
+         * Needs to be called during prepare() and at the end of every
+         * invocation of process() when signal domain is MHA_WAVEFORM. */
+        void insert_ac_variables_peaks_and_levels();
+
+        /** (Re-)insert a single AC variable. Helper method used by
+         * insert_ac_variables_levels and insert_ac_variables_peaks_and_levels.
+         * The stride of the AC variable will be set to v.size().
+         * @param v Vector of floats to insert into the AC space. Its memory
+         *          at v.data() must be valid until the next call to process()
+         *          or release() (whichever occurs earlier).  Values may be
+         *          accessed or altered by other plugins.
+         * @param acname Name of the AC variable in the AC space.
+         */
+        void insert_ac_variable_float_vector(std::vector<float> & v,
+                                             const std::string & acname);
+
+        /** Remove AC variables from AC space. Called from release(). */
+        void remove_ac_variables();
     };
-
-    /**
-     * Interface class of the rmslevel plugin
-     */
-    class rmslevel_if_t : public MHAPlugin::plugin_t<rmslevel_t> {
-    public:
-        rmslevel_if_t(algo_comm_t iac, const std::string & configured_name);
-        mha_spec_t* process(mha_spec_t*);
-        mha_wave_t* process(mha_wave_t*);
-        void prepare(mhaconfig_t&);
-    private:
-        void update();
-        MHAEvents::patchbay_t<rmslevel_if_t> patchbay;
-        std::string name;
-        MHAParser::kw_t unit;
-    };
-
-    void rmslevel_t::insert()
-    {
-        for(auto& mon : monitors) {
-            mon.second->insert();
-        }
-    }
-
-    rmslevel_t::rmslevel_t(const mhaconfig_t& tf,algo_comm_t ac,const std::string& name,MHAParser::parser_t& p,
-                           UNIT unit_)
-        : fftlen(tf.fftlen),
-          unit(unit_),
-          domain(tf.domain),
-          freq_offsets(fftlen/2+1)
-    {
-        for(unsigned idx=0U; idx<fftlen/2+1; ++idx){
-            // factor two needed because coloured intensity expects squared weights
-            freq_offsets[idx]=MHASignal::db2lin(2*MHAUtils::spl2hl(MHASignal::bin2freq(idx,tf.fftlen, tf.srate)));
-        }
-        monitors.emplace(std::make_pair("level",std::make_unique<mon_t>(tf.channels,
-                                                                        "level",ac,name,p,"RMS level in W/m^2")));
-        monitors.emplace(std::make_pair("level_db",std::make_unique<mon_t>(tf.channels,
-                                                                           "level_db",ac,name,p,"RMS level in dB")));
-        if(domain==MHA_WAVEFORM){
-            monitors.emplace(std::make_pair("peak",std::make_unique<mon_t>(tf.channels,
-                                                                           "peak",ac,name,p,"peak amplitude in Pa")));
-            monitors.emplace(std::make_pair("peak_db",std::make_unique<mon_t>(tf.channels,
-                                                                              "peak_db",ac,name,p,"peak amplitude in dB")));
-        }
-    }
 
     rmslevel_if_t::rmslevel_if_t(algo_comm_t iac, const std::string & configured_name)
-        : plugin_t<rmslevel_t>(
-              "This algorithm displays block based RMS level informations.\n"
-              "Results are stored in these AC variables (replace 'rmslevel'\n"
-              "by the configured plugin name):\n\n"
+        : plugin_t<UNIT>(
+              "This plugin measures block based levels.  Results are\n"
+              "published in monitor variables and in these AC variables\n"
+              "(replace 'rmslevel' with the configured plugin name):\n\n"
               "  rmslevel_level_db\n"
               "  rmslevel_peak_db\n"
               "  rmslevel_level\n"
@@ -156,76 +137,136 @@ namespace rmslevel {
               " The \'peak\' variables are only"
               " available during waveform processing.",
               iac),
-          name(configured_name),
+          level_acname(configured_name + "_level"),
+          level_db_acname(configured_name + "_level_db"),
+          peak_acname(configured_name + "_peak"),
+          peak_db_acname(configured_name + "_peak_db"),
           unit("Use dB(SPL) or dB(HL)", "spl", "[spl hl]")
     {
-      insert_item("unit", &unit);
-      patchbay.connect(&unit.writeaccess, this, &rmslevel_if_t::update);
+        insert_member(unit);
+        insert_member(level);
+        insert_member(level_db);
+        insert_member(peak);
+        insert_member(peak_db);
+        patchbay.connect(&unit.writeaccess, this, &rmslevel_if_t::update);
     }
 
     mha_spec_t* rmslevel_if_t::process(mha_spec_t* s)
     {
-        poll_config();
-        return cfg->process(s);
+        poll_config(); // makes dB unit available in *cfg
+        for(unsigned int ch=0U; ch<s->num_channels;ch++){
+            level.data[ch] = std::max(2e-10f,
+                MHASignal::rmslevel(*s,ch,tftype.fftlen));
+            switch(*cfg) {
+            case UNIT::SPL:
+                level_db.data[ch] = MHASignal::pa2dbspl(level.data[ch]);
+                break;
+            case UNIT::HL:
+                level_db.data[ch] = std::max(-100.0f,MHASignal::pa22dbspl(
+                        MHASignal::colored_intensity(
+                            *s,ch,tftype.fftlen,freq_offsets.data())));
+                break;
+            default:
+                throw MHA_Error(__FILE__,__LINE__, "Internal error: "
+                                "Unknown unit for dB. Use dB(SPL) or dB(HL)");
+            }
+        }
+        insert_ac_variables_levels();
+        return s;
     }
 
     mha_wave_t* rmslevel_if_t::process(mha_wave_t* s)
     {
-        poll_config();
-        return cfg->process(s);
-    }
-
-    mha_spec_t* rmslevel_t::process(mha_spec_t* s)
-    {
-        for(unsigned int ch=0U; ch<s->num_channels;ch++){
-            (*monitors["level"])[ch] = std::max(MHASignal::rmslevel(*s,ch,fftlen),2e-10f);
-            if(unit==UNIT::SPL){
-                (*monitors["level_db"])[ch] = MHASignal::pa2dbspl((*monitors["level"])[ch]);
-            }
-            else if(unit==UNIT::HL){
-                (*monitors["level_db"])[ch] =
-                    MHASignal::pa22dbspl(std::max(MHASignal::colored_intensity(*s,ch,fftlen,freq_offsets.data()),2e-10f));
-            }
-            else {
-                throw MHA_Error(__FILE__,__LINE__,"Bug: Unknown unit for dB\nUse dB(SPL) or dB(HL)");
-            }
-        }
-        for(auto& mon: monitors){
-            mon.second->store();
-        }
-        insert();
-        return s;
-    }
-
-    mha_wave_t* rmslevel_t::process(mha_wave_t* s)
-    {
+        if (*poll_config() != UNIT::SPL)
+            throw MHA_Error(__FILE__, __LINE__, "Internal error: dB unit must "
+                            "be dB(SPL) when processing waveform signal");
         for(unsigned ch=0U; ch<s->num_channels;ch++){
-            (*monitors["level"])[ch] = std::max(MHASignal::rmslevel(*s,ch),2e-10f);
-            (*monitors["peak"])[ch] = std::max(MHASignal::maxabs(*s,ch),2e-10f);
-            (*monitors["level_db"])[ch] = MHASignal::pa2dbspl((*monitors["level"])[ch]);
-            (*monitors["peak_db"])[ch] = MHASignal::pa2dbspl((*monitors["peak"])[ch]);
+            level.data[ch] = std::max(MHASignal::rmslevel(*s,ch),2e-10f);
+            peak.data[ch] = std::max(MHASignal::maxabs(*s,ch),2e-10f);
+            level_db.data[ch] = MHASignal::pa2dbspl(level.data[ch]);
+            peak_db.data[ch] = MHASignal::pa2dbspl(peak.data[ch]);
         }
-        for(auto& mon: monitors){
-            mon.second->store();
-        }
+        insert_ac_variables_peaks_and_levels();
         return s;
     }
 
     void rmslevel_if_t::update(){
         if(!is_prepared())
             return;
-        if( tftype.domain == MHA_WAVEFORM and static_cast<UNIT>(unit.data.get_index()) == UNIT::HL )
+        const UNIT u = static_cast<UNIT>(unit.data.get_index());
+        if (tftype.domain == MHA_WAVEFORM  and  u == UNIT::HL)
             throw MHA_Error(__FILE__,__LINE__,"rmslevel: Conversion to dB(HL) is only supported in frequency domain.");
-        auto cfg=new rmslevel_t(tftype,ac,name,static_cast<MHAParser::parser_t&>(*this),
-                                static_cast<UNIT>(unit.data.get_index()));
-        cfg->insert();
-        push_config(cfg);
+        push_config(new UNIT(u));
     }
 
     void rmslevel_if_t::prepare(mhaconfig_t& tf)
     {
         tftype = tf;
+
+        freq_offsets.resize(tftype.fftlen/2+1);
+        for(unsigned idx=0U; idx<tftype.fftlen/2+1; ++idx) {
+            const auto freq =
+                MHASignal::bin2freq(idx,tftype.fftlen, tftype.srate);
+            // factor two because coloured intensity expects squared weights
+            freq_offsets[idx] = MHASignal::db2lin(2*MHAUtils::spl2hl(freq));
+        }
+
+        // All results are filled with tf.channels NaN values
+        // before the first block is processed.
+        constexpr float NaN = std::numeric_limits<float>::quiet_NaN();
+        const std::vector<float> init_vector(tftype.channels, NaN);
+
+        // All following assignments resize and initialize with NaN
+        level.data = init_vector;
+        level_db.data = init_vector;
+        peak.data = init_vector;    // will stay NaN during spectrum processing
+        peak_db.data = init_vector; // will stay NaN during spectrum processing
         update();
+        if (tftype.domain == MHA_WAVEFORM)
+            insert_ac_variables_peaks_and_levels();
+        else
+            insert_ac_variables_levels();
+    }
+
+    void rmslevel_if_t::release()
+    {
+        remove_ac_variables();
+    }
+
+    void rmslevel_if_t::insert_ac_variables_levels()
+    {
+        insert_ac_variable_float_vector(level.data, level_acname);
+        insert_ac_variable_float_vector(level_db.data, level_db_acname);
+    }
+    void rmslevel_if_t::insert_ac_variables_peaks_and_levels()
+    {
+        insert_ac_variable_float_vector(peak.data, peak_acname);
+        insert_ac_variable_float_vector(peak_db.data, peak_db_acname);
+        insert_ac_variables_levels(); // reuse existing method for level vars
+    }
+    void rmslevel_if_t::
+    insert_ac_variable_float_vector(std::vector<float> & v,
+                                    const std::string & acname)
+    {
+        comm_var_t cv;
+        cv.data_type = MHA_AC_FLOAT,
+        cv.num_entries = v.size(),
+        cv.stride = v.size(),
+        cv.data = v.data();
+
+        // Check that v.size() did not overflow cv.num_entries nor cv.stride
+        if (cv.num_entries != v.size() || cv.stride != cv.num_entries)
+            throw MHA_Error(__FILE__,__LINE__, "Vector %s has too many "
+                            "(%zu) elements for an AC variable",
+                            acname.c_str(), v.size());
+        ac.insert_var(ac.handle, acname.c_str(), cv);
+    }
+    void rmslevel_if_t::remove_ac_variables()
+    {
+        ac.remove_ref(ac.handle, peak.data.data());
+        ac.remove_ref(ac.handle, peak_db.data.data());
+        ac.remove_ref(ac.handle, level.data.data());
+        ac.remove_ref(ac.handle, level_db.data.data());
     }
 
     MHAPLUGIN_CALLBACKS(rmslevel,rmslevel_if_t,spec,spec)
