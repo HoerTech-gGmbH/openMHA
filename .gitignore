@@ -40,7 +40,7 @@ mha/tools/mfiles/octave-workspace
 # catch directories of the form "<arch>-<platform>-<compiler>[-<version>]/".
 *-linux-*/
 *-MinGW-*/
-x86_64-Darwin-clang
+*-Darwin-*/
 
 # Build artefacts
 git_commit_hash.txt
