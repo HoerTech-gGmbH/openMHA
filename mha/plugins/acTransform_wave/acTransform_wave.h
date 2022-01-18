@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2015 2018 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -28,6 +29,9 @@ public:
     ~acTransform_wave_config();
 
     mha_wave_t* process(mha_wave_t*);
+
+    /// Insert or reinsert AC variables rotated_p, rotated_i
+    void insert_ac_variables();
 
     //declare data necessary for processing state here
     algo_comm_t &ac;

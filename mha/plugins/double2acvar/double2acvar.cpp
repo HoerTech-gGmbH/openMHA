@@ -1,5 +1,6 @@
 // This file is part of the HörTech open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -70,7 +71,7 @@ double2acvar_t::double2acvar_t(algo_comm_t iac, const std::string & configured_n
                         "to algorithm communication variable of type double.\n"
                         "Name of the AC variable is the configured algorithm\n"
                         "name.", "0"),
-    ac_double(iac, configured_name, 0.0),
+    ac_double(iac, configured_name, 0.0, true),
     is_prepared(false)
 {
     patchbay.connect(&writeaccess,this,

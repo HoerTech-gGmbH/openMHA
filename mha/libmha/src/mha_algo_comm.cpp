@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2013 2016 HörTech gGmbH
 // Copyright © 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -875,13 +876,14 @@ float MHA_AC::get_var_float(algo_comm_t ac,const std::string& n)
 }
 
 MHA_AC::spectrum_t::spectrum_t(algo_comm_t iac,
-                               std::string iname,
-                               unsigned int frames,
+                               const std::string & iname,
+                               unsigned int bins,
                                unsigned int channels,
                                bool insert_now)
-    : MHASignal::spectrum_t(frames,channels),
+    : MHASignal::spectrum_t(bins,channels),
       ac(iac),
-      name(iname)
+      name(iname),
+      remove_during_destructor(insert_now)
 {
     if( insert_now )
         insert();
@@ -889,18 +891,30 @@ MHA_AC::spectrum_t::spectrum_t(algo_comm_t iac,
 
 MHA_AC::spectrum_t::~spectrum_t()
 {
+    if (remove_during_destructor) {
+        try {
+            remove();
+        }
+        catch (...) {
+            // ignore all exceptions because we are in destructor
+        }
+    }
+}
+void MHA_AC::spectrum_t::remove()
+{
     ac.remove_ref(ac.handle,buf);
 }
 
 
 MHA_AC::waveform_t::waveform_t(algo_comm_t iac,
-                               std::string iname,
+                               const std::string & iname,
                                unsigned int frames,
                                unsigned int channels,
                                bool insert_now)
     : MHASignal::waveform_t(frames,channels),
       ac(iac),
-      name(iname)
+      name(iname),
+      remove_during_destructor(insert_now)
 {
     if( insert_now )
         insert();
@@ -908,77 +922,18 @@ MHA_AC::waveform_t::waveform_t(algo_comm_t iac,
 
 MHA_AC::waveform_t::~waveform_t()
 {
+    if (remove_during_destructor) {
+        try {
+            remove();
+        }
+        catch (...) {
+            // ignore all exceptions because we are in destructor
+        }
+    }
+}
+void MHA_AC::waveform_t::remove()
+{
     ac.remove_ref(ac.handle,buf);
-}
-
-MHA_AC::int_t::int_t(algo_comm_t ac,std::string name,int val)
-    : data(val),
-      ac(ac),
-      name(name)
-{
-    insert();
-}
-
-void MHA_AC::int_t::insert()
-{
-     if( int err = ac.insert_var_int(ac.handle,name.c_str(),&data) )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Not able to insert AC variable 'int %s':\n%s",
-                        name.c_str(),ac.get_error(err));
-}
-
-MHA_AC::int_t::~int_t()
-{
-    ac.remove_ref(ac.handle,&data);
-}
-
-MHA_AC::float_t::float_t(algo_comm_t ac,std::string name,float val)
-    : data(val),
-      ac(ac),
-      name(name)
-{
-    insert();
-}
-
-void MHA_AC::float_t::insert()
-{
-    if( int err = ac.insert_var_float(ac.handle,name.c_str(),&data) )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Not able to insert AC variable 'float %s':\n%s",
-                        name.c_str(),ac.get_error(err));
-}
-
-MHA_AC::float_t::~float_t()
-{
-    ac.remove_ref(ac.handle,&data);
-}
-
-MHA_AC::double_t::double_t(algo_comm_t ac,std::string name,double val)
-    : data(val),
-      ac(ac),
-      name(name)
-{
-    insert();
-}
-
-void MHA_AC::double_t::insert()
-{
-    comm_var_t acv;
-    memset(&acv,0,sizeof(acv));
-    acv.data_type = MHA_AC_DOUBLE;
-    acv.num_entries = 1;
-    acv.stride = 1;
-    acv.data = &data;
-    int err = ac.insert_var(ac.handle, name.c_str(), acv);
-    if( err )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Not able to insert AC variable 'double %s':\n%s",
-                        name.c_str(),ac.get_error(err));
-}
-
-MHA_AC::double_t::~double_t()
-{
-    ac.remove_ref(ac.handle,&data);
 }
 
 MHA_AC::stat_t::stat_t(algo_comm_t ac,const std::string& name,
@@ -1014,7 +969,7 @@ void MHA_AC::waveform_t::insert()
         int err;
         if( (err = ac.insert_var(ac.handle,name.c_str(),var)) )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Not able to insert AC variable 'waveform %s':\n%s",
+                            "Not able to insert AC waveform variable '%s':\n%s",
                             name.c_str(),ac.get_error(err));
     }
 }
@@ -1030,7 +985,7 @@ void MHA_AC::spectrum_t::insert()
         int err;
         if( (err = ac.insert_var(ac.handle,name.c_str(),var)) )
             throw MHA_Error(__FILE__,__LINE__,
-                            "Not able to insert AC variable 'spectrum %s':\n%s",
+                            "Not able to insert AC spectrum variable '%s':\n%s",
                             name.c_str(),ac.get_error(err));
     }
 }

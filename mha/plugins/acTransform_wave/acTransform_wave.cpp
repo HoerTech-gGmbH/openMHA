@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2015 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -29,8 +30,8 @@ acTransform_wave_config::acTransform_wave_config(algo_comm_t &ac, acTransform_wa
     ang_name(_transform->ang_name.data),
     raw_p_name(_transform->raw_p_name.data),
     raw_p_max_name(_transform->raw_p_max_name.data),
-    rotated_p(ac, _transform->rotated_p_name.data.c_str(), _transform->numsamples.data, 1, true),
-    rotated_i(ac, _transform->rotated_p_max_name.data.c_str(), _transform->numsamples.data / 2),
+    rotated_p(ac, _transform->rotated_p_name.data.c_str(), _transform->numsamples.data, 1, false),
+    rotated_i(ac, _transform->rotated_p_max_name.data.c_str(), _transform->numsamples.data / 2, false),
     offset(_transform->numsamples.data / 2),
     resolution(ceil(360 / _transform->numsamples.data))
 {
@@ -71,9 +72,14 @@ mha_wave_t *acTransform_wave_config::process(mha_wave_t *wave)
 
     }
 
-    rotated_i.insert();
+    insert_ac_variables();
     //return current fragment
     return wave;
+}
+
+void acTransform_wave_config::insert_ac_variables() {
+    rotated_i.insert();
+    rotated_p.insert();
 }
 
 /** Constructs our plugin. */
@@ -117,6 +123,7 @@ void acTransform_wave::prepare(mhaconfig_t & signal_info)
 
     /* make sure that a valid runtime configuration exists: */
     update_cfg();
+    poll_config()->insert_ac_variables();
 }
 
 void acTransform_wave::update_cfg()

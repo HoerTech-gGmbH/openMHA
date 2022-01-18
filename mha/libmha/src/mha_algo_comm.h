@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2011 2013 2015 2016 2017 2018 HörTech gGmbH
 // Copyright © 2019 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -106,114 +107,182 @@ namespace MHA_AC {
     
     /**
        \ingroup algocomm
-       \brief Insert a MHASignal::spectrum_t class into the AC space
-
-       The variable is automatically removed on destruction.
-
+       Convenience class for inserting a spectrum into the AC space.
     */
     class spectrum_t : public MHASignal::spectrum_t {
     public:
-        /** \brief Create the AC variable.
+        /** \brief Initialize memory and metadata of the AC variable.
+            All spectral bins are initially set to 0.
             \param ac AC handle
             \param name Name of variable in AC space
-            \param bins Number of FFT bins in the waveform_t class
-            \param channels Number of audio channels in the waveform_t class
-            \param insert_now Insert implicitely in the constructor (true) or explicitely in the insert() function (false)
-         */
+            \param bins Number of FFT bins per channel in the spectrum_t class
+            \param channels Number of audio channels in the spectrum_t class
+            \param insert_now If true, then the constructor inserts the new
+                              variable into the AC space, and the
+                              destructor will remove the variable from AC space
+                              when it executes. */
         spectrum_t(algo_comm_t ac,
-                   std::string name,
+                   const std::string & name,
                    unsigned int bins,
                    unsigned int channels,
                    bool insert_now);
+        /** Destroy the AC variable: deallocate its memory.
+         * If the constructor parameter insert_now was true, then the destruc-
+         * tor removes the AC variable from AC space when it executes. */
         ~spectrum_t();
-        void insert();//!< Insert AC variable into AC space
+        /** Insert or re-insert AC variable into AC space. Plugins should call
+         * this method from their prepare() and process() functions. */
+        void insert();
+        /** Remove the AC variable by reference from the AC variable space.
+         * Plugins may call this method only from their prepare(), release()
+         * methods or their plugin destructor.  It is not necessary to remove
+         * the AC variable from AC space at all if either another AC variable
+         * with the same name has replaced this variable before this variable
+         * is destroyed, or if no plugin will access this variable between its
+         * destruction and either its replacement or the MHA exit. */
+        void remove();
     protected:
-        algo_comm_t ac;
-        std::string name;
+        /** AC variable space. */
+        const algo_comm_t ac;
+        /** Name of this AC variable in the AC variable space. */
+        const std::string name;
+        /** flag whether to remove from AC variable space in destructor. */
+        const bool remove_during_destructor;
     };
 
     /**
        \ingroup algocomm
-       \brief Insert a MHASignal::waveform_t class into the AC space
-
-       The variable is automatically removed on destruction.
-
+       Convenience class for inserting a waveform
+       (a block of time-domain audio signal) into the AC space.
     */
     class waveform_t : public MHASignal::waveform_t {
     public:
-        /** \brief Create the AC variable.
+        /** \brief Initialize memory and metadata of the AC variable.
+            All audio samples are initially set to 0.
             \param ac AC handle
             \param name Name of variable in AC space
-            \param frames Number of frames in the waveform_t class
+            \param frames Number of samples per channel in the waveform_t class
             \param channels Number of audio channels in the waveform_t class
-            \param insert_now Insert implicitely in the constructor (true) or explicitely in the insert() function (false)
-         */
+            \param insert_now If true, then the constructor inserts the new
+                              variable into the AC space, and the
+                              destructor will remove the variable from AC space
+                              when it executes. */
         waveform_t(algo_comm_t ac,
-                   std::string name,
+                   const std::string & name,
                    unsigned int frames,
                    unsigned int channels,
                    bool insert_now);
+        /** Destroy the AC variable: deallocate its memory.
+         * If the constructor parameter insert_now was true, then the destruc-
+         * tor removes the AC variable from AC space when it executes. */
         ~waveform_t();
-        void insert();//!< Insert AC variable into AC space
+        /** Insert or re-insert AC variable into AC space. Plugins should call
+         * this method from their prepare() and process() functions. */
+        void insert();
+        /** Remove the AC variable by reference from the AC variable space.
+         * Plugins may call this method only from their prepare(), release()
+         * methods or their plugin destructor.  It is not necessary to remove
+         * the AC variable from AC space at all if either another AC variable
+         * with the same name has replaced this variable before this variable
+         * is destroyed, or if no plugin will access this variable between its
+         * destruction and either its replacement or the MHA exit. */
+        void remove();
     protected:
-        algo_comm_t ac;
-        std::string name;
+        /** AC variable space. */
+        const algo_comm_t ac;
+        /** Name of this AC variable in the AC variable space. */
+        const std::string name;
+        /** flag whether to remove from AC variable space in destructor. */
+        const bool remove_during_destructor;
     };
 
     /**
        \ingroup algocomm
-       \brief Insert a integer variable into the AC space
-
-       The variable is automatically removed on destruction.
-
+       Template for convenience classes for inserting a numeric scalar
+       into the AC space.
     */
-    class int_t {
+    template <typename numeric_t, unsigned int MHA_AC_TYPECODE> 
+    class scalar_t {
     public:
-        int_t(algo_comm_t ac,std::string name,int val=0);
-        ~int_t();
-        int data; //!< Integer value variable
-        void insert();
+        /** \brief Initialize memory and metadata of the AC variable.
+            \param ac AC handle
+            \param name Name of variable in AC space
+            \param val Initial value
+            \param insert_now If true, then the constructor inserts the new
+                              variable into the AC space, and the
+                              destructor will remove the variable from AC space
+                              when it executes. */
+        scalar_t(algo_comm_t ac,
+                 const std::string & name,
+                 numeric_t val = 0,
+                 bool insert_now = true)
+            : data(val),
+              ac(ac),
+              name(name),
+              remove_during_destructor(insert_now)
+        {
+            if (insert_now)
+                insert();
+        }
+        /** Destroy the AC variable: deallocate its memory.
+         * If the constructor parameter insert_now was true, then the destruc-
+         * tor removes the AC variable from AC space when it executes. */
+        ~scalar_t()
+        {
+            if (remove_during_destructor) {
+                try {
+                    remove();
+                }
+                catch (...) {
+                    // ignore all exceptions because we are in destructor
+                }
+            }
+        }
+        numeric_t data; //!< Numeric value of this AC variable.
+        /** Insert or re-insert AC variable into AC space. Plugins should call
+         * this method from their prepare() and process() functions. */
+        void insert()
+        {
+            comm_var_t acv;
+            memset(&acv,0,sizeof(acv));
+            acv.data_type = MHA_AC_TYPECODE;
+            acv.num_entries = 1;
+            acv.stride = 1;
+            acv.data = &data;
+            int err = ac.insert_var(ac.handle, name.c_str(), acv);
+            if( err )
+                throw MHA_Error(__FILE__,__LINE__,
+                                "Unable to insert AC variable '%s':\n%s",
+                                name.c_str(),ac.get_error(err));
+        }
+        /** Remove the AC variable by reference from the AC variable space.
+         * Plugins may call this method only from their prepare(), release()
+         * methods or their plugin destructor.  It is not necessary to remove
+         * the AC variable from AC space at all if either another AC variable
+         * with the same name has replaced this variable before this variable
+         * is destroyed, or if no plugin will access this variable between its
+         * destruction and either its replacement or the MHA exit. */
+        void remove()
+        {
+            ac.remove_ref(ac.handle,&data);
+        }
     private:
-        algo_comm_t ac;
-        std::string name;
+        /** AC variable space. */
+        const algo_comm_t ac;
+        /** Name of this AC variable in the AC variable space. */
+        const std::string name;
+        /** flag whether to remove from AC variable space in destructor. */
+        const bool remove_during_destructor;
     };
-
-    /**
-       \ingroup algocomm
-       \brief Insert a float point variable into the AC space
-
-       The variable is automatically removed on destruction.
-
-    */
-    class float_t {
-    public:
-        float_t(algo_comm_t,std::string,float=0); //!< Constructor
-        ~float_t();
-        float data; //!< Floating point value variable
-        void insert();
-    private:
-        algo_comm_t ac;
-        std::string name;
-    };
-
-    /**
-       \ingroup algocomm
-       \brief Insert a double precision floating point variable into the AC space
-
-       The variable is automatically removed on destruction.
-
-    */
-    class double_t {
-    public:
-        double_t(algo_comm_t,std::string,double=0);
-        ~double_t();
-        double data; //!< Floating point (double precision) value variable
-        void insert();
-    private:
-        algo_comm_t ac;
-        std::string name;
-    };
-
+    /// Convenience class for inserting an integer variable into the AC space.
+    typedef scalar_t<int, MHA_AC_INT> int_t;
+    /// Convenience class for inserting a single-precision floating-point
+    /// variable into the AC space.
+    typedef scalar_t<float, MHA_AC_FLOAT> float_t;
+    /// Convenience class for inserting a double-precision floating-point
+    /// variable into the AC space.
+    typedef scalar_t<double, MHA_AC_DOUBLE> double_t;
+    
     class stat_t : public MHASignal::stat_t {
     public:
         stat_t(algo_comm_t ac,const std::string& name,

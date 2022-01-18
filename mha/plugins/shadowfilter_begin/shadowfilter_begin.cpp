@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 // Copyright © 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +24,9 @@ class cfg_t {
 public:
     cfg_t(int nfft, int inch, int outch, algo_comm_t ac, std::string name);
     mha_spec_t* process(mha_spec_t*);
+    /** Inserts or reinserts AC variables in_spec_copy, nch, ntracks into
+     * AC variable space. */
+    void insert_ac_variables();
 private:
     MHA_AC::spectrum_t in_spec_copy;
     MHASignal::spectrum_t out_spec;
@@ -30,11 +34,18 @@ private:
     MHA_AC::int_t ntracks;
 };
 
+void cfg_t::insert_ac_variables()
+{
+    in_spec_copy.insert();
+    nch.insert();
+    ntracks.insert();
+}
+
 cfg_t::cfg_t(int nfft, int inch, int outch, algo_comm_t ac, std::string name)
-    : in_spec_copy(ac,name,nfft/2+1,inch,true),
+    : in_spec_copy(ac,name,nfft/2+1,inch,false),
       out_spec(nfft/2+1,outch),
-      nch(ac,name+"_nch",outch),
-      ntracks(ac,name+"_ntracks",inch/outch)
+      nch(ac,name+"_nch",outch, false),
+      ntracks(ac,name+"_ntracks",inch/outch,false)
 {
     if( inch < outch )
         throw MHA_ErrorMsg("Number of input channels is less than number of output channels.");
@@ -56,8 +67,7 @@ mha_spec_t* cfg_t::process(mha_spec_t* s)
         for(kfr=0;kfr<out_spec.num_frames;kfr++)
             out_spec.buf[kfr + kch*out_spec.num_frames] = 
                 in_spec_copy.buf[kfr + kch*in_spec_copy.num_frames];
-    nch.insert();
-    ntracks.insert();    
+    insert_ac_variables();
     return &out_spec;
 }
 
@@ -102,7 +112,10 @@ void shadowfilter_begin_t::prepare(mhaconfig_t& tf)
                             nch.data * ntracks.data, tf.channels);
         tf.channels = nch.data;
         tftype = tf;
-        push_config(new cfg_t(tftype.fftlen,nch.data * ntracks.data,tf.channels,ac,basename));
+        cfg_t * new_cfg = new cfg_t(tftype.fftlen,nch.data * ntracks.data,
+                                    tf.channels,ac,basename);
+        push_config(new_cfg);
+        new_cfg->insert_ac_variables();
     }
     catch(...){
         nch.setlock(false);

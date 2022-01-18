@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2015 2016 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -27,8 +28,9 @@
 doasvm_classification_config::doasvm_classification_config(algo_comm_t &ac, doasvm_classification *_doasvm):
     ac(ac),
     doasvm(_doasvm),
-    p(ac, _doasvm->p_name.data.c_str(), _doasvm->angles.data.size(), 1, true),
-    p_max(ac, _doasvm->max_p_ind_name.data.c_str(), (_doasvm->angles.data.size() - 1) / 2)
+    p(ac, _doasvm->p_name.data.c_str(), _doasvm->angles.data.size(), 1, false),
+    p_max(ac, _doasvm->max_p_ind_name.data.c_str(),
+          (_doasvm->angles.data.size() - 1) / 2, false)
 {
     //initialize plugin state for a new configuration
     c.num_frames = _doasvm->w.data.size(); // number of rows of w
@@ -73,10 +75,15 @@ mha_wave_t *doasvm_classification_config::process(mha_wave_t *wave)
     }
 
     p_max.data = max_ind;
-    p_max.insert();
+    insert_ac_variables();
 
     //return current fragment
     return wave;
+}
+
+void doasvm_classification_config::insert_ac_variables() {
+    p_max.insert();
+    p.insert();
 }
 
 /** Constructs our plugin. */
@@ -118,18 +125,6 @@ doasvm_classification::~doasvm_classification() {}
  */
 void doasvm_classification::prepare(mhaconfig_t & signal_info)
 {
-    //good idea: restrict input type and dimension
-    /*
-    if (signal_info.channels != 2)
-        throw MHA_Error(__FILE__, __LINE__,
-                        "This plugin must have 2 input channels: (%d found)\n"
-                        "[Left, Right].", signal_info.channels);
-
-    if (signal_info.domain != MHA_SPECTRUM)
-        throw MHA_Error(__FILE__, __LINE__,
-                        "This plugin can only process spectrum signals.");
-                        */
-
     if( signal_info.domain != MHA_WAVEFORM )
         throw MHA_Error(__FILE__, __LINE__,
                         "This plug-in requires time-domain signals.");
@@ -141,6 +136,7 @@ void doasvm_classification::prepare(mhaconfig_t & signal_info)
 
     /* make sure that a valid runtime configuration exists: */
     update_cfg();
+    poll_config()->insert_ac_variables();
 }
 
 void doasvm_classification::update_cfg()
