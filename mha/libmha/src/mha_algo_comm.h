@@ -48,9 +48,14 @@ namespace MHA_AC {
         \brief Convert an AC variable into a spectrum
         
         This function reads an AC variable and tries to convert it into a
-        valid spectrum. The Spectrum variable is granted to be valid only
-        for one call of the processing function.
+        valid spectrum. The spectrum variable is only valid during
+        the current call of the plugin's process() method and should not be
+        stored for later reuse.
     
+        The stride of the AC variable is used as the number of spectral bins
+        per channel.  The complex values of the spectrum are not copied, the
+        \c buf pointer of the returned spectrum points to the original memory
+        of the AC variable.
         \param ac AC handle
         \param name Name of the variable
         \return Spectrum structure
@@ -63,9 +68,14 @@ namespace MHA_AC {
         \brief Convert an AC variable into a waveform
         
         This function reads an AC variable and tries to convert it into a
-        valid waveform. The waveform variable is granted to be valid only
-        for one call of the processing function.
+        valid block of waveform signal. The waveform variable only valid during
+        the current call of the plugin's process() method and should not be
+        stored for later reuse.
     
+        The stride of the AC variable is used as the number of audio channels.
+        The single-precision floating-point sample values are not copied, the
+        \c buf pointer of the returned waveform points to the original memory
+        of the AC variable.
         \param ac AC handle
         \param name Name of the variable
         \return waveform structure
@@ -108,6 +118,13 @@ namespace MHA_AC {
     /**
        \ingroup algocomm
        Convenience class for inserting a spectrum into the AC space.
+
+       In MHA, spectra are stored non-interleaved: First all bins of the first
+       channel are stored, then all bins of the second channel, etc.
+       
+       The stride of the AC variable is set to the number of stored bins, which
+       is equal to floor(fftlen/2)+1 in MHA (negative frequency bins are not
+       stored).
     */
     class spectrum_t : public MHASignal::spectrum_t {
     public:
@@ -154,6 +171,12 @@ namespace MHA_AC {
        \ingroup algocomm
        Convenience class for inserting a waveform
        (a block of time-domain audio signal) into the AC space.
+
+       In MHA, waveforms are stored interleaved: The first sample of the first
+       is followed by the first samples of all other channels before the second
+       sample of the first sample is stored, etc.
+       
+       The stride of the AC variable is set to the number of audio channels.
     */
     class waveform_t : public MHASignal::waveform_t {
     public:
