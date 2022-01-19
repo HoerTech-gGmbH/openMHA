@@ -2,6 +2,7 @@
 
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+# Copyright © 2022 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -108,11 +109,23 @@ done
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
             echo TOOLSET=clang
             WITH_JACK=yes
-            echo LDLIBS+='-L/opt/local/lib'
             # We do not want warnings from external headers, so use -isystem instead of -I
-            MACCXXFLAGS+="-isystem/opt/local/include -Wno-error=unused-command-line-argument"
-            MACINCLUDES+="-isystem/opt/local/include"
-            MACLDFLAGS+="-L/opt/local/lib"
+            if [ -d "/opt/local/include" ]; then
+                MACINCLUDES+=" -isystem/opt/local/include"
+            fi
+            if [ -d "/opt/local/lib" ]; then
+                MACLDFLAGS+=" -L/opt/local/lib"
+                echo LDLIBS+=" -L/opt/local/lib"
+            fi
+            # On arm macs homebrew saves its stuff into /opt/homebrew/...
+            if [ -d "/opt/homebrew/include" ]; then
+                MACINCLUDES+=" -isystem/opt/homebrew/include"
+            fi
+            if [ -d "/opt/homebrew/lib" ]; then
+                MACLDFLAGS+=" -L/opt/homebrew/lib"
+                echo LDLIBS+=" -L/opt/homebrew/lib"
+            fi
+            MACCXXFLAGS+="-Wno-error=unused-command-line-argument"
     esac
     echo ARCH=$ARCH
     echo PREFIX=$PREFIX
@@ -209,8 +222,8 @@ done
     fi
 
     echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
-    echo 'CXXFLAGS+=-Wall -Wextra -Wnon-virtual-dtor -Wformat -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
-    echo 'CFLAGS+=-Wall -Wextra -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACCXXFLAGS} $DEBUG
+    echo 'CXXFLAGS+=-Wall -Wextra -Wnon-virtual-dtor -Wformat -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACINCLUDES} ${MACCXXFLAGS} $DEBUG
+    echo 'CFLAGS+=-Wall -Wextra -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACINCLUDES} ${MACCXXFLAGS} $DEBUG
     if [[ $(type -P octave) ]] ; then
         echo "MHA_TEST_COMMAND=octave --no-gui --no-window-system --eval"\
              "\"set_environment;exit(~run_mha_tests())\"";
