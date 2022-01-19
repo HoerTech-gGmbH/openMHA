@@ -1,7 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2013 2016 HörTech gGmbH
 // Copyright © 2017 2018 2019 2020 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2021 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -245,7 +245,8 @@ in plugins using AC variables:
        process() before accessing their values.
 */
 
-void MHAKernel::comm_var_map_t::insert(const char * name, const comm_var_t & var)
+void MHAKernel::comm_var_map_t::insert(const std::string & name,
+                                       const comm_var_t & var)
 {
     // If we are not replacing an entry, then we must be creating a new entry.
     const bool creating_new_entry = not has_key(name);
@@ -255,7 +256,7 @@ void MHAKernel::comm_var_map_t::insert(const char * name, const comm_var_t & var
         throw MHA_Error(__FILE__,__LINE__,"Attempt to create AC variable %s "
                         "during live signal processing.  The plugin that "
                         "tried to do this is misbehaving and should be fixed.",
-                        name);
+                        name.c_str());
     // Create or replace.
     map[name] = var;
 
@@ -264,14 +265,14 @@ void MHAKernel::comm_var_map_t::insert(const char * name, const comm_var_t & var
         update_entries();
 }
 
-void MHAKernel::comm_var_map_t::erase_by_name(const char * name)
+void MHAKernel::comm_var_map_t::erase_by_name(const std::string & name)
 {
     // Removing AC variables is not permitted while MHA is prepared.
     if (is_prepared)
         throw MHA_Error(__FILE__,__LINE__,"Attempt to remove AC variable %s "
                         "during live signal processing.  The plugin that "
                         "tried to do this is misbehaving and should be fixed.",
-                        name);
+                        name.c_str());
     // When not perpared, it is permitted, do it.
     map.erase(name);
     update_entries();
@@ -339,14 +340,15 @@ void MHAKernel::comm_var_map_t::erase_by_pointer(void * ptr)
         update_entries();
 }
 
-const comm_var_t & MHAKernel::comm_var_map_t::retrieve(const char * name) const
+const comm_var_t &
+MHAKernel::comm_var_map_t::retrieve(const std::string & name) const
 {
     if (has_key(name)) 
         return map.at(name);
     else
         throw MHA_Error(__FILE__,__LINE__,
                         "No algorithm communication variable \"%s\".",
-                        name);
+                        name.c_str());
 }
 
 const std::string & MHAKernel::comm_var_map_t::get_entries() const

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2013 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2021 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -59,7 +60,7 @@ namespace MHAKernel {
          * @return true if the variable is present in the AC space.
          * @return false if no variable with this name exists in the AC space.
          */
-        bool has_key(const char * name) const
+        bool has_key(const std::string & name) const
         {return map.find(name) != map.end();}
 
         /** Create or replace variable.  Creating is only permitted if
@@ -67,12 +68,12 @@ namespace MHAKernel {
          * @param name Name of the AC variable to create or update.
          * @param var  Metadata of the AC variable.
          * @throw MHA_Error if asked to create in prepared state. */
-        void insert(const char * name, const comm_var_t & var);
+        void insert(const std::string & name, const comm_var_t & var);
 
         /** Remove variable. Only permitted if is_prepared == false.
          * @param name Name of the AC variable to remove.
          * @throw MHA_Error if called while prepared. */
-        void erase_by_name(const char * name);
+        void erase_by_name(const std::string & name);
 
         /** Find variables that point to the given address. Erase all that
          * are found. It is not an error if no variable points there.  Only
@@ -84,7 +85,7 @@ namespace MHAKernel {
         /** Get the comm_var_t of an existing variable.
          * @param name The name of the AC variable.
          * @throw MHA_Error if no such variable exists in the AC space. */
-        const comm_var_t & retrieve(const char * name) const;
+        const comm_var_t & retrieve(const std::string & name) const;
 
         /** @return A string with names of all AC variables in this AC
          *          space, separated by spaces. */
