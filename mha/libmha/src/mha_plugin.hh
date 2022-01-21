@@ -21,7 +21,7 @@
 #include "mha_error.hh"
 #include "mha_errno.h"
 #include "mha_parser.hh"
-#include "mha_algo_comm.h"
+#include "mha_algo_comm.hh"
 #include "mha_events.h"
 #include "mha_git_commit_hash.hh"
 #include <atomic>

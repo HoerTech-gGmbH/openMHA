@@ -21,7 +21,6 @@
 #include <pthread.h>
 #include <sched.h>
 
-#include "mha_algo_comm.h"
 #include "mha_plugin.hh"
 #include "mha_os.h"
 #include "mha_events.h"

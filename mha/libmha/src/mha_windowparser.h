@@ -17,7 +17,7 @@
 #define MHA_WINDOWPARSER_H
 
 #include "mha_parser.hh"
-#include "mha_algo_comm.h"
+#include "mha_algo_comm.hh"
 
 /**
    \ingroup mhasignal

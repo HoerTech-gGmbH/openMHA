@@ -18,7 +18,6 @@
 
 #include "mha_parser.hh"
 #include "mha_windowparser.h"
-#include "mha_algo_comm.h"
 #include "mha_signal.hh"
 #include "mha_plugin.hh"
 #include "mha_filter.hh"
