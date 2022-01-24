@@ -2,10 +2,12 @@
 
 Open Master Hearing Aid (openMHA) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4569575.svg)](https://doi.org/10.5281/zenodo.4569575)
 
-## Content of the openMHA release 4.16.1 (2021-09-20)
+Current release: 4.16.1 (2021-09-20)
+
+## Content of the openMHA
 
 The software contains the source code of the openMHA Toolbox library, of the
-openMHA framework and command line application, and of a selection of algorithm
+openMHA framework and command line application, several tools to operate openMHA and of a selection of algorithm
 plugins forming a basic hearing aid processing chain featuring
 
 * calibration
@@ -26,15 +28,13 @@ See below for a list of available reference implementations.
 ## Citation in publications
 
 In publications using openMHA please use the DOI assigned to this Github repository
-and cite related publications:
+and cite the following open-access publication:
 
-Herzke, T., Kayser, H., Loshaj, F., Grimm, G., Hohmann, V., Open signal
-processing software platform for hearing aid research (openMHA).
-Proceedings of the Linux Audio Conference. Université Jean Monnet,
-Saint-Étienne, pp. 35-42, 2017.
 
-A preprint of a journal manuscript submitted to SoftwareX is available at 
-[arXiv](https://arxiv.org/abs/2103.02313) and [zenodo](https://doi.org/10.5281/zenodo.4601603).
+Hendrik Kayser, Tobias Herzke, Paul Maanen, Max Zimmermann, Giso Grimm, and Volker Hohmann,
+Open community platform for hearing aid algorithm research: open Master Hearing Aid (openMHA),
+SoftwareX, Volume 17, 2022, 100953, ISSN 2352-7110, [DOI: 10.1016/j.softx.2021.100953](https://doi.org/10.1016/j.softx.2021.100953).
+
 
 For individual algorithms, please also refer to the plugin documentation and the 
 list of publications at the end of this README.
