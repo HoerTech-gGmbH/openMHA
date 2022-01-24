@@ -14,14 +14,18 @@ menu: main
 <info@openMHA.org>
 
 #### Address
-HörTech gGmbH  
+Hörzentrum Oldenburg gGmbH  
 Marie-Curie-Straße 2  
-D-26129 Oldenburg
+26129 Oldenburg
+Germany
 
-Telephone: +49 441 21 72-200  
-Telefax: +49 441 21 72-250  
-E-Mail: info@HoerTech.de
+Telephone: +49 441 21 72-100  
+Telefax: +49 441 21 72-150  
+E-Mail: info@hz-ol.de
 
-Director: Sebastian Quirandt  
-Commercial Register: Amtsgericht Oldenburg HRB 5035  
-Ust.-Id.: DE 813438636
+Managing Director: Sebastian Quirandt  
+Registry court: Oldenburg Local Court  
+Registration number: HRB 3695  
+Sales tax identification number: DE 178883722  
+
+**Hörzentrum Oldenburg gGmbH is the legal successor to HörTech gGmbH in all respects.**
