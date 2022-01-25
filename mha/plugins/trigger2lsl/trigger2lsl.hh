@@ -16,7 +16,7 @@
 
 
 #include "lsl_cpp.h"
-#include "mha_algo_comm.h"
+#include "mha_algo_comm.hh"
 #include "mha_plugin.hh"
 #include "mha_fifo.h"
 
@@ -46,7 +46,7 @@ namespace trigger2lsl {
     void process(mha_wave_t* wave);
   private:
     /** Outlet stream */
-    const lsl::stream_outlet stream;
+    lsl::stream_outlet stream;
     /** String to be sent when a rising edge is detected */
     const std::string rising_edge;
     /** String to be sent when a falling edge is detected */
@@ -58,7 +58,7 @@ namespace trigger2lsl {
     /** Current state. false means HIGH and true means LOW. LOW state means we are below
      * the threshold, looking for rising edges, HIGH state means we are above, looking for falling edges.
      */
-    const bool state=false;
+    bool state=false;
     /** Sampling rate of the input signal. Needed for timestamp offeset correction */
     const mha_real_t sampling_rate;
     /** Flag wether to use the position of the edge within the signal block to correct the timestamp of the output marker. */
