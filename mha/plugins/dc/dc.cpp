@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2011 2014 2015 HörTech gGmbH
 // Copyright © 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2021 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +29,7 @@ dc_if_t::dc_if_t(algo_comm_t iac, const std::string & configured_name)
 
 void dc_if_t::update()
 {
-    if( tftype.channels ){
+    if( is_prepared() ){
         float filter_rate;
         if( tftype.domain == MHA_WAVEFORM )
             filter_rate = tftype.srate;
@@ -43,7 +44,8 @@ void dc_if_t::update()
                                  filter_rate,
                                  tftype.channels,
                                  ac,
-                                 tftype.domain,tftype.fftlen,algo,
+                                 tftype.domain,tftype.fftlen,
+                                 broadband_audiochannels, algo,
                                  rmslevel_state, attack_state, decay_state));
         }
         else {
@@ -51,27 +53,116 @@ void dc_if_t::update()
                                  filter_rate,
                                  tftype.channels,
                                  ac,
-                                 tftype.domain,tftype.fftlen,algo));
+                                 tftype.domain,tftype.fftlen,
+                                 broadband_audiochannels, algo));
         }
     }
+}
+
+/** The dynamic compressor implemented by plugin \c dc was created to perform
+ * multi-band dynamic compression as found in hearing aids.  In hearing aid
+ * simulation tasks, openMHA will normally simulate either one or two hearing
+ * aids (i.e., aid one or two ears).
+ * 
+ * The filter bank which splits the broadband input signal from left and/or
+ * right microphone is not part of plugin dc.  openMHA researchers can use
+ * a filterbank plugin of their choice, e.g. \c fftfilterbank.
+ * Filter banks split broadband signal channels into multiple
+ * narrow-band signal channels:  A filter bank with 10 frequency bands
+ * would split one broadband signal channel into 10 narrow-band signal
+ * channels, and the dc plugin will then only see these 10 narrow-band
+ * audio signal channels.  The same filter bank would split 2 broadband
+ * channels into 20 narrow-band channels, i.e. 10 channels per ear.
+ * 
+ * For hearing aid fitting, the fitting rule should be able to detect if
+ * the dc plugin fits one hearing aid or two hearing aids.  The dc plugin
+ * can normally not derive this information from the incoming audio signal
+ * dimensions alone, but the filterbank that was used to split the broadband
+ * signals into narrow-band signal knows the original number of broadband
+ * channels.  MHA filterbank plugins therefore publish an AC variable
+ * containing the original number of broadband audio channels,
+ * which were present before the filterbank split the signal into frequency
+ * bands.
+ * 
+ * This function accesses the AC space and reads the number of broadband audio
+ * channels from the AC variable \c acname, which must be given by the
+ * configuration and should identify the AC variable published by the filter
+ * bank for this purpose.
+ * 
+ * If \c acname is empty, then the function parameter \c totalchannels is
+ * returned instead, assuming that there was no filterbank and all input
+ * channels that the \c dc plugin receives are broadband audio channels.
+ * 
+ * @param totalchannels   The number of audio channels that dc receives from
+ *        the MHA (MHA informs plugins about the number of input signal
+ *        channels with the prepare() callback).  If the \c dc plugin processes
+ *        the output signal of a filter bank, then this will be the equal to
+ *        the number of broadband input channels multiplied by the number of
+ *        filter bank bands.  If not, this will already be the number of
+ *        broadband input channels.
+ * @param acname   If non-empty, name of an AC variable that contains the
+ *        number of broadband input processed by an up-stream filter bank
+ *        plugin.  An empty acname denotes that no filter bank is present and
+ *        that the \c dc plugin directly processes broadband audio signals.
+ * @param ac    Algorithm communication variable space, needed to access
+ *        AC variable \c acname.
+ * @return The number of broadband audio channels from which the input signal
+ *        of \dc was generated.  This will usually be 1 or 2 for normal
+ *        hearing aid simulation task, but the \c dc plugin is not restricted
+ *        to process only 1 or 2 broadband signals, therefore other return
+ *        values are possible, but then hearing aid fitting rules querying
+ *        the dc plugin may become confused.
+ * @warning Since this function accesses the AC variable space, it may only
+ *        be called in situation where a plugin is allowed to interact with
+ *        the AC variable space.  This function should be called from prepare()
+ */
+static unsigned int get_audiochannels(unsigned int totalchannels,
+                                      std::string acname,
+                                      algo_comm_t ac)
+{
+    if( acname.size() ){
+        totalchannels = MHA_AC::get_var_int(ac,acname);
+        if( totalchannels == 0 )
+            throw MHA_Error(__FILE__,__LINE__,"dc got 0 channels from AC variable \"%s\".",acname.c_str());
+    }else{
+        if( totalchannels == 0 )
+            throw MHA_Error(__FILE__,__LINE__,"dc got 0 channels from prepare configuration.");
+    }
+    return totalchannels;
 }
 
 void dc_if_t::prepare(mhaconfig_t& tf)
 {
     tftype = tf;
+    broadband_audiochannels = get_audiochannels(tftype.channels,chname.data,ac);
+    bands_per_channel = tftype.channels / broadband_audiochannels;
+    if (bands_per_channel * broadband_audiochannels != tftype.channels)
+        throw MHA_Error(__FILE__,__LINE__, "Mismatching channel configuration "
+                        "(%u bands_per_channel, %u broadbandaudio channels, %u"
+                        " total compression bands)", bands_per_channel,
+                        broadband_audiochannels, tftype.channels);
     update();
     poll_config();
     cfg->explicit_insert();
-    size_t fbands = cfg->get_nbands();
     input_level.data.resize(tf.channels);
     filtered_level.data.resize(tf.channels);
-    center_frequencies.data.resize(fbands);
-    edge_frequencies.data.resize(fbands+1);
-    band_weights.data.resize(fbands);
+    center_frequencies.data.resize(bands_per_channel);
+    edge_frequencies.data.resize(bands_per_channel+1);
+    band_weights.data.resize(bands_per_channel);
     cf_name = filterbank.data + "_cf";
     ef_name = filterbank.data + "_ef";
     bw_name = filterbank.data + "_band_weights";
     update_monitors();
+
+    // Filterbank layout must not change during processing.
+    filterbank.setlock(true);
+    chname.setlock(true);
+}
+
+void dc_if_t::release()
+{
+    filterbank.setlock(false);
+    chname.setlock(false);
 }
 
 mha_wave_t* dc_if_t::process(mha_wave_t* s_in)
@@ -135,25 +226,13 @@ dc_vars_validator_t::dc_vars_validator_t(dc_vars_t & v,
                         v.offset.data.size(),s);
 }
 
-unsigned int get_audiochannels(unsigned int totalchannels,std::string acname,algo_comm_t ac)
-{
-    if( acname.size() ){
-        totalchannels = MHA_AC::get_var_int(ac,acname);
-        if( totalchannels == 0 )
-            throw MHA_Error(__FILE__,__LINE__,"dc got 0 channels from AC variable \"%s\".",acname.c_str());
-    }else{
-        if( totalchannels == 0 )
-            throw MHA_Error(__FILE__,__LINE__,"dc got 0 channels from prepare configuration.");
-    }
-    return totalchannels;
-}
-
 dc_t::dc_t(dc_vars_t vars,
            mha_real_t filter_rate,
            unsigned int nch_,
            algo_comm_t ac,
            mha_domain_t domain,
            unsigned int fftlen_,
+           unsigned naudiochannels_,
            const std::string& algo,
            const std::vector<mha_real_t>& rmslevel_state,
            const std::vector<mha_real_t>& attack_state,
@@ -180,7 +259,7 @@ dc_t::dc_t(dc_vars_t vars,
         }()),
     bypass(vars.bypass.data),
     log_interp(vars.log_interp.data),
-    naudiochannels(get_audiochannels(nch_,vars.chname.data,ac)),
+    naudiochannels(naudiochannels_),
     nbands(nch_ / naudiochannels),
     nch(nch_),
     level_in_db(ac,algo+"_l_in",nbands,naudiochannels,false),
@@ -286,8 +365,7 @@ mha_wave_t* dc_t::process(mha_wave_t* s)
 
 mha_spec_t* dc_t::process(mha_spec_t* s)
 {
-    level_in_db.insert();
-    level_in_db_adjusted.insert();
+    explicit_insert();
     mha_real_t level_in, gain;
     unsigned int k, ch, kfb, ch_idx;
     if( s->num_channels != gt.size() )
@@ -356,7 +434,6 @@ dc_vars_t::dc_vars_t(MHAParser::parser_t& p)
       clientid("Client ID of last fit",""),
       gainrule("Gain rule of last fit",""),
       preset("Preset name of last fit",""),
-      modified("Flag if configuration has been modified"),
       input_level("input level of last block / dB SPL"),
       filtered_level("input level of last block after time-constant filters / dB SPL"),
       center_frequencies("nominal center frequencies of filterbank bands"),
@@ -379,7 +456,6 @@ dc_vars_t::dc_vars_t(MHAParser::parser_t& p)
     p.insert_member(clientid);
     p.insert_member(gainrule);
     p.insert_member(preset);
-    p.insert_member(modified);
     p.insert_item("level_in", &input_level);
     p.insert_item("level_in_filtered", &filtered_level);
     p.insert_item("cf", &center_frequencies);

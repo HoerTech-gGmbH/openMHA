@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2020 HörTech gGmbH
+// Copyright © 2021 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -55,7 +56,7 @@ protected:
 
 TEST_F(dc_if_t_testing,lin_interp){
   dc_if_handle.parse("log_interp=no");
-  dc_if_handle.prepare(signal_properties);
+  dc_if_handle.prepare_(signal_properties);
   acspace.set_prepared(true);
 
   // 0dBSPL - extrapolated linearly (to -InfdB gain)
@@ -116,7 +117,7 @@ TEST_F(dc_if_t_testing,lin_interp){
 
 TEST_F(dc_if_t_testing,log_interp){
   dc_if_handle.parse("log_interp=yes");
-  dc_if_handle.prepare(signal_properties);
+  dc_if_handle.prepare_(signal_properties);
   acspace.set_prepared(true);
 
   // -Inf dBSPL (extrapolated logarithmically to -InfdB gain)
