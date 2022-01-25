@@ -24,6 +24,7 @@
 #include <atomic>
 #include <string>
 #include <random>
+using namespace std::string_literals;
 using namespace std::chrono_literals;
 
 constexpr int NCHUNKS=12;
@@ -100,7 +101,7 @@ protected:
     [&infos]() { ASSERT_FALSE(infos.empty());
     }();
     info=infos[0];
-    var =  std::make_unique<lsl2ac::save_var_t>(info, ac, ob, 1, 1, nchannels,
+    var =  std::make_unique<lsl2ac::save_var_t<mha_real_t>>(info, ac, ob, MHA_AC_FLOAT, 1, 1, nchannels,
                                              nsamples);
   }
   ~Test_save_var_t(){
@@ -125,7 +126,7 @@ protected:
   MHAKernel::algo_comm_class_t acspace;
   algo_comm_t ac;
   std::vector<std::vector<float>> expected;
-  std::unique_ptr<lsl2ac::save_var_t> var;
+  std::unique_ptr<lsl2ac::save_var_base_t> var;
 };
 
 using Test_save_var_t_discard=Test_save_var_t;
@@ -159,7 +160,7 @@ TEST_P(Test_save_var_t_fixed_size,ThrowOnWrongChannelNo){
   int nchannels;
   std::tie(ob, nchannels, std::ignore) = GetParam();
   /// Try to construct new save_var_t with wrong number of channels
-  EXPECT_THROW(var.reset(new lsl2ac::save_var_t(info,ac,ob,1,1,nchannels+1,0)),MHA_Error);
+  EXPECT_THROW(var.reset(new lsl2ac::save_var_t<mha_real_t>(info,ac,ob, MHA_AC_FLOAT, 1,1,nchannels+1,0)),MHA_Error);
 }
 
 INSTANTIATE_TEST_SUITE_P(ThrowOnResize,Test_save_var_t_fixed_size,
@@ -196,3 +197,103 @@ INSTANTIATE_TEST_SUITE_P(IgnoreOverrun,Test_save_var_t_ignore,
                            std::string name = to_string(std::get<0>(info.param));
                            return name;
                          });
+
+
+template<lsl2ac::overrun_behavior ob>
+class Test_save_var_string_t : public ::testing::Test {
+protected:
+  Test_save_var_string_t():
+    /*  We need to use a unique name for the stream as sometimes the lsl background process does not close the
+     steam timely even if our stream_outlet is already destroyed. Append random characters to ensure uniqueness
+     among concurrently running tests.
+    */
+    name([](){auto test_info=testing::UnitTest::GetInstance()->current_test_info();
+        return std::string(test_info->test_suite_name())+"."+std::string(test_info->name())+"_"+random_string();}()),
+    info(name,"Marker",1,lsl::IRREGULAR_RATE,lsl::cf_string,name),
+    acspace(),
+    ac(acspace.get_c_handle())
+    {
+        expected={"First","Second","Third","Fourth","Fifth","Very Very Long String, much longer than our preallocated buffer"};
+        outlet_thread=std::thread([this](){
+                                {
+                                  lsl::stream_outlet outlet(info);
+                                  outlet_ready=true;
+                                  outlet.wait_for_consumers(2/*s*/);
+                                  for(const auto& vec : expected)
+                                    outlet.push_sample(&vec);
+                                  // Short sleep needed for the lsl buffers to sort themselves out
+                                  std::this_thread::sleep_for(0.01s);
+                                  outlet_done=true;
+                                  while(!stop_request){
+                                    std::this_thread::sleep_for(0.01s);
+                                  }
+                                }
+                              });
+    while(!outlet_ready)
+      std::this_thread::sleep_for(0.01s);
+    // Resolving and using that info is much faster than reusing the info from the outlet construction
+    auto infos=lsl::resolve_stream("name",name);
+    // Lambda trickery needed b/c fatal ASSERTions can only be placed in
+    // void-returning functions. C'tors and D'tors do not count as void-returning. See also
+    // https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#assertion-placement
+    [&infos]() {
+      ASSERT_FALSE(infos.empty());
+    }();
+    info=infos[0];
+    var =  std::make_unique<lsl2ac::save_var_t<std::string>>(info, ac, ob, 1, 1, 25);
+  }
+  ~Test_save_var_string_t(){
+    var.reset();
+    stop_request=true;
+    outlet_thread.join();
+  }
+  virtual void SetUp() override {
+    while(!outlet_done)
+      std::this_thread::sleep_for(0.01s);
+  }
+  // Creates an outlet stream. Sends the samples as fast as possible once a
+  // consumer connects. Synchronization through the atomic bools.
+  void open_stream();
+  void TearDown() override {}
+  std::atomic<bool> outlet_ready{false};
+  std::atomic<bool> outlet_done{false};
+  std::atomic<bool> stop_request{false};
+  std::thread outlet_thread;
+  std::string name;
+  lsl::stream_info info;
+  MHAKernel::algo_comm_class_t acspace;
+  algo_comm_t ac;
+  std::vector<std::string> expected;
+  std::unique_ptr<lsl2ac::save_var_base_t> var;
+};
+
+
+using Test_save_var_string_t_discard=Test_save_var_string_t<lsl2ac::overrun_behavior::Discard>;
+TEST_F(Test_save_var_string_t_discard,OverrunBehavior){
+  var->receive_frame();
+  comm_var_t v;
+  int err=ac.get_var(ac.handle,name.c_str(),&v);
+  ASSERT_TRUE(err==0);
+  std::string actual((const char*)v.data);
+  // We discarded the overrun, so we expect the last string we sent to be the current value
+  EXPECT_EQ("Very Very Long String, m"s,actual);
+}
+
+
+using Test_save_var_string_t_ignore=Test_save_var_string_t<lsl2ac::overrun_behavior::Ignore>;
+TEST_F(Test_save_var_string_t_ignore,OverrunBehavior){
+  var->receive_frame();
+  comm_var_t v;
+  int err=ac.get_var(ac.handle,name.c_str(),&v);
+  ASSERT_TRUE(err==0);
+  std::string actual((const char*)v.data);
+  // We ignored overrun, so the value of the AC variable should be the first string we sent.
+  EXPECT_EQ(expected.front(),actual);
+}
+
+/*
+ * Local variables:
+ * c-basic-offset: 4
+ * compile-command: "make unit-tests"
+ * End:
+ */
