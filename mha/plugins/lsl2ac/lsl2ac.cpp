@@ -146,11 +146,11 @@ lsl2ac::cfg_t::cfg_t(const algo_comm_t& ac_,
                                                                         nsamples_));
             break;
         case lsl::channel_format_t::cf_int64:
-            throw MHA_Error(__FILE__,__LINE__,"Stream %s: Channel format int64 is not supported.",matching_streams[0].name());
+            throw MHA_Error(__FILE__,__LINE__,"Stream %s: Channel format int64 is not supported.",matching_streams[0].name().c_str());
         case lsl::channel_format_t::cf_undefined:
-            throw MHA_Error(__FILE__,__LINE__,"Stream %s:Can not store undefined channel format in AC variable",matching_streams[0].name());
+                            throw MHA_Error(__FILE__,__LINE__,"Stream %s:Can not store undefined channel format in AC variable",matching_streams[0].name().c_str());
         default:
-            throw MHA_Error(__FILE__,__LINE__,"Stream %s:Unknown lsl channel format: %i",matching_streams[0].name(),matching_streams[0].name());
+                            throw MHA_Error(__FILE__,__LINE__,"Stream %s:Unknown lsl channel format: %i",matching_streams[0].name().c_str(),matching_streams[0].channel_format());
         }
     }
 }
