@@ -1,5 +1,6 @@
 // This file is part of the open HörTech Master Hearing Aid (openMHA)
 // Copyright © 2006 2009 2010 2013 2014 2015 2018 2020 2021 HörTech gGmbH
+// Copyright © 2021 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -37,7 +38,7 @@ proc_counter_t::proc_counter_t(algo_comm_t iac, const std::string &configured_na
 
 proc_counter_t::~proc_counter_t()
 {
-    ac.remove_ref(ac.handle, &data);
+    ac.handle->remove_ref(&data);
 }
 
 mha_wave_t* proc_counter_t::process(mha_wave_t* s)

@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2013 2014 2015 2018 HörTech gGmbH
 // Copyright © 2019 2020 2021 HörTech gGmbH
+// Copyright © 2021 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -82,7 +83,7 @@ void wave2spec_t::publish_ac_variables()
 wave2spec_t::~wave2spec_t()
 {
     mha_fft_free( ft );
-    ac.remove_ref(ac.handle, window.buf);
+    ac.handle->remove_ref(window.buf);
 }
 
 mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)

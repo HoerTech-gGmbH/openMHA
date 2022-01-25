@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2019 2020 2021 HörTech gGmbH
+// Copyright © 2021 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -52,7 +53,7 @@ public:
   /// Test teardown releases plugin
   void TearDown() override {
     acspace.set_prepared(false);
-    w2s.release();
+    w2s.release_();
   }
 };
 
@@ -161,6 +162,10 @@ TEST_F(wave2spec_testing, zeropadding_distribution)
        {"test_case_5", 512,   1,   1, 1.0f, 511,   0}
       };
   unsigned channels = 2U;
+
+  // Allow side effects on AC space from creating and deleting wave2spec_t-s.
+  acspace.set_prepared(false);
+
   for (auto params : zeropadding_test_parameters) {
     auto runtime =
       std::make_unique<wave2spec_t>(params.fftlen, params.wndlen,

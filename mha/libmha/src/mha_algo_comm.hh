@@ -218,93 +218,6 @@ namespace MHA_AC {
         const bool remove_during_destructor;
     };
 
-    /**
-       \ingroup algocomm
-       Template for convenience classes for inserting a numeric scalar
-       into the AC space.
-    */
-    template <typename numeric_t, unsigned int MHA_AC_TYPECODE> 
-    class scalar_t {
-    public:
-        /** \brief Initialize memory and metadata of the AC variable.
-            \param ac AC handle
-            \param name Name of variable in AC space
-            \param val Initial value
-            \param insert_now If true, then the constructor inserts the new
-                              variable into the AC space, and the
-                              destructor will remove the variable from AC space
-                              when it executes. */
-        scalar_t(algo_comm_t ac,
-                 const std::string & name,
-                 numeric_t val = 0,
-                 bool insert_now = true)
-            : data(val),
-              ac(ac),
-              name(name),
-              remove_during_destructor(insert_now)
-        {
-            if (insert_now)
-                insert();
-        }
-        /** Destroy the AC variable: deallocate its memory.
-         * If the constructor parameter insert_now was true, then the destruc-
-         * tor removes the AC variable from AC space when it executes. */
-        ~scalar_t()
-        {
-            if (remove_during_destructor) {
-                try {
-                    remove();
-                }
-                catch (...) {
-                    // ignore all exceptions because we are in destructor
-                }
-            }
-        }
-        numeric_t data; //!< Numeric value of this AC variable.
-        /** Insert or re-insert AC variable into AC space. Plugins should call
-         * this method from their prepare() and process() functions. */
-        void insert()
-        {
-            comm_var_t acv;
-            memset(&acv,0,sizeof(acv));
-            acv.data_type = MHA_AC_TYPECODE;
-            acv.num_entries = 1;
-            acv.stride = 1;
-            acv.data = &data;
-            int err = ac.insert_var(ac.handle, name.c_str(), acv);
-            if( err )
-                throw MHA_Error(__FILE__,__LINE__,
-                                "Unable to insert AC variable '%s':\n%s",
-                                name.c_str(),ac.get_error(err));
-        }
-        /** Remove the AC variable by reference from the AC variable space.
-         * Plugins may call this method only from their prepare(), release()
-         * methods or their plugin destructor.  It is not necessary to remove
-         * the AC variable from AC space at all if either another AC variable
-         * with the same name has replaced this variable before this variable
-         * is destroyed, or if no plugin will access this variable between its
-         * destruction and either its replacement or the MHA exit. */
-        void remove()
-        {
-            ac.remove_ref(ac.handle,&data);
-        }
-    private:
-        /** AC variable space. */
-        const algo_comm_t ac;
-        /** Name of this AC variable in the AC variable space. */
-        const std::string name;
-        /** flag whether to remove from AC variable space in destructor. */
-        const bool remove_during_destructor;
-    };
-    /// Convenience class for inserting an integer variable into the AC space.
-    typedef scalar_t<int, MHA_AC_INT> int_t;
-    /// Convenience class for inserting a single-precision floating-point
-    /// variable into the AC space.
-    typedef scalar_t<float, MHA_AC_FLOAT> float_t;
-    /// Convenience class for inserting a double-precision floating-point
-    /// variable into the AC space.
-    typedef scalar_t<double, MHA_AC_DOUBLE> double_t;
-    
     class stat_t : public MHASignal::stat_t {
     public:
         stat_t(algo_comm_t ac,const std::string& name,
@@ -559,10 +472,6 @@ namespace MHAKernel {
          * Redirects to local_remove_var(). */
         static int remove_var(void*,const char*);
 
-        /** Trampoline to be referenced by algo_comm_t::remove_ref.
-         * Redirects to local_insert_var_int(). */
-        static int remove_ref(void*,void*);
-
         /** Trampoline to be referenced by algo_comm_t::is_var.
          * Redirects to local_is_var(). */
         static int is_var(void*,const char*);
@@ -601,10 +510,16 @@ namespace MHAKernel {
         virtual
         void local_remove_var(const char*);
 
-        /** Interacts with AC space storage to remove an AC variable. Only
-         * permitted when AC space is not prepared. */
-        virtual
-        void local_remove_ref(void*);
+        /** Remove all AC variables from AC space that point to the given
+         * memory address.  Only permitted when AC space is not prepared.
+         * While not prepared, it is not an error if no AC variables or if
+         * multiple AC variables actually point to addr.  All matching
+         * variables are removed.
+         * @param addr Memory address where the data of the AC variable(s) to
+         *             remove is or was stored.
+         * @throw MHA_Error if called while prepared, regardless whether any
+         *                  AC variables currently point to addr or not. */
+        virtual void remove_ref(void* addr);
 
         /** Interacts with AC space storage to check if an AC variable with
          * the given name exists. Always permitted. */
@@ -640,6 +555,95 @@ namespace MHAKernel {
 
     algo_comm_class_t* algo_comm_safe_cast(void*);
 
+}
+
+namespace MHA_AC {
+    /**
+       \ingroup algocomm
+       Template for convenience classes for inserting a numeric scalar
+       into the AC space.
+    */
+    template <typename numeric_t, unsigned int MHA_AC_TYPECODE> 
+    class scalar_t {
+    public:
+        /** \brief Initialize memory and metadata of the AC variable.
+            \param ac AC handle
+            \param name Name of variable in AC space
+            \param val Initial value
+            \param insert_now If true, then the constructor inserts the new
+                              variable into the AC space, and the
+                              destructor will remove the variable from AC space
+                              when it executes. */
+        scalar_t(algo_comm_t ac,
+                 const std::string & name,
+                 numeric_t val = 0,
+                 bool insert_now = true)
+            : data(val),
+              ac(ac),
+              name(name),
+              remove_during_destructor(insert_now)
+        {
+            if (insert_now)
+                insert();
+        }
+        /** Destroy the AC variable: deallocate its memory.
+         * If the constructor parameter insert_now was true, then the destruc-
+         * tor removes the AC variable from AC space when it executes. */
+        ~scalar_t()
+        {
+            if (remove_during_destructor) {
+                try {
+                    remove();
+                }
+                catch (...) {
+                    // ignore all exceptions because we are in destructor
+                }
+            }
+        }
+        numeric_t data; //!< Numeric value of this AC variable.
+        /** Insert or re-insert AC variable into AC space. Plugins should call
+         * this method from their prepare() and process() functions. */
+        void insert()
+        {
+            comm_var_t acv;
+            memset(&acv,0,sizeof(acv));
+            acv.data_type = MHA_AC_TYPECODE;
+            acv.num_entries = 1;
+            acv.stride = 1;
+            acv.data = &data;
+            int err = ac.insert_var(ac.handle, name.c_str(), acv);
+            if( err )
+                throw MHA_Error(__FILE__,__LINE__,
+                                "Unable to insert AC variable '%s':\n%s",
+                                name.c_str(),ac.get_error(err));
+        }
+        /** Remove the AC variable by reference from the AC variable space.
+         * Plugins may call this method only from their prepare(), release()
+         * methods or their plugin destructor.  It is not necessary to remove
+         * the AC variable from AC space at all if either another AC variable
+         * with the same name has replaced this variable before this variable
+         * is destroyed, or if no plugin will access this variable between its
+         * destruction and either its replacement or the MHA exit. */
+        void remove()
+        {
+            ac.handle->remove_ref(&data);
+        }
+    private:
+        /** AC variable space. */
+        const algo_comm_t ac;
+        /** Name of this AC variable in the AC variable space. */
+        const std::string name;
+        /** flag whether to remove from AC variable space in destructor. */
+        const bool remove_during_destructor;
+    };
+    /// Convenience class for inserting an integer variable into the AC space.
+    typedef scalar_t<int, MHA_AC_INT> int_t;
+    /// Convenience class for inserting a single-precision floating-point
+    /// variable into the AC space.
+    typedef scalar_t<float, MHA_AC_FLOAT> float_t;
+    /// Convenience class for inserting a double-precision floating-point
+    /// variable into the AC space.
+    typedef scalar_t<double, MHA_AC_DOUBLE> double_t;
 }
 
 #endif

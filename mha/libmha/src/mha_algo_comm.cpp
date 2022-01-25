@@ -82,16 +82,6 @@ section \ref algocomm.
     \param n    name of variable to be removed
     \return Error code or zero on success
 */
-/** \var algo_comm_t::remove_ref
-    \brief Remove all AC variable which refer to address
-    
-    This function removes all AC variables whos data field points
-    to the given address.
-    
-    \param h    AC handle
-    \param p    address which should not be referred to any more
-    \return Error code or zero on success
-*/
 /** \var algo_comm_t::is_var
     \brief Test if an AC variable exists
     
@@ -412,7 +402,6 @@ algo_comm_t algo_comm_default = {
     MHAKernel::algo_comm_class_t::insert_var_float,
     MHAKernel::algo_comm_class_t::insert_var_double,
     MHAKernel::algo_comm_class_t::remove_var,
-    MHAKernel::algo_comm_class_t::remove_ref,
     MHAKernel::algo_comm_class_t::is_var,
     MHAKernel::algo_comm_class_t::get_var,
     MHAKernel::algo_comm_class_t::get_var_int,
@@ -479,7 +468,7 @@ void MHAKernel::algo_comm_class_t::local_remove_var(const char* name)
                         "A variable of name \"%s\" was not found.",name);
 }
 
-void MHAKernel::algo_comm_class_t::local_remove_ref(void* addr)
+void MHAKernel::algo_comm_class_t::remove_ref(void* addr)
 {
     vars.erase_by_pointer(addr);
 }
@@ -620,21 +609,6 @@ int MHAKernel::algo_comm_class_t::remove_var(void* handle,const char* name)
         if(!p) 
             return AC_INVALID_HANDLE;
         p->local_remove_var(name);
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error&e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
-}
-
-int MHAKernel::algo_comm_class_t::remove_ref(void* handle,void* ref)
-{
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p) 
-            return AC_INVALID_HANDLE;
-        p->local_remove_ref(ref);
         return AC_SUCCESS;
     }
     catch(MHA_Error&e){
@@ -904,7 +878,7 @@ MHA_AC::spectrum_t::~spectrum_t()
 }
 void MHA_AC::spectrum_t::remove()
 {
-    ac.remove_ref(ac.handle,buf);
+    ac.handle->remove_ref(buf);
 }
 
 
@@ -935,7 +909,7 @@ MHA_AC::waveform_t::~waveform_t()
 }
 void MHA_AC::waveform_t::remove()
 {
-    ac.remove_ref(ac.handle,buf);
+    ac.handle->remove_ref(buf);
 }
 
 MHA_AC::stat_t::stat_t(algo_comm_t ac,const std::string& name,
