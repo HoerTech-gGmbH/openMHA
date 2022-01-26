@@ -405,8 +405,12 @@ namespace lsl2ac{
       if(n==0)
         return 0;
       std::copy_n(str.begin(),n,buf.begin());
-      if(n<buf.size()-1)
+      if(n<buf.size()-1){
         buf[n]='\0';
+        // return n+1 -> include the zero byte into the regular entries of the AC variable
+        // this is safe b/c we just checked that buf.size()>n-1, i.e. we own at least n+1 bytes
+        return n+1;
+      }
       else
         buf.back()='\0';
       return n;
