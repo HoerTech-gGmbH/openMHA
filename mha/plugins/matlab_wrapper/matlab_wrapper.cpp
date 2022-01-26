@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -261,7 +262,7 @@ void matlab_wrapper::matlab_wrapper_t::wrapped_plugin_t::release(){
     if(spec_out) emxDestroyArray_creal_T(spec_out);
 }
 
-matlab_wrapper::matlab_wrapper_t::matlab_wrapper_t(algo_comm_t iac,
+matlab_wrapper::matlab_wrapper_t::matlab_wrapper_t(MHA_AC::algo_comm_t & iac,
                                                    const std::string &)
     : MHAPlugin::plugin_t<matlab_wrapper::matlab_wrapper_rt_cfg_t>("",iac)
 {

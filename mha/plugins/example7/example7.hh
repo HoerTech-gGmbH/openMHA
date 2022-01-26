@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2007 2009 2010 2012 2013 2014 2015 2017 2018
 //             2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,12 +23,11 @@
 
 class example7_t : public MHAPlugin::plugin_t<int> {
 public:
-  example7_t(algo_comm_t iac, const std::string & configured_name);
+  example7_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
 
   void release(void);
   void prepare(mhaconfig_t&);
   mha_wave_t* process(mha_wave_t*);
-
 };
 
 #endif

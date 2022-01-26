@@ -66,7 +66,7 @@ public:
  */
 class example6_t : public MHAPlugin::plugin_t<cfg_t> {
 public:
-    example6_t(algo_comm_t iac, const std::string & configured_name);
+    example6_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
 private:
@@ -105,7 +105,7 @@ cfg_t::cfg_t(unsigned int ichannel,
 /*
  * Constructor of the simple signal processing class.
  */
-example6_t::example6_t(algo_comm_t iac, const std::string &)
+example6_t::example6_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<cfg_t>("Example rms level meter plugin",iac),
       /* initialzing variable 'channel_no' with MHAParser::int_t(char* name, .... ) */
       channel_no("channel in which the RMS level is measured","0","[0,[")
@@ -125,7 +125,7 @@ example6_t::example6_t(algo_comm_t iac, const std::string &)
      * variable (i.e. prefixing the name with the algorithm name
      * passed to MHAInit).
      */
-    ac.handle->insert_var_float("example6_rmslev", &rmsdb );
+    ac.insert_var_float("example6_rmslev", &rmsdb );
 }
 
 /*
@@ -150,7 +150,7 @@ mha_wave_t* example6_t::process(mha_wave_t* wave)
     if( rmsdb < 1e-10 )
         rmsdb = 1e-10;
     rmsdb = 10*log10( rmsdb );
-    ac.handle->insert_var_float("example6_rmslev", &rmsdb );
+    ac.insert_var_float("example6_rmslev", &rmsdb);
     return wave;
 }
 
@@ -171,7 +171,7 @@ void example6_t::prepare(mhaconfig_t& tfcfg)
     tftype = tfcfg;
     /* make sure that a valid runtime configuration exists: */
     update_cfg();
-    ac.handle->insert_var_float("example6_rmslev", &rmsdb );
+    ac.insert_var_float("example6_rmslev", &rmsdb);
 }
 
 /*

@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2010 2011 2013 2014 2015 2018 2019 HörTech gGmbH
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,17 +22,22 @@
 #include "mha_algo_comm.hh"
 #include "mha_windowparser.h"
 
-class mhaplug_cfg_t : private MHAKernel::algo_comm_class_t, public PluginLoader::mhapluginloader_t
+class mhaplug_cfg_t :
+    private MHA_AC::algo_comm_class_t, public PluginLoader::mhapluginloader_t
 {
 public:
-    mhaplug_cfg_t(algo_comm_t iac,const std::string& libname,bool use_own_ac);
+    mhaplug_cfg_t(MHA_AC::algo_comm_t & iac,
+                  const std::string& libname,
+                  bool use_own_ac);
     ~mhaplug_cfg_t() throw () {};
     void prepare(mhaconfig_t&) override;
     void release() override;
 };
 
-mhaplug_cfg_t::mhaplug_cfg_t(algo_comm_t iac,const std::string& libname,bool use_own_ac)
-    : PluginLoader::mhapluginloader_t((use_own_ac?get_c_handle():iac),libname)
+mhaplug_cfg_t::mhaplug_cfg_t(MHA_AC::algo_comm_t & iac,
+                             const std::string& libname,
+                             bool use_own_ac)
+    : PluginLoader::mhapluginloader_t((use_own_ac?*this:iac),libname)
 {
 }
 void mhaplug_cfg_t::prepare(mhaconfig_t & signal_dimensions)
@@ -52,7 +58,7 @@ void mhaplug_cfg_t::release()
 class altplugs_t : public MHAPlugin::plugin_t<MHAWindow::fun_t>
 {
 public:
-    altplugs_t(algo_comm_t iac, const std::string & configured_name);
+    altplugs_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     void process(mha_wave_t*,mha_wave_t**);
@@ -92,7 +98,7 @@ private:
     unsigned int ramp_len;
 };
 
-altplugs_t::altplugs_t(algo_comm_t iac, const std::string &)
+altplugs_t::altplugs_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<MHAWindow::fun_t>("Configure alternative plugins.",iac),
       use_own_ac("Use own AC space for each plug (yes), or share parents space (no). Must be set before plugs.","no"),
       parser_plugs("List of plugins","[]"),

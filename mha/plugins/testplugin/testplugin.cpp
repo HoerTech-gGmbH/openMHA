@@ -67,7 +67,7 @@ namespace testplugin {
   };
 
   class ac_parser_t : public MHAParser::parser_t,
-                      public MHAKernel::algo_comm_class_t {
+                      public MHA_AC::algo_comm_class_t {
   public:
     MHAParser::string_t insert_var;
     MHAParser::string_t get_var;
@@ -115,7 +115,7 @@ namespace testplugin {
     /** Insert variable into AC space. This leaks memory by design, as the 
         plugin is for testing only */
     void do_insert_var() {
-      comm_var_t c;
+      MHA_AC::comm_var_t c;
       c.num_entries = num_entries.data; c.stride = stride.data;
       c.data_type = MHA_AC_FLOAT;
       switch (data_type.data.get_index()) {
@@ -151,11 +151,12 @@ namespace testplugin {
                         "insertion of ac variables of type %s is not supported"
                         " by this plugin", data_type.data.get_value().c_str());
       }
-      MHAKernel::algo_comm_class_t::insert_var(insert_var.data, c);
+      MHA_AC::algo_comm_class_t::insert_var(insert_var.data, c);
     }
 
     void do_get_var() {
-      comm_var_t c = MHAKernel::algo_comm_class_t::get_var(get_var.data);
+      MHA_AC::comm_var_t c =
+        MHA_AC::algo_comm_class_t::get_var(get_var.data);
 
       char_data.data.clear();  int_data.data.clear();
       float_data.data.clear(); complex_data.data.clear();
@@ -225,7 +226,7 @@ namespace testplugin {
 
   class if_t : public MHAPlugin::plugin_t<int> {
   public:
-    if_t(algo_comm_t iac, const std::string & configured_name);
+    if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     mha_spec_t* process(mha_spec_t * s_in) {return s_in;}
     mha_wave_t* process(mha_wave_t * s_in) {return s_in;}
     void prepare(mhaconfig_t&) {}
@@ -241,10 +242,10 @@ namespace testplugin {
     void test_process();
   };
 
-  if_t::if_t(algo_comm_t iac, const std::string &)
+  if_t::if_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<int>("loads a plugin for testing",iac),
       _prepare("for preparing/releasing the loaded plugin","no"),
-      plug(*this, ac.get_c_handle())
+      plug(*this, ac)
   {
     insert_member(config_in); insert_member(config_out);
     insert_member(ac);        insert_member(signal);

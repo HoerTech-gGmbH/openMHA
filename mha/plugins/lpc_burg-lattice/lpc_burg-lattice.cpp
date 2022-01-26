@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2016 2017 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +25,9 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &lpc_burglattice::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-lpc_burglattice_config::lpc_burglattice_config(algo_comm_t &iac, const mhaconfig_t in_cfg, lpc_burglattice *_lpc)
+lpc_burglattice_config::lpc_burglattice_config(MHA_AC::algo_comm_t & iac,
+                                               const mhaconfig_t in_cfg,
+                                               lpc_burglattice *_lpc)
     : ac(iac)
     , forward(_lpc->lpc_order.data, in_cfg.channels)
     , backward(_lpc->lpc_order.data, in_cfg.channels * 2)
@@ -92,7 +95,7 @@ mha_wave_t *lpc_burglattice_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-lpc_burglattice::lpc_burglattice(algo_comm_t iac,
+lpc_burglattice::lpc_burglattice(MHA_AC::algo_comm_t & iac,
                                  const std::string &)
     : MHAPlugin::plugin_t<lpc_burglattice_config>(
           "This plugin estimates the linear predictive coding coefficients for estimating the next sample value of a time series using the Burg-Lattice approach.\n\n"

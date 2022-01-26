@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2013 2014 2015 HörTech gGmbH
 // Copyright © 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -73,7 +74,7 @@ class cohflt_t : private fftfb_t, private mhaconfig_t {
 public:
     cohflt_t(vars_t& v,
              const mhaconfig_t& icf,
-             algo_comm_t iac,
+             MHA_AC::algo_comm_t & iac,
              const std::string& name);
     mha_spec_t* process(mha_spec_t*);
     void insert();
@@ -101,7 +102,7 @@ private:
 
 class cohflt_if_t : public MHAPlugin::plugin_t<cohflt_t> {
 public:
-    cohflt_if_t(algo_comm_t iac, const std::string & configured_name);
+    cohflt_if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_spec_t* process(mha_spec_t*);
@@ -114,7 +115,7 @@ private:
 
 cohflt_t::cohflt_t(vars_t& v,
                    const mhaconfig_t& icf,
-                   algo_comm_t ac,
+                   MHA_AC::algo_comm_t & ac,
                    const std::string& name)
     : fftfb_t(v,icf.fftlen,icf.srate),
       mhaconfig_t(icf),
@@ -162,7 +163,8 @@ cohflt_t::cohflt_t(vars_t& v,
     c_min = v.mapping.data[0];
 }
 
-cohflt_if_t::cohflt_if_t(algo_comm_t iac, const std::string& configured_name)
+cohflt_if_t::cohflt_if_t(MHA_AC::algo_comm_t & iac,
+                         const std::string& configured_name)
     : MHAPlugin::plugin_t<cohflt_t>("Coherence filter",iac),
       vars(this),
       algo(configured_name)

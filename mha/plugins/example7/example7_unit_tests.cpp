@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2007 2009 2010 2012 2013 2014 2015 2017 2018
 //             2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,11 +23,11 @@
 
 class example7_testing : public ::testing::Test {
 public:
-  // AC variable space
-  MHAKernel::algo_comm_class_t acspace{};
-  // C handle to AC variable space
-  algo_comm_t ac {acspace.get_c_handle()};
-  // example input to prepare method
+  /// AC variable space.
+  MHA_AC::algo_comm_class_t acspace;
+  /// Client interface to AC variable space.
+  MHA_AC::algo_comm_t & ac = {acspace};
+  /// Example input to prepare method.
   mhaconfig_t signal_properties {
       .channels = 2U,
       .domain = MHA_WAVEFORM,
@@ -34,9 +35,9 @@ public:
       .wndlen = 0U,
       .fftlen = 0U,
       .srate = 44100.0f
-      };
-  //Plugin instance
-  example7_t ex7{ac,"algo"};
+  };
+  /// Plugin instance.
+  example7_t ex7 = {ac,"algo"};
   MHASignal::waveform_t wave_input{signal_properties.fragsize,signal_properties.channels};
 };
 //! [first docu snippet]

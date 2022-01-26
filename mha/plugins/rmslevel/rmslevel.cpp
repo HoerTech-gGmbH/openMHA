@@ -35,7 +35,8 @@ namespace rmslevel {
          * \param configured_name Configured name of this plugins: either
          *            "rmslevel" or the name explicitly given after the colon.
          *            Used as prefix for all published AC variables. */
-        rmslevel_if_t(algo_comm_t iac, const std::string & configured_name);
+        rmslevel_if_t(MHA_AC::algo_comm_t & iac,
+                      const std::string & configured_name);
 
         /** Extract level from current STFT spectrum.
          * \param s input spectrum, not modified by this method. */
@@ -126,7 +127,8 @@ namespace rmslevel {
         void remove_ac_variables();
     };
 
-    rmslevel_if_t::rmslevel_if_t(algo_comm_t iac, const std::string & configured_name)
+    rmslevel_if_t::rmslevel_if_t(MHA_AC::algo_comm_t & iac,
+                                 const std::string & configured_name)
         : plugin_t<UNIT>(
               "This plugin measures block based levels.  Results are\n"
               "published in monitor variables and in these AC variables\n"
@@ -249,7 +251,7 @@ namespace rmslevel {
     insert_ac_variable_float_vector(std::vector<float> & v,
                                     const std::string & acname)
     {
-        comm_var_t cv;
+        MHA_AC::comm_var_t cv;
         cv.data_type = MHA_AC_FLOAT,
         cv.num_entries = v.size(),
         cv.stride = v.size(),
@@ -260,14 +262,14 @@ namespace rmslevel {
             throw MHA_Error(__FILE__,__LINE__, "Vector %s has too many "
                             "(%zu) elements for an AC variable",
                             acname.c_str(), v.size());
-        ac.handle->insert_var(acname, cv);
+        ac.insert_var(acname, cv);
     }
     void rmslevel_if_t::remove_ac_variables()
     {
-        ac.handle->remove_ref(peak.data.data());
-        ac.handle->remove_ref(peak_db.data.data());
-        ac.handle->remove_ref(level.data.data());
-        ac.handle->remove_ref(level_db.data.data());
+        ac.remove_ref(peak.data.data());
+        ac.remove_ref(peak_db.data.data());
+        ac.remove_ref(level.data.data());
+        ac.remove_ref(level_db.data.data());
     }
 
     MHAPLUGIN_CALLBACKS(rmslevel,rmslevel_if_t,spec,spec)

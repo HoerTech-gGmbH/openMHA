@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2015 2016 2017 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +19,8 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &steerbf::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-steerbf_config::steerbf_config(algo_comm_t &ac, const mhaconfig_t in_cfg,
+steerbf_config::steerbf_config(MHA_AC::algo_comm_t & ac,
+                               const mhaconfig_t in_cfg,
                                steerbf *steerbf) :
   nchan( in_cfg.channels ),
     nfreq( in_cfg.fftlen/2 + 1 ),
@@ -73,7 +75,7 @@ mha_spec_t *steerbf_config::process(mha_spec_t *inSpec)
 }
 
 /** Constructs our plugin. */
-steerbf::steerbf(algo_comm_t iac, const std::string &)
+steerbf::steerbf(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<steerbf_config>("Steerable Beamformer",iac),
       bf_src("Provides the beamforming filters encoded as a block matrix: [chanXnangle,nfreq].", ""),
       angle_ind("Sets the steering angle in filtering.", "0", "[0,1000]"),

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2007 2009 2010 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +34,7 @@ namespace mconv {
          * @param iac handle and function pointers for algorithm communication
          * @param configured_name The name by which e.g an mhachain refers to
          *                        this instance of the mconv plugin */
-        MConv(const algo_comm_t & iac, const std::string & algoname);
+        MConv(MHA_AC::algo_comm_t & iac, const std::string & algoname);
         /** Prepare this plugin for processing.
          * @param mhaconfig Configuration for this plugin (Input/Output parameter)
          * Sample rate, fragment size, number of channels are detailed here. */
@@ -74,7 +75,7 @@ namespace mconv {
         MHAEvents::patchbay_t<MConv> patchbay;
     };
 
-    MConv::MConv(const algo_comm_t & iac, const std::string & )
+    MConv::MConv(MHA_AC::algo_comm_t & iac, const std::string & )
         : MHAPlugin::plugin_t<MHAFilter::partitioned_convolution_t>
         ("FFT based FIR filter using partitioned convolution\n"
          "  This plugin filters its input channels using partitioned fast\n"

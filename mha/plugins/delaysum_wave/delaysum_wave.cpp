@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -54,7 +55,8 @@ namespace delaysum{
      */
     class delaysum_wave_if_t : public MHAPlugin::plugin_t<delaysum_wave_t> {
     public:
-        delaysum_wave_if_t(algo_comm_t iac, const std::string & configured_name);
+        delaysum_wave_if_t(MHA_AC::algo_comm_t & iac,
+                           const std::string & configured_name);
         mha_wave_t* process(mha_wave_t*);
         void prepare(mhaconfig_t&);
         void release();
@@ -104,7 +106,8 @@ namespace delaysum{
         return &out;
     }
 
-    delaysum_wave_if_t::delaysum_wave_if_t(algo_comm_t iac, const std::string &)
+    delaysum_wave_if_t::delaysum_wave_if_t(MHA_AC::algo_comm_t & iac,
+                                           const std::string &)
         :  MHAPlugin::plugin_t<delaysum_wave_t>("delay and sum plugin. Mixes all "
                                            "channels into a single output "
                                            "channel after applying channel-"

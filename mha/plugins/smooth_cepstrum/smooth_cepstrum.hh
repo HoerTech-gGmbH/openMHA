@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2013 2014 2017 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -69,7 +70,7 @@ namespace smooth_cepstrum {
     class smooth_cepstrum_t {
 
     public:
-        smooth_cepstrum_t(algo_comm_t & ac, smooth_params & params);
+        smooth_cepstrum_t(MHA_AC::algo_comm_t & ac, smooth_params & params);
         smooth_cepstrum_t(const smooth_cepstrum_t&)=delete;
         smooth_cepstrum_t& operator=(const smooth_cepstrum_t&)=delete;
         ~smooth_cepstrum_t();
@@ -77,7 +78,7 @@ namespace smooth_cepstrum {
 
     private:
 
-        algo_comm_t ac;
+        MHA_AC::algo_comm_t & ac;
         smooth_params params;
 
         unsigned int fftlen;
@@ -142,7 +143,8 @@ namespace smooth_cepstrum {
     class smooth_cepstrum_if_t : public MHAPlugin::plugin_t<smooth_cepstrum_t> {
 
     public:
-        smooth_cepstrum_if_t(algo_comm_t iac, const std::string & configured_name);
+        smooth_cepstrum_if_t(MHA_AC::algo_comm_t & iac,
+                             const std::string & configured_name);
         mha_spec_t* process(mha_spec_t*);
         void prepare(mhaconfig_t&);
         void release(void) {/* Do nothing in release */}

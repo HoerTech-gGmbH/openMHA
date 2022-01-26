@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2008 2009 2010 2011 2013 2014 2015 2016 2018 2019 HörTech gGmbH
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -80,7 +81,10 @@ void plugin_signals_t::apply_gains(MHAOvlFilter::fftfb_t* pFb,DynComp::dc_afterb
 
 class fftfb_plug_t : public MHAOvlFilter::fftfb_t {
 public:
-    fftfb_plug_t(MHAOvlFilter::fftfb_vars_t&,const mhaconfig_t& cfg,algo_comm_t ac,std::string alg);
+    fftfb_plug_t(MHAOvlFilter::fftfb_vars_t&,
+                 const mhaconfig_t& cfg,
+                 MHA_AC::algo_comm_t & ac,
+                 std::string alg);
     void insert();
 private:
     /** vector of nominal center frequencies / Hz */
@@ -91,7 +95,10 @@ private:
     MHA_AC::waveform_t bwv;
 };
 
-fftfb_plug_t::fftfb_plug_t(MHAOvlFilter::fftfb_vars_t& vars,const mhaconfig_t& cfg,algo_comm_t ac,std::string alg)
+fftfb_plug_t::fftfb_plug_t(MHAOvlFilter::fftfb_vars_t& vars,
+                           const mhaconfig_t& cfg,
+                           MHA_AC::algo_comm_t & ac,
+                           std::string alg)
     : MHAOvlFilter::fftfb_t(vars,cfg.fftlen,cfg.srate),
       cfv(ac,alg+"_cf",nbands(),1,false),
       efv(ac,alg+"_ef",nbands()+1,1,false),
@@ -123,7 +130,7 @@ void fftfb_plug_t::insert()
 class interface_t : public MHAPlugin::plugin_t<fftfb_plug_t>,
                     public MHAOvlFilter::fftfb_vars_t {
 public:
-    interface_t(algo_comm_t iac, const std::string & configured_name);
+    interface_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_spec_t* process(mha_spec_t*);
@@ -145,7 +152,7 @@ private:
     \param th     chain name
     \param al     algorithm name
 */
-interface_t::interface_t(algo_comm_t iac, const std::string & configured_name)
+interface_t::interface_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name)
     : MHAPlugin::plugin_t<fftfb_plug_t>("Multiband compressor framework based on level in overlapping filter bands.",iac),
       MHAOvlFilter::fftfb_vars_t(static_cast<MHAParser::parser_t&>(*this)),
       num_channels(iac, configured_name + "_nch", 0),

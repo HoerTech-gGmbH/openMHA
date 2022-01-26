@@ -25,7 +25,8 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &acTransform_wave::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-acTransform_wave_config::acTransform_wave_config(algo_comm_t &ac, acTransform_wave *_transform):
+acTransform_wave_config::acTransform_wave_config(MHA_AC::algo_comm_t & ac,
+                                                 acTransform_wave *_transform):
     ac(ac),
     ang_name(_transform->ang_name.data),
     raw_p_name(_transform->raw_p_name.data),
@@ -83,7 +84,8 @@ void acTransform_wave_config::insert_ac_variables() {
 }
 
 /** Constructs our plugin. */
-acTransform_wave::acTransform_wave(algo_comm_t iac, const std::string & configured_name)
+acTransform_wave::acTransform_wave(MHA_AC::algo_comm_t & iac,
+                                   const std::string & configured_name)
     : MHAPlugin::plugin_t<acTransform_wave_config>("Transform Plugin Between Coordinate Systems for Waveforms",iac)
     , ang_name("This parameter has the name of the AC variable having the rotation angle", "head_ang")
     , raw_p_name("This parameter has the name of the AC variable having the waveform to be rotated", "p")

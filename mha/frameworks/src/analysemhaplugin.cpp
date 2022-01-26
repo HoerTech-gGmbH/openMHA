@@ -29,7 +29,7 @@ std::string strdom( mha_domain_t d )
     }
 }
 
-void print_ac(MHAKernel::algo_comm_class_t& ac,std::string txt)
+void print_ac(MHA_AC::algo_comm_t & ac,std::string txt)
 {
     const std::vector<std::string> & vstmp = ac.get_entries();
     if( vstmp.size() ){
@@ -42,8 +42,11 @@ void print_ac(MHAKernel::algo_comm_class_t& ac,std::string txt)
     }
 }
 
-int document_plugin(MHAKernel::algo_comm_class_t& ac, PluginLoader::mhapluginloader_t &load, int argc,
-    char **argv) {
+int document_plugin(MHA_AC::algo_comm_class_t& ac,
+                    PluginLoader::mhapluginloader_t &load,
+                    int argc,
+                    char **argv)
+{
   for (int karg = 2; karg < argc; karg++)
     std::cout << load.parse(argv[karg]) << std::endl;
   std::cout << "-- general information ---------------------------\n";
@@ -127,8 +130,8 @@ int main(int argc,char** argv)
         if( argc < 2 )
             throw MHA_Error(__FILE__,__LINE__,"Usage: analysemhaplugin <plugin> [parser args]");
         try {
-            MHAKernel::algo_comm_class_t ac;
-            PluginLoader::mhapluginloader_t load(ac.get_c_handle(), argv[1]);
+            MHA_AC::algo_comm_class_t ac;
+            PluginLoader::mhapluginloader_t load(ac, argv[1]);
             return document_plugin(ac, load, argc, argv);
         } catch (MHA_Error &e) {
             // We maybe have an i/o plugin, try to document as io plugin. NOTE: This is a hacky way to

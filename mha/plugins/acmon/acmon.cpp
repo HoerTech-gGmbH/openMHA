@@ -24,7 +24,7 @@
 namespace acmon {
 class acmon_t : public MHAPlugin::plugin_t<int> {
 public:
-    acmon_t(algo_comm_t, const std::string & configured_name);
+    acmon_t(MHA_AC::algo_comm_t &, const std::string & configured_name);
     ~acmon_t();
     void prepare(mhaconfig_t&);
     void release() {};
@@ -33,7 +33,7 @@ public:
 private:
     void save_vars();
     void update_recmode();
-    algo_comm_t ac;
+    MHA_AC::algo_comm_t & ac;
     MHAParser::vstring_mon_t varlist;
     MHAParser::vstring_mon_t dimensions;
     MHAParser::kw_t dispmode;
@@ -45,7 +45,7 @@ private:
     bool b_snapshot;
 };
 
-acmon_t::acmon_t(algo_comm_t iac, const std::string& configured_name)
+acmon_t::acmon_t(MHA_AC::algo_comm_t & iac, const std::string& configured_name)
     : MHAPlugin::plugin_t<int>("This algorithm converts AC variables into parsable monitor variables.",iac),
       ac(iac),
       varlist("complete list of variables"),
@@ -76,7 +76,7 @@ void acmon_t::update_recmode()
 
 void acmon_t::prepare(mhaconfig_t&)
 {
-    const std::vector<std::string> & entrl = ac.handle->get_entries();
+    const std::vector<std::string> & entrl = ac.get_entries();
     varlist.data.clear();
     dimensions.data.clear();
     unsigned int k;

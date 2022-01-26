@@ -58,7 +58,7 @@ public:
     ~acwriter_t() = default;
     /// Place the data present in the algorithm communication variable into the
     /// fifo for output to disk.
-    void process(comm_var_t*);
+    void process(MHA_AC::comm_var_t*);
     /// Terminate output thread.
     void exit_request();
     /// getter for ac variable name @return name as char* as needed by get_var
@@ -117,7 +117,7 @@ public:
     void release();
     /// Plugin interface constructor.
     /// @param iac Algorithm communication variable space.
-    acrec_t(algo_comm_t iac, const std::string & configured_name);
+    acrec_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
 private:
     /// Configuration callback called whenever configuaration variable "record"
     /// is written to.
@@ -137,8 +137,8 @@ private:
     MHAParser::bool_t use_date =
         {"Use date and time (yes), or only prefix (no)","yes"};
     MHAEvents::patchbay_t<acrec_t> patchbay;
-    comm_var_t cv;
-    algo_comm_t ac;
+    MHA_AC::comm_var_t cv;
+    MHA_AC::algo_comm_t & ac;
 };
 
 std::string to_iso8601(time_t tm);

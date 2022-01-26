@@ -33,7 +33,8 @@ public:
      * @param iac             Algorithm communication variable space.
      * @param configured_name Configured name of this plugin, also used as name
      *                        of the AC variable. */
-    double2acvar_t(algo_comm_t iac, const std::string & configured_name);
+    double2acvar_t(MHA_AC::algo_comm_t & iac,
+                   const std::string & configured_name);
     ~double2acvar_t() = default;
     /** process() does not alter the signal and has same implementation
      * regardless of signal domain.
@@ -65,7 +66,7 @@ private:
     bool is_prepared;
 };
 
-double2acvar_t::double2acvar_t(algo_comm_t iac, const std::string & configured_name) :
+double2acvar_t::double2acvar_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name) :
     MHAParser::string_t("Converts configuration variable of type string\n"
                         "containing a decimal floating point number literal\n"
                         "to algorithm communication variable of type double.\n"

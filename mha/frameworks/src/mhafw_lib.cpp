@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2011 2013 2014 2016 2017 2018 HörTech gGmbH
 // Copyright © 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -156,7 +157,7 @@ void fw_t::exec_fw_command()
 void fw_t::load_proc_lib()
 {
     if( proc_name.data.size() ){
-        proc_lib = new PluginLoader::mhapluginloader_t(ac.get_c_handle(),proc_name.data);
+        proc_lib = new PluginLoader::mhapluginloader_t(ac, proc_name.data);
         if( proc_lib->has_parser() )
             insert_item("mha",proc_lib);
         proc_name.setlock(true);

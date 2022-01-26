@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2015 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +29,8 @@
 namespace ac_proc {
     class interface_t : public MHAPlugin::plugin_t<int> {
     public:
-        interface_t(algo_comm_t iac, const std::string & configured_name);
+        interface_t(MHA_AC::algo_comm_t & iac,
+                    const std::string & configured_name);
         void prepare(mhaconfig_t&);
         void release();
         void process();
@@ -52,7 +54,7 @@ namespace ac_proc {
         \param iac                 algorithm communication handle
         \param configured_name     algorithm name
     */
-    interface_t::interface_t(algo_comm_t iac,
+    interface_t::interface_t(MHA_AC::algo_comm_t & iac,
                              const std::string & configured_name)
         : MHAPlugin::plugin_t<int>("AC variable processor.",iac),
         algo(configured_name),

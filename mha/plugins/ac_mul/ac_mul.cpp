@@ -16,7 +16,8 @@
 
 #include "ac_mul.hh"
 
-ac_mul_t::ac_mul_t(algo_comm_t iac, const std::string & configured_name)
+ac_mul_t::ac_mul_t(MHA_AC::algo_comm_t & iac,
+                   const std::string & configured_name)
     : MHAParser::string_t("Element-wise multiplication expression in style"
                           " \"a * b\",\n"
                           "where \"a\" and \"b\" are AC variables.","a * b"),
@@ -174,7 +175,7 @@ void ac_mul_t::get_arg_type_and_dimension(
     unsigned int& num_channels
     )
 {
-    comm_var_t v = ac.handle->get_var(name);
+    MHA_AC::comm_var_t v = ac.get_var(name);
     switch( v.data_type ){
     case MHA_AC_MHAREAL :
     case MHA_AC_FLOAT :

@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
 // Copyright © 2013 2014 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -1988,13 +1989,13 @@ namespace MHASignal {
            \note The type and dimension of the AC variable must match the type and dimension of the matrix.
            
         */
-        MHASignal::matrix_t& operator=(const comm_var_t& v);
+        MHASignal::matrix_t& operator=(const MHA_AC::comm_var_t& v);
         /**
            \brief Return a AC communication variable pointing to the data of the current matrix
            \return AC variable object (comm_var_t), valid for the life time of the matrix.
            
         */
-        comm_var_t get_comm_var();
+        MHA_AC::comm_var_t get_comm_var();
         /**
            \brief Return the dimension of the matrix
            \return Dimension of the matrix

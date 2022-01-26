@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2016 2018 2019 HörTech gGmbH
 // Copyright © 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -123,7 +124,7 @@ namespace plingploing {
     /** Plugin class of the plingploing music generator */
     class if_t : public MHAPlugin::plugin_t<plingploing_t> {
     public:
-        if_t(algo_comm_t iac, const std::string & configured_name);
+        if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
         mha_wave_t* process(mha_wave_t*);
         void prepare(mhaconfig_t& cf);
     private:
@@ -153,7 +154,7 @@ namespace plingploing {
         MHAParser::float_t bassperiod;
     };
 
-    if_t::if_t(algo_comm_t iac, const std::string &)
+    if_t::if_t(MHA_AC::algo_comm_t & iac, const std::string &)
         : MHAPlugin::plugin_t<plingploing_t>("plingploing algorithm.", iac),
         level("Output level in dB SPL","70"),
         pitch("Bass pitch in Hz","415","[1,]"),

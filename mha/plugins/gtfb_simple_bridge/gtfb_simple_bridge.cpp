@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2009 2010 2012 2013 2014 2015 2018 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -56,7 +57,7 @@ public:
      *   Either an empty string, or the name of an AC variable from which 
      *   element-wise linear factors are read.
      */
-    gtfb_simple_rt_t(algo_comm_t ac,
+    gtfb_simple_rt_t(MHA_AC::algo_comm_t & ac,
                      const std::string& name,
                      mhaconfig_t& chcfg,
                      std::vector<mha_real_t> cf,
@@ -91,6 +92,12 @@ public:
      *          Order of output bands in real and imaginary output are:
      *          (channel0,band0), (channel0,band1), ..., (cannel1,band0), ... */
     mha_wave_t* post_plugin(mha_wave_t* s);
+
+    /** (Re-)insert all AC variables into the AC space.  Must be called during
+     * each prepare() and process() callback of the plugin.  For the process()
+     * callback, this method is called from pre_plugin().  For the prepare()
+     * callback, it must be called by the plugin interface.*/
+    void insert_ac_variables();
 
     /** Const-accessor to contained gammatone filterbank object. */
     const MHAFilter::gamma_flt_t & get_gf() const {return gf;}
@@ -145,7 +152,7 @@ private:
     std::string element_gain_name_;
 
     /** Algorithm Communication Variable space. */
-    algo_comm_t _ac;
+    MHA_AC::algo_comm_t & _ac;
 };
 
 std::vector<mha_real_t> gtfb_simple_rt_t::duplicate_vector(const std::vector<mha_real_t>& src,unsigned int nchannels)
@@ -156,7 +163,7 @@ std::vector<mha_real_t> gtfb_simple_rt_t::duplicate_vector(const std::vector<mha
     return ret;
 }
 
-gtfb_simple_rt_t::gtfb_simple_rt_t(algo_comm_t ac,
+gtfb_simple_rt_t::gtfb_simple_rt_t(MHA_AC::algo_comm_t & ac,
                                    const std::string& name,
                                    mhaconfig_t& chcfg,
                                    std::vector<mha_real_t> cf,
@@ -170,15 +177,15 @@ gtfb_simple_rt_t::gtfb_simple_rt_t(algo_comm_t ac,
     : _order(order),
       _pre_stages(pre_stages),
       nbands(cf.size()),
-      imag(ac,name+"_imag",chcfg.fragsize,chcfg.channels*nbands,true),
-      accf(ac,name+"_cf",1,cf.size(),true),
-      acbw(ac,name+"_bw",1,bw.size(),true),
+      imag(ac,name+"_imag",chcfg.fragsize,chcfg.channels*nbands,false),
+      accf(ac,name+"_cf",1,cf.size(),false),
+      acbw(ac,name+"_bw",1,bw.size(),false),
       input(chcfg.fragsize,chcfg.channels*nbands),
       output(chcfg.fragsize,chcfg.channels),
       gf(duplicate_vector(cf,chcfg.channels),
          duplicate_vector(bw,chcfg.channels),chcfg.srate,order),
-      cLTASS(ac,name+"_cLTASS",1,chcfg.channels*nbands,true),
-      ac_resynthesis_gain(ac,name+"_resyngain",1,chcfg.channels*nbands,true),
+      cLTASS(ac,name+"_cLTASS",1,chcfg.channels*nbands,false),
+      ac_resynthesis_gain(ac,name+"_resyngain",1,chcfg.channels*nbands,false),
       element_gain_name_(element_gain_name),
       _ac(ac)
 {
@@ -220,6 +227,15 @@ gtfb_simple_rt_t::gtfb_simple_rt_t(algo_comm_t ac,
     ac_resynthesis_gain.copy(resynthesis_gain);
 }
 
+void gtfb_simple_rt_t::insert_ac_variables()
+{
+    imag.insert();
+    accf.insert();
+    acbw.insert();
+    cLTASS.insert();
+    ac_resynthesis_gain.insert();
+}
+
 mha_wave_t* gtfb_simple_rt_t::pre_plugin(mha_wave_t* s)
 {
     for(unsigned int k=0;k<s->num_frames;k++)
@@ -228,6 +244,7 @@ mha_wave_t* gtfb_simple_rt_t::pre_plugin(mha_wave_t* s)
                 input.value(k,ch*nbands+kband) = value(s,k,ch);
     for(unsigned int stage=0;stage<_pre_stages;stage++)
         gf(input,imag,stage);
+    insert_ac_variables();
     return &input;
 }
 
@@ -266,7 +283,8 @@ public:
      * @param ac    Algorithm Communication Variable space
      * @param chain chain name
      * @param algo  configured name of this plugin instance */
-    gtfb_simple_t(algo_comm_t iac, const std::string & configured_name);
+    gtfb_simple_t(MHA_AC::algo_comm_t & iac,
+                  const std::string & configured_name);
 
     /** Prepare contained plugin for signal processing.  Allocates the runtime
      * configuration instance.  Locks all variables. */
@@ -323,7 +341,7 @@ private:
     std::string name_;
 };
 
-gtfb_simple_t::gtfb_simple_t(algo_comm_t iac,
+gtfb_simple_t::gtfb_simple_t(MHA_AC::algo_comm_t & iac,
                              const std::string & configured_name)
     : MHAPlugin::plugin_t<gtfb_simple_rt_t>("Simple gammatone filterbank",iac),
       plug(*this,iac),
@@ -362,6 +380,7 @@ void gtfb_simple_t::prepare(mhaconfig_t& chcfg)
     push_config(next_cfg);
     gf_internals.data = next_cfg->get_gf().inspect();
     mhaconfig_t chcfg_expected(chcfg);
+    poll_config()->insert_ac_variables();
     plug.prepare(chcfg);
     PluginLoader::mhaconfig_compare(chcfg_expected,chcfg);
     chcfg = input_cfg();
@@ -404,7 +423,8 @@ MHAPLUGIN_DOCUMENTATION
  "Real and imaginary signal are presented separately to the loaded plugin:"
  " The real part is transferred as the regular MHA audio input signal,"
  " while the imaginary part is transferred through an AC variable with the"
- " same name as the configured name of this filterbank plugin.\n\n"
+ " same name as the configured name of this filterbank plugin with string"
+ " \"\\_imag\" appended.\n\n"
  "This plugin does not support changing the configuration at run time.\n\n"
  "This plugin creates the following AC variables during preparation:\n"
  "\\begin{description}\n"
@@ -437,7 +457,12 @@ MHAPLUGIN_DOCUMENTATION
  " with size (fragsize x channels*bands).  If this name is given, then"
  " the values given in this matrix are multiplied element-wise with the"
  " real and imaginary output signals of the loaded plugin before the filterbank"
- " resynthesis is performed.\n"
+ " resynthesis is performed.\n\n"
+ "If the plugin which processes the filterbank signal modifies the real part"
+ " of the signal, then it should also modify the imaginary part in the same"
+ " way (e.g. apply same amplification factors).  The imaginary part of the"
+ " signal must be modified in-place, by modifying the values inside the"
+ " AC variable, and not by creating an altered copy.\n\n"
  )
 
 // Local Variables:

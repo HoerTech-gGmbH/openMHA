@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2015 2016 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +27,9 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &acPooling_wave::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-acPooling_wave_config::acPooling_wave_config(algo_comm_t &ac, const mhaconfig_t in_cfg, acPooling_wave *_pooling):
+acPooling_wave_config::acPooling_wave_config(MHA_AC::algo_comm_t & ac,
+                                             const mhaconfig_t in_cfg,
+                                             acPooling_wave *_pooling):
     ac(ac),
     raw_p_name(_pooling->p_name.data),
     p(ac, _pooling->pool_name.data.c_str(), _pooling->numsamples.data, 1, false),
@@ -180,8 +183,10 @@ mha_wave_t *acPooling_wave_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-acPooling_wave::acPooling_wave(algo_comm_t iac, const std::string & configured_name)
-    : MHAPlugin::plugin_t<acPooling_wave_config>("Pooling of several consecutive time frames",iac)
+acPooling_wave::acPooling_wave(MHA_AC::algo_comm_t & iac,
+                               const std::string & configured_name)
+    : MHAPlugin::plugin_t<acPooling_wave_config>("Pooling of several "
+                                                 "consecutive time frames",iac)
     , numsamples("This parameter determines the length of the wave to be pooled in samples", "37", "]0,]")
     , pooling_wndlen("This parameter determines the length of the pooling window in msec.", "300", "]0,]")
     , pooling_type("This parameter determines the pooling method applied to the pooling window.", "mean", "[max sum mean]")

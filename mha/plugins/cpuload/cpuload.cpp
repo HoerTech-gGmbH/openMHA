@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2012 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -89,7 +90,8 @@ namespace cpuload{
 
   class cpuload_if_t :  public MHAPlugin::plugin_t<cpuload_cfg_t> {
   public:
-    cpuload_if_t(algo_comm_t iac, const std::string & configured_name);
+    cpuload_if_t(MHA_AC::algo_comm_t & iac,
+                 const std::string & configured_name);
     mha_spec_t* process(mha_spec_t*);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
@@ -101,7 +103,7 @@ namespace cpuload{
     MHAEvents::patchbay_t<cpuload_if_t> patchbay;
   };
 
-  cpuload_if_t::cpuload_if_t(algo_comm_t iac, const std::string &)
+  cpuload_if_t::cpuload_if_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<cpuload_cfg_t>("cpu load generator. CPU load is proportional to number of channels, number of frames, and factor",iac),
       factor("cpu load factor. Values > 1 increase cpu load, values < 1 decrease it","1","[0,]"),
       table_size("Size of the lookup table","65536","[1,]"),

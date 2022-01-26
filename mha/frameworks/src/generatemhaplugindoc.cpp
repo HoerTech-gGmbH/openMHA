@@ -45,8 +45,7 @@ public:
  */
 class io_wrapper : public plug_wrapperI, public fw_t {
 public:
-    io_wrapper(algo_comm_t iac, const std::string& libname):fw_t(){
-        (void)iac;
+    io_wrapper(const std::string& libname):fw_t(){
         fw_t::parse("iolib="+libname);
     };
     virtual ~io_wrapper()=default;
@@ -77,7 +76,8 @@ public:
  */
 class plug_wrapper : public plug_wrapperI, PluginLoader::mhapluginloader_t {
 public:
-    plug_wrapper(algo_comm_t iac, const std::string& libname):PluginLoader::mhapluginloader_t(iac,libname){};
+    plug_wrapper(MHA_AC::algo_comm_t & iac, const std::string& libname)
+        : PluginLoader::mhapluginloader_t(iac,libname) {};
     virtual ~plug_wrapper()=default;
     virtual std::vector<std::string> get_categories(){return PluginLoader::mhapluginloader_t::get_categories();};
     virtual std::string parse(const std::string& str){return  PluginLoader::mhapluginloader_t::parse(str);};
@@ -147,7 +147,7 @@ public:
     std::vector<std::string> get_categories() const;
 private:
     std::string strdom(mha_domain_t d) const;
-    std::string get_ac(MHAKernel::algo_comm_class_t& ac,std::string txt) const;
+    std::string get_ac(MHA_AC::algo_comm_t& ac,std::string txt) const;
     std::string parsername(std::string s) const;
     std::string get_parser_var(MHAParser::base_t* p,std::string name) const;
     std::string get_parser_tab(MHAParser::base_t* p,
@@ -155,7 +155,7 @@ private:
                                const std::string & latex_macro) const;
     const std::string plugname;
     const std::string latex_plugname;
-    MHAKernel::algo_comm_class_t ac;
+    MHA_AC::algo_comm_class_t ac;
     std::unique_ptr<plug_wrapperI> loader;
     const std::string plugin_macro;
 };
@@ -166,10 +166,10 @@ latex_doc_t::latex_doc_t(const std::string& plugname_,const std::string& plugin_
       plugin_macro(plugin_macro_)
 {
     try{
-        loader=std::make_unique<plug_wrapper>(ac.get_c_handle(),plugname);
+        loader=std::make_unique<plug_wrapper>(ac,plugname);
     }
     catch(...){
-        loader=std::make_unique<io_wrapper>(ac.get_c_handle(),plugname);
+        loader=std::make_unique<io_wrapper>(plugname);
       }
 }
 
@@ -245,7 +245,7 @@ std::string latex_doc_t::strdom( mha_domain_t d ) const
     }
 }
 
-std::string latex_doc_t::get_ac(MHAKernel::algo_comm_class_t& ac,
+std::string latex_doc_t::get_ac(MHA_AC::algo_comm_t & ac,
                                 std::string txt) const
 {
     std::string retv("");

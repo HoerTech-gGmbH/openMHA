@@ -18,7 +18,8 @@
 
 using namespace lsl;
 using namespace trigger2lsl;
-trigger2lsl_if_t::trigger2lsl_if_t(algo_comm_t iac, const std::string & )
+trigger2lsl_if_t::trigger2lsl_if_t(MHA_AC::algo_comm_t & iac,
+                                   const std::string & )
     : MHAPlugin::plugin_t<trigger2lsl_rt_t>("ac variable file recorder",iac)//,ac(iac)
 {
     insert_member(rising_edge);

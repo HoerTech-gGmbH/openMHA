@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2013 2014 2015 2017 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -39,8 +40,13 @@ namespace noise_psd_estimator {
 
     class noise_psd_estimator_t {
     public:
-        noise_psd_estimator_t(const mhaconfig_t& cf,algo_comm_t ac,const std::string& name,
-                              float alphaPH1mean,float alphaPSD,float q,float xiOptDb);
+        noise_psd_estimator_t(const mhaconfig_t& cf,
+                              MHA_AC::algo_comm_t & ac,
+                              const std::string& name,
+                              float alphaPH1mean,
+                              float alphaPSD,
+                              float q,
+                              float xiOptDb);
         void process(mha_spec_t* noisyDftFrame);
         void insert(){
             noisePow.insert();
@@ -78,12 +84,12 @@ namespace noise_psd_estimator {
     };
 
     noise_psd_estimator_t::noise_psd_estimator_t(const mhaconfig_t& cf,
-                                       algo_comm_t ac,
-                                       const std::string& name,
-                                       float alphaPH1mean,
-                                       float alphaPSD,
-                                       float q,
-                                       float xiOptDb)
+                                                 MHA_AC::algo_comm_t & ac,
+                                                 const std::string& name,
+                                                 float alphaPH1mean,
+                                                 float alphaPSD,
+                                                 float q,
+                                                 float xiOptDb)
         : noisyPer(cf.fftlen/2+1,cf.channels),
           PH1mean(cf.fftlen/2+1,cf.channels),
           noisePow(ac,name,cf.fftlen/2+1,cf.channels,false),
@@ -156,7 +162,7 @@ namespace noise_psd_estimator {
 
     class noise_psd_estimator_if_t : public MHAPlugin::plugin_t<noise_psd_estimator_t> {
     public:
-        noise_psd_estimator_if_t(algo_comm_t iac,
+        noise_psd_estimator_if_t(MHA_AC::algo_comm_t & iac,
                                  const std::string & configured_name);
         mha_spec_t* process(mha_spec_t*);
         void prepare(mhaconfig_t&);
@@ -172,7 +178,7 @@ namespace noise_psd_estimator {
     };
 
     noise_psd_estimator_if_t::
-    noise_psd_estimator_if_t(algo_comm_t iac,
+    noise_psd_estimator_if_t(MHA_AC::algo_comm_t & iac,
                              const std::string & configured_name)
         : MHAPlugin::plugin_t<noise_psd_estimator_t>("Noise power estimator after Gerkmann (2012).",iac),
         alphaPH1mean("low pass filter coefficient for PH1mean","0.9","[0,1["),

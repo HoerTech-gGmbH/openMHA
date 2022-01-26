@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2015 2016 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +23,8 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &acConcat_wave::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-acConcat_wave_config::acConcat_wave_config(algo_comm_t &ac, acConcat_wave *_concat):
+acConcat_wave_config::acConcat_wave_config(MHA_AC::algo_comm_t & ac,
+                                           acConcat_wave *_concat):
     ac(ac),
     strNames_AC(_concat->num_AC.data, _concat->prefix_names_AC.data)
 {
@@ -77,7 +79,7 @@ mha_wave_t *acConcat_wave_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-acConcat_wave::acConcat_wave(algo_comm_t iac, const std::string &)
+acConcat_wave::acConcat_wave(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<acConcat_wave_config>("Concatenating two or more waveforms into one", iac)
     , num_AC("Number of waveforms to be concatenated", "15", "[1, 28]")
     , prefix_names_AC("Prefix of the names of the waveforms to be concatenated", "vGCC_ac")

@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2011 2013 2015 HörTech gGmbH
 // Copyright © 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -873,7 +874,9 @@ MHAOvlFilter::overlap_save_filterbank_t::overlap_save_filterbank_t(MHAOvlFilter:
 //
 //**************************************************************************
 
-MHAOvlFilter::fftfb_ac_info_t::fftfb_ac_info_t(const MHAOvlFilter::fftfb_t& fb,algo_comm_t ac,const std::string& prefix)
+MHAOvlFilter::fftfb_ac_info_t::fftfb_ac_info_t(const MHAOvlFilter::fftfb_t& fb,
+                                               MHA_AC::algo_comm_t & ac,
+                                               const std::string& prefix)
 : cfv(ac,prefix+"_cf",fb.nbands(),1,false),
   efv(ac,prefix+"_ef",fb.nbands()+1,1,false),
   bwv(ac,prefix+"_band_weights",fb.nbands(),1,false),

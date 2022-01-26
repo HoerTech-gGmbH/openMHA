@@ -41,7 +41,7 @@ wave2spec_t::wave2spec_t(unsigned int nfft,
                          unsigned int nch,
                          mha_real_t wndpos,
                          const MHAWindow::base_t& window_,
-                         algo_comm_t ac,
+                         MHA_AC::algo_comm_t & ac,
                          std::string algo)
     : MHA_AC::spectrum_t(ac,algo,nfft/2+1,nch,false),
       nwnd(nwnd_),
@@ -72,14 +72,14 @@ void wave2spec_t::publish_ac_variables()
     this->MHA_AC::spectrum_t::insert(); // would throw in case of error
 
     // insert window shape with name <configured_name>_wnd
-    comm_var_t cv = {MHA_AC_MHAREAL, window.num_frames, 1U, window.buf};
-    ac.handle->insert_var(ac_wndshape_name, cv);
+    MHA_AC::comm_var_t cv = {MHA_AC_MHAREAL, window.num_frames, 1U, window.buf};
+    ac.insert_var(ac_wndshape_name, cv);
 }
 
 wave2spec_t::~wave2spec_t()
 {
     mha_fft_free( ft );
-    ac.handle->remove_ref(window.buf);
+    ac.remove_ref(window.buf);
 }
 
 mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)
@@ -97,7 +97,8 @@ mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)
     return &spec_in;
 }
 
-wave2spec_if_t::wave2spec_if_t(algo_comm_t iac, const std::string & configured_name)
+wave2spec_if_t::wave2spec_if_t(MHA_AC::algo_comm_t & iac,
+                               const std::string & configured_name)
     : MHAPlugin::plugin_t<wave2spec_t>(
         "Waveform to spectrum overlap add and FFT method.\n\n"
         "Audio data is collected up to wndlen, then windowed by\n"

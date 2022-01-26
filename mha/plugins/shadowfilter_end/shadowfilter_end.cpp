@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2018 2019 2020 HörTech gGmbH
 // Copyright © 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,10 +22,10 @@ namespace shadowfilter_end {
 
 class cfg_t {
 public:
-    cfg_t(int nfft_, algo_comm_t ac_, std::string name_);
+    cfg_t(int nfft_, MHA_AC::algo_comm_t & ac_, std::string name_);
     mha_spec_t* process(mha_spec_t*);
 private:
-    algo_comm_t ac;
+    MHA_AC::algo_comm_t & ac;
     std::string name;
     int nfft;
     int ntracks;
@@ -34,7 +35,7 @@ private:
     MHA_AC::spectrum_t gains;
 };
 
-cfg_t::cfg_t(int nfft_, algo_comm_t ac_, std::string name_)
+cfg_t::cfg_t(int nfft_, MHA_AC::algo_comm_t & ac_, std::string name_)
     : ac(ac_),
       name(name_),
       nfft(nfft_),
@@ -88,14 +89,15 @@ mha_spec_t* cfg_t::process(mha_spec_t* s)
 
 class shadowfilter_end_t : public MHAPlugin::plugin_t<cfg_t> {
 public:
-    shadowfilter_end_t(algo_comm_t iac, const std::string & configured_name);
+    shadowfilter_end_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
 private:
     MHAParser::string_t basename;
 };
 
-shadowfilter_end_t::shadowfilter_end_t(algo_comm_t iac, const std::string &)
+shadowfilter_end_t::shadowfilter_end_t(MHA_AC::algo_comm_t & iac,
+                                       const std::string &)
     : MHAPlugin::plugin_t<cfg_t>("Compute spectral gains seen since shadowfilter_begin, apply gains to other tracks",iac),
       basename("configuration name of shadowfilter_begin","shadowfilter_begin")
 {

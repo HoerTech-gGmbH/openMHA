@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2015 2017 2018 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,14 +25,16 @@ class acPooling_wave;
 class acPooling_wave_config {
 
 public:
-    acPooling_wave_config(algo_comm_t &ac, const mhaconfig_t in_cfg, acPooling_wave *_pooling);
+    acPooling_wave_config(MHA_AC::algo_comm_t & ac,
+                          const mhaconfig_t in_cfg,
+                          acPooling_wave *_pooling);
     ~acPooling_wave_config();
 
     mha_wave_t* process(mha_wave_t*);
     void insert();
 
     //declare data necessary for processing state here
-    algo_comm_t &ac;
+    MHA_AC::algo_comm_t & ac;
     std::string raw_p_name;
     MHA_AC::waveform_t p;
     MHA_AC::waveform_t p_biased;
@@ -53,7 +56,8 @@ public:
 class acPooling_wave : public MHAPlugin::plugin_t<acPooling_wave_config> {
 
 public:
-    acPooling_wave(algo_comm_t iac, const std::string & configured_name);
+    acPooling_wave(MHA_AC::algo_comm_t & iac,
+                   const std::string & configured_name);
     ~acPooling_wave();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);

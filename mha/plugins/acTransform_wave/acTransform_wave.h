@@ -25,7 +25,8 @@ class acTransform_wave;
 class acTransform_wave_config {
 
 public:
-    acTransform_wave_config(algo_comm_t &ac, acTransform_wave *_transform);
+    acTransform_wave_config(MHA_AC::algo_comm_t & ac,
+                            acTransform_wave *_transform);
     ~acTransform_wave_config();
 
     mha_wave_t* process(mha_wave_t*);
@@ -34,7 +35,7 @@ public:
     void insert_ac_variables();
 
     //declare data necessary for processing state here
-    algo_comm_t &ac;
+    MHA_AC::algo_comm_t & ac;
     std::string ang_name;
     std::string raw_p_name;
     std::string raw_p_max_name;
@@ -50,7 +51,8 @@ public:
 class acTransform_wave : public MHAPlugin::plugin_t<acTransform_wave_config> {
 
 public:
-    acTransform_wave(algo_comm_t iac, const std::string & configured_name);
+    acTransform_wave(MHA_AC::algo_comm_t & iac,
+                     const std::string & configured_name);
     ~acTransform_wave();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);

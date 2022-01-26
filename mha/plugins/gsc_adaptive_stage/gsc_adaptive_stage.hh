@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2013 2014 2016 2018 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +25,7 @@ constexpr mha_real_t DELT=1e-12;
 class gsc_adaptive_stage {
 
 public:
-  gsc_adaptive_stage(algo_comm_t & ac, const mhaconfig_t,
+  gsc_adaptive_stage(MHA_AC::algo_comm_t & ac, const mhaconfig_t,
                 int lenOldSamps, bool doCircularComp,
                 float mu, float alp, bool useVAD,
                 const std::string& vadName_);
@@ -38,7 +39,7 @@ private:
   void insert();
 
   /** Handle to AC space */
-  algo_comm_t ac;
+  MHA_AC::algo_comm_t & ac;
   /** Number of old samples to buffer */
   unsigned int lenOldSamps;
   /** Number of new samples*/
@@ -102,7 +103,7 @@ private:
 
 // Local Variables:
 // compile-command: "make"
-// c-basic-offset: 4
+// c-basic-offset: 2
 // indent-tabs-mode: nil
 // coding: utf-8-unix
 // End:

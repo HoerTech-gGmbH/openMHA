@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2009 2010 2013 2014 2015 2016 HörTech gGmbH
 // Copyright © 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -225,7 +226,7 @@ adm_rtconfig_t::~adm_rtconfig_t()
 
 class adm_if_t : public MHAPlugin::plugin_t<adm_rtconfig_t> {
 public:
-    adm_if_t(algo_comm_t ac, const std::string & configured_name);
+    adm_if_t(MHA_AC::algo_comm_t & ac, const std::string & configured_name);
     mha_wave_t * process(mha_wave_t * in);
 
     virtual void prepare(mhaconfig_t &);
@@ -253,7 +254,7 @@ private:
     bool is_prepared() { return out != 0; }
 };
 
-adm_if_t::adm_if_t(algo_comm_t iac, const std::string &)
+adm_if_t::adm_if_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<adm_rtconfig_t>("Adaptive differential microphone",
                                           iac),
       out(0),

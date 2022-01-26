@@ -21,7 +21,7 @@
 class windnoise_testing : public ::testing::Test {
 public:
   /// algorithm communication variable space needed for instantiating plugin
-  MHAKernel::algo_comm_class_t ac;
+  MHA_AC::algo_comm_class_t ac;
 
   /// plugin instance under test
   windnoise::if_t windnoise;
@@ -34,7 +34,7 @@ public:
 
   /// constructor creates plugin instance but does not prepare it
   windnoise_testing()
-    : windnoise(ac.get_c_handle(), "algo_name")
+    : windnoise(ac, "algo_name")
   {
   }
 

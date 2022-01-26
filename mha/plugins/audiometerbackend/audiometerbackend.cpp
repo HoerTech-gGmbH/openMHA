@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -179,7 +180,7 @@ typedef MHAPlugin::plugin_t<signal_gen_t> generator;
 class audiometer_if_t : public generator, private level_adaptor
 {
 public:
-    audiometer_if_t(algo_comm_t iac, const std::string & configured_name);
+    audiometer_if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
 private:
@@ -199,7 +200,7 @@ private:
     MHAEvents::patchbay_t<audiometer_if_t> patchbay;
 };
 
-audiometer_if_t::audiometer_if_t(algo_comm_t iac,const std::string &)
+audiometer_if_t::audiometer_if_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<signal_gen_t>(
         "This plugin mimicks an audiometer by playing a signal in a given sound level on a given channel.\n\n", iac),
       freq("Frequency in Hz.","440"),

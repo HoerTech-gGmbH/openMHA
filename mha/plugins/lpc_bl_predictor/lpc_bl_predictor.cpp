@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2016 2017 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +21,9 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &lpc_bl_predictor::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-lpc_bl_predictor_config::lpc_bl_predictor_config(algo_comm_t &iac, const mhaconfig_t in_cfg, lpc_bl_predictor *_lpc)
+lpc_bl_predictor_config::lpc_bl_predictor_config(MHA_AC::algo_comm_t & iac,
+                                                 const mhaconfig_t in_cfg,
+                                                 lpc_bl_predictor *_lpc)
     : ac(iac)
     , f_est(ac, _lpc->name_lpc_f.data, in_cfg.fragsize, in_cfg.channels, true)
     , b_est(ac, _lpc->name_lpc_b.data, in_cfg.fragsize, in_cfg.channels, true)
@@ -89,7 +92,7 @@ mha_wave_t *lpc_bl_predictor_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-lpc_bl_predictor::lpc_bl_predictor(algo_comm_t iac,
+lpc_bl_predictor::lpc_bl_predictor(MHA_AC::algo_comm_t & iac,
                                    const std::string &)
     : MHAPlugin::plugin_t<lpc_bl_predictor_config>(
           "This plugin performs forward and backward linear prediction using the Burg - Lattice algorithm for computing the next value of a given time series.\n\n"

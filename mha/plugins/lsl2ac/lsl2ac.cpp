@@ -17,7 +17,8 @@
 #include "lsl2ac.hh"
 #include <algorithm>
 using namespace std::string_literals;
-lsl2ac::lsl2ac_t::lsl2ac_t(algo_comm_t iac, const std::string &)
+
+lsl2ac::lsl2ac_t::lsl2ac_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<lsl2ac::cfg_t>("Receive LSL streams and copy"
                                          " them to AC variables.",iac)
 {
@@ -79,7 +80,7 @@ void lsl2ac::lsl2ac_t::get_all_stream_names()
         available_streams.data.push_back(istream.name());
 }
 
-lsl2ac::cfg_t::cfg_t(const algo_comm_t& ac_,
+lsl2ac::cfg_t::cfg_t(MHA_AC::algo_comm_t & ac_,
                      overrun_behavior ob_,
                      int bufsize_,
                      int chunksize_,

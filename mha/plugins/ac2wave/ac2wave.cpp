@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2010 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
 // Copyright © 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +23,7 @@ class ac2wave_t {
 public:
     ac2wave_t(unsigned int frames_,
               unsigned int channels_, 
-              algo_comm_t ac_, 
+              MHA_AC::algo_comm_t & ac_, 
               std::string name_,
               float gain_in_,
               float gain_ac_,
@@ -33,7 +34,7 @@ private:
     unsigned int frames;
     unsigned int channels;
     mha_wave_t w;
-    algo_comm_t ac;
+    MHA_AC::algo_comm_t & ac;
     std::string name;
     MHASignal::delay_wave_t delay_in;
     MHASignal::delay_wave_t delay_ac;
@@ -44,7 +45,7 @@ private:
 ac2wave_t::ac2wave_t(
     unsigned int frames_,
     unsigned int channels_, 
-    algo_comm_t ac_, 
+    MHA_AC::algo_comm_t & ac_, 
     std::string name_,
     float gain_in_,
     float gain_ac_,
@@ -84,7 +85,8 @@ mha_wave_t* ac2wave_t::process(mha_wave_t* s)
 
 class ac2wave_if_t : public MHAPlugin::plugin_t<ac2wave_t> {
 public:
-    ac2wave_if_t(algo_comm_t iac, const std::string & configured_name);
+    ac2wave_if_t(MHA_AC::algo_comm_t & iac,
+                 const std::string & configured_name);
     mha_wave_t* process(mha_spec_t*);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
@@ -101,7 +103,7 @@ private:
     MHAEvents::patchbay_t<ac2wave_if_t> patchbay;
 };
 
-ac2wave_if_t::ac2wave_if_t(algo_comm_t iac, const std::string &)
+ac2wave_if_t::ac2wave_if_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<ac2wave_t>(
         "Mix the main input signal with a waveform stored into AC\n"
         "variables. Main and AC signal can be attenuated or delayed\n"

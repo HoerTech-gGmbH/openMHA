@@ -264,33 +264,83 @@ typedef struct {
  */
 typedef void* mha_fft_t;
 
-#define MHA_AC_UNKNOWN 0
-#define MHA_AC_CHAR 1
-#define MHA_AC_INT 2
-#define MHA_AC_MHAREAL 3
-#define MHA_AC_FLOAT 4
-#define MHA_AC_DOUBLE 5
-#define MHA_AC_MHACOMPLEX 6
-#define MHA_AC_VEC_FLOAT 51
-#define MHA_AC_USER 1000
+/** Values for the \ref MHA_AC::comm_var_t::data_type \c data_type field
+ * of AC variables in MHA_AC::comm_var_t. */
+enum MHA_AC_TYPE_CONSTANTS : unsigned int {
+    /** This value should not be used for AC variables in the AC space.
+     * It may be used to indicate that the MHA_AC::comm_var_t struct
+     * has not yet been initialized. */
+    MHA_AC_UNKNOWN = 0,
+    /** The AC variable points to value(s) of type \c char. */
+    MHA_AC_CHAR = 1,
+    /** The AC variable points to value(s) of type \c int. */
+    MHA_AC_INT = 2,
+    /** The AC variable points to value(s) of type \c mha_real_t. */
+    MHA_AC_MHAREAL = 3,
+    /** The AC variable points to value(s) of type \c float. */
+    MHA_AC_FLOAT = 4,
+    /** The AC variable points to value(s) of type \c double. */
+    MHA_AC_DOUBLE = 5,
+    /** The AC variable points to value(s) of type \c mha_comples_t. */
+    MHA_AC_MHACOMPLEX = 6,
+    /** This value or any higher value for the MHA_AC::comm_var_t::data_type
+     * field indicate that the AC variable is of a user-defined data type. */
+    MHA_AC_USER = 1000,
+};
 
-typedef struct {
-    unsigned int data_type; 
-    unsigned int num_entries;
-    unsigned int stride;
-    void* data;         
-} comm_var_t;
+namespace MHA_AC {
 
-// Forward declaration of AC space provider class.
-namespace MHAKernel {class algo_comm_class_t;}
+    /** \ingroup algocomm
+     * \brief Algorithm communication variable structure
+     * 
+     * Algorithm communication variables (AC variables) are described by
+     * objects of this type.
+     * AC variables can be published to the algorithm variable space with the
+     * \ref algo_comm_class_t::insert_var method so that
+     * other plugins can read and modify their values. */
+    struct comm_var_t {
 
-typedef struct algo_comm_t {
-    MHAKernel::algo_comm_class_t * handle;
-} algo_comm_t;
+        /** \brief Type of data.
+         * \c data_type can be one of the predefined types or any user
+         * defined type. The pre-defined types are:
+         * \li \ref ::MHA_AC_CHAR
+         * \li \ref ::MHA_AC_INT
+         * \li \ref ::MHA_AC_MHAREAL
+         * \li \ref ::MHA_AC_FLOAT
+         * \li \ref ::MHA_AC_DOUBLE
+         * \li \ref ::MHA_AC_MHACOMPLEX
+         * \li or any user defined type with a value >= \ref ::MHA_AC_USER
+         */
+        unsigned int data_type;
+
+        /** The number of elements of data type \ref data_type stored at
+         * the pointer address \ref data. */
+        unsigned int num_entries;
+
+        /** This data member can be used to describe the extent of one
+         * dimension if the data should be interpreted as a two-dimensional
+         * matrix. The extent in the other dimension then is
+         * \ref num_entries / \ref stride.  When downstream plugins could interpret
+         * the AC variable as a (possibly 1x1) matrix, then it should be
+         * avoided to set \ref stride to 0. */
+        unsigned int stride;
+
+        /** \c data is a pointer to where the AC variable's `data`
+         * is stored in memory.  This pointer has to be valid for the lifetime
+         * of this AC variable. */
+        void* data;
+    };
+    // forward declaration
+    class algo_comm_t;
+}
+// For historic reasons, MHA_AC::comm_var_t and MHA_AC::algo_comm_t are made
+// available in the default namespace.
+using MHA_AC::comm_var_t;
+using MHA_AC::algo_comm_t;
 
 typedef unsigned int (*MHAGetVersion_t)(void);
 
-typedef int (*MHAInit_t)(algo_comm_t algo_comm,
+typedef int (*MHAInit_t)(MHA_AC::algo_comm_t & algo_comm,
                          const char* algo_name,
                          void** h);
 

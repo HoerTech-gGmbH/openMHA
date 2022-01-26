@@ -25,14 +25,15 @@ class doasvm_classification;
 class doasvm_classification_config {
 
 public:
-    doasvm_classification_config(algo_comm_t &ac, doasvm_classification *_doasvm);
+    doasvm_classification_config(MHA_AC::algo_comm_t & ac,
+                                 doasvm_classification *_doasvm);
     ~doasvm_classification_config();
 
     mha_wave_t* process(mha_wave_t*);
     /// Insert or reinsert AC variables p, p_max into AC space.
     void insert_ac_variables();
     //declare data necessary for processing state here
-    algo_comm_t &ac;
+    MHA_AC::algo_comm_t & ac;
     doasvm_classification *doasvm;
     MHA_AC::waveform_t p;
     MHA_AC::int_t p_max;
@@ -43,7 +44,8 @@ public:
 class doasvm_classification : public MHAPlugin::plugin_t<doasvm_classification_config> {
 
 public:
-    doasvm_classification(algo_comm_t iac, const std::string & configured_name);
+    doasvm_classification(MHA_AC::algo_comm_t & iac,
+                          const std::string & configured_name);
     ~doasvm_classification();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);

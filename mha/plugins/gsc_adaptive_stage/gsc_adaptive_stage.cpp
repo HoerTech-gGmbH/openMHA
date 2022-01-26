@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2013 2014 2016 2018 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -28,10 +29,15 @@
     @param useVAD Use voice activity detection?
     @param vadName_ Name of the VAD AC variable
  */
-gsc_adaptive_stage::gsc_adaptive_stage::gsc_adaptive_stage(algo_comm_t & ac, const mhaconfig_t in_cfg,
-                                     int lenOldSamps, bool doCircularComp, float mu,
-                                     float alp, bool useVAD, const std::string& vadName_) :
-
+gsc_adaptive_stage::gsc_adaptive_stage::
+gsc_adaptive_stage(MHA_AC::algo_comm_t & ac,
+                   const mhaconfig_t in_cfg,
+                   int lenOldSamps,
+                   bool doCircularComp,
+                   float mu,
+                   float alp,
+                   bool useVAD,
+                   const std::string& vadName_) :
   ac( ac ),
   lenOldSamps( lenOldSamps ),
   lenNewSamps( in_cfg.fragsize ), //use the fragsize for lenNewSamps

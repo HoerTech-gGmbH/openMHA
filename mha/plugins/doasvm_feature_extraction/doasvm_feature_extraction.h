@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2018 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -27,7 +28,9 @@ class doasvm_feature_extraction;
 class doasvm_feature_extraction_config {
 
 public:
-    doasvm_feature_extraction_config(algo_comm_t &ac, const mhaconfig_t in_cfg, doasvm_feature_extraction *_doagcc);
+    doasvm_feature_extraction_config(MHA_AC::algo_comm_t & ac,
+                                     const mhaconfig_t in_cfg,
+                                     doasvm_feature_extraction *_doagcc);
     ~doasvm_feature_extraction_config();
 
     mha_wave_t* process(mha_wave_t*);
@@ -61,7 +64,7 @@ public:
 class doasvm_feature_extraction : public MHAPlugin::plugin_t<doasvm_feature_extraction_config> {
 
 public:
-    doasvm_feature_extraction(algo_comm_t iac,
+    doasvm_feature_extraction(MHA_AC::algo_comm_t & iac,
                               const std::string & configured_name);
     ~doasvm_feature_extraction();
     mha_wave_t* process(mha_wave_t*);

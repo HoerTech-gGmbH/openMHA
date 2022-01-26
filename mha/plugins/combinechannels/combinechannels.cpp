@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2009 2010 2012 2013 2014 2015 HörTech gGmbH
 // Copyright © 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,11 +21,16 @@
 
 class combc_t {
 public:
-    combc_t(algo_comm_t ac,mhaconfig_t cfg_input,mhaconfig_t cfg_output,std::vector<float> channel_gains,const std::string& element_gain_name, bool interleaved);
+    combc_t(MHA_AC::algo_comm_t & ac,
+            mhaconfig_t cfg_input,
+            mhaconfig_t cfg_output,
+            std::vector<float> channel_gains,
+            const std::string& element_gain_name,
+            bool interleaved);
     mha_wave_t* process(mha_wave_t* s);
     mha_spec_t* process(mha_spec_t* s);
 private:
-    algo_comm_t ac_;
+    MHA_AC::algo_comm_t & ac_;
     bool interleaved_;
     unsigned int nbands;
     MHASignal::waveform_t w_out;
@@ -34,7 +40,12 @@ private:
 };
 
 
-combc_t::combc_t(algo_comm_t ac,mhaconfig_t cfg_input,mhaconfig_t cfg_output,std::vector<float> channel_gains,const std::string& element_gain_name,bool interleaved)
+combc_t::combc_t(MHA_AC::algo_comm_t & ac,
+                 mhaconfig_t cfg_input,
+                 mhaconfig_t cfg_output,
+                 std::vector<float> channel_gains,
+                 const std::string& element_gain_name,
+                 bool interleaved)
     : ac_(ac),
       interleaved_(interleaved),
       nbands(cfg_input.channels/cfg_output.channels),
@@ -115,7 +126,7 @@ mha_spec_t* combc_t::process(mha_spec_t* s)
 
 class combc_if_t : public MHAPlugin::plugin_t<combc_t> {
 public:
-    combc_if_t(algo_comm_t iac, const std::string & configured_name);
+    combc_if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     mha_wave_t* process(mha_wave_t*);
     mha_spec_t* process(mha_spec_t*);
@@ -126,7 +137,7 @@ private:
     MHAParser::string_t element_gain_name;
 };
 
-combc_if_t::combc_if_t(algo_comm_t iac, const std::string &)
+combc_if_t::combc_if_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<combc_t>("Channel combiner",iac),
       outchannels("Number of output channels","1","[1,]"),
       interleaved("Input signal has interleaved channel order?","no"),

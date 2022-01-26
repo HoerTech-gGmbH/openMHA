@@ -1,6 +1,7 @@
 // This file is part of the open HörTech Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -60,7 +61,7 @@ dc_t::line_t::line_t(mha_real_t x1,mha_real_t y1,mha_real_t m_)
 {
 }
 
-dc_if_t::dc_if_t(algo_comm_t iac, const std::string &)
+dc_if_t::dc_if_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : DC("Simple dynamic compression scheme",iac),
       dc_vars_t(static_cast<MHAParser::parser_t&>(*this)),
       clientid("Client ID of last fit",""),

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2013 2014 2015 2017 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +32,8 @@ constexpr static mha_real_t EPSILON =1e-10;
 
 /** Constructs the beamforming plugin. */
 smooth_cepstrum::
-smooth_cepstrum_if_t::smooth_cepstrum_if_t(algo_comm_t iac, const std::string&)
+smooth_cepstrum_if_t::smooth_cepstrum_if_t(MHA_AC::algo_comm_t & iac,
+                                           const std::string&)
     : MHAPlugin::plugin_t<smooth_cepstrum_t>("Cepstral smoothing single-channel noise reduction",iac),
       xi_min_db("Minimum a priori SNR for a bin in dB(power)","-27.0","[-50,50]"),
       f0_low("Lower limit for F0 detection in Hz","70.0","[0,400]"),
@@ -131,7 +133,8 @@ mha_spec_t * smooth_cepstrum::smooth_cepstrum_if_t::process(mha_spec_t * signal)
 //TODO: "full" variables probably not needed,
 //ie we just use the symmetric ffts provided by MHA
 
-smooth_cepstrum::smooth_cepstrum_t::smooth_cepstrum_t(algo_comm_t & ac, smooth_params & params_) :
+smooth_cepstrum::smooth_cepstrum_t::smooth_cepstrum_t(MHA_AC::algo_comm_t & ac,
+                                                      smooth_params & params_) :
 
     ac( ac ), params( params_ ),
     fftlen( params.in_cfg.fftlen ),

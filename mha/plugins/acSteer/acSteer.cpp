@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +24,9 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &acSteer::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-acSteer_config::acSteer_config(algo_comm_t &ac, const mhaconfig_t in_cfg, acSteer *acSteer):
+acSteer_config::acSteer_config(MHA_AC::algo_comm_t & ac,
+                               const mhaconfig_t in_cfg,
+                               acSteer *acSteer):
     nchan( in_cfg.channels ),
     nfreq( in_cfg.fftlen/2 + 1 ),
     nsteerchan( acSteer->nsteerchan.data ),
@@ -80,7 +83,7 @@ acSteer_config::~acSteer_config() {}
 
 
 /** Constructs our plugin. */
-acSteer::acSteer(algo_comm_t iac, const std::string & )
+acSteer::acSteer(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<acSteer_config>("Steering Vector Loading Plugin",iac)
     , steerFile("Name of the input file where the steering vectors are saved", "steerfile.bin")
     , acSteerName1("Name of the AC variable where the steering vectors of the first (left) reference microphone are saved", "acSteerLeft")

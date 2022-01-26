@@ -20,10 +20,10 @@
 class delay_testing : public ::testing::Test {
   public:
   // AC variable space
-  MHAKernel::algo_comm_class_t acspace{};
+  MHA_AC::algo_comm_class_t acspace{};
 
   // C handle to AC variable space
-  algo_comm_t ac {acspace.get_c_handle()};
+  MHA_AC::algo_comm_t & ac {acspace};
 
   // Example input to prepare method
   mhaconfig_t signal_properties =  {

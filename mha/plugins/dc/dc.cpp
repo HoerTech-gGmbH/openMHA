@@ -19,7 +19,7 @@
 
 using namespace dc;
 
-dc_if_t::dc_if_t(algo_comm_t iac, const std::string & configured_name)
+dc_if_t::dc_if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name)
    : MHAPlugin::plugin_t<dc_t>("dynamic compression",iac),
     dc_vars_t(static_cast<MHAParser::parser_t&>(*this)),
     algo(configured_name)
@@ -118,7 +118,7 @@ void dc_if_t::update()
  */
 static unsigned int get_audiochannels(unsigned int totalchannels,
                                       std::string acname,
-                                      algo_comm_t ac)
+                                      MHA_AC::algo_comm_t & ac)
 {
     if( acname.size() ){
         totalchannels = MHA_AC::get_var_int(ac,acname);
@@ -229,7 +229,7 @@ dc_vars_validator_t::dc_vars_validator_t(dc_vars_t & v,
 dc_t::dc_t(dc_vars_t vars,
            mha_real_t filter_rate,
            unsigned int nch_,
-           algo_comm_t ac,
+           MHA_AC::algo_comm_t & ac,
            mha_domain_t domain,
            unsigned int fftlen_,
            unsigned naudiochannels_,
@@ -300,19 +300,19 @@ void dc_if_t::update_monitors()
     const unsigned int fbands = cfg->get_nbands();
     const unsigned int naudiochannels = tftype.channels / fbands;
     const mha_real_t * cf = 0, * ef = 0, * bw = 0;
-    comm_var_t v;
-    if (ac.handle->is_var(cf_name)) {
-        v = ac.handle->get_var(cf_name);
+    MHA_AC::comm_var_t v;
+    if (ac.is_var(cf_name)) {
+        v = ac.get_var(cf_name);
         if (v.data_type == MHA_AC_MHAREAL && v.num_entries == fbands)
             cf = static_cast<mha_real_t *>(v.data);
     }
-    if (ac.handle->is_var(ef_name)) {
-        v = ac.handle->get_var(ef_name);
+    if (ac.is_var(ef_name)) {
+        v = ac.get_var(ef_name);
         if (v.data_type == MHA_AC_MHAREAL && v.num_entries == (fbands+1U))
             ef = static_cast<mha_real_t *>(v.data);
     }
-    if (ac.handle->is_var(bw_name)) {
-        v = ac.handle->get_var(bw_name);
+    if (ac.is_var(bw_name)) {
+        v = ac.get_var(bw_name);
         if (v.data_type == MHA_AC_MHAREAL && v.num_entries == fbands)
             bw = static_cast<mha_real_t *>(v.data);
     }

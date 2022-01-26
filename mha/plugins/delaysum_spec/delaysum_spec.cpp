@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2010 2013 2014 2015 2016 2017 2018 2019 HörTech gGmbH
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +31,7 @@ namespace delaysum_spec {
 
   class delaysum_spec_if_t : public MHAPlugin::plugin_t<delaysum_t> {
   public:
-    delaysum_spec_if_t(algo_comm_t iac, const std::string & configured_name);
+    delaysum_spec_if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
   private:
@@ -78,7 +79,7 @@ namespace delaysum_spec {
     return &output;
   }
 
-  delaysum_spec_if_t::delaysum_spec_if_t(algo_comm_t iac,
+  delaysum_spec_if_t::delaysum_spec_if_t(MHA_AC::algo_comm_t & iac,
                                          const std::string &)
     : MHAPlugin::plugin_t<delaysum_t>("simple delay and sum with single channel output",iac),
     groupdelay("Group delay in seconds. Positive values represent a delay. One entry for each audio channel","[0 0]","[,]"),

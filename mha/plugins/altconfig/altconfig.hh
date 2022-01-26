@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2009 2010 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -43,7 +44,7 @@ public:
      * @param iac             Algorithm communication variable space, not used
      *                        by this plugin except to initialize base class.
      * @param configured_name Configured name of this plugin. */
-    altconfig_t(algo_comm_t iac, const std::string & configured_name);
+    altconfig_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
 
     /** Invoked by MHA when this plugin should prepare for signal processing.
      * altconfig delegates to the loaded plugin and does not need to do more work to prepare.

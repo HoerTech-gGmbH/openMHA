@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2010 2012 2013 2014 2015 2017 2018 2019 2020 HörTech gGmbH
 // Copyright © 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +21,7 @@ namespace route {
 
     class process_t {
     public:
-        process_t(algo_comm_t iac,
+        process_t(MHA_AC::algo_comm_t & iac,
                   const std::string acname,
                   const std::vector<std::string>& r_out,
                   const std::vector<std::string>& r_ac,
@@ -40,7 +41,8 @@ namespace route {
     class interface_t : public MHAPlugin::plugin_t<route::process_t>
     {
     public:
-        interface_t(algo_comm_t iac, const std::string & configured_name);
+        interface_t(MHA_AC::algo_comm_t & iac,
+                    const std::string & configured_name);
         void prepare(mhaconfig_t&);
         void release();
         mha_wave_t* process(mha_wave_t*);
@@ -60,7 +62,7 @@ namespace route {
 
 }
 
-route::interface_t::interface_t(algo_comm_t iac,
+route::interface_t::interface_t(MHA_AC::algo_comm_t & iac,
                                 const std::string & configured_name)
     : MHAPlugin::plugin_t<route::process_t>(
         "Signal router plugin.\n\n"
@@ -126,7 +128,7 @@ mha_spec_t* route::interface_t::process(mha_spec_t* s)
     return cfg->process(s);
 }
 
-route::process_t::process_t(algo_comm_t ac,
+route::process_t::process_t(MHA_AC::algo_comm_t & ac,
                             const std::string acname,
                             const std::vector<std::string>& r_out,
                             const std::vector<std::string>& r_ac,

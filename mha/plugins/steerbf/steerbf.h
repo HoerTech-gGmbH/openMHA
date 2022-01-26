@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2017 2018 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -34,7 +35,9 @@ public:
 class steerbf_config {
 
 public:
-    steerbf_config(algo_comm_t &ac, const mhaconfig_t in_cfg, steerbf *steerbf);
+    steerbf_config(MHA_AC::algo_comm_t & ac,
+                   const mhaconfig_t in_cfg,
+                   steerbf *steerbf);
     ~steerbf_config();
     mha_spec_t* process(mha_spec_t*);
 
@@ -45,7 +48,7 @@ private:
     mha_spec_t bf_vec;
     unsigned int nangle;
     steerbf *_steerbf;
-    algo_comm_t &ac;
+    MHA_AC::algo_comm_t & ac;
     std::string bf_src_copy;
 };
 
@@ -53,7 +56,7 @@ private:
 class steerbf : public MHAPlugin::plugin_t<steerbf_config> {
 
 public:
-    steerbf(algo_comm_t iac, const std::string & configured_name);
+    steerbf(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     ~steerbf();
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);

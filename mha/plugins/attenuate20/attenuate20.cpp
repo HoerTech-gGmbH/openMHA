@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +18,7 @@
 
 class attenuate20_t : public MHAPlugin::plugin_t<int> {
 public:
-  attenuate20_t(algo_comm_t iac, const std::string & configured_name)
+  attenuate20_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name)
       : MHAPlugin::plugin_t<int>("This plugin attenuates by 20dB",iac)
   {(void)configured_name;}
   void release(void) override

@@ -65,7 +65,7 @@ protected:
         return std::string(test_info->test_suite_name())+"."+std::string(test_info->name())+"_"+random_string();}()),
     info(name,"Audio",NCHANNELS,lsl::IRREGULAR_RATE,lsl::cf_float32,name),
     acspace(),
-    ac(acspace.get_c_handle())
+    ac(acspace)
   {
     expected.resize(NCHUNKS);
     int i=0;
@@ -124,8 +124,8 @@ protected:
   std::thread outlet_thread;
   std::string name;
   lsl::stream_info info;
-  MHAKernel::algo_comm_class_t acspace;
-  algo_comm_t ac;
+  MHA_AC::algo_comm_class_t acspace;
+  MHA_AC::algo_comm_t & ac;
   std::vector<std::vector<float>> expected;
   std::unique_ptr<lsl2ac::save_var_base_t> var;
 };
@@ -212,7 +212,7 @@ protected:
         return std::string(test_info->test_suite_name())+"."+std::string(test_info->name())+"_"+random_string();}()),
     info(name,"Marker",1,lsl::IRREGULAR_RATE,lsl::cf_string,name),
     acspace(),
-    ac(acspace.get_c_handle())
+    ac(acspace)
     {
         expected={"First","Second","Third","Fourth","Fifth","Very Very Long String, much longer than our preallocated buffer"};
         outlet_thread=std::thread([this](){
@@ -262,8 +262,8 @@ protected:
   std::thread outlet_thread;
   std::string name;
   lsl::stream_info info;
-  MHAKernel::algo_comm_class_t acspace;
-  algo_comm_t ac;
+  MHA_AC::algo_comm_class_t acspace;
+  MHA_AC::algo_comm_t & ac;
   std::vector<std::string> expected;
   std::unique_ptr<lsl2ac::save_var_base_t> var;
 };
@@ -272,8 +272,8 @@ protected:
 using Test_save_var_string_t_discard=Test_save_var_string_t<lsl2ac::overrun_behavior::Discard>;
 TEST_F(Test_save_var_string_t_discard,OverrunBehavior){
   var->receive_frame();
-  comm_var_t v;
-  ASSERT_NO_THROW(v = ac.handle->get_var(name));
+  MHA_AC::comm_var_t v;
+  ASSERT_NO_THROW(v = ac.get_var(name));
   std::string actual((const char*)v.data);
   // We discarded the overrun, so we expect the last string we sent to be the current value
   EXPECT_EQ("Very Very Long String, m"s,actual);
@@ -283,8 +283,8 @@ TEST_F(Test_save_var_string_t_discard,OverrunBehavior){
 using Test_save_var_string_t_ignore=Test_save_var_string_t<lsl2ac::overrun_behavior::Ignore>;
 TEST_F(Test_save_var_string_t_ignore,OverrunBehavior){
   var->receive_frame();
-  comm_var_t v;
-  ASSERT_NO_THROW(v = ac.handle->get_var(name));
+  MHA_AC::comm_var_t v;
+  ASSERT_NO_THROW(v = ac.get_var(name));
   std::string actual((const char*)v.data);
   // We ignored overrun, so the value of the AC variable should be the first string we sent.
   EXPECT_EQ(expected.front(),actual);

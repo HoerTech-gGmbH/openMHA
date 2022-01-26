@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -46,7 +47,7 @@ class droptect_t : public MHAPlugin::plugin_t<int> {
 public:
   /** This constructor initializes the configuration language
    * variables and inserts them into the MHA configuration tree. */
-  droptect_t(algo_comm_t iac, const std::string & configured_name);
+  droptect_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
 
   /** Allocates and initializes storage for this algorithm.
    * @param signal_info contains fft length, number of channels,
@@ -61,7 +62,7 @@ public:
   mha_spec_t * process(mha_spec_t * signal);
 };
 
-droptect_t::droptect_t(algo_comm_t iac, const std::string &)
+droptect_t::droptect_t(MHA_AC::algo_comm_t & iac, const std::string &)
   : MHAPlugin::plugin_t<int>("Plugin detects dropouts in channels that"
                              " have a constant spectrum",iac),
     dropouts("Number of dropouts detected since last reset or start"),

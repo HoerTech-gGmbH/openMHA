@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2008 2011 2012 2013 2016 2017 2019 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -127,7 +128,7 @@ private:
     MHAParser::bool_t dump_mha;
     /// A variable for naming MHA instances
     MHAParser::string_t inst_name;
-    MHAKernel::algo_comm_class_t ac;
+    MHA_AC::algo_comm_class_t ac;
     PluginLoader::mhapluginloader_t* proc_lib;
     mhaconfig_t cfin, cfout;
     enum state_t {

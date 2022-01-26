@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2015 2017 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -23,12 +24,26 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &lpc::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-lpc_config::lpc_config(algo_comm_t &ac, const mhaconfig_t in_cfg,
-                       std::string & algo_name, unsigned int _order, unsigned int _lpc_buffer_size, bool _shift, unsigned int _comp_each_iter, bool _norm) :
-    norm(_norm), shift(_shift), comp_each_iter(_comp_each_iter), order(_order), lpc_buffer_size(_lpc_buffer_size), N(in_cfg.fragsize), //copy the LPC order and fragsize
+lpc_config::lpc_config(MHA_AC::algo_comm_t & ac,
+                       const mhaconfig_t in_cfg,
+                       std::string & algo_name,
+                       unsigned int _order,
+                       unsigned int _lpc_buffer_size,
+                       bool _shift,
+                       unsigned int _comp_each_iter,
+                       bool _norm) :
+    norm(_norm),
+    shift(_shift),
+    comp_each_iter(_comp_each_iter),
+    order(_order),
+    lpc_buffer_size(_lpc_buffer_size),
+    N(in_cfg.fragsize), //copy the LPC order and fragsize
     comp_iter(0),
-    R(_order + 1, 0 ), A(_order + 1, 0), //store the estimated autocorrelation and filters
-    inwave((_order + 1) > _lpc_buffer_size ? (_order + 1) : _lpc_buffer_size, in_cfg.channels, 0),
+    R(_order + 1, 0 ),
+    A(_order + 1, 0), //store the estimated autocorrelation and filters
+    inwave((_order + 1) > _lpc_buffer_size ? (_order + 1) : _lpc_buffer_size,
+           in_cfg.channels,
+           0),
     lpc_out(ac, algo_name, _order + 1, in_cfg.channels, false),
     corr_out(ac, algo_name + "_corr", _order + 1, in_cfg.channels, false)
 {
@@ -134,13 +149,24 @@ mha_wave_t *lpc_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-lpc::lpc(algo_comm_t iac, const std::string & configured_name)
-    : MHAPlugin::plugin_t<lpc_config>("This plugin implements the linear predictive coding analysis (LPC) by using the Levinson-Durbin recursion.",iac),
+lpc::lpc(MHA_AC::algo_comm_t & iac, const std::string & configured_name)
+    : MHAPlugin::plugin_t<lpc_config>("This plugin implements the linear\n"
+                                      "predictive coding analysis (LPC) by\n"
+                                      "using the Levinson-Durbin recursion.",
+                                      iac),
       algo_name(configured_name), //copy algo name
       lpc_order("LPC filter order", "20", "[0,500]"),
-      lpc_buffer_size("Size of the buffer in samples for which the autocorrelation matrix will be computed", "21", "]0,501]"),
-      shift("Refill the LPC buffer completely with new input signal by ignoring the old samples (no) or shift the old buffer as large as the block size of the input signal and read in the current input signal (yes).", "yes"),
-      comp_each_iter("Reestimate the LPC coefficients each <comp_each_iter> iterations, default value is 1", "1", "]0,]"),
+      lpc_buffer_size("Size of the buffer in samples for which the"
+                      " autocorrelation matrix will be computed",
+                      "21",
+                      "]0,501]"),
+      shift("Refill the LPC buffer completely with new input signal by\n"
+            "ignoring the old samples (no) or shift the old buffer as large\n"
+            "as the block size of the input signal and read in the current\n"
+            "input signal (yes).",
+            "yes"),
+      comp_each_iter("Reestimate the LPC coefficients each <comp_each_iter>\n"
+                     "iterations, default value is 1", "1", "]0,]"),
       norm("Normalize the auto correlation matrix with the LPC order", "no")
 {
     // make the plug-in findable via "?listid"

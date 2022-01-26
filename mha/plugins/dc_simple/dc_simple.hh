@@ -1,6 +1,7 @@
 // This file is part of the open HörTech Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -162,7 +163,7 @@ namespace dc_simple {
     class dc_if_t : public DC, public LEVEL, public dc_vars_t {
     public:
         /** Constructor instantiates one dc_simple plugin */
-        dc_if_t(algo_comm_t iac, 
+        dc_if_t(MHA_AC::algo_comm_t & iac, 
                 const std::string & configured_name);
 
         /** Prepare dc_simple plugin for signal processing
@@ -210,3 +211,9 @@ namespace dc_simple {
     };
 
 }
+// Local Variables:
+// compile-command: "make"
+// c-basic-offset: 4
+// indent-tabs-mode: nil
+// coding: utf-8-unix
+// End:

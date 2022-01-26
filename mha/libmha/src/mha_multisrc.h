@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2013 2016 2017 2018 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -33,15 +34,15 @@ namespace MHAMultiSrc {
 
     class base_t : protected MHAPlugin::config_t<MHAMultiSrc::channels_t> {
     public:
-        base_t(algo_comm_t iac);
+      base_t(MHA_AC::algo_comm_t & iac);
         void select_source(const std::vector<std::string>& src,int in_channels);
     protected:
-        algo_comm_t ac;
+      MHA_AC::algo_comm_t & ac;
     };
 
     class waveform_t : public MHA_AC::waveform_t, public MHAMultiSrc::base_t {
     public:
-        waveform_t(algo_comm_t iac,
+        waveform_t(MHA_AC::algo_comm_t & iac,
                    std::string name,
                    unsigned int frames,
                    unsigned int channels);
@@ -50,13 +51,13 @@ namespace MHAMultiSrc {
 
     class spectrum_t : public MHA_AC::spectrum_t, public MHAMultiSrc::base_t {
     public:
-        spectrum_t(algo_comm_t iac,
+        spectrum_t(MHA_AC::algo_comm_t & iac,
                    std::string name,
                    unsigned int frames,
                    unsigned int channels);
         mha_spec_t* update(mha_spec_t* s);
     };
-        
+
 }
 
 #endif

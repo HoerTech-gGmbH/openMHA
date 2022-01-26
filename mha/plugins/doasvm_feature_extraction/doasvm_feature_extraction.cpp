@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2015 2016 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,12 +25,19 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &doasvm_feature_extraction::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-doasvm_feature_extraction_config::doasvm_feature_extraction_config(algo_comm_t &ac, const mhaconfig_t in_cfg, doasvm_feature_extraction *_doagcc)
+doasvm_feature_extraction_config::
+doasvm_feature_extraction_config(MHA_AC::algo_comm_t & ac,
+                                 const mhaconfig_t in_cfg,
+                                 doasvm_feature_extraction *_doagcc)
     : doagcc(_doagcc)
     , wndlen(in_cfg.fragsize)
     , fftlen(_doagcc->fftlen.data)
     , G_length(fftlen / 2 + 1)
-    , vGCC_ac(ac, _doagcc->vGCC_name.data.c_str(), 2*_doagcc->max_lag.data * _doagcc->nupsample.data + 1, 1, true)
+    , vGCC_ac(ac,
+              _doagcc->vGCC_name.data.c_str(),
+              2*_doagcc->max_lag.data * _doagcc->nupsample.data + 1,
+              1,
+              true)
     , hifftwin_sum(0)
     , proc_wave(fftlen, 2)
     , hwin(fftlen, 1)
@@ -132,7 +140,7 @@ mha_wave_t *doasvm_feature_extraction_config::process(mha_wave_t *wave)
 }
 
 /** Constructs our plugin. */
-doasvm_feature_extraction::doasvm_feature_extraction(algo_comm_t iac,
+doasvm_feature_extraction::doasvm_feature_extraction(MHA_AC::algo_comm_t & iac,
                                                      const std::string & configured_name)
     : MHAPlugin::plugin_t<doasvm_feature_extraction_config>("Plugin for computing the generalized cross correlation with phase transform (GCC-PHAT)",iac)
     , fftlen("The length of the FFT window", "160", "[0,[")

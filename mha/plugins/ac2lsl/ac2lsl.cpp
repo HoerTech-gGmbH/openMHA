@@ -164,7 +164,8 @@ namespace ac2lsl{
 
     /** Runtime configuration class of the ac2lsl plugin */
     class cfg_t {
-        void create_or_replace_var(const std::string& name, const comm_var_t& v);
+        void create_or_replace_var(const std::string& name,
+                                   const MHA_AC::comm_var_t& v);
         void check_and_send();
         /** Maps variable name to unique ptr's of ac to lsl bridges. */
         std::map<std::string, std::unique_ptr<save_var_base_t>> varlist;
@@ -177,7 +178,7 @@ namespace ac2lsl{
         /** User configurable source id. */
         const std::string source_id;
         /** Handle to the ac space*/
-        const algo_comm_t& ac;
+        const MHA_AC::algo_comm_t & ac;
     public:
 
         /** C'tor of ac2lsl run time configuration
@@ -189,8 +190,11 @@ namespace ac2lsl{
          *                    stream.  Usually the rate with which process calls
          *                    happen, but may be lower due to the subsampling
          *                    caused by skip_ */
-        cfg_t(const algo_comm_t& ac_, unsigned skip_, const std::string& source_id,
-              const std::vector<std::string>& varnames_, double rate);
+        cfg_t(MHA_AC::algo_comm_t & ac_,
+              unsigned skip_,
+              const std::string& source_id,
+              const std::vector<std::string>& varnames_,
+              double rate);
         void process();
 
     };
@@ -199,7 +203,8 @@ namespace ac2lsl{
     class ac2lsl_t : public MHAPlugin::plugin_t<cfg_t>
     {
     public:
-        ac2lsl_t(algo_comm_t iac, const std::string & configured_name);
+        ac2lsl_t(MHA_AC::algo_comm_t & iac,
+                 const std::string & configured_name);
         /** Prepare constructs the vector of bridge variables and locks
          * the configuration, then calls update(). */
         void prepare(mhaconfig_t&);
@@ -226,7 +231,7 @@ namespace ac2lsl{
     };
 }
 
-ac2lsl::ac2lsl_t::ac2lsl_t(algo_comm_t iac, const std::string &)
+ac2lsl::ac2lsl_t::ac2lsl_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<ac2lsl::cfg_t>("Send AC variables as"
                                          " LSL messages.",iac),
     vars("List of AC variables to be saved, empty for all.","[]"),
@@ -258,7 +263,7 @@ void ac2lsl::ac2lsl_t::prepare(mhaconfig_t&)
         //No variable names were given in the configuration,
         //meaning we have to scan the whole ac space
         if( !vars.data.size() ){
-            vars.data=ac.handle->get_entries();
+            vars.data=ac.get_entries();
         }
         update();
     }
@@ -308,8 +313,11 @@ void ac2lsl::ac2lsl_t::update(){
     }
 }
 
-ac2lsl::cfg_t::cfg_t(const algo_comm_t& ac_, unsigned skip_, const std::string& source_id_,
-                     const std::vector<std::string>& varnames_, double rate_):
+ac2lsl::cfg_t::cfg_t(MHA_AC::algo_comm_t & ac_,
+                     unsigned skip_,
+                     const std::string& source_id_,
+                     const std::vector<std::string>& varnames_,
+                     double rate_):
     skipcnt(skip_),
     skip(skip_),
     srate(rate_),
@@ -317,7 +325,7 @@ ac2lsl::cfg_t::cfg_t(const algo_comm_t& ac_, unsigned skip_, const std::string& 
     ac(ac_)
 {
     for(auto& name : varnames_) {
-        comm_var_t v = ac.handle->get_var(name);
+        MHA_AC::comm_var_t v = ac.get_var(name);
         create_or_replace_var(name, v);
     }
 }
@@ -334,7 +342,7 @@ void ac2lsl::cfg_t::process(){
 
 void ac2lsl::cfg_t::check_and_send() {
     for(auto& var : varlist){
-        comm_var_t v = ac.handle->get_var(var.first);
+        MHA_AC::comm_var_t v = ac.get_var(var.first);
         if( var.second->get_buf_address()!=v.data and
             // static_cast is safe b/c LSL stores channel count as uint32_t
             static_cast<unsigned>(var.second->info().channel_count()) == v.stride and
@@ -352,7 +360,8 @@ void ac2lsl::cfg_t::check_and_send() {
     }
 }
 
-void ac2lsl::cfg_t::create_or_replace_var(const std::string& name, const comm_var_t& v) {
+void ac2lsl::cfg_t::create_or_replace_var(const std::string& name,
+                                          const MHA_AC::comm_var_t& v) {
     unsigned channel_count = v.stride ? v.stride : 1;
     switch( v.data_type ){
     case MHA_AC_INT :

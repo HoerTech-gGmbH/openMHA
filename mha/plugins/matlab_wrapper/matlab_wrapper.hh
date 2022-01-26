@@ -192,7 +192,8 @@ public:
    * @param iac             Handle to ac space
    * @param configured_name Configured name of this plugin
    */
-  matlab_wrapper_t(const algo_comm_t iac, const std::string & configured_name);
+  matlab_wrapper_t(MHA_AC::algo_comm_t & iac,
+                   const std::string & configured_name);
   /** Pure waveform processing
    * @param sin input waveform signal
    * @param sout output waveform signal */

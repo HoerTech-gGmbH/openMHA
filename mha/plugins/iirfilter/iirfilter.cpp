@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
 // Copyright © 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,14 +19,14 @@
 
 class iirfilter_t : public MHAFilter::iir_filter_t {
 public:
-    iirfilter_t(algo_comm_t iac, const std::string & configured_name);
+    iirfilter_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     void prepare_(mhaconfig_t&);
     void release_(){};
     mha_wave_t* process(mha_wave_t*);
 private:
 };
 
-iirfilter_t::iirfilter_t(algo_comm_t, const std::string &)
+iirfilter_t::iirfilter_t(MHA_AC::algo_comm_t &, const std::string &)
     : MHAFilter::iir_filter_t("IIR filter")
 {
 }

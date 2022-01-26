@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2011 2012 2013 2014 2016 2017 2018 HörTech gGmbH
 // Copyright © 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -35,7 +36,9 @@ PluginLoader::config_file_splitter_t::config_file_splitter_t(const std::string& 
     configname = cfgname.rval;
 }
 
-PluginLoader::mhapluginloader_t::mhapluginloader_t(algo_comm_t iac,const std::string& libname,bool check_version)
+PluginLoader::mhapluginloader_t::mhapluginloader_t(MHA_AC::algo_comm_t & iac,
+                                                   const std::string& libname,
+                                                   bool check_version)
     : config_file_splitter_t(libname),
       MHAParser::c_ifc_parser_t(get_libname()),
       ac(iac),
@@ -309,8 +312,10 @@ void PluginLoader::mhaconfig_compare(const mhaconfig_t& req, const mhaconfig_t& 
     }
 }
 
-MHAParser::mhapluginloader_t::mhapluginloader_t(MHAParser::parser_t& parent,const algo_comm_t& ac,
-                                                const std::string& plugname_name, const std::string& prefix)
+MHAParser::mhapluginloader_t::mhapluginloader_t(MHAParser::parser_t& parent,
+                                                MHA_AC::algo_comm_t & ac,
+                                                const std::string&plugname_name,
+                                                const std::string& prefix)
     : plug(NULL),
       parent_(parent),
       plugname("Plugin name",""),

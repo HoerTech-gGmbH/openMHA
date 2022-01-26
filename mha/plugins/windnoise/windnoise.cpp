@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -41,7 +42,7 @@ namespace windnoise {
         , powspec(signal_info.fftlen / 2 + 1, signal_info.channels)
     {}
 
-    if_t::if_t(algo_comm_t iac, const std::string & configured_name)
+    if_t::if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name)
         : MHAPlugin::plugin_t<cfg_t>("This plugin detects which microphone "
                                      "channels are affected by wind noise and\n"
                                      "replaces their signal with signal from "

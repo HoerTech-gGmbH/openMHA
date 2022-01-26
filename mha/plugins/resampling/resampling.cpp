@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2012 2013 2014 2015 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -89,7 +90,7 @@ namespace MHAPlugin_Resampling {
 
     class resampling_if_t : public MHAPlugin::plugin_t< resampling_t > {
     public:
-        resampling_if_t(algo_comm_t iac, const std::string & configured_name);
+        resampling_if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
         mha_wave_t* process(mha_wave_t*);
         void prepare(mhaconfig_t&);
         void release();
@@ -102,7 +103,7 @@ namespace MHAPlugin_Resampling {
         std::string algo;
     };
 
-    resampling_if_t::resampling_if_t(algo_comm_t iac,
+    resampling_if_t::resampling_if_t(MHA_AC::algo_comm_t & iac,
                                      const std::string & configured_name)
         : MHAPlugin::plugin_t<resampling_t>("Synchronous resampling plugin.",
                                             iac),

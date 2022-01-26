@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2017 2018 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +26,9 @@ class adaptive_feedback_canceller;
 class adaptive_feedback_canceller_config {
 
 public:
-    adaptive_feedback_canceller_config(algo_comm_t &ac, const mhaconfig_t in_cfg, adaptive_feedback_canceller *afc);
+    adaptive_feedback_canceller_config(MHA_AC::algo_comm_t & ac,
+                                       const mhaconfig_t in_cfg,
+                                       adaptive_feedback_canceller *afc);
     ~adaptive_feedback_canceller_config();
 
     mha_wave_t* process(mha_wave_t*s_Y, mha_real_t rho, mha_real_t c);
@@ -34,7 +37,7 @@ public:
     //declare data necessary for processing state here
 
 private:
-    algo_comm_t ac;
+    MHA_AC::algo_comm_t & ac;
     unsigned int ntaps;
     unsigned int frames;
     unsigned int channels;
@@ -78,7 +81,7 @@ private:
 class adaptive_feedback_canceller : public MHAPlugin::plugin_t<adaptive_feedback_canceller_config> {
 
 public:
-    adaptive_feedback_canceller(algo_comm_t ac,
+    adaptive_feedback_canceller(MHA_AC::algo_comm_t & ac,
                                 const std::string & configured_name);
     ~adaptive_feedback_canceller();
     mha_wave_t* process(mha_wave_t*);

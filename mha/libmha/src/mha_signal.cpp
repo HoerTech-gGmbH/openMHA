@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2008 2009 2010 2011 2012 HörTech gGmbH
 // Copyright © 2013 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -1794,7 +1795,7 @@ bool MHASignal::matrix_t::is_same_size(const MHASignal::matrix_t& src)
     return true;
 }
 
-MHASignal::matrix_t& MHASignal::matrix_t::operator=(const comm_var_t& src)
+MHASignal::matrix_t& MHASignal::matrix_t::operator=(const MHA_AC::comm_var_t& src)
 {
     if( dimension() != 2 )
         throw MHA_Error(__FILE__,__LINE__,"Expected dimension of 2, got %u.",dimension());
@@ -1843,9 +1844,9 @@ MHASignal::matrix_t& MHASignal::matrix_t::operator=(const comm_var_t& src)
     return *this;
 }
 
-comm_var_t MHASignal::matrix_t::get_comm_var()
+MHA_AC::comm_var_t MHASignal::matrix_t::get_comm_var()
 {
-    comm_var_t retv;
+    MHA_AC::comm_var_t retv;
     memset(&retv,0,sizeof(retv));
     if( dimension() != 2 )
         throw MHA_Error(__FILE__,__LINE__,"Expected dimension of 2, got %u.",dimension());

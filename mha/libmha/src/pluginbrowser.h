@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2016 2017 2018 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +37,9 @@ public:
     std::map<std::string,std::string> queries;
 };
 
-class pluginloader_t : private MHAKernel::algo_comm_class_t, public PluginLoader::mhapluginloader_t
+class pluginloader_t :
+    private MHA_AC::algo_comm_class_t,
+    public PluginLoader::mhapluginloader_t
 {
 public:
     pluginloader_t(const std::string& name);

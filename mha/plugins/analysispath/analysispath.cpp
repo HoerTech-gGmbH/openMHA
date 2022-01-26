@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
 // Copyright © 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +34,7 @@ public:
                   MHAProc_wave2wave_t inner_proc_wave2wave,
                   MHAProc_wave2spec_t inner_proc_wave2spec,
                   void* ilibdata,
-                  algo_comm_t outer_ac,
+                  MHA_AC::algo_comm_t & outer_ac,
                   const MHA_AC::acspace2matrix_t& acspace_template,
                   mha_domain_t inner_out_domain,
                   unsigned int fifo_len_blocks);
@@ -49,7 +50,7 @@ private:
     mha_fifo_lf_t<MHA_AC::acspace2matrix_t> ac_fifo;
     MHA_AC::acspace2matrix_t inner_ac_copy;
     MHA_AC::acspace2matrix_t outer_ac_copy;
-    algo_comm_t outer_ac;
+    MHA_AC::algo_comm_t & outer_ac;
     mha_domain_t inner_out_domain;
     MHA_Error inner_error;
     bool has_inner_error;
@@ -142,7 +143,7 @@ analysepath_t::analysepath_t(unsigned int nchannels_in,
                              MHAProc_wave2wave_t inner_proc_wave2wave,
                              MHAProc_wave2spec_t inner_proc_wave2spec,
                              void* ilibdata,
-                             algo_comm_t iouter_ac,
+                             MHA_AC::algo_comm_t & iouter_ac,
                              const MHA_AC::acspace2matrix_t& acspace_template,
                              mha_domain_t iinner_out_domain,
                              unsigned int fifo_len_blocks)
@@ -213,21 +214,24 @@ analysepath_t::~analysepath_t()
     pthread_cancel(thread);
 }
 
-class plug_t : private MHAKernel::algo_comm_class_t, public PluginLoader::mhapluginloader_t  {
+class plug_t :
+    private MHA_AC::algo_comm_class_t, public PluginLoader::mhapluginloader_t
+{
 public:
     plug_t(const std::string& libname);
     ~plug_t() throw () {}
     MHAProc_wave2wave_t get_process_wave();
     MHAProc_wave2spec_t get_process_spec();
     void* get_handle();
-    algo_comm_t get_ac() { return get_c_handle();};
+    MHA_AC::algo_comm_t & get_ac() {return *this;};
     void prepare(mhaconfig_t&) override;
     void release() override;
 };
 
 class analysispath_if_t : public MHAPlugin::plugin_t< analysepath_t > {
 public:
-    analysispath_if_t(algo_comm_t iac, const std::string & configured_name);
+    analysispath_if_t(MHA_AC::algo_comm_t & iac,
+                      const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
     void release();
@@ -245,7 +249,7 @@ private:
     MHA_AC::acspace2matrix_t* acspace_template;
 };
 
-analysispath_if_t::analysispath_if_t(algo_comm_t iac,
+analysispath_if_t::analysispath_if_t(MHA_AC::algo_comm_t & iac,
                                      const std::string & configured_name)
     : MHAPlugin::plugin_t<analysepath_t>(
         "Split-up of signal analysis and filtering, with asychronous processing of filter path and thread-safe exchange of filter parameters as AC variables.",iac),
@@ -360,7 +364,7 @@ void* plug_t::get_handle()
 }
 
 plug_t::plug_t(const std::string& libname)
-    : PluginLoader::mhapluginloader_t(get_c_handle(),libname)
+    : PluginLoader::mhapluginloader_t(get_ac(),libname)
 {
 }
 

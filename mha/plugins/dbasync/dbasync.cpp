@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2012 2013 2014 2015 2018 HörTech gGmbH
 // Copyright © 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -211,13 +212,13 @@ dbasync_t::~dbasync_t()
 
 class db_if_t : public MHAPlugin::plugin_t< dbasync_t > {
 public:
-    db_if_t(algo_comm_t iac, const std::string & configured_name);
+    db_if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
     void release();
     ~db_if_t()=default;
 private:
-    MHAKernel::algo_comm_class_t sub_ac;
+    MHA_AC::algo_comm_class_t sub_ac;
     MHAParser::mhapluginloader_t plugloader;
     MHAParser::int_t fragsize;
     MHAParser::int_t delay;
@@ -232,11 +233,11 @@ private:
     std::string algo;
 };
 
-db_if_t::db_if_t(algo_comm_t iac, const std::string & configured_name)
+db_if_t::db_if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name)
     : MHAPlugin::plugin_t<dbasync_t>("Bidirectional fragment size adaptor"
                                      " (double buffer) with asynchronous"
                                      " processing",iac),
-      plugloader(*this,sub_ac.get_c_handle()),
+      plugloader(*this, sub_ac),
       fragsize("fragment size of inner plugin","200","[1,]"), 
       delay("algorithmic delay present after bidirectional fragment size adaptation"
             " (minimum is inner_fragment_size - gcd(inner_fragment_size, outer_fragment_size)","0","[0,]"),

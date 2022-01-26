@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -63,7 +64,7 @@ mha_spec_t *fshift::fshift_config_t::process(mha_spec_t *in)
 }
 
 /** Constructs our plugin. */
-fshift::fshift_t::fshift_t(algo_comm_t iac, const std::string &)
+fshift::fshift_t::fshift_t(MHA_AC::algo_comm_t & iac, const std::string &)
        : MHAPlugin::plugin_t<fshift_config_t>("",iac),
   m_fmin("lower boundary for frequency shifter in Hz","4000","[0,]"),
   m_fmax("upper boundary for frequency shifter in Hz","16000","[0,]"),

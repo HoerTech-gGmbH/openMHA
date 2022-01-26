@@ -60,7 +60,7 @@ MHAMultiSrc::channels_t::channels_t(const std::vector<std::string>& route,int in
     }
 }
 
-MHAMultiSrc::base_t::base_t(algo_comm_t iac)
+MHAMultiSrc::base_t::base_t(MHA_AC::algo_comm_t & iac)
     : ac(iac)
 {
 }
@@ -79,7 +79,7 @@ void MHAMultiSrc::base_t::select_source(const std::vector<std::string>& src, int
     push_config(new MHAMultiSrc::channels_t(src,in_channels));
 }
 
-MHAMultiSrc::waveform_t::waveform_t(algo_comm_t ac,
+MHAMultiSrc::waveform_t::waveform_t(MHA_AC::algo_comm_t & ac,
                                     std::string name,
                                     unsigned int frames,
                                     unsigned int channels)
@@ -124,7 +124,7 @@ mha_wave_t* MHAMultiSrc::waveform_t::update(mha_wave_t* s)
     return this;
 }
 
-MHAMultiSrc::spectrum_t::spectrum_t(algo_comm_t ac,
+MHAMultiSrc::spectrum_t::spectrum_t(MHA_AC::algo_comm_t & ac,
                                     std::string name,
                                     unsigned int frames,
                                     unsigned int channels)

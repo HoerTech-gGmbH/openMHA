@@ -154,7 +154,8 @@ mha_wave_t* overlapadd_t::spec2wave(mha_spec_t* s)
     return &write_buf;
 }
 
-overlapadd_if_t::overlapadd_if_t(algo_comm_t iac, const std::string & configured_name)
+overlapadd_if_t::overlapadd_if_t(MHA_AC::algo_comm_t & iac,
+                                 const std::string & configured_name)
     : MHAPlugin::plugin_t<overlapadd_t>(
         "Waveform to spectrum overlap add and FFT method.\n\n"
         "Audio data is collected up to wndlen, then windowed by\n"

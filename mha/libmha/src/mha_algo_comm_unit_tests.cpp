@@ -33,15 +33,15 @@ TEST(comm_var_map_t, string_literals_are_available)
 
 TEST(comm_var_map_t, is_prepared)
 {
-  MHAKernel::comm_var_map_t s;
+  MHA_AC::comm_var_map_t s;
   EXPECT_FALSE(s.is_prepared);
 }
 
 TEST(comm_var_map_t, has_key_insert_erase_while_unprepared)
 {
-  MHAKernel::comm_var_map_t s;
+  MHA_AC::comm_var_map_t s;
   EXPECT_FALSE(s.has_key("key"s));
-  comm_var_t v = {};
+  MHA_AC::comm_var_t v = {};
   s.insert("key"s,v);
   EXPECT_TRUE(s.has_key("key"s));
   s.erase_by_name("key"s);
@@ -58,8 +58,8 @@ TEST(comm_var_map_t, has_key_insert_erase_while_unprepared)
 
 TEST(comm_var_map_t, insert_erase_disallowed_while_prepared)
 {
-  MHAKernel::comm_var_map_t s;
-  comm_var_t v = {};
+  MHA_AC::comm_var_map_t s;
+  MHA_AC::comm_var_t v = {};
   s.is_prepared = true;
   EXPECT_THROW(s.insert("key"s,v), MHA_Error);
   EXPECT_FALSE(s.has_key("key"s));
@@ -76,9 +76,9 @@ TEST(comm_var_map_t, insert_erase_disallowed_while_prepared)
 
 TEST(comm_var_map_t, retrieve_get_entries_size)
 {
-  MHAKernel::comm_var_map_t s;
+  MHA_AC::comm_var_map_t s;
   int i1 = 1, i2 = 2;
-  comm_var_t v1 = {}, v2a = {}, v2b={};
+  MHA_AC::comm_var_t v1 = {}, v2a = {}, v2b={};
   v1.data = &i1;
   v2a.data = v2b.data = &i2; // two AC references to same memory
   EXPECT_THROW(s.retrieve("key1"s), MHA_Error);
@@ -120,19 +120,22 @@ TEST(comm_var_map_t, retrieve_get_entries_size)
 
 TEST(algo_comm_class_t, insert_var_remove_var)
 {
-  MHAKernel::algo_comm_class_t acspace;
+  MHA_AC::algo_comm_class_t acspace;
 
   const std::string name = "key";
   EXPECT_FALSE(acspace.is_var(name));
   EXPECT_NO_THROW(acspace.remove_var(name)) <<
     "Removing a non-existing variable from AC space is not an error";
 
-  comm_var_t cv = {};
+  MHA_AC::comm_var_t cv = {};
+  EXPECT_EQ(0U, acspace.size());
   acspace.insert_var(name, cv);
   EXPECT_TRUE(acspace.is_var(name));
+  EXPECT_EQ(1U, acspace.size());
   EXPECT_NO_THROW(acspace.remove_var(name)) <<
     "Removing an existing variable from AC space works while unprepared";
   EXPECT_FALSE(acspace.is_var(name));
+  EXPECT_EQ(0U, acspace.size());
 
   acspace.set_prepared(true);
   EXPECT_THROW(acspace.remove_var(name), MHA_Error) <<
@@ -152,7 +155,7 @@ TEST(algo_comm_class_t, insert_var_remove_var)
 
 TEST(algo_comm_class_t, get_var_int)
 {
-  MHAKernel::algo_comm_class_t acspace;
+  MHA_AC::algo_comm_class_t acspace;
 
   // Check that exception is raised if AC variable has wrong type
   float wrong_type = 0.1f;
@@ -174,7 +177,7 @@ TEST(algo_comm_class_t, get_var_int)
 
 TEST(algo_comm_class_t, get_var_float)
 {
-  MHAKernel::algo_comm_class_t acspace;
+  MHA_AC::algo_comm_class_t acspace;
 
   // Check that exception is raised if AC variable has wrong type
   int wrong_type = -42;
@@ -192,7 +195,7 @@ TEST(algo_comm_class_t, get_var_float)
   float correct = 42.0f;
   acspace.insert_var("float", {MHA_AC_FLOAT, 1, 1, &correct});
   EXPECT_EQ(42.0f, acspace.get_var_float("float"));
-  EXPECT_EQ(42.0f, MHA_AC::get_var_float(acspace.get_c_handle(), "float"));
+  EXPECT_EQ(42.0f, MHA_AC::get_var_float(acspace, "float"));
 
   if (std::is_same<float, mha_real_t>::value) {
     acspace.insert_var("mha_real_t", {MHA_AC_MHAREAL, 1, 1, &correct});
@@ -202,7 +205,7 @@ TEST(algo_comm_class_t, get_var_float)
 
 TEST(algo_comm_class_t, get_var_double)
 {
-  MHAKernel::algo_comm_class_t acspace;
+  MHA_AC::algo_comm_class_t acspace;
 
   // Check that exception is raised if AC variable has wrong type
   int wrong_type = -42;
@@ -229,8 +232,8 @@ TEST(algo_comm_class_t, get_var_double)
 
 TEST(algo_comm_class_t, get_var_vfloat)
 {
-  MHAKernel::algo_comm_class_t acspace;
-  auto ac = acspace.get_c_handle();
+  MHA_AC::algo_comm_class_t acspace;
+  MHA_AC::algo_comm_t & ac = acspace;
 
   // Check that exception is raised if AC variable has wrong type
   int wrong_type = -42;
@@ -256,7 +259,7 @@ TEST(ac2matrix_t, insert)
 {
   // ac2matrix_t::insert is used by plugin analysispath to copy AC
   // variables from one AC space to another AC space
-  MHAKernel::algo_comm_class_t acspace1, acspace2;
+  MHA_AC::algo_comm_class_t acspace1, acspace2;
   const std::string name = "acname";
 
   // Create original variable in first AC space
@@ -264,30 +267,45 @@ TEST(ac2matrix_t, insert)
   acspace1.insert_var_vfloat(name, my_float_vector);
 
   // Create a matrix copy of the variable in first acspace
-  MHA_AC::ac2matrix_t copy(acspace1.get_c_handle(), name);
+  MHA_AC::ac2matrix_t copy(acspace1, name);
 
   // Insert the copy into the second ac space
-  copy.insert(acspace2.get_c_handle());
+  copy.insert(acspace2);
 
   // Now both ac spaces contain a single AC variable with name
   EXPECT_TRUE(acspace1.is_var(name));
   EXPECT_TRUE(acspace2.is_var(name));
 }
 
-TEST(acspace2matrix_t, constructor)
+TEST(acspace2matrix_t, constructor_insert)
 {
   // Create test ac space with 2 AC variables
-  MHAKernel::algo_comm_class_t acspace;
+  MHA_AC::algo_comm_class_t acspace;
   int i = 42;
   float f = 0.1f;
   acspace.insert_var_int("int", &i);
   acspace.insert_var_float("float", &f);
   
-  // Constructor with empty variable list copies all variables
-  MHA_AC::acspace2matrix_t B(acspace.get_c_handle(),{});
+  // Constructor with empty variable list copies all variables, converting
+  // all non-complex numeric types to mha_real_t
+  MHA_AC::acspace2matrix_t B(acspace,{});
   EXPECT_EQ(2U, B.size());
-}
 
+  // Create a second acspace where to insert the copies of all variables
+  MHA_AC::algo_comm_class_t target;
+  B.insert(target);
+  EXPECT_EQ(2U, target.size());
+  ASSERT_EQ(1U, target.get_var("int").num_entries);
+  ASSERT_EQ(1U, target.get_var("float").num_entries);
+  ASSERT_EQ(MHA_AC_MHAREAL, target.get_var("int").data_type);
+  ASSERT_EQ(MHA_AC_MHAREAL, target.get_var("float").data_type);
+  EXPECT_EQ(42, static_cast<mha_real_t*>(target.get_var("int").data)[0]);
+  EXPECT_EQ(0.1f, static_cast<mha_real_t*>(target.get_var("float").data)[0]);
+
+  // Verify it is a copy and not a reference
+  EXPECT_NE(&i, target.get_var("int").data);
+  EXPECT_NE(&f, target.get_var("float").data);
+}
 /*
  * Local Variables:
  * compile-command: "make -C .. unit-tests"

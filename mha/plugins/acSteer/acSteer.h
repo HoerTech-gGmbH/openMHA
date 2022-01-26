@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2017 2018 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +30,9 @@ class acSteer;
 class acSteer_config {
 
 public:
-    acSteer_config(algo_comm_t &ac, const mhaconfig_t in_cfg, acSteer *acSteer);
+    acSteer_config(MHA_AC::algo_comm_t & ac,
+                   const mhaconfig_t in_cfg,
+                   acSteer *acSteer);
     ~acSteer_config();
     void insert();
 
@@ -47,7 +50,7 @@ public:
 class acSteer : public MHAPlugin::plugin_t<acSteer_config> {
 
 public:
-    acSteer(algo_comm_t iac, const std::string & configured_name);
+    acSteer(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     ~acSteer();
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);

@@ -1,5 +1,6 @@
 // This file is part of the open HörTech Master Hearing Aid (openMHA)
 // Copyright © 2006 2009 2010 2013 2014 2015 2018 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +41,7 @@ typedef enum {
 class ac_mul_t : public MHAParser::string_t {
 public:
     /// Plugin constructor
-    ac_mul_t(algo_comm_t iac, const std::string & configured_name);
+    ac_mul_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     /// Prepare method, called prepare_() with trailing underscore because 
     /// ac_mul_t does not inherit from plugin_t<>.  Leaves signal dimensions
     /// unchanged.  The AC variables contained in the string expression must
@@ -59,7 +60,7 @@ private:
     void process_cr();
     void process_cc();
     //
-    algo_comm_t ac;
+    MHA_AC::algo_comm_t & ac;
     std::string algo;
     arg_type_t argt;
     std::string str_a;

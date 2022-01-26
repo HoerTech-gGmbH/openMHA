@@ -82,7 +82,8 @@ namespace trigger2lsl {
     void release();
     /// Plugin interface constructor.
     /// @param iac Algorithm communication variable space.
-    trigger2lsl_if_t(algo_comm_t iac, const std::string & configured_name);
+    trigger2lsl_if_t(MHA_AC::algo_comm_t & iac,
+                     const std::string & configured_name);
   private:
     void update();
     MHAEvents::patchbay_t<trigger2lsl_if_t> patchbay;

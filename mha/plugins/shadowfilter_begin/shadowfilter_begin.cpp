@@ -22,7 +22,11 @@ namespace shadowfilter_begin {
 
 class cfg_t {
 public:
-    cfg_t(int nfft, int inch, int outch, algo_comm_t ac, std::string name);
+    cfg_t(int nfft,
+          int inch,
+          int outch,
+          MHA_AC::algo_comm_t & ac,
+          std::string name);
     mha_spec_t* process(mha_spec_t*);
     /** Inserts or reinserts AC variables in_spec_copy, nch, ntracks into
      * AC variable space. */
@@ -41,7 +45,11 @@ void cfg_t::insert_ac_variables()
     ntracks.insert();
 }
 
-cfg_t::cfg_t(int nfft, int inch, int outch, algo_comm_t ac, std::string name)
+cfg_t::cfg_t(int nfft,
+             int inch,
+             int outch,
+             MHA_AC::algo_comm_t & ac,
+             std::string name)
     : in_spec_copy(ac,name,nfft/2+1,inch,false),
       out_spec(nfft/2+1,outch),
       nch(ac,name+"_nch",outch, false),
@@ -73,7 +81,8 @@ mha_spec_t* cfg_t::process(mha_spec_t* s)
 
 class shadowfilter_begin_t : public MHAPlugin::plugin_t<cfg_t> {
 public:
-    shadowfilter_begin_t(algo_comm_t iac, const std::string & configured_name);
+    shadowfilter_begin_t(MHA_AC::algo_comm_t & iac,
+                         const std::string & configured_name);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
 private:
@@ -82,7 +91,7 @@ private:
     MHAParser::int_t ntracks;
 };
 
-shadowfilter_begin_t::shadowfilter_begin_t(algo_comm_t iac,
+shadowfilter_begin_t::shadowfilter_begin_t(MHA_AC::algo_comm_t & iac,
                                            const std::string & configured_name)
     : MHAPlugin::plugin_t<cfg_t>("Save signal spectrum to AC variable",iac),
       basename(configured_name),

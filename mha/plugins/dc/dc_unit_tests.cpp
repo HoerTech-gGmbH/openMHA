@@ -22,8 +22,8 @@
 class dc_if_t_testing : public ::testing::Test {
 protected:
   mhaconfig_t signal_properties;
-  MHAKernel::algo_comm_class_t acspace;
-  algo_comm_t ac;
+  MHA_AC::algo_comm_class_t acspace;
+  MHA_AC::algo_comm_t & ac;
   dc::dc_if_t dc_if_handle;
   dc_if_t_testing():
     signal_properties {
@@ -35,7 +35,7 @@ protected:
       .srate = 100.0f
       },
     acspace{},
-    ac{acspace.get_c_handle()},
+    ac{acspace},
     dc_if_handle{ac, "algo"}
   {
     dc_if_handle.parse("gtdata=[[20 40 40]]");

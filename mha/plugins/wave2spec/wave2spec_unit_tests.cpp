@@ -21,9 +21,9 @@
 class wave2spec_testing : public ::testing::Test {
 public:
   /// AC variable space
-  MHAKernel::algo_comm_class_t acspace = {};
+  MHA_AC::algo_comm_class_t acspace = {};
   /// C handle to AC variable space
-  algo_comm_t ac = {acspace.get_c_handle()};
+  MHA_AC::algo_comm_t & ac = {acspace};
   /// Example STFT settings used in tests
   const unsigned fftlen = 800, wndlen = 600, fragsize = 300;
   /// example input to prepare method
@@ -99,10 +99,10 @@ TEST_F(wave2spec_testing, ac_variables)
   // Other tests use EXPECT_...
   
   // AC space accessor
-  comm_var_t cv = {0,0,0,nullptr};
+  MHA_AC::comm_var_t cv = {0,0,0,nullptr};
   // AC variables exist already after prepare:
   // "algo_name" is a spectrum with 2 channels and 401 (fftlen/2+1) bins
-  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name")); // exists
+  ASSERT_NO_THROW(cv = ac.get_var("algo_name")); // exists
   EXPECT_EQ(unsigned(MHA_AC_MHACOMPLEX), cv.data_type);
   EXPECT_EQ(signal_dimensions.channels * (fftlen / 2 + 1), cv.num_entries);
   EXPECT_EQ(fftlen/2+1, cv.stride);
@@ -110,7 +110,7 @@ TEST_F(wave2spec_testing, ac_variables)
   void const * const spec_ptr = cv.data;
 
   // "algo_name_wnd" is a real array with wndlen entries
-  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name_wnd")); // exists
+  ASSERT_NO_THROW(cv = ac.get_var("algo_name_wnd")); // exists
   EXPECT_EQ(unsigned(MHA_AC_MHAREAL), cv.data_type);
   EXPECT_EQ(wndlen, cv.num_entries);
   EXPECT_EQ(1U, cv.stride);
@@ -120,18 +120,18 @@ TEST_F(wave2spec_testing, ac_variables)
   // to test that wave2spec re-inserts both AC variables during processing,
   // we shadow the variables temporarily
   int shadow1 = 0, shadow2 = 0;
-  ac.handle->insert_var_int("algo_name", &shadow1);
-  ac.handle->insert_var_int("algo_name_wnd", &shadow2);
-  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name")); // exists
+  ac.insert_var_int("algo_name", &shadow1);
+  ac.insert_var_int("algo_name_wnd", &shadow2);
+  ASSERT_NO_THROW(cv = ac.get_var("algo_name")); // exists
   EXPECT_NE(spec_ptr, cv.data);
-  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name_wnd")); // exists
+  ASSERT_NO_THROW(cv = ac.get_var("algo_name_wnd")); // exists
   ASSERT_NE(wnd_ptr, cv.data); // was shadowed
 
   // Calling process should restore the AC variables
   w2s.process(&waveform, &spectrum);
-  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name")); // exists
+  ASSERT_NO_THROW(cv = ac.get_var("algo_name")); // exists
   EXPECT_EQ(spec_ptr, cv.data);
-  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name_wnd")); // exists
+  ASSERT_NO_THROW(cv = ac.get_var("algo_name_wnd")); // exists
   EXPECT_EQ(wnd_ptr, cv.data);
 }
 

@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2008 2010 2012 2013 2014 2015 2016 2017 2018 2020 HörTech gGmbH
 // Copyright © 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +33,7 @@
 class rt_nlms_t 
 {
 public:
-    rt_nlms_t(algo_comm_t iac,
+    rt_nlms_t(MHA_AC::algo_comm_t & iac,
               const std::string& name,
               const mhaconfig_t& cfg,
               unsigned int ntaps_,
@@ -46,7 +47,7 @@ public:
     mha_wave_t* process(mha_wave_t* sUD, mha_real_t rho, mha_real_t c, unsigned int norm_type, unsigned int estim_type, mha_real_t lambda_smooth);
     void insert();
 private:
-    algo_comm_t ac;
+    MHA_AC::algo_comm_t & ac;
     unsigned int ntaps;
     unsigned int frames;
     unsigned int channels;
@@ -81,7 +82,7 @@ private:
 class nlms_t : public MHAPlugin::plugin_t<rt_nlms_t>
 {
 public:
-    nlms_t(algo_comm_t iac, const std::string & configured_name);
+    nlms_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_wave_t* process(mha_wave_t*);
@@ -103,7 +104,7 @@ private:
     MHAEvents::patchbay_t<nlms_t> patchbay;
 };
 
-nlms_t::nlms_t(algo_comm_t iac, const std::string & configured_name)
+nlms_t::nlms_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name)
     : MHAPlugin::plugin_t<rt_nlms_t>(
           "This plugin adaptively estimates the coefficients of a filter by means of the NLMS algorithm.\n\n"
           "The estimated filter  is stored into an AC variable named by the algorithm configuration name or by the configuration variable name_f and the input signal is filtered by the current filter and returned as the output signal of the plugin.\n",
@@ -365,7 +366,7 @@ mha_wave_t* nlms_t::process(mha_wave_t* s)
     return poll_config()->process(s, rho.data, c.data, normtype.data.get_index(), estimtype.data.get_index(), lambda_smoothing_power.data);
 }
 
-rt_nlms_t::rt_nlms_t(algo_comm_t iac,
+rt_nlms_t::rt_nlms_t(MHA_AC::algo_comm_t & iac,
                      const std::string& name,
                      const mhaconfig_t& cfg,
                      unsigned int ntaps_,
@@ -378,7 +379,7 @@ rt_nlms_t::rt_nlms_t(algo_comm_t iac,
       ntaps(ntaps_),
       frames(cfg.fragsize),
       channels(cfg.channels), //all input channels processed
-      F(ac,name_f.empty() ? name : name_f,ntaps,channels,true), // Estimated filter is saved in the AC space and thereby made accessible to other plugins in the same chain
+      F(ac,name_f.empty() ? name : name_f,ntaps,channels,false), // Estimated filter is saved in the AC space and thereby made accessible to other plugins in the same chain
       U(ntaps,channels),
       Uflt(ntaps,channels),
       Pu(ntaps,channels),

@@ -20,7 +20,7 @@
 
 class overlapadd_testing : public ::testing::Test {
 public:
-  MHAKernel::algo_comm_class_t ac;
+  MHA_AC::algo_comm_class_t ac;
   const unsigned fftlen = 800, wndlen = 600, fragsize = 300;
   MHAParser::window_t window = {"window type"};
   MHAParser::window_t zerowindow = {"zero padding post window type"};

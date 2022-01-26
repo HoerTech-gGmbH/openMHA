@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -88,7 +89,7 @@ void cfg_t::process(mha_spec_t* s)
 
 class noise_t : public MHAPlugin::plugin_t<cfg_t> {
 public:
-    noise_t(algo_comm_t iac, const std::string & configured_name);
+    noise_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     mha_spec_t* process(mha_spec_t*);
     void prepare(mhaconfig_t&);
@@ -110,7 +111,7 @@ void noise_t::update_cfg()
         push_config(new cfg_t(input_cfg(),lev.data,mode.isval("replace"),frozennoise_length.data, seed.data));
 }
 
-noise_t::noise_t(algo_comm_t iac, const std::string &)
+noise_t::noise_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<cfg_t>(
         "white noise generator\n\n"
         "Waveform and spectral domain are supported. Please\n"

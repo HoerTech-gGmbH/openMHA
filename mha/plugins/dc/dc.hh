@@ -134,7 +134,7 @@ namespace dc {
         dc_t(dc_vars_t vars,
              mha_real_t filter_rate,
              unsigned int nch_,
-             algo_comm_t ac,
+             MHA_AC::algo_comm_t & ac,
              mha_domain_t domain,
              unsigned int fftlen,
              unsigned int naudiochannels_,
@@ -223,7 +223,7 @@ namespace dc {
          * @param iac Algorithm communication variable space.
          * @param configured_name The name given to this plugin by the
          *                        configuration. */
-        dc_if_t(algo_comm_t iac, const std::string & configured_name);
+        dc_if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
         /** Prepare plugin for signal processing.
          * @param tf Input signal dimensions.  They are not modified. */
         void prepare(mhaconfig_t& tf);

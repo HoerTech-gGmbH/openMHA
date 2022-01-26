@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +34,10 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &adaptive_feedback_canceller::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-adaptive_feedback_canceller_config::adaptive_feedback_canceller_config(algo_comm_t &ac, const mhaconfig_t in_cfg, adaptive_feedback_canceller *afc)
+adaptive_feedback_canceller_config::
+adaptive_feedback_canceller_config(MHA_AC::algo_comm_t & ac,
+                                   const mhaconfig_t in_cfg,
+                                   adaptive_feedback_canceller *afc)
     : ac(ac),
       ntaps(afc->ntaps.data),
       frames(in_cfg.fragsize),
@@ -277,8 +281,9 @@ void adaptive_feedback_canceller_config::insert()
 }
 
 /** Constructs our plugin. */
-adaptive_feedback_canceller::adaptive_feedback_canceller(algo_comm_t iac,
-                                   const std::string & configured_name)
+adaptive_feedback_canceller::
+adaptive_feedback_canceller(MHA_AC::algo_comm_t & iac,
+                            const std::string & configured_name)
     : MHAPlugin::plugin_t<adaptive_feedback_canceller_config>
     ("Prediction error method for adaptive feedback cancellation",iac),
     rho("Step size","0.01","]0,2]"),

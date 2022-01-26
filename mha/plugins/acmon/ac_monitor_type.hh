@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2009 2013 2014 2017 2018 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -31,12 +32,12 @@ namespace acmon {
          */
         ac_monitor_t(MHAParser::parser_t & parent,
                      const std::string & name_,
-                     algo_comm_t ac,
+                     MHA_AC::algo_comm_t & ac,
                      bool use_matrix);
 
         /** Update values of monitor
          * \param ac Handle to algorithm communication space */
-        void getvar(algo_comm_t ac);
+        void getvar(MHA_AC::algo_comm_t & ac);
 
         std::string name; /**< name of AC variable and parser monitor */
         std::string dimstr; /**< columns x rows */

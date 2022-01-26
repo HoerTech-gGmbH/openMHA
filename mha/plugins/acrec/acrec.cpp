@@ -30,7 +30,7 @@ std::string plugins::hoertech::acrec::to_iso8601(time_t tm){
     return std::string(buf);
 }
 
-acrec_t::acrec_t(algo_comm_t iac, const std::string & )
+acrec_t::acrec_t(MHA_AC::algo_comm_t & iac, const std::string & )
     : MHAPlugin::plugin_t<acwriter_t>("ac variable file recorder",iac),
       ac(iac)
 {
@@ -46,7 +46,7 @@ acrec_t::acrec_t(algo_comm_t iac, const std::string & )
 template <class mha_signal_t> mha_signal_t* acrec_t::process(mha_signal_t* s)
 {
     poll_config();
-    cv = ac.handle->get_var(cfg->get_varname());
+    cv = ac.get_var(cfg->get_varname());
     cfg->process(&cv);
     return s;
 }
@@ -121,7 +121,7 @@ acwriter_t::acwriter_t(bool active,unsigned fifosize,unsigned minwrite,
     (void)get_varname();
 }
 
-void acwriter_t::process(comm_var_t* s)
+void acwriter_t::process(MHA_AC::comm_var_t* s)
 {
     if( active ) {
         if (not is_num_channels_known) {

@@ -165,7 +165,7 @@ namespace windnoise {
         const std::string lowpass_quotient_acname;
 
         /// Constructor instantiates one windnoise plugin
-        if_t(algo_comm_t iac, const std::string & configured_name);
+        if_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
 
         /// Prepare windnoise plugin for signal processing
         /// @param signal_info signal dimensions, not changed by this plugin
@@ -182,16 +182,16 @@ namespace windnoise {
 
         /// inserts the windnoise detection vector into AC space
         void insert() {
-            comm_var_t cv = {
+            MHA_AC::comm_var_t cv = {
                 .data_type = MHA_AC_INT,
                 .num_entries = unsigned(detected.data.size()),
                 .stride = 1,
                 .data = detected.data.size() ? &detected.data[0] : nullptr
             };
-            ac.handle->insert_var(detected_acname, cv);
+            ac.insert_var(detected_acname, cv);
             cv.data_type = MHA_AC_FLOAT;
             cv.data = cv.num_entries ? &lowpass_quotient.data[0] : nullptr;
-            ac.handle->insert_var(lowpass_quotient_acname, cv);
+            ac.insert_var(lowpass_quotient_acname, cv);
         }
 
         // make poll_config public for unit tests

@@ -18,7 +18,8 @@
 
 acmon::ac_monitor_t::ac_monitor_t(MHAParser::parser_t & parent,
                                   const std::string & name_,
-                                  algo_comm_t ac,bool use_mat_)
+                                  MHA_AC::algo_comm_t & ac,
+                                  bool use_mat_)
     : name(name_),
       mon(""),
       mon_mat(""),
@@ -27,7 +28,7 @@ acmon::ac_monitor_t::ac_monitor_t(MHAParser::parser_t & parent,
       p_parser(parent),
       use_mat(use_mat_)
 {
-    comm_var_t v = ac.handle->get_var(name);
+    MHA_AC::comm_var_t v = ac.get_var(name);
     switch( v.data_type ){
         case MHA_AC_INT :
         case MHA_AC_FLOAT :
@@ -58,10 +59,10 @@ acmon::ac_monitor_t::ac_monitor_t(MHAParser::parser_t & parent,
     dimstr = MHAParser::StrCnv::val2str(cols)+"x"+MHAParser::StrCnv::val2str(rows);
 }
 
-void acmon::ac_monitor_t::getvar(algo_comm_t ac)
+void acmon::ac_monitor_t::getvar(MHA_AC::algo_comm_t & ac)
 {
     unsigned int ndim, k, stride;
-    comm_var_t v = ac.handle->get_var(name);
+    MHA_AC::comm_var_t v = ac.get_var(name);
     switch( v.data_type ){
         case MHA_AC_INT :
         case MHA_AC_FLOAT :

@@ -18,51 +18,6 @@
 #include "mha_algo_comm.hh"
 #include "mha_defs.h"
 
-/** 
-
-\ingroup algocomm
-\struct comm_var_t
-
-\brief Algorithm communication variable structure
-    
-Algorithm communication variables (AC variables) are objects of this
-type. The member data is a pointer to the variable `data'. This
-pointer has to be valid for the lifetime of this AC variable. The
-member `data_type' can be one of the predefined types or any user
-defined type. The member `num_entries' describes the number of
-elements of this base type stored at the pointer address.
-    
-    An AC variable can be registered with the \ref
-    algo_comm_class_t::insert_var method.
-    
-*/
-/** \var comm_var_t::data_type
-    \brief Type of data.
-    
-    This can be one of the predefined types
-    \li MHA_AC_CHAR
-    \li MHA_AC_INT
-    \li MHA_AC_MHAREAL
-    \li MHA_AC_FLOAT
-    \li MHA_AC_DOUBLE
-    \li MHA_AC_MHACOMPLEX
-    \li MHA_AC_VEC_FLOAT
-    or any user defined type with a value greater than
-    \li MHA_AC_USER
-*/
-
-/** \var comm_var_t::num_entries
-    \brief Number of entries 
-*/
-/** \var comm_var_t::stride
-    \brief length of one row (C interpretation)
-           or of one column (Fortran interpretation) 
-*/     
-/** \var comm_var_t::data
-    \brief Pointer to variable data 
-*/
-
-
 /** \defgroup algocomm Communication between algorithms
 
 Algorithms within one chain can share variables for communication
@@ -101,8 +56,8 @@ in plugins using AC variables:
        process() before accessing their values.
 */
 
-void MHAKernel::comm_var_map_t::insert(const std::string & name,
-                                       const comm_var_t & var)
+void MHA_AC::comm_var_map_t::insert(const std::string & name,
+                                    const comm_var_t & var)
 {
     // If we are not replacing an entry, then we must be creating a new entry.
     const bool creating_new_entry = not has_key(name);
@@ -128,7 +83,7 @@ void MHAKernel::comm_var_map_t::insert(const std::string & name,
         update_entries();
 }
 
-void MHAKernel::comm_var_map_t::erase_by_name(const std::string & name)
+void MHA_AC::comm_var_map_t::erase_by_name(const std::string & name)
 {
     // Removing AC variables is not permitted while MHA is prepared.
     if (is_prepared)
@@ -142,7 +97,7 @@ void MHAKernel::comm_var_map_t::erase_by_name(const std::string & name)
     update_entries();
 }
 
-void MHAKernel::comm_var_map_t::erase_by_pointer(void * ptr)
+void MHA_AC::comm_var_map_t::erase_by_pointer(void * ptr)
 {
     std::map<std::string,comm_var_t>::iterator current_iterator, next_iterator;
 
@@ -204,8 +159,8 @@ void MHAKernel::comm_var_map_t::erase_by_pointer(void * ptr)
         update_entries();
 }
 
-const comm_var_t &
-MHAKernel::comm_var_map_t::retrieve(const std::string & name) const
+const MHA_AC::comm_var_t &
+MHA_AC::comm_var_map_t::retrieve(const std::string & name) const
 {
     if (has_key(name)) 
         return map.at(name);
@@ -215,12 +170,12 @@ MHAKernel::comm_var_map_t::retrieve(const std::string & name) const
                         name.c_str());
 }
 
-const std::vector<std::string> & MHAKernel::comm_var_map_t::get_entries() const
+const std::vector<std::string> & MHA_AC::comm_var_map_t::get_entries() const
 {
     return entries;
 }
 
-void MHAKernel::comm_var_map_t::update_entries()
+void MHA_AC::comm_var_map_t::update_entries()
 {
     if (is_prepared == true) {
         // Should not happen, this is a private method, the caller should make
@@ -234,45 +189,31 @@ void MHAKernel::comm_var_map_t::update_entries()
     }
 }
 
-MHAKernel::algo_comm_class_t::algo_comm_class_t()
-{
-    ac.handle = this;
-}
-
-algo_comm_t MHAKernel::algo_comm_class_t::get_c_handle()
-{
-    return ac;
-}
-
-MHAKernel::algo_comm_class_t::~algo_comm_class_t()
-{
-}
-
-void MHAKernel::algo_comm_class_t::
+void MHA_AC::algo_comm_class_t::
 insert_var(const std::string & name, comm_var_t var)
 {
     vars.insert(name, var);
 }
 
-void MHAKernel::algo_comm_class_t::
+void MHA_AC::algo_comm_class_t::
 insert_var_int(const std::string & name, int* ptr)
 {
     insert_var(name, {MHA_AC_INT, 1, 1, ptr});
 }
 
-void MHAKernel::algo_comm_class_t::
+void MHA_AC::algo_comm_class_t::
 insert_var_float(const std::string & name, float* ptr)
 {
     insert_var(name, {MHA_AC_FLOAT, 1, 1, ptr});
 }
 
-void MHAKernel::algo_comm_class_t::
+void MHA_AC::algo_comm_class_t::
 insert_var_double(const std::string & name, double* ptr)
 {
     insert_var(name, {MHA_AC_DOUBLE, 1, 1, ptr});
 }
 
-void MHAKernel::algo_comm_class_t::
+void MHA_AC::algo_comm_class_t::
 insert_var_vfloat(const std::string & name,std::vector<float>& vec)
 {
     comm_var_t cv{MHA_AC_FLOAT, 1, 1, vec.data()};
@@ -286,45 +227,45 @@ insert_var_vfloat(const std::string & name,std::vector<float>& vec)
     insert_var(name, cv);
 }
 
-void MHAKernel::algo_comm_class_t::remove_var(const std::string & name)
+void MHA_AC::algo_comm_class_t::remove_var(const std::string & name)
 {
     vars.erase_by_name(name);
 }
 
-void MHAKernel::algo_comm_class_t::remove_ref(void* addr)
+void MHA_AC::algo_comm_class_t::remove_ref(void* addr)
 {
     vars.erase_by_pointer(addr);
 }
 
-comm_var_t MHAKernel::algo_comm_class_t::
+MHA_AC::comm_var_t MHA_AC::algo_comm_class_t::
 get_var(const std::string & name) const
 {
     return vars.retrieve(name);
 }
 
-bool MHAKernel::algo_comm_class_t::is_var(const std::string & name) const
+bool MHA_AC::algo_comm_class_t::is_var(const std::string & name) const
 {
     return vars.has_key(name);
 }
 
-const std::vector<std::string> & MHAKernel::algo_comm_class_t::
+const std::vector<std::string> & MHA_AC::algo_comm_class_t::
 get_entries() const
 {
     return vars.get_entries();
 }
 
-size_t MHAKernel::algo_comm_class_t::size() const
+size_t MHA_AC::algo_comm_class_t::size() const
 {
     return vars.size();
 }
 
-int MHAKernel::algo_comm_class_t::get_var_int(const std::string & name) const
+int MHA_AC::algo_comm_class_t::get_var_int(const std::string & name) const
 {
     comm_var_t var = get_var(name);
     if( var.data_type != MHA_AC_INT )
         throw MHA_Error(__FILE__, __LINE__, "algo_comm_class_t::get_var_int: "
                         "AC variable \"%s\" has unexpected data type %u, "
-                        "expected MHA_AC_INT (%d).", name.c_str(),
+                        "expected MHA_AC_INT (%u).", name.c_str(),
                         var.data_type, MHA_AC_INT);
     if( var.num_entries != 1 )
         throw MHA_Error(__FILE__, __LINE__, "algo_comm_class_t::get_var_int: "
@@ -333,14 +274,14 @@ int MHAKernel::algo_comm_class_t::get_var_int(const std::string & name) const
     return *static_cast<int*>(var.data);
 }
 
-float MHAKernel::algo_comm_class_t::
+float MHA_AC::algo_comm_class_t::
 get_var_float(const std::string & name) const
 {
     comm_var_t var = get_var(name);
     if( var.data_type != MHA_AC_FLOAT )
         throw MHA_Error(__FILE__, __LINE__,"algo_comm_class_t::get_var_float: "
                         "AC variable \"%s\" has unexpected data type %u, "
-                        "expected MHA_AC_FLOAT (%d).", name.c_str(),
+                        "expected MHA_AC_FLOAT (%u).", name.c_str(),
                         var.data_type, MHA_AC_FLOAT);
     if( var.num_entries != 1 )
         throw MHA_Error(__FILE__, __LINE__,"algo_comm_class_t::get_var_float: "
@@ -349,14 +290,14 @@ get_var_float(const std::string & name) const
     return *static_cast<float*>(var.data);
 }
 
-double MHAKernel::algo_comm_class_t::
+double MHA_AC::algo_comm_class_t::
 get_var_double(const std::string & name) const
 {
     comm_var_t var = get_var(name);
     if( var.data_type != MHA_AC_DOUBLE )
         throw MHA_Error(__FILE__,__LINE__,"algo_comm_class_t::get_var_double: "
                         "AC variable \"%s\" has unexpected data type %u, "
-                        "expected MHA_AC_DOUBLE (%d).", name.c_str(),
+                        "expected MHA_AC_DOUBLE (%u).", name.c_str(),
                         var.data_type, MHA_AC_DOUBLE);
     if( var.num_entries != 1 )
         throw MHA_Error(__FILE__,__LINE__,"algo_comm_class_t::get_var_double: "
@@ -365,14 +306,14 @@ get_var_double(const std::string & name) const
     return *static_cast<double*>(var.data);
 }
 
-void MHAKernel::algo_comm_class_t::set_prepared(bool prepared)
+void MHA_AC::algo_comm_class_t::set_prepared(bool prepared)
 {
     vars.is_prepared = prepared;
 }
 
-mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)
+mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t & ac,const std::string& n)
 {
-    comm_var_t var = ac.handle->get_var(n);
+    comm_var_t var = ac.get_var(n);
     if( (var.stride == 0) || (var.num_entries!=0 && var.stride > var.num_entries) )
         throw MHA_Error(__FILE__,__LINE__,
                         "The variable \"%s\" has invalid stride settings (%u).",
@@ -393,9 +334,9 @@ mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)
     return s;
 }
 
-mha_wave_t MHA_AC::get_var_waveform(algo_comm_t ac,const std::string& n)
+mha_wave_t MHA_AC::get_var_waveform(algo_comm_t & ac,const std::string& n)
 {
-    comm_var_t var = ac.handle->get_var(n);
+    comm_var_t var = ac.get_var(n);
     if( (var.stride == 0) || (var.num_entries!=0 && var.stride > var.num_entries) )
         throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%u).",n.c_str(),var.stride);
     mha_wave_t s;
@@ -419,14 +360,14 @@ mha_wave_t MHA_AC::get_var_waveform(algo_comm_t ac,const std::string& n)
     throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid data type.",n.c_str());
 }
 
-int MHA_AC::get_var_int(algo_comm_t ac,const std::string& n)
+int MHA_AC::get_var_int(algo_comm_t & ac,const std::string& n)
 {
-    return ac.handle->get_var_int(n);
+    return ac.get_var_int(n);
 }
 
-std::vector<float> MHA_AC::get_var_vfloat(algo_comm_t ac,const std::string& name)
+std::vector<float> MHA_AC::get_var_vfloat(algo_comm_t & ac,const std::string& name)
 {
-    comm_var_t cv = ac.handle->get_var(name);
+    comm_var_t cv = ac.get_var(name);
     unsigned types[2] = {MHA_AC_FLOAT, MHA_AC_FLOAT};
     if (std::is_same<float,mha_real_t>::value)
         types[0] = MHA_AC_MHAREAL;
@@ -443,12 +384,12 @@ std::vector<float> MHA_AC::get_var_vfloat(algo_comm_t ac,const std::string& name
     return vfloat;
 }
 
-float MHA_AC::get_var_float(algo_comm_t ac,const std::string& n)
+float MHA_AC::get_var_float(algo_comm_t & ac,const std::string& n)
 {
-    return ac.handle->get_var_float(n);
+    return ac.get_var_float(n);
 }
 
-MHA_AC::spectrum_t::spectrum_t(algo_comm_t iac,
+MHA_AC::spectrum_t::spectrum_t(algo_comm_t & iac,
                                const std::string & iname,
                                unsigned int bins,
                                unsigned int channels,
@@ -475,11 +416,11 @@ MHA_AC::spectrum_t::~spectrum_t()
 }
 void MHA_AC::spectrum_t::remove()
 {
-    ac.handle->remove_ref(buf);
+    ac.remove_ref(buf);
 }
 
 
-MHA_AC::waveform_t::waveform_t(algo_comm_t iac,
+MHA_AC::waveform_t::waveform_t(algo_comm_t & iac,
                                const std::string & iname,
                                unsigned int frames,
                                unsigned int channels,
@@ -506,10 +447,10 @@ MHA_AC::waveform_t::~waveform_t()
 }
 void MHA_AC::waveform_t::remove()
 {
-    ac.handle->remove_ref(buf);
+    ac.remove_ref(buf);
 }
 
-MHA_AC::stat_t::stat_t(algo_comm_t ac,const std::string& name,
+MHA_AC::stat_t::stat_t(algo_comm_t & ac,const std::string& name,
                        const unsigned int& frames, const unsigned int& channels,
                        bool insert_now)
     : MHASignal::stat_t(frames,channels),
@@ -538,7 +479,7 @@ void MHA_AC::waveform_t::insert()
     var.num_entries = num_frames * num_channels;
     var.stride = num_channels;
     var.data = buf;
-    ac.handle->insert_var(name,var);
+    ac.insert_var(name,var);
 }
 
 void MHA_AC::spectrum_t::insert()
@@ -548,11 +489,11 @@ void MHA_AC::spectrum_t::insert()
     var.num_entries = num_frames * num_channels;
     var.stride = num_frames;
     var.data = buf;
-    ac.handle->insert_var(name,var);
+    ac.insert_var(name,var);
 }
 
-MHA_AC::ac2matrix_helper_t::ac2matrix_helper_t(algo_comm_t iac,const std::string& iname)
-    : ac(iac),
+MHA_AC::ac2matrix_helper_t::ac2matrix_helper_t(algo_comm_t & iac,const std::string& iname)
+    : ac(&iac),
       size(2)
 {
     MHAParser::expression_t cfgname(iname, ":");
@@ -568,7 +509,7 @@ MHA_AC::ac2matrix_helper_t::ac2matrix_helper_t(algo_comm_t iac,const std::string
 
 void MHA_AC::ac2matrix_helper_t::getvar()
 {
-    acvar = ac.handle->get_var(name);
+    acvar = ac->get_var(name);
     if( acvar.stride == 0 )
         throw MHA_Error(__FILE__,__LINE__,"Stride of AC variable %s is zero.",name.c_str());
     switch( acvar.data_type ){
@@ -585,7 +526,7 @@ void MHA_AC::ac2matrix_helper_t::getvar()
     }
 }
 
-MHA_AC::ac2matrix_t::ac2matrix_t(algo_comm_t iac,const std::string& iname)
+MHA_AC::ac2matrix_t::ac2matrix_t(algo_comm_t & iac,const std::string& iname)
     : MHA_AC::ac2matrix_helper_t(iac,iname),
       MHASignal::matrix_t(MHA_AC::ac2matrix_helper_t::size,MHA_AC::ac2matrix_helper_t::is_complex)
 {
@@ -598,17 +539,17 @@ void MHA_AC::ac2matrix_t::update()
     MHASignal::matrix_t::operator=(acvar);
 }
 
-void MHA_AC::ac2matrix_t::insert(algo_comm_t ac)
+void MHA_AC::ac2matrix_t::insert(algo_comm_t & ac)
 {
-    ac.handle->insert_var(getname(),get_comm_var());
+    ac.insert_var(getname(),get_comm_var());
 }
 
-MHA_AC::acspace2matrix_t::acspace2matrix_t(algo_comm_t iac,const std::vector<std::string>& names)
+MHA_AC::acspace2matrix_t::acspace2matrix_t(algo_comm_t & iac,const std::vector<std::string>& names)
     : len(names.size()),data(NULL),frameno(0)
 {
     std::vector<std::string> entries(names);
     if( len == 0 ){
-        entries = iac.handle->get_entries();
+        entries = iac.get_entries();
         len = entries.size();
     }
     data = new MHA_AC::ac2matrix_t*[mha_min_1(len)];
@@ -642,7 +583,7 @@ MHA_AC::acspace2matrix_t& MHA_AC::acspace2matrix_t::operator=(const MHA_AC::acsp
     return *this;
 }
 
-void MHA_AC::acspace2matrix_t::insert(algo_comm_t oac)
+void MHA_AC::acspace2matrix_t::insert(algo_comm_t & oac)
 {
     for(unsigned int k=0;k<size();k++)
         (*this)[k].insert(oac);

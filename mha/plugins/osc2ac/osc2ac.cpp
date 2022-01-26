@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2012 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +41,7 @@ public:
         @param hAC Handle of Algorithm Communication Variable space.
         @param lost libLO Server Thread. */
     osc_variable_t(const std::string& name, unsigned int size,
-                   algo_comm_t hAC, lo_server_thread lost);
+                   MHA_AC::algo_comm_t & hAC, lo_server_thread lost);
     /** Copies the latest OSC data from the OSC storage to the AC storage.
      * To be executed during process callback of osc2ac plugin.
      * @todo Data is copied from array osc_data while osc_data may be changed
@@ -87,7 +88,7 @@ private:
 };
 
 osc_variable_t::osc_variable_t(const std::string& name, unsigned int size,
-                               algo_comm_t hAC, lo_server_thread lost)
+                               MHA_AC::algo_comm_t & hAC, lo_server_thread lost)
     : ac_data(hAC,
               [&](){
                   // Split the given name by ':' the left side
@@ -146,7 +147,9 @@ public:
     ~osc_server_t();
     void server_stop();
     void server_start();
-    void insert_variable(const std::string& name, unsigned int size, algo_comm_t hAC);
+    void insert_variable(const std::string& name,
+                         unsigned int size,
+                         MHA_AC::algo_comm_t & hAC);
     void sync_osc2ac();
     void ac_insert();
     static void error_h(int num, const char *msg, const char *path);
@@ -203,7 +206,9 @@ osc_server_t::osc_server_t(const std::string& multicastgroup, const std::string&
         throw MHA_Error(__FILE__,__LINE__,"liblo server error.");
 }
 
-void osc_server_t::insert_variable(const std::string& name, unsigned int size, algo_comm_t hAC)
+void osc_server_t::insert_variable(const std::string& name,
+                                   unsigned int size,
+                                   MHA_AC::algo_comm_t & hAC)
 {
     pVars.push_back(std::make_unique<osc_variable_t>(name, size, hAC, lost));
 }
@@ -217,7 +222,7 @@ osc_server_t::~osc_server_t()
 class osc2ac_t : public MHAPlugin::plugin_t<int>
 {
 public:
-    osc2ac_t(algo_comm_t iac, const std::string & configured_name);
+    osc2ac_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_wave_t* process(mha_wave_t* s) {process();return s;};
@@ -241,7 +246,7 @@ void osc2ac_t::setlock(bool b)
     size.setlock(b);
 }
 
-osc2ac_t::osc2ac_t(algo_comm_t iac, const std::string &)
+osc2ac_t::osc2ac_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<int>("Receive OSC messages and convert them to AC variables.\n"
                                "Only data type float can be received."
                                ,iac),

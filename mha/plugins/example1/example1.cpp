@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2007 2009 2010 2012 2013 2014 2015 2017 2018 HörTech gGmbH
 // Copyright © 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +33,7 @@ public:
   /** Do-nothing constructor.  The constructor has to take these two
    * arguments, but it does not have to use them.  The base
    * class has to be initialized. */
-  example1_t(algo_comm_t iac, const std::string & configured_name)
+  example1_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name)
       : MHAPlugin::plugin_t<int>("",iac)
   {(void)configured_name;/* ignore 2nd parameter */}
 
@@ -109,7 +110,7 @@ MHAPLUGIN_DOCUMENTATION\
 
 // Local Variables:
 // compile-command: "make"
-// c-basic-offset: 4
+// c-basic-offset: 2
 // indent-tabs-mode: nil
 // coding: utf-8-unix
 // End:

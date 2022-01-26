@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2013 2014 2015 2018 2019 HörTech gGmbH
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -151,7 +152,8 @@ namespace fftfilter {
     /** \internal Implements the MHA plugin interface for FFTFilter */
     class interface_t : public MHAPlugin::plugin_t<fftfilter_t> {
     public:
-        interface_t(algo_comm_t iac, const std::string & configured_name);
+        interface_t(MHA_AC::algo_comm_t & iac,
+                    const std::string & configured_name);
         mha_wave_t* process(mha_wave_t*);
         void prepare(mhaconfig_t&);
     private:
@@ -177,7 +179,7 @@ namespace fftfilter {
         }
     }
 
-    interface_t::interface_t(algo_comm_t iac, const std::string &)
+    interface_t::interface_t(MHA_AC::algo_comm_t & iac, const std::string &)
         : MHAPlugin::plugin_t<fftfilter_t>("FFT based FIR filter",iac),
         irs("Impulse responses, one row for each channel\n(or single row to use in all channels)","[[1]]"),
         fftlen("FFT length used for FIR filter. If zero, the FFT length\n"

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -60,7 +61,7 @@ namespace wave2lsl{
     class wave2lsl_t : public MHAPlugin::plugin_t<cfg_t>
     {
     public:
-        wave2lsl_t(algo_comm_t iac, const std::string & configured_name);
+        wave2lsl_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
         /** Prepare locks the configuration, then calls update(). */
         void prepare(mhaconfig_t&);
         /** Processing fct for waveforms. Calls process of the cfg class. */
@@ -80,7 +81,7 @@ namespace wave2lsl{
     };
 }
 
-wave2lsl::wave2lsl_t::wave2lsl_t(algo_comm_t iac, const std::string &)
+wave2lsl::wave2lsl_t::wave2lsl_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : MHAPlugin::plugin_t<wave2lsl::cfg_t>("Generate an LSL stream from the incoming waveform.",iac),
     name("Name of the LSL stream to be generated.","[]"),
     source_id("Unique source id for the stream outlet.",""),

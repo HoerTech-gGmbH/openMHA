@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2012 2013 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -121,7 +122,9 @@ namespace PluginLoader {
          *   a known compatible MHA version if this flag is set to false.
          *   Disabling version check is discouraged.
          */
-        mhapluginloader_t(algo_comm_t iac, const std::string& libname, bool check_version=true);
+        mhapluginloader_t(MHA_AC::algo_comm_t & iac,
+                          const std::string& libname,
+                          bool check_version=true);
         ~mhapluginloader_t() throw();
         bool has_process(mha_domain_t in,mha_domain_t out) const;
         bool has_parser() const;
@@ -143,7 +146,7 @@ namespace PluginLoader {
         void mha_test_struct_size(unsigned int s);
         void resolve_and_init();
         int lib_err;
-        algo_comm_t ac;
+        MHA_AC::algo_comm_t & ac;
         pluginlib_t lib_handle;
         void* lib_data;
         // callback handles:
@@ -175,8 +178,10 @@ namespace MHAParser {
      */
     class mhapluginloader_t {
     public:
-        mhapluginloader_t(MHAParser::parser_t& parent,const algo_comm_t& ac,
-                          const std::string& plugname_name = "plugin_name", const std::string& prefix = "");
+        mhapluginloader_t(MHAParser::parser_t& parent,
+                          MHA_AC::algo_comm_t & ac,
+                          const std::string& plugname_name = "plugin_name",
+                          const std::string& prefix = "");
         ~mhapluginloader_t();
         void prepare(mhaconfig_t& cf);
         void release();
@@ -195,7 +200,7 @@ namespace MHAParser {
         MHAParser::string_t plugname;
         std::string prefix_;
         MHAEvents::connector_t<mhapluginloader_t> connector;
-        algo_comm_t ac_;
+        MHA_AC::algo_comm_t & ac_;
         std::string last_name;
         std::string plugname_name_;
         mhaconfig_t cf_in_;

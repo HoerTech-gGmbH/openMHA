@@ -34,7 +34,7 @@ namespace acsave {
 
 class save_var_t {
 public:
-    save_var_t(const std::string&,int,const algo_comm_t&);
+    save_var_t(const std::string&, int, MHA_AC::algo_comm_t &);
     ~save_var_t();
     void store_frame();
     void save_txt(FILE*,unsigned int);
@@ -46,19 +46,21 @@ private:
     unsigned int nframes;
     unsigned int ndim;
     unsigned int maxframe;
-    algo_comm_t ac;
+    MHA_AC::algo_comm_t & ac;
     unsigned int framecnt;
     bool b_complex;
 };
 
 class cfg_t {
 public:
-    cfg_t(const algo_comm_t& iac,unsigned int imax_frames,std::vector<std::string>& var_names);
+    cfg_t(MHA_AC::algo_comm_t & iac,
+          unsigned int imax_frames,
+          std::vector<std::string>& var_names);
     ~cfg_t();
     void store_frame();
     void flush_data(const std::string&,unsigned int);
 private:
-    algo_comm_t ac;
+    MHA_AC::algo_comm_t & ac;
     unsigned int nvars;
     save_var_t** varlist;
     unsigned int rec_frames;
@@ -68,7 +70,7 @@ private:
 class acsave_t : public MHAPlugin::plugin_t<cfg_t> {
     typedef std::vector<save_var_t*> varlist_t;
 public:
-    acsave_t(algo_comm_t iac, const std::string & configured_name);
+    acsave_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_spec_t* process(mha_spec_t*);
@@ -89,7 +91,7 @@ private:
     MHAEvents::patchbay_t<acsave_t> patchbay;
 };
 
-cfg_t::cfg_t(const algo_comm_t& iac,
+cfg_t::cfg_t(MHA_AC::algo_comm_t & iac,
              unsigned int imax_frames,
              std::vector<std::string>& varnames) :
     ac(iac),
@@ -99,7 +101,7 @@ cfg_t::cfg_t(const algo_comm_t& iac,
     max_frames(imax_frames)
 {
     if( !varnames.size() ){
-        varnames = ac.handle->get_entries();
+        varnames = ac.get_entries();
     }
     nvars = varnames.size();
     if( !nvars )
@@ -190,7 +192,8 @@ void cfg_t::flush_data(const std::string& filename,unsigned int fmt)
 /*                                                            ***/
 /****************************************************************/
 
-acsave_t::acsave_t(algo_comm_t iac, const std::string & configured_name)
+acsave_t::acsave_t(MHA_AC::algo_comm_t & iac,
+                   const std::string & configured_name)
     : MHAPlugin::plugin_t<cfg_t>(
         "Save chain data to text or Matlab 4 files.\n\n"
         "Usage:\n\n"
@@ -287,10 +290,10 @@ typedef struct {
     int32_t namelen;
 } mat4head_t;
 
-save_var_t::save_var_t(const std::string& nm,int n,const algo_comm_t& iac)
+save_var_t::save_var_t(const std::string& nm, int n, MHA_AC::algo_comm_t & iac)
     : data(NULL),name(nm),nframes(n),ndim(0), maxframe(0), ac(iac), framecnt(0), b_complex(false)
 {
-    comm_var_t v = ac.handle->get_var(name);
+    MHA_AC::comm_var_t v = ac.get_var(name);
     switch( v.data_type ){
     case MHA_AC_INT :
     case MHA_AC_FLOAT :
@@ -328,7 +331,7 @@ void save_var_t::store_frame()
         return;
     if( framecnt >= nframes )
         return;
-    comm_var_t v = ac.handle->get_var(name);
+    MHA_AC::comm_var_t v = ac.get_var(name);
     unsigned int local_ndim = v.num_entries;
     if( local_ndim > ndim )
         local_ndim = ndim;

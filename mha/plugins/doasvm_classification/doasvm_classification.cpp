@@ -25,7 +25,9 @@
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &doasvm_classification::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-doasvm_classification_config::doasvm_classification_config(algo_comm_t &ac, doasvm_classification *_doasvm):
+doasvm_classification_config::
+doasvm_classification_config(MHA_AC::algo_comm_t & ac,
+                             doasvm_classification *_doasvm):
     ac(ac),
     doasvm(_doasvm),
     p(ac, _doasvm->p_name.data.c_str(), _doasvm->angles.data.size(), 1, false),
@@ -87,7 +89,7 @@ void doasvm_classification_config::insert_ac_variables() {
 }
 
 /** Constructs our plugin. */
-doasvm_classification::doasvm_classification(algo_comm_t iac,
+doasvm_classification::doasvm_classification(MHA_AC::algo_comm_t & iac,
                                              const std::string & configured_name)
     : MHAPlugin::plugin_t<doasvm_classification_config>("Support vector machine (SVM) plugin for computing the direction of arrival (DOA) probabilities",iac)
     , angles("The angles for which the SVM model has been trained", "[]")

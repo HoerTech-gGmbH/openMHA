@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2008 2009 2010 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -67,7 +68,8 @@ typedef MHAPlugin::plugin_t<level_adapt_t> level_adaptor;
 class fader_wave_if_t : public level_adaptor
 {
 public:
-    fader_wave_if_t(algo_comm_t iac, const std::string & configured_name);
+    fader_wave_if_t(MHA_AC::algo_comm_t & iac,
+                    const std::string & configured_name);
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
     void release();
@@ -79,7 +81,7 @@ private:
     bool prepared;
 };
 
-fader_wave_if_t::fader_wave_if_t(algo_comm_t iac, const std::string &)
+fader_wave_if_t::fader_wave_if_t(MHA_AC::algo_comm_t & iac, const std::string &)
     : level_adaptor("Apply level",iac),
       gain("Gain (linear)","[1]"),
       ramplen("Length of hanning ramp at gain changes in seconds","0","[0,]"),

@@ -180,6 +180,7 @@ pipeline {
                         }
                         stash name: "MatlabCoderGeneration",
                               includes: 'mha/plugins/matlabcoder_skeleton/'
+                        archiveArtifacts 'mha/plugins/matlabcoder_skeleton/**'
                     }
                 }
                 stage(                         "focal && x86_64 && mhadoc") {

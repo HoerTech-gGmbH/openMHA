@@ -69,7 +69,7 @@ namespace lsl2ac{
     // This is a function try block. Really ugly syntax but the only way to handle exceptions
     // in the ctor initializer list. See http://www.gotw.ca/gotw/066.htm
     save_var_t(const lsl::stream_info &info_,
-               const algo_comm_t &ac_,
+               MHA_AC::algo_comm_t & ac_,
                overrun_behavior ob_,
                int type_,
                int buflen_,
@@ -119,7 +119,7 @@ namespace lsl2ac{
             cv.num_entries = info_.channel_count() * nsamples; // Not problematic if zero initially - will be reset on first pull
             cv.data_type = type_;
             cv.data = buf.data();
-            ac.handle->insert_var(info_.name(), cv);
+            ac.insert_var(info_.name(), cv);
             ts.stride = 1;
             ts.num_entries = nsamples;
             ts.data_type = MHA_AC_DOUBLE;
@@ -169,11 +169,11 @@ namespace lsl2ac{
     /** Timestamp buffer */
     std::vector<double> ts_buf;
     /** Handle to AC space */
-    const algo_comm_t& ac;
+    MHA_AC::algo_comm_t & ac;
     /** Timeseries AC variable */
-    comm_var_t cv;
+    MHA_AC::comm_var_t cv;
     /** Timestamp AC variable */
-    comm_var_t ts;
+    MHA_AC::comm_var_t ts;
     /** Current time correction */
     double tc=0.0;
     /** Timestamp AC variable name */
@@ -276,10 +276,10 @@ namespace lsl2ac{
     };
     /** Insert stream value, time stamp and time offset into ac space*/
     void insert_vars(){
-      ac.handle->insert_var(name,cv);
-      ac.handle->insert_var(ts_name, ts);
-      ac.handle->insert_var_double(tc_name, &tc);
-      ac.handle->insert_var_int(new_name, &n_new_samples);
+      ac.insert_var(name,cv);
+      ac.insert_var(ts_name, ts);
+      ac.insert_var_double(tc_name, &tc);
+      ac.insert_var_int(new_name, &n_new_samples);
     };
   };
 
@@ -305,7 +305,7 @@ namespace lsl2ac{
     // This is a function try block. Really ugly syntax but the only way to handle exceptions
     // in the ctor initializer list. See http://www.gotw.ca/gotw/066.htm
     save_var_t(const lsl::stream_info &info_,
-               const algo_comm_t &ac_,
+               MHA_AC::algo_comm_t & ac_,
                overrun_behavior ob_,
                int buflen_,
                int chunksize_,
@@ -331,7 +331,7 @@ namespace lsl2ac{
             cv.num_entries = 0; // Not problematic if zero initially - will be reset on first pull
             cv.data_type = MHA_AC_CHAR;
             cv.data = &buf[0];
-            ac.handle->insert_var(info_.name(), cv);
+            ac.insert_var(info_.name(), cv);
             insert_vars();
           } catch (MHA_Error &e) {
       // The framework can handle MHA_Errors. Just re-throw
@@ -378,9 +378,9 @@ namespace lsl2ac{
     /** Timestamp */
     double ts;
     /** Handle to AC space */
-    const algo_comm_t& ac;
+    MHA_AC::algo_comm_t & ac;
     /** Timeseries AC variable */
-    comm_var_t cv;
+    MHA_AC::comm_var_t cv;
     /** Current time correction */
     double tc=0.0;
     /** Timestamp AC variable name */
@@ -472,9 +472,9 @@ namespace lsl2ac{
     void insert_vars(){
       cv.data = &buf[0];
 
-      ac.handle->insert_var(name,cv);
-      ac.handle->insert_var_double(ts_name, &ts);
-      ac.handle->insert_var_double(tc_name, &tc);
+      ac.insert_var(name,cv);
+      ac.insert_var_double(ts_name, &ts);
+      ac.insert_var_double(tc_name, &tc);
     };
   };
 
@@ -493,9 +493,12 @@ namespace lsl2ac{
      * @param nchannels_   Number of channels to expect in the the LSL streams. Zero means accept any.
      * @param nsamples_    Number of samples per channel in the AC variable. Zero means resize as needed.
      */
-    cfg_t(const algo_comm_t& ac_, overrun_behavior overrun_,
-          int bufsize_, int chunksize_,const std::vector<std::string>& streamnames_,
-          int nchannels_, int nsamples_);
+    cfg_t(MHA_AC::algo_comm_t & ac_,
+          overrun_behavior overrun_,
+          int bufsize_, int chunksize_,
+          const std::vector<std::string>& streamnames_,
+          int nchannels_,
+          int nsamples_);
     void process();
 
   };
@@ -504,7 +507,7 @@ namespace lsl2ac{
   class lsl2ac_t : public MHAPlugin::plugin_t<cfg_t>
   {
   public:
-    lsl2ac_t(algo_comm_t iac, const std::string & configured_name);
+    lsl2ac_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     /** Prepare constructs the vector of bridge variables and locks
      * the configuration, then calls update(). */
     void prepare(mhaconfig_t&);

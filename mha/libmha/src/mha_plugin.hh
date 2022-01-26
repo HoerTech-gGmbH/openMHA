@@ -213,7 +213,7 @@ namespace MHAPlugin {
     template < class runtime_cfg_t> class plugin_t:
         public MHAParser::parser_t, public MHAPlugin::config_t < runtime_cfg_t > {
     public:
-        plugin_t( const std::string &, const algo_comm_t & );
+        plugin_t( const std::string &, MHA_AC::algo_comm_t & );
         virtual ~plugin_t();
         virtual void prepare( mhaconfig_t & ) = 0;
         virtual void release();
@@ -249,7 +249,7 @@ namespace MHAPlugin {
            used by derived plugins to access the AC space. Its
            contents should not be modified.
         */
-        algo_comm_t ac;
+        MHA_AC::algo_comm_t & ac;
     private:
         bool is_prepared_;
         mhaconfig_t input_cfg_;
@@ -462,8 +462,9 @@ template < class runtime_cfg_t > void MHAPlugin::config_t < runtime_cfg_t >::rem
                language query command "?help".
    \param iac AC space handle (will be stored into the member variable ac).
 */
-template < class runtime_cfg_t > MHAPlugin::plugin_t < runtime_cfg_t >::plugin_t( const std::string & help,
-                                                                                  const algo_comm_t & iac )
+template <class runtime_cfg_t>
+MHAPlugin::plugin_t<runtime_cfg_t>::plugin_t( const std::string & help,
+                                              MHA_AC::algo_comm_t & iac )
     : MHAParser::parser_t( help ), ac( iac ), is_prepared_(false),
       mhaconfig_in("Input configuration"),
       mhaconfig_out("Output configuration")
@@ -577,7 +578,7 @@ template < class runtime_cfg_t > void MHAPlugin::plugin_t < runtime_cfg_t >::pre
 
 #define MHAPLUGIN_INIT_CALLBACKS_PREFIX(prefix,classname)               \
     extern "C" {                                                        \
-        __declspec(dllexport) int prefix ## MHAInit(algo_comm_t algo_comm, const char*algo_name,void** handle) \
+        __declspec(dllexport) int prefix ## MHAInit(MHA_AC::algo_comm_t & algo_comm, const char*algo_name,void** handle) \
         {                                                               \
             try{                                                        \
                 *handle = new classname(algo_comm,algo_name);          \

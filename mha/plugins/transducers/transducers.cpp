@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2009 2010 2011 2014 2015 2016 2017 2018 HörTech gGmbH
 // Copyright © 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -370,7 +371,7 @@ class calibrator_t : public rtcalibrator,
                      private rmslevelmeter
 {
 public:
-    calibrator_t(algo_comm_t,bool is_input);
+    calibrator_t(MHA_AC::algo_comm_t &, bool is_input);
     void prepare(mhaconfig_t& tf){tftype=tf;prepared=true;update();update_tau_level();};
     void release(){prepared=false;};
     mha_wave_t* process(mha_wave_t* s);
@@ -423,7 +424,7 @@ mha_wave_t* calibrator_t::process(mha_wave_t* s)
     return s;
 }
 
-calibrator_t::calibrator_t(algo_comm_t iac,bool is_input)
+calibrator_t::calibrator_t(MHA_AC::algo_comm_t & iac, bool is_input)
     : MHAPlugin::plugin_t<calibrator_runtime_layer_t>("calibration module",iac),b_is_input(is_input),vars(is_input,*this),prepared(false)
 {
     patchbay.connect(&vars.spnoise_parser.writeaccess,this,&calibrator_t::update);
@@ -449,7 +450,8 @@ void calibrator_t::update()
 class bbcalib_interface_t : public MHAPlugin::plugin_t<int> 
 {
 public:
-    bbcalib_interface_t(algo_comm_t iac, const std::string & configured_name);
+    bbcalib_interface_t(MHA_AC::algo_comm_t & iac,
+                        const std::string & configured_name);
     ~bbcalib_interface_t();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);
@@ -460,7 +462,8 @@ private:
     MHAParser::mhapluginloader_t plugloader;
 };
 
-bbcalib_interface_t::bbcalib_interface_t(algo_comm_t iac, const std::string &)
+bbcalib_interface_t::bbcalib_interface_t(MHA_AC::algo_comm_t & iac,
+                                         const std::string &)
     : MHAPlugin::plugin_t<int>(
         "Signal level calibration plugin.",iac),
       calib_in(iac,true),calib_out(iac,false),

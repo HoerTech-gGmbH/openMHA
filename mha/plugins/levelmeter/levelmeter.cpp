@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2007 2010 2012 2013 2014 2015 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +21,8 @@
 class levelmeter_t : public MHAPlugin::plugin_t<MHASignal::async_rmslevel_t>
 {
 public:
-  levelmeter_t(algo_comm_t iac, const std::string & configured_name);
+    levelmeter_t(MHA_AC::algo_comm_t & iac,
+                 const std::string & configured_name);
   mha_wave_t* process(mha_wave_t*);
   void prepare(mhaconfig_t&);
 private:
@@ -34,7 +36,7 @@ private:
   MHAEvents::patchbay_t<levelmeter_t> patchbay;
 };
 
-levelmeter_t::levelmeter_t(algo_comm_t iac, const std::string &)
+levelmeter_t::levelmeter_t(MHA_AC::algo_comm_t & iac, const std::string &)
   : MHAPlugin::plugin_t<MHASignal::async_rmslevel_t>("Broadband level meter.",iac),
   tau("RMS time constant / s","0.1","[0,]"),
   mode("Level scale","Pa","[Pa FS]"),

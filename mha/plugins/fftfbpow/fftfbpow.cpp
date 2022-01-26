@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2013 2014 2015 2018 2019 HörTech gGmbH
 // Copyright © 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +33,12 @@ namespace fftfbpow {
      * @param ac AC space
      * @param name Configured name of plugin interface, used as prefix for AC variable names
      */
-  fftfbpow_t(MHAOvlFilter::fftfb_vars_t& vars,unsigned int nch,unsigned int nfft,mha_real_t fs,algo_comm_t ac,std::string name);
+  fftfbpow_t(MHAOvlFilter::fftfb_vars_t& vars,
+             unsigned int nch,
+             unsigned int nfft,
+             mha_real_t fs,
+             MHA_AC::algo_comm_t & ac,
+             std::string name);
     /// AC variable containing the estimated power in each frequency band.
     MHA_AC::waveform_t fbpow;
   };
@@ -44,7 +50,7 @@ namespace fftfbpow {
      * @param iac             Handle to algorithm communication variable space
      * @param configured_name Configured name of this plugin instance
      */
-    fftfbpow_interface_t(algo_comm_t iac, const std::string & configured_name);
+    fftfbpow_interface_t(MHA_AC::algo_comm_t & iac, const std::string & configured_name);
     /** Standard MHA plugin prepare function.
      * Ensures that the input is in the frequency domain, calls update_cfg()
      * and inserts fbpow into the AC space.
@@ -67,9 +73,11 @@ namespace fftfbpow {
   };
 }
 
-fftfbpow::fftfbpow_interface_t::fftfbpow_interface_t(algo_comm_t iac,
-                                                     const std::string & configured_name)
-  : MHAPlugin::plugin_t<fftfbpow_t>("FFT based filterbank analysis with overlapping filters",iac),
+fftfbpow::fftfbpow_interface_t::
+fftfbpow_interface_t(MHA_AC::algo_comm_t & iac,
+                     const std::string & configured_name)
+  : MHAPlugin::plugin_t<fftfbpow_t>("FFT based filterbank analysis with "
+                                    "overlapping filters", iac),
   MHAOvlFilter::fftfb_vars_t(static_cast<MHAParser::parser_t&>(*this)),
   name(configured_name)
 {
@@ -100,7 +108,12 @@ void fftfbpow::fftfbpow_interface_t::update_cfg()
 }
 
 
-fftfbpow::fftfbpow_t::fftfbpow_t(MHAOvlFilter::fftfb_vars_t& vars,unsigned int nch,unsigned int nfft,mha_real_t fs,algo_comm_t ac,std::string name)
+fftfbpow::fftfbpow_t::fftfbpow_t(MHAOvlFilter::fftfb_vars_t& vars,
+                                 unsigned int nch,
+                                 unsigned int nfft,
+                                 mha_real_t fs,
+                                 MHA_AC::algo_comm_t & ac,
+                                 std::string name)
   : MHAOvlFilter::fftfb_t(vars,nfft,fs),
   fbpow(ac,name,nbands(),nch,false)
 {
@@ -123,7 +136,7 @@ MHAPLUGIN_DOCUMENTATION\
 
 // Local Variables:
 // compile-command: "make"
-// c-basic-offset: 4
+// c-basic-offset: 2
 // indent-tabs-mode: nil
 // coding: utf-8-unix
 // End:

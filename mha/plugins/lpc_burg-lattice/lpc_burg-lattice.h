@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2016 2017 2018 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +26,7 @@ class lpc_burglattice;
 //runtime config
 class lpc_burglattice_config {
 
-    algo_comm_t ac;
+    MHA_AC::algo_comm_t & ac;
 
     MHASignal::waveform_t forward;
     MHASignal::waveform_t backward;
@@ -43,7 +44,9 @@ class lpc_burglattice_config {
     mha_wave_t s_b;
 
 public:
-    lpc_burglattice_config(algo_comm_t &iac, const mhaconfig_t in_cfg, lpc_burglattice * _lpc);
+    lpc_burglattice_config(MHA_AC::algo_comm_t & iac,
+                           const mhaconfig_t in_cfg,
+                           lpc_burglattice * _lpc);
     ~lpc_burglattice_config();
 
     mha_wave_t* process(mha_wave_t*);
@@ -55,7 +58,8 @@ public:
 class lpc_burglattice : public MHAPlugin::plugin_t<lpc_burglattice_config> {
 
 public:
-    lpc_burglattice(algo_comm_t iac, const std::string & configured_name);
+    lpc_burglattice(MHA_AC::algo_comm_t & iac,
+                    const std::string & configured_name);
     ~lpc_burglattice();
     mha_wave_t* process(mha_wave_t*);
     void prepare(mhaconfig_t&);

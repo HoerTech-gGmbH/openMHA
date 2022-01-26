@@ -18,38 +18,48 @@
 
 class proc_counter_t : public MHAParser::int_mon_t {
 public:
-    proc_counter_t(algo_comm_t iac, const std::string &configured_name);
+    proc_counter_t(MHA_AC::algo_comm_t & iac,
+                   const std::string &configured_name);
     ~proc_counter_t();
     mha_wave_t* process(mha_wave_t* s);
     mha_spec_t* process(mha_spec_t* s);
-    void prepare_(mhaconfig_t&) {}
+    void prepare_(mhaconfig_t&) {insert();}
     void release_() {}
 private:
-    algo_comm_t ac;
+    void insert();
+    MHA_AC::algo_comm_t & ac;
+    const std::string configured_name;
 };
 
-proc_counter_t::proc_counter_t(algo_comm_t iac, const std::string &configured_name)
+proc_counter_t::proc_counter_t(MHA_AC::algo_comm_t & iac,
+                               const std::string &configured_name)
     : MHAParser::int_mon_t("Counter for invocations of signal processing callback"),
-      ac(iac)
+      ac(iac),
+      configured_name(configured_name)
 {
     data = 0;
-    ac.handle->insert_var_int(configured_name, &data);
+    insert();
+}
+void proc_counter_t::insert() {
+    ac.insert_var_int(configured_name, &data);
 }
 
 proc_counter_t::~proc_counter_t()
 {
-    ac.handle->remove_ref(&data);
+    ac.remove_ref(&data);
 }
 
 mha_wave_t* proc_counter_t::process(mha_wave_t* s)
 {
     ++data;
+    insert();
     return s;
 }
 
 mha_spec_t* proc_counter_t::process(mha_spec_t* s)
 {
     ++data;
+    insert();
     return s;
 }
 

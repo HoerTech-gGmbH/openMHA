@@ -34,9 +34,9 @@ TEST(enum_val_type_t, test_values_differ_from_each_other) {
 class test_ac_mul_t : public ::testing::Test {
 public:
   // AC variable space
-  MHAKernel::algo_comm_class_t acspace = {};
+  MHA_AC::algo_comm_class_t acspace = {};
   // C handle to AC variable space
-  algo_comm_t ac = {acspace.get_c_handle()};
+  MHA_AC::algo_comm_t & ac = {acspace};
 
   // example signal dimensions for the prepare method
   mhaconfig_t signal_properties {

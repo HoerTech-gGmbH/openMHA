@@ -35,12 +35,7 @@
 #include <string>
 #include <map>
 
-#define ALGO_COMM_ID_STR "MFVK3jL5rmeus1XtggEI971aXCR/GU7RRehKz4kQtrg="
-
-extern algo_comm_t algo_comm_default;
-
 namespace MHA_AC {
-
     /** 
         \ingroup algocomm
 
@@ -59,7 +54,7 @@ namespace MHA_AC {
         \param name Name of the variable
         \return Spectrum structure
     */
-    mha_spec_t get_var_spectrum(algo_comm_t ac,const std::string& name);
+    mha_spec_t get_var_spectrum(algo_comm_t & ac,const std::string& name);
 
     /** 
         \ingroup algocomm
@@ -79,7 +74,7 @@ namespace MHA_AC {
         \param name Name of the variable
         \return waveform structure
     */
-    mha_wave_t get_var_waveform(algo_comm_t ac,const std::string& name);
+    mha_wave_t get_var_waveform(algo_comm_t & ac,const std::string& name);
 
     /**
        \ingroup algocomm
@@ -90,7 +85,7 @@ namespace MHA_AC {
        \param name Name of the variable
        \return Variable value
      */
-    int get_var_int(algo_comm_t ac,const std::string& name);
+    int get_var_int(algo_comm_t & ac,const std::string& name);
 
     /**
        \ingroup algocomm
@@ -101,7 +96,7 @@ namespace MHA_AC {
        \param name Name of the variable
        \return Variable value
      */
-    float get_var_float(algo_comm_t ac,const std::string& name);
+    float get_var_float(algo_comm_t & ac,const std::string& name);
     
     /**
        \ingroup algocomm
@@ -115,7 +110,7 @@ namespace MHA_AC {
        \param name Name of the variable
        \return Variable value
      */
-    std::vector<float> get_var_vfloat(algo_comm_t ac,const std::string& name);
+    std::vector<float> get_var_vfloat(algo_comm_t & ac,const std::string& name);
     
     /**
        \ingroup algocomm
@@ -140,7 +135,7 @@ namespace MHA_AC {
                               variable into the AC space, and the
                               destructor will remove the variable from AC space
                               when it executes. */
-        spectrum_t(algo_comm_t ac,
+        spectrum_t(algo_comm_t & ac,
                    const std::string & name,
                    unsigned int bins,
                    unsigned int channels,
@@ -162,7 +157,7 @@ namespace MHA_AC {
         void remove();
     protected:
         /** AC variable space. */
-        const algo_comm_t ac;
+        algo_comm_t & ac;
         /** Name of this AC variable in the AC variable space. */
         const std::string name;
         /** flag whether to remove from AC variable space in destructor. */
@@ -192,7 +187,7 @@ namespace MHA_AC {
                               variable into the AC space, and the
                               destructor will remove the variable from AC space
                               when it executes. */
-        waveform_t(algo_comm_t ac,
+        waveform_t(algo_comm_t & ac,
                    const std::string & name,
                    unsigned int frames,
                    unsigned int channels,
@@ -214,7 +209,7 @@ namespace MHA_AC {
         void remove();
     protected:
         /** AC variable space. */
-        const algo_comm_t ac;
+        algo_comm_t & ac;
         /** Name of this AC variable in the AC variable space. */
         const std::string name;
         /** flag whether to remove from AC variable space in destructor. */
@@ -223,7 +218,7 @@ namespace MHA_AC {
 
     class stat_t : public MHASignal::stat_t {
     public:
-        stat_t(algo_comm_t ac,const std::string& name,
+        stat_t(algo_comm_t & ac, const std::string& name,
                const unsigned int& frames, const unsigned int& channels,
                bool insert_now);
         void update();
@@ -236,9 +231,9 @@ namespace MHA_AC {
     class ac2matrix_helper_t
     {
     public:
-        ac2matrix_helper_t(algo_comm_t,const std::string&);
+        ac2matrix_helper_t(algo_comm_t&, const std::string&);
         void getvar();
-        algo_comm_t ac;
+        algo_comm_t * ac;
         std::string name;
         std::string username;
         MHASignal::uint_vector_t size;
@@ -265,7 +260,7 @@ namespace MHA_AC {
            \param ac AC handle
            \param name Name of AC variable to be copied
         */
-        ac2matrix_t(algo_comm_t ac,const std::string& name);
+        ac2matrix_t(algo_comm_t & ac,const std::string& name);
         /**
            \brief Update contents of the matrix from the AC space.
 
@@ -287,7 +282,7 @@ namespace MHA_AC {
            \param ac AC space handle to insert data
            \note The AC variable data buffer points to the data of the matrix. Modifications of the AC variable directly modify the data of the matrix; after deletion of the matrix, the data buffer is invalid.
          */
-        void insert(algo_comm_t ac);
+        void insert(algo_comm_t & ac);
     };
 
     /**
@@ -305,7 +300,7 @@ namespace MHA_AC {
            \param ac AC handle.
            \param names Names of AC variables, or empty for all.
         */
-        acspace2matrix_t(algo_comm_t ac,const std::vector<std::string>& names);
+        acspace2matrix_t(algo_comm_t& ac,const std::vector<std::string>& names);
 
         /**
            \brief Constructor with initialization from an instance.
@@ -355,15 +350,12 @@ namespace MHA_AC {
            \brief Insert AC space copy into an AC space (other than source AC space)
            \param ac AC space handle to insert data
          */
-        void insert(algo_comm_t ac);
+        void insert(algo_comm_t & ac);
     private:
         unsigned int len;
         MHA_AC::ac2matrix_t** data;
         unsigned int frameno;
     };
-}
-
-namespace MHAKernel {
 
     /** Storage class for the AC variable space.  Uses an std::map for
      * associating AC variable names with AC variable metadata (\c comm_var_t).
@@ -434,19 +426,11 @@ namespace MHAKernel {
         size_t size() const {return map.size();}
     };
 
-    /** AC variable space. */
-    class algo_comm_class_t {
+    /** Algorithm communication variable space interface. */
+    class algo_comm_t {
     public:
-
-        /// AC variable space constructor
-        algo_comm_class_t();
-
-        /// AC variable space destructor
-        virtual
-        ~algo_comm_class_t();
-
-        /// Generates the client handle for users for this AC space.
-        virtual algo_comm_t get_c_handle();
+        // interface has only abstract methods, declare destructor virtual
+        virtual ~algo_comm_t() = default;
 
         /** Interacts with AC space storage to create or replace an AC variable
          * 
@@ -476,7 +460,7 @@ namespace MHAKernel {
          *                  variable with name \c name exists yet.
          * @throw MHA_Error if name is emtpy or contains space. */
         virtual
-        void insert_var(const std::string & name, comm_var_t cv);
+        void insert_var(const std::string & name, comm_var_t cv) = 0;
 
         /** Convenience method for inserting or replacing a scalar integer AC
          * variable into AC space.  Creates suitable comm_var_t and forwards to
@@ -492,7 +476,7 @@ namespace MHAKernel {
          * @throw MHA_Error If the AC space is already prepared and no AC
          *                  variable with name \ref name exists yet.
          * @throw MHA_Error if name is emtpy or contains space. */
-        virtual void insert_var_int(const std::string & name, int * ptr);
+        virtual void insert_var_int(const std::string & name, int * ptr) = 0;
 
         /** Convenience function for inserting or replacing a vector of floats
          * as an AC variable into the AC space.  Creates suitable comm_var_t
@@ -514,7 +498,7 @@ namespace MHAKernel {
          * @throw MHA_Error if vec contains more elements than can be
          *                  represented by comm_var_t::num_entries. */
         virtual void
-        insert_var_vfloat(const std::string & name, std::vector<float>& vec);
+        insert_var_vfloat(const std::string & name, std::vector<float>& vec)=0;
 
         /** Convenience method for inserting or replacing a scalar float AC
          * variable into AC space.  Creates suitable comm_var_t and forwards to
@@ -530,7 +514,7 @@ namespace MHAKernel {
          * @throw MHA_Error If the AC space is already prepared and no AC
          *                  variable with name \c name exists yet.
          * @throw MHA_Error if name is emtpy or contains space. */
-        virtual void insert_var_float(const std::string & name, float* ptr);
+        virtual void insert_var_float(const std::string & name, float* ptr)=0;
 
         /** Convenience method for inserting or replacing a scalar double AC
          * variable into AC space.  Creates suitable comm_var_t and forwards to
@@ -546,7 +530,7 @@ namespace MHAKernel {
          * @throw MHA_Error If the AC space is already prepared and no AC
          *                  variable with name \c name exists yet.
          * @throw MHA_Error if name is emtpy or contains space. */
-        virtual void insert_var_double(const std::string & name, double* ptr);
+        virtual void insert_var_double(const std::string& name, double* ptr)=0;
 
         /** Remove an AC variable from AC space by name.  Only
          * permitted when AC space is not prepared.  Trying to remove a
@@ -557,7 +541,7 @@ namespace MHAKernel {
          * @param name Name of the AC variable to remove.
          * @throw MHA_Error if called while prepared, and then regardless of
          *        whether an AC variable with name \c name exists or not. */
-        virtual void remove_var(const std::string & name);
+        virtual void remove_var(const std::string & name) = 0;
 
         /** Remove all AC variables from AC space that point to the given
          * memory address.  Only permitted when AC space is not prepared.
@@ -568,14 +552,13 @@ namespace MHAKernel {
          *             remove is or was stored.
          * @throw MHA_Error if called while prepared, regardless whether any
          *                  AC variables currently point to addr or not. */
-        virtual void remove_ref(void* addr);
+        virtual void remove_ref(void* addr) = 0;
 
         /** Interacts with AC space storage to check if an AC variable with
          * the given name exists.
          * @param name Name of the AC variable to check. */
         virtual
-        bool is_var(const std::string & name) const;
-
+        bool is_var(const std::string & name) const = 0;
 
         /** Interacts with AC space storage to retrieve the metadata for an
          * AC variable with the given name.
@@ -584,7 +567,7 @@ namespace MHAKernel {
          *         location and size.
          * @throw MHA_Error if no AC variable with the given name exists. */
         virtual
-        comm_var_t get_var(const std::string & name) const;
+        comm_var_t get_var(const std::string & name) const = 0;
 
         /** Convenience method for retrieving a scalar integer AC
          * variable from AC space.  Checks data type and size. 
@@ -593,7 +576,7 @@ namespace MHAKernel {
          * @throw MHA_Error if no AC variable with the given name exists.
          * @throw MHA_Error if AC variable \c name is not an integer or not a
          *                  scalar. */
-        virtual int get_var_int(const std::string & name) const;
+        virtual int get_var_int(const std::string & name) const = 0;
 
         /** Convenience method for retrieving a scalar float AC
          * variable from AC space.  Checks data type and size. 
@@ -602,7 +585,7 @@ namespace MHAKernel {
          * @throw MHA_Error if no AC variable with the given name exists.
          * @throw MHA_Error if AC variable \c name is not a float or not a
          *                  scalar. */
-        virtual float get_var_float(const std::string & name) const;
+        virtual float get_var_float(const std::string & name) const = 0;
 
          /** Convenience method for retrieving a scalar double AC
          * variable from AC space.  Checks data type and size. 
@@ -611,16 +594,36 @@ namespace MHAKernel {
          * @throw MHA_Error if no AC variable with the given name exists.
          * @throw MHA_Error if AC variable \c name is not a double or not a
          *                  scalar. */
-        virtual double get_var_double(const std::string & name) const;
+        virtual double get_var_double(const std::string & name) const = 0;
 
         /** @return a list of the names of all existing AC variables. */
         virtual
-        const std::vector<std::string> & get_entries() const;
+        const std::vector<std::string> & get_entries() const = 0;
 
         /** Interacts with AC space storage to return the number of AC
          * variables currently stored in the AC space.  Always permitted. */
         virtual
-        size_t size() const;
+        size_t size() const = 0;
+    };
+
+    /** AC variable space implementation. */
+    class algo_comm_class_t : public algo_comm_t {
+    public:
+        void insert_var(const std::string & name, comm_var_t cv)      override;
+        void insert_var_int(const std::string & name, int * ptr)      override;
+        void insert_var_vfloat(const std::string & name,
+                               std::vector<float> & vec)              override;
+        void insert_var_float(const std::string & name, float* ptr)   override;
+        void insert_var_double(const std::string & name, double* ptr) override;
+        void remove_var(const std::string & name)                     override;
+        void remove_ref(void* addr)                                   override;
+        bool is_var(const std::string & name) const                   override;
+        comm_var_t get_var(const std::string & name) const            override;
+        int get_var_int(const std::string & name) const               override;
+        float get_var_float(const std::string & name) const           override;
+        double get_var_double(const std::string & name) const         override;
+        const std::vector<std::string> & get_entries() const          override;
+        size_t size() const                                           override;
 
         /** The provider of this AC space must set the AC space to prepared at
          * the end of its own prepare() operation and to not prepared at the
@@ -628,12 +631,10 @@ namespace MHAKernel {
         virtual void set_prepared(bool prepared);
 
     private:
-        algo_comm_t ac;
+        /** Storage. */
         comm_var_map_t vars;
     };
-}
 
-namespace MHA_AC {
     /**
        \ingroup algocomm
        Template for convenience classes for inserting a numeric scalar
@@ -650,7 +651,7 @@ namespace MHA_AC {
                               variable into the AC space, and the
                               destructor will remove the variable from AC space
                               when it executes. */
-        scalar_t(algo_comm_t ac,
+        scalar_t(algo_comm_t & ac,
                  const std::string & name,
                  numeric_t val = 0,
                  bool insert_now = true)
@@ -687,7 +688,7 @@ namespace MHA_AC {
             acv.num_entries = 1;
             acv.stride = 1;
             acv.data = &data;
-            ac.handle->insert_var(name, acv);
+            ac.insert_var(name, acv);
         }
         /** Remove the AC variable by reference from the AC variable space.
          * Plugins may call this method only from their prepare(), release()
@@ -698,11 +699,11 @@ namespace MHA_AC {
          * destruction and either its replacement or the MHA exit. */
         void remove()
         {
-            ac.handle->remove_ref(&data);
+            ac.remove_ref(&data);
         }
     private:
         /** AC variable space. */
-        const algo_comm_t ac;
+        algo_comm_t & ac;
         /** Name of this AC variable in the AC variable space. */
         const std::string name;
         /** flag whether to remove from AC variable space in destructor. */

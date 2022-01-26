@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2007 2009 2010 2011 2013 2014 2015 2016 HörTech gGmbH
 // Copyright © 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +27,11 @@ namespace fftfilterbank {
 
 class fftfb_plug_t : public MHAOvlFilter::overlap_save_filterbank_analytic_t {
 public:
-    fftfb_plug_t(MHAOvlFilter::overlap_save_filterbank_t::vars_t&,mhaconfig_t chcfg,algo_comm_t ac,std::string alg,bool return_imag);
+    fftfb_plug_t(MHAOvlFilter::overlap_save_filterbank_t::vars_t&,
+                 mhaconfig_t chcfg,
+                 MHA_AC::algo_comm_t & ac,
+                 std::string alg,
+                 bool return_imag);
     mha_spec_t* process(mha_spec_t*);
     mha_wave_t* process(mha_wave_t*);
     void insert();
@@ -40,7 +45,8 @@ private:
 class fftfb_interface_t : public MHAPlugin::plugin_t<fftfb_plug_t>,
                     public MHAOvlFilter::overlap_save_filterbank_t::vars_t {
 public:
-    fftfb_interface_t(algo_comm_t iac, const std::string & configured_name);
+    fftfb_interface_t(MHA_AC::algo_comm_t & iac,
+                      const std::string & configured_name);
     void prepare(mhaconfig_t&);
     void release();
     mha_spec_t* process(mha_spec_t*);
@@ -62,7 +68,7 @@ Default values are set and MHA configuration variables registered into the parse
 \param th     chain name
 \param al     algorithm name
 */
-fftfb_interface_t::fftfb_interface_t(algo_comm_t iac,
+fftfb_interface_t::fftfb_interface_t(MHA_AC::algo_comm_t & iac,
                                      const std::string & configured_name)
     : MHAPlugin::plugin_t<fftfb_plug_t>("FFT based filterbank with overlapping filters",iac),
       MHAOvlFilter::overlap_save_filterbank_t::vars_t(static_cast<MHAParser::parser_t&>(*this)),
@@ -153,7 +159,12 @@ mha_wave_t* fftfb_interface_t::process(mha_wave_t* s)
     return poll_config()->process(s);
 }
 
-fftfb_plug_t::fftfb_plug_t(MHAOvlFilter::overlap_save_filterbank_t::vars_t& vars,mhaconfig_t chcfg,algo_comm_t ac,std::string alg,bool return_imag)
+fftfb_plug_t::
+fftfb_plug_t(MHAOvlFilter::overlap_save_filterbank_t::vars_t& vars,
+             mhaconfig_t chcfg,
+             MHA_AC::algo_comm_t & ac,
+             std::string alg,
+             bool return_imag)
     : MHAOvlFilter::overlap_save_filterbank_analytic_t(vars,chcfg),
       fb_acinfo(*this,ac,alg),
       s_out(chcfg.fftlen/2+1,chcfg.channels*nbands()),
