@@ -290,7 +290,6 @@ typedef struct algo_comm_t {
     int (*insert_var_int)(void*,const char*,int*);
     int (*insert_var_float)(void*,const char*,float*);
     int (*insert_var_double)(void*,const char*,double*);
-    int (*remove_var)(void*,const char*);
     int (*is_var)(void*,const char*);
     int (*get_var)(void*,const char*,comm_var_t*);
     int (*get_var_int)(void*,const char*,int*);

@@ -71,17 +71,6 @@ section \ref algocomm.
     \param v    pointer on the variable
     \return Error code or zero on success
 */
-/** \var algo_comm_t::remove_var
-    \brief Remove an AC variable
-
-    Remove (unregister) an AC variable. After calling this
-    function, the variable is not available to ac.is_var or
-    ac.get_var. The data pointer is not affected.
-    
-    \param h    AC handle
-    \param n    name of variable to be removed
-    \return Error code or zero on success
-*/
 /** \var algo_comm_t::is_var
     \brief Test if an AC variable exists
     
@@ -401,7 +390,6 @@ algo_comm_t algo_comm_default = {
     MHAKernel::algo_comm_class_t::insert_var_int,
     MHAKernel::algo_comm_class_t::insert_var_float,
     MHAKernel::algo_comm_class_t::insert_var_double,
-    MHAKernel::algo_comm_class_t::remove_var,
     MHAKernel::algo_comm_class_t::is_var,
     MHAKernel::algo_comm_class_t::get_var,
     MHAKernel::algo_comm_class_t::get_var_int,
@@ -456,16 +444,9 @@ void MHAKernel::algo_comm_class_t::local_insert_var(const char* name,comm_var_t 
     vars.insert(name, var);
 }
 
-void MHAKernel::algo_comm_class_t::local_remove_var(const char* name)
+void MHAKernel::algo_comm_class_t::remove_var(const std::string & name)
 {
-    if (name == 0) {
-        throw MHA_ErrorMsg("String pointer for variable name must not be NULL");
-    }
-    if (vars.has_key(name))
-        vars.erase_by_name(name);
-    else
-        throw MHA_Error(__FILE__,__LINE__,
-                        "A variable of name \"%s\" was not found.",name);
+    vars.erase_by_name(name);
 }
 
 void MHAKernel::algo_comm_class_t::remove_ref(void* addr)
@@ -594,21 +575,6 @@ int MHAKernel::algo_comm_class_t::insert_var_vfloat(void* handle,const char* nam
         var.stride = 1;
         var.data = static_cast<void*>(const_cast<float*>(ivar.data()));
         p->local_insert_var(name,var);
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error&e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
-}
-
-int MHAKernel::algo_comm_class_t::remove_var(void* handle,const char* name)
-{
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p) 
-            return AC_INVALID_HANDLE;
-        p->local_remove_var(name);
         return AC_SUCCESS;
     }
     catch(MHA_Error&e){

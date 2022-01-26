@@ -468,10 +468,6 @@ namespace MHAKernel {
          * Creates suitable comm_var_t and forwards to local_insert_var(). */
         static int insert_var_double(void*,const char*,double*);
 
-        /** Trampoline to be referenced by algo_comm_t::remove_var.
-         * Redirects to local_remove_var(). */
-        static int remove_var(void*,const char*);
-
         /** Trampoline to be referenced by algo_comm_t::is_var.
          * Redirects to local_is_var(). */
         static int is_var(void*,const char*);
@@ -505,10 +501,16 @@ namespace MHAKernel {
         virtual
         void local_insert_var(const char*,comm_var_t);
 
-        /** Interacts with AC space storage to remove an AC variable.  Only
-         * permitted when AC space is not prepared. */
-        virtual
-        void local_remove_var(const char*);
+        /** Remove an AC variable from AC space by name.  Only
+         * permitted when AC space is not prepared.  Trying to remove a
+         * non-existing AC variable from AC space is not by itself an error.
+         * Calling this method while the AC space is prepared is an error,
+         * because it is not permitted to remove AC variables during signal
+         * processing, only to update them.
+         * @param name Name of the AC variable to remove.
+         * @throw MHA_Error if called while prepared, and then regardless of
+         *        whether an AC variable with name \c name exists or not. */
+        virtual void remove_var(const std::string & name);
 
         /** Remove all AC variables from AC space that point to the given
          * memory address.  Only permitted when AC space is not prepared.

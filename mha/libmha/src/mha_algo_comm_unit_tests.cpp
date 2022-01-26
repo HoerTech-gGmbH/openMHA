@@ -117,6 +117,30 @@ TEST(comm_var_map_t, retrieve_get_entries_size)
   EXPECT_EQ(2, i2);
 }
 
+
+TEST(algo_comm_class_t, insert_var_remove_var)
+{
+  MHAKernel::algo_comm_class_t acspace;
+
+  const std::string name = "key";
+  EXPECT_FALSE(acspace.local_is_var(name.c_str()));
+  EXPECT_NO_THROW(acspace.remove_var(name)) <<
+    "Removing a non-existing variable from AC space is not an error";
+
+  comm_var_t cv = {};
+  acspace.get_c_handle().insert_var(&acspace, name.c_str(), cv);
+  EXPECT_TRUE(acspace.local_is_var(name.c_str()));
+  EXPECT_NO_THROW(acspace.remove_var(name)) <<
+    "Removing an existing variable from AC space works while unprepared";
+  EXPECT_FALSE(acspace.local_is_var(name.c_str()));
+
+  acspace.set_prepared(true);
+  EXPECT_THROW(acspace.remove_var(name), MHA_Error) <<
+    "Removing variable from AC space by name while prepared is not allowed." <<
+    " Calling the function while prepared is an error even if no variable" <<
+    " with this name exists.";
+}
+
 /*
  * Local Variables:
  * compile-command: "make -C .. unit-tests"
