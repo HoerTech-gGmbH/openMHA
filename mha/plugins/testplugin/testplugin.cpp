@@ -131,9 +131,9 @@ namespace testplugin {
         c.data = idata;
         c.data_type = MHA_AC_INT;
       } break;
-      case _MHA_AC_MHAREAL: 
+      case _MHA_AC_MHAREAL:
         c.data_type = MHA_AC_MHAREAL;
-        // fall through
+        [[fallthrough]];
       case _MHA_AC_FLOAT: {
         float * fdata = new float[float_data.data.size()];
         std::copy(float_data.data.begin(), float_data.data.end(), fdata);

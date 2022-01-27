@@ -125,7 +125,7 @@ done
                 MACLDFLAGS+=" -L/opt/homebrew/lib"
                 echo LDLIBS+=" -L/opt/homebrew/lib"
             fi
-            MACCXXFLAGS+="-Wno-error=unused-command-line-argument"
+            MACCXXFLAGS+="-Wno-error=unused-command-line-argument -Wimplicit-fallthrough"
     esac
     echo ARCH=$ARCH
     echo PREFIX=$PREFIX
