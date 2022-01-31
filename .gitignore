@@ -3,3 +3,4 @@ _site
 jekyllInfo.txt
 _config.yml.rej
 Gemfile.lock
+.DS_Store
