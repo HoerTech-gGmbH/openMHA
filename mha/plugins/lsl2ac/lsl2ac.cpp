@@ -15,7 +15,7 @@
 
 #include "lsl2ac.hh"
 #include <algorithm>
-
+using namespace std::string_literals;
 lsl2ac::lsl2ac_t::lsl2ac_t(algo_comm_t iac, const std::string &)
     : MHAPlugin::plugin_t<lsl2ac::cfg_t>("Receive LSL streams and copy"
                                          " them to AC variables.",iac)
@@ -128,7 +128,7 @@ lsl2ac::cfg_t::cfg_t(const algo_comm_t& ac_,
             break;
         case lsl::channel_format_t::cf_string:
             // char arrays and marker streams both use cf_string - distinguish by type meta data
-            if(matching_streams[0].type()=="Marker")
+            if(matching_streams[0].type().find("Marker"s) != std::string::npos)
                 varlist.emplace(name,std::make_unique<save_var_t<std::string>>(matching_streams[0],
                                                                         ac_,
                                                                         ob_,
