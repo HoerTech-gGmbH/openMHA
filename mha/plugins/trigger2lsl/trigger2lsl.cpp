@@ -27,12 +27,14 @@ trigger2lsl_if_t::trigger2lsl_if_t(algo_comm_t iac, const std::string & )
     insert_member(stream_name);
     insert_member(use_edge_position);
     insert_member(min_debounce);
+    insert_member(channel);
     patchbay.connect(&rising_edge.writeaccess,this,&trigger2lsl_if_t::update);
     patchbay.connect(&falling_edge.writeaccess,this,&trigger2lsl_if_t::update);
     patchbay.connect(&threshold.writeaccess,this,&trigger2lsl_if_t::update);
     patchbay.connect(&stream_name.writeaccess,this,&trigger2lsl_if_t::update);
     patchbay.connect(&use_edge_position.writeaccess,this,&trigger2lsl_if_t::update);
     patchbay.connect(&min_debounce.writeaccess,this,&trigger2lsl_if_t::update);
+    patchbay.connect(&channel.writeaccess,this,&trigger2lsl_if_t::update);
 }
 
 template <class mha_signal_t> mha_signal_t* trigger2lsl_if_t::process(mha_signal_t* s)
