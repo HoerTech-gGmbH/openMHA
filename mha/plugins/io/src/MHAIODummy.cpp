@@ -139,7 +139,8 @@ io_dummy_t::io_dummy_t(unsigned int ifragsize,
       stop_event(istop_event),
       proc_handle(iproc_handle),
       start_handle(istart_handle),
-      stop_handle(istop_handle)
+      stop_handle(istop_handle),
+      stop_request(false)
 {}
 
 extern "C" {
