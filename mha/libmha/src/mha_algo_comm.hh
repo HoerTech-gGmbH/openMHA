@@ -401,8 +401,10 @@ namespace MHAKernel {
         /** Create or replace variable.  Creating is only permitted if
          * is_prepared == false.
          * @param name Name of the AC variable to create or update.
+         *             May not be empty.  Must not contain space character.
          * @param var  Metadata of the AC variable.
-         * @throw MHA_Error if asked to create in prepared state. */
+         * @throw MHA_Error if asked to create in prepared state.
+         * @throw MHA_Error if name is emtpy or contains space. */
         void insert(const std::string & name, const comm_var_t & var);
 
         /** Remove variable. Only permitted if is_prepared == false.
@@ -448,26 +450,6 @@ namespace MHAKernel {
         /// Generates the client handle for users for this AC space.
         virtual algo_comm_t get_c_handle();
 
-        /** Trampoline to be referenced by algo_comm_t::insert_var.
-         * Redirects to local_insert_var(). */
-        static int insert_var(void*,const char*,comm_var_t);
-
-        /** Convenience function for algo_comm_t::insert_var_int.
-         * Creates suitable comm_var_t and forwards to local_insert_var(). */
-        static int insert_var_int(void*,const char*,int*);
-
-        /** Convenience function for algo_comm_t::insert_var_vfloat.
-         * Creates suitable comm_var_t and forwards to local_insert_var(). */
-        static int insert_var_vfloat(void* handle,const char* name, std::vector<float>& ivar);
-
-        /** Convenience function for algo_comm_t::insert_var_float.
-         * Creates suitable comm_var_t and forwards to local_insert_var(). */
-        static int insert_var_float(void*,const char*,float*);
-
-        /** Convenience function for algo_comm_t::insert_var_double.
-         * Creates suitable comm_var_t and forwards to local_insert_var(). */
-        static int insert_var_double(void*,const char*,double*);
-
         /** Trampoline to be referenced by algo_comm_t::is_var.
          * Redirects to local_is_var(). */
         static int is_var(void*,const char*);
@@ -497,9 +479,104 @@ namespace MHAKernel {
         static const char* get_error(int);
         
         /** Interacts with AC space storage to create or replace an AC variable
-         * When the AC space is prepared, only replacing is permitted. */
+         * 
+         * When the AC space is already prepared, only replacing existing
+         * variables is permitted, not creating new ones.  An AC space becomes
+         * prepared only after the plugin's prepare() method has finished
+         * executing, and becomes unprepared again before the plugin's
+         * release() method starts executing.  During signal processing, which
+         * starts after all plugins have executed their prepare() methods and
+         * terminates before any plugin executes its release() method, the
+         * AC space stays in prepared state.
+         * 
+         * Plugins calling this method must ensure that it is called directly
+         * or indirectly from every single invocation of their prepare() and
+         * their process() methods for each AC variable that they choose to
+         * publish.  During prepare(), plugins must decide which AC variables
+         * to publish and stick to this decision until the next invocation of
+         * release().
+         * 
+         * @param name Name of the AC variable to create or to replace.
+         *             May not be empty.  Must not contain space character.
+         * @param cv Descriptor of AC variable.  The \c data pointer of this
+         *           struct must remain valid until at least the next
+         *           invocation of the calling plugin's process() or release()
+         *           method, the other fields must correctly describe the data.
+         * @throw MHA_Error If the AC space is already prepared and no AC
+         *                  variable with name \c name exists yet.
+         * @throw MHA_Error if name is emtpy or contains space. */
         virtual
-        void local_insert_var(const char*,comm_var_t);
+        void insert_var(const std::string & name, comm_var_t cv);
+
+        /** Convenience method for inserting or replacing a scalar integer AC
+         * variable into AC space.  Creates suitable comm_var_t and forwards to
+         * insert_var(), therefore see also the documentation of insert_var().
+         * When the AC space is already prepared, only replacing existing
+         * variables is permitted, not creating new ones.
+         * @param name Name of the AC variable to create or to replace.
+         *             May not be empty.  Must not contain space character.
+         * @param ptr Pointer to an int variable owned by the calling plugin.
+         *            The pointer must remain valid until at least the next
+         *            invocation of the calling plugin's process() or release()
+         *            method.
+         * @throw MHA_Error If the AC space is already prepared and no AC
+         *                  variable with name \ref name exists yet.
+         * @throw MHA_Error if name is emtpy or contains space. */
+        virtual void insert_var_int(const std::string & name, int * ptr);
+
+        /** Convenience function for inserting or replacing a vector of floats
+         * as an AC variable into the AC space.  Creates suitable comm_var_t
+         * and forwards to insert_var(), therefore see also the documentation
+         * of insert_var().
+         * When the AC space is prepared, only replacing existing variables
+         * is permitted, not creating new ones.
+         * @param name Name of the AC variable to create or to replace.
+         *             May not be empty.  Must not contain space character.
+         * @param vec Reference to a float vector owned by the calling plugin.
+         *            The internal storage of this vector must remain valid
+         *            until at least the next invocation of the calling
+         *            plugin's process() or release() method.
+         *            No methods that could cause iterator invalidation may be
+         *            called on this vector until at least then.
+         * @throw MHA_Error If the AC space is already prepared and no AC
+         *                  variable with name \c name exists yet.
+         * @throw MHA_Error if name is emtpy or contains space.
+         * @throw MHA_Error if vec contains more elements than can be
+         *                  represented by comm_var_t::num_entries. */
+        virtual void
+        insert_var_vfloat(const std::string & name, std::vector<float>& vec);
+
+        /** Convenience method for inserting or replacing a scalar float AC
+         * variable into AC space.  Creates suitable comm_var_t and forwards to
+         * insert_var(), therefore see also the documentation of insert_var().
+         * When the AC space is prepared, only replacing existing variables
+         * is permitted, not creating new ones.
+         * @param name Name of the AC variable to create or to replace.
+         *             May not be empty.  Must not contain space character.
+         * @param ptr Pointer to a float variable owned by the calling plugin.
+         *            The pointer must remain valid until at least the next
+         *            invocation of the calling plugin's process() or release()
+         *            method.
+         * @throw MHA_Error If the AC space is already prepared and no AC
+         *                  variable with name \c name exists yet.
+         * @throw MHA_Error if name is emtpy or contains space. */
+        virtual void insert_var_float(const std::string & name, float* ptr);
+
+        /** Convenience method for inserting or replacing a scalar double AC
+         * variable into AC space.  Creates suitable comm_var_t and forwards to
+         * insert_var(), therefore see also the documentation of insert_var().
+         * When the AC space is prepared, only replacing existing variables
+         * is permitted, not creating new ones.
+         * @param name Name of the AC variable to create or to replace.
+         *             May not be empty.  Must not contain space character.
+         * @param ptr Pointer to a double variable owned by the calling plugin.
+         *            The pointer must remain valid until at least the next
+         *            invocation of the calling plugin's process() or release()
+         *            method.
+         * @throw MHA_Error If the AC space is already prepared and no AC
+         *                  variable with name \c name exists yet.
+         * @throw MHA_Error if name is emtpy or contains space. */
+        virtual void insert_var_double(const std::string & name, double* ptr);
 
         /** Remove an AC variable from AC space by name.  Only
          * permitted when AC space is not prepared.  Trying to remove a
@@ -613,11 +690,7 @@ namespace MHA_AC {
             acv.num_entries = 1;
             acv.stride = 1;
             acv.data = &data;
-            int err = ac.insert_var(ac.handle, name.c_str(), acv);
-            if( err )
-                throw MHA_Error(__FILE__,__LINE__,
-                                "Unable to insert AC variable '%s':\n%s",
-                                name.c_str(),ac.get_error(err));
+            ac.handle->insert_var(name, acv);
         }
         /** Remove the AC variable by reference from the AC variable space.
          * Plugins may call this method only from their prepare(), release()

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2013 2016 2017 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -118,7 +119,7 @@ mha_wave_t* MHAMultiSrc::waveform_t::update(mha_wave_t* s)
         for(k=0;k<num_frames;k++)
             value(k,ch) = ::value(win,k,(*cfg)[ch].channel);
     }
-    if( num_channels )
+    if( num_channels > 0U && name.length() > 0U )
         insert();
     return this;
 }
@@ -163,7 +164,7 @@ mha_spec_t* MHAMultiSrc::spectrum_t::update(mha_spec_t* s)
         for(k=0;k<num_frames;k++)
             value(k,ch) = ::value(win,k,(*cfg)[ch].channel);
     }
-    if( num_channels )
+    if( num_channels > 0U && name.length() > 0U )
         insert();
     return this;
 }

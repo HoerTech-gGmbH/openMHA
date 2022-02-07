@@ -120,8 +120,8 @@ TEST_F(wave2spec_testing, ac_variables)
   // to test that wave2spec re-inserts both AC variables during processing,
   // we shadow the variables temporarily
   int shadow1 = 0, shadow2 = 0;
-  ac.insert_var_int(ac.handle, "algo_name", &shadow1);
-  ac.insert_var_int(ac.handle, "algo_name_wnd", &shadow2);
+  ac.handle->insert_var_int("algo_name", &shadow1);
+  ac.handle->insert_var_int("algo_name_wnd", &shadow2);
   ASSERT_EQ(0, ac.get_var(ac.handle, "algo_name", &cv)); // exists
   EXPECT_NE(spec_ptr, cv.data);
   ASSERT_EQ(0, ac.get_var(ac.handle, "algo_name_wnd", &cv)); // exists

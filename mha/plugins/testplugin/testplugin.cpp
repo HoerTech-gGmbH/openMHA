@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2014 2015 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -150,7 +151,7 @@ namespace testplugin {
                         "insertion of ac variables of type %s is not supported"
                         " by this plugin", data_type.data.get_value().c_str());
       }
-      local_insert_var(insert_var.data.c_str(), c);
+      MHAKernel::algo_comm_class_t::insert_var(insert_var.data, c);
     }
 
     void do_get_var() {

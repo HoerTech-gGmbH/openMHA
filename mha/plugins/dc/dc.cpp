@@ -107,7 +107,7 @@ void dc_if_t::update()
  * @param ac    Algorithm communication variable space, needed to access
  *        AC variable \c acname.
  * @return The number of broadband audio channels from which the input signal
- *        of \dc was generated.  This will usually be 1 or 2 for normal
+ *        of \c dc was generated.  This will usually be 1 or 2 for normal
  *        hearing aid simulation task, but the \c dc plugin is not restricted
  *        to process only 1 or 2 broadband signals, therefore other return
  *        values are possible, but then hearing aid fitting rules querying

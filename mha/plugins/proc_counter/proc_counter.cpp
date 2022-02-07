@@ -33,7 +33,7 @@ proc_counter_t::proc_counter_t(algo_comm_t iac, const std::string &configured_na
       ac(iac)
 {
     data = 0;
-    ac.insert_var_int(ac.handle, configured_name.c_str(), &data);
+    ac.handle->insert_var_int(configured_name, &data);
 }
 
 proc_counter_t::~proc_counter_t()

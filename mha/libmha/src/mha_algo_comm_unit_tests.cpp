@@ -128,7 +128,7 @@ TEST(algo_comm_class_t, insert_var_remove_var)
     "Removing a non-existing variable from AC space is not an error";
 
   comm_var_t cv = {};
-  acspace.get_c_handle().insert_var(&acspace, name.c_str(), cv);
+  acspace.insert_var(name, cv);
   EXPECT_TRUE(acspace.local_is_var(name.c_str()));
   EXPECT_NO_THROW(acspace.remove_var(name)) <<
     "Removing an existing variable from AC space works while unprepared";
@@ -139,6 +139,37 @@ TEST(algo_comm_class_t, insert_var_remove_var)
     "Removing variable from AC space by name while prepared is not allowed." <<
     " Calling the function while prepared is an error even if no variable" <<
     " with this name exists.";
+  
+  // Exercise convenience functions while checking naming restrictions
+  acspace.set_prepared(false);
+  float my_float = 0.0f;
+  std::vector<float> my_float_vector(10, 0.0f);
+  // names containing space(s) are forbidden
+  EXPECT_THROW(acspace.insert_var_float("na me", &my_float), MHA_Error);
+  // empty name is forbidden
+  EXPECT_THROW(acspace.insert_var_vfloat("", my_float_vector), MHA_Error);
+}
+
+TEST(ac2matrix_t, insert)
+{
+  // ac2matrix_t::insert is used by plugin analysispath to copy AC
+  // variables from one AC space to another AC space
+  MHAKernel::algo_comm_class_t acspace1, acspace2;
+  const std::string name = "acname";
+
+  // Create original variable in first AC space
+  std::vector<float> my_float_vector({1.0f,2.0f,3.0f,4.0f,5.0f,6.0f,7.0f});
+  acspace1.insert_var_vfloat(name, my_float_vector);
+
+  // Create a matrix copy of the variable in first acspace
+  MHA_AC::ac2matrix_t copy(acspace1.get_c_handle(), name);
+
+  // Insert the copy into the second ac space
+  copy.insert(acspace2.get_c_handle());
+
+  // Now both ac spaces contain a single AC variable with name
+  EXPECT_TRUE(acspace1.local_is_var(name.c_str()));
+  EXPECT_TRUE(acspace2.local_is_var(name.c_str()));
 }
 
 /*

@@ -119,7 +119,7 @@ namespace lsl2ac{
             cv.num_entries = info_.channel_count() * nsamples; // Not problematic if zero initially - will be reset on first pull
             cv.data_type = type_;
             cv.data = buf.data();
-            ac.insert_var(ac.handle, info_.name().c_str(), cv);
+            ac.handle->insert_var(info_.name(), cv);
             ts.stride = 1;
             ts.num_entries = nsamples;
             ts.data_type = MHA_AC_DOUBLE;
@@ -276,10 +276,10 @@ namespace lsl2ac{
     };
     /** Insert stream value, time stamp and time offset into ac space*/
     void insert_vars(){
-      ac.insert_var(ac.handle,name.c_str(),cv);
-      ac.insert_var(ac.handle,ts_name.c_str(), ts);
-      ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
-      ac.insert_var_int(ac.handle, new_name.c_str(), &n_new_samples);
+      ac.handle->insert_var(name,cv);
+      ac.handle->insert_var(ts_name, ts);
+      ac.handle->insert_var_double(tc_name, &tc);
+      ac.handle->insert_var_int(new_name, &n_new_samples);
     };
   };
 
@@ -331,7 +331,7 @@ namespace lsl2ac{
             cv.num_entries = 0; // Not problematic if zero initially - will be reset on first pull
             cv.data_type = MHA_AC_CHAR;
             cv.data = &buf[0];
-            ac.insert_var(ac.handle, info_.name().c_str(), cv);
+            ac.handle->insert_var(info_.name(), cv);
             insert_vars();
           } catch (MHA_Error &e) {
       // The framework can handle MHA_Errors. Just re-throw
@@ -472,9 +472,9 @@ namespace lsl2ac{
     void insert_vars(){
       cv.data = &buf[0];
 
-      ac.insert_var(ac.handle,name.c_str(),cv);
-      ac.insert_var_double(ac.handle,ts_name.c_str(), &ts);
-      ac.insert_var_double(ac.handle,tc_name.c_str(), &tc);
+      ac.handle->insert_var(name,cv);
+      ac.handle->insert_var_double(ts_name, &ts);
+      ac.handle->insert_var_double(tc_name, &tc);
     };
   };
 

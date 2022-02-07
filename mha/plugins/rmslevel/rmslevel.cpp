@@ -260,7 +260,7 @@ namespace rmslevel {
             throw MHA_Error(__FILE__,__LINE__, "Vector %s has too many "
                             "(%zu) elements for an AC variable",
                             acname.c_str(), v.size());
-        ac.insert_var(ac.handle, acname.c_str(), cv);
+        ac.handle->insert_var(acname, cv);
     }
     void rmslevel_if_t::remove_ac_variables()
     {

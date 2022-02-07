@@ -33,44 +33,6 @@ section \ref algocomm.
 /** \var algo_comm_t::handle
     \brief AC variable control handle
 */
-/** \var algo_comm_t::insert_var
-    \brief Register an AC variable.
-    
-    This function can register a variable to be shared within one
-    chain. If a variable of this name exists it will be
-    overwritten.
-    
-    \param h    AC handle
-    \param n    name of variable.
-                May not be empty. Must not contain space character.
-                The name is copied, therefore it is allowed that the
-                char array pointed to gets invalid after return.
-    \param v    variable handle of type \ref comm_var_t
-    \return Error code or zero on success
-*/
-
-/** \var algo_comm_t::insert_var_int
-    \brief Register an int as an AC variable.
-    
-    This function can register an int variable to be shared with other
-    algorithms. It behaves similar to ac.insert_var.
-    
-    \param h    AC handle
-    \param n    name of variable
-    \param v    pointer on the variable
-    \return Error code or zero on success
-*/
-/** \var algo_comm_t::insert_var_float
-    \brief Register a float as an AC variable.
-    
-    This function can register a float variable to be shared with
-    other algorithms. It behaves similar to ac.insert_var.
-    
-    \param h    AC handle
-    \param n    name of variable
-    \param v    pointer on the variable
-    \return Error code or zero on success
-*/
 /** \var algo_comm_t::is_var
     \brief Test if an AC variable exists
     
@@ -156,7 +118,7 @@ defined type. The member `num_entries' describes the number of
 elements of this base type stored at the pointer address.
     
     An AC variable can be registered with the \ref
-    algo_comm_t::insert_var "insert_var" function.
+    algo_comm_class_t::insert_var method.
     
 */
 /** \var comm_var_t::data_type
@@ -232,10 +194,17 @@ void MHAKernel::comm_var_map_t::insert(const std::string & name,
 
     // Creating new entry is not permitted when MHA is prepared.
     if (is_prepared && creating_new_entry)
-        throw MHA_Error(__FILE__,__LINE__,"Attempt to create AC variable %s "
+        throw MHA_Error(__FILE__, __LINE__, "Attempt to create AC variable "
+                        "\"%s\" "
                         "during live signal processing.  The plugin that "
                         "tried to do this is misbehaving and should be fixed.",
                         name.c_str());
+
+    if (name.empty() || name.find(' ') != std::string::npos)
+        throw MHA_Error(__FILE__,__LINE__,"Invalid algorithm communication "
+                        "variable name \"%s\", cannot insert into AC space",
+                        name.c_str());
+
     // Create or replace.
     map[name] = var;
 
@@ -248,7 +217,8 @@ void MHAKernel::comm_var_map_t::erase_by_name(const std::string & name)
 {
     // Removing AC variables is not permitted while MHA is prepared.
     if (is_prepared)
-        throw MHA_Error(__FILE__,__LINE__,"Attempt to remove AC variable %s "
+        throw MHA_Error(__FILE__,__LINE__,"Attempt to remove AC variable "
+                        "\"%s\" "
                         "during live signal processing.  The plugin that "
                         "tried to do this is misbehaving and should be fixed.",
                         name.c_str());
@@ -386,10 +356,6 @@ const char* MHAKernel::algo_comm_class_t::get_error(int e)
 
 algo_comm_t algo_comm_default = {
     NULL,
-    MHAKernel::algo_comm_class_t::insert_var,
-    MHAKernel::algo_comm_class_t::insert_var_int,
-    MHAKernel::algo_comm_class_t::insert_var_float,
-    MHAKernel::algo_comm_class_t::insert_var_double,
     MHAKernel::algo_comm_class_t::is_var,
     MHAKernel::algo_comm_class_t::get_var,
     MHAKernel::algo_comm_class_t::get_var_int,
@@ -431,17 +397,42 @@ MHAKernel::algo_comm_class_t::~algo_comm_class_t()
     delete [] algo_comm_id_string;
 }
 
-void MHAKernel::algo_comm_class_t::local_insert_var(const char* name,comm_var_t var)
+void MHAKernel::algo_comm_class_t::
+insert_var(const std::string & name, comm_var_t var)
 {
-    if (name == 0)
-        throw MHA_ErrorMsg("NULL is not a valid name for an algo_comm variable");
-    if (strlen(name) == 0)
-        throw MHA_ErrorMsg("Empty string is not a valid name " \
-                         "for an algo_comm variable");
-    if (strchr(name, ' ') != 0)
-        throw MHA_ErrorMsg("algo_comm variable name " \
-                         "may not contain space character");
     vars.insert(name, var);
+}
+
+void MHAKernel::algo_comm_class_t::
+insert_var_int(const std::string & name, int* ptr)
+{
+    insert_var(name, {MHA_AC_INT, 1, 1, ptr});
+}
+
+void MHAKernel::algo_comm_class_t::
+insert_var_float(const std::string & name, float* ptr)
+{
+    insert_var(name, {MHA_AC_FLOAT, 1, 1, ptr});
+}
+
+void MHAKernel::algo_comm_class_t::
+insert_var_double(const std::string & name, double* ptr)
+{
+    insert_var(name, {MHA_AC_DOUBLE, 1, 1, ptr});
+}
+
+void MHAKernel::algo_comm_class_t::
+insert_var_vfloat(const std::string & name,std::vector<float>& vec)
+{
+    comm_var_t cv{MHA_AC_FLOAT, 1, 1, vec.data()};
+    cv.num_entries = vec.size();
+    if (cv.num_entries != vec.size()) { // overflow, too many elements
+        throw MHA_Error(__FILE__, __LINE__, "Error inserting vector as "
+                        "algorithm communication variable \"%s\" into AC "
+                        "space: too many elements (%zu), maximum is %u.",
+                        name.c_str(), vec.size(), --(cv.num_entries=0));
+    }
+    insert_var(name, cv);
 }
 
 void MHAKernel::algo_comm_class_t::remove_var(const std::string & name)
@@ -487,101 +478,6 @@ size_t MHAKernel::algo_comm_class_t::size() const
  * Here begins the static function implementation:
  *
  */
-
-int MHAKernel::algo_comm_class_t::insert_var(void* handle,const char* name,comm_var_t var)
-{
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p) 
-            return AC_INVALID_HANDLE;
-        p->local_insert_var(name,var);
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error&e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
-}
-
-int MHAKernel::algo_comm_class_t::insert_var_int(void* handle,const char* name,int* ivar)
-{
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p) 
-            return AC_INVALID_HANDLE;
-        comm_var_t var;
-        var.data_type = MHA_AC_INT;
-        var.num_entries = 1;
-        var.stride = 1;
-        var.data = ivar;
-        p->local_insert_var(name,var);
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error&e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
-}
-
-int MHAKernel::algo_comm_class_t::insert_var_float(void* handle,const char* name,float* ivar)
-{
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p) 
-            return AC_INVALID_HANDLE;
-        comm_var_t var;
-        var.data_type = MHA_AC_FLOAT;
-        var.num_entries = 1;
-        var.stride = 1;
-        var.data = ivar;
-        p->local_insert_var(name,var);
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error& e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
-}
-
-int MHAKernel::algo_comm_class_t::insert_var_double(void* handle,const char* name,double* ivar)
-{
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p) 
-            return AC_INVALID_HANDLE;
-        comm_var_t var;
-        var.data_type = MHA_AC_DOUBLE;
-        var.num_entries = 1;
-        var.stride = 1;
-        var.data = ivar;
-        p->local_insert_var(name,var);
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error& e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
-}
-
-int MHAKernel::algo_comm_class_t::insert_var_vfloat(void* handle,const char* name,std::vector<float>& ivar)
-{
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if(!p)
-            return AC_INVALID_HANDLE;
-        comm_var_t var;
-        var.data_type = MHA_AC_FLOAT;
-        var.num_entries = ivar.size();
-        var.stride = 1;
-        var.data = static_cast<void*>(const_cast<float*>(ivar.data()));
-        p->local_insert_var(name,var);
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error&e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
-}
 
 int MHAKernel::algo_comm_class_t::get_var(void* handle,const char* name,comm_var_t* var)
 {
@@ -902,34 +798,22 @@ void MHA_AC::stat_t::update()
 
 void MHA_AC::waveform_t::insert()
 {
-    if( name.size() ){
-        comm_var_t var;
-        var.data_type = MHA_AC_MHAREAL;
-        var.num_entries = num_frames * num_channels;
-        var.stride = num_channels;
-        var.data = buf;
-        int err;
-        if( (err = ac.insert_var(ac.handle,name.c_str(),var)) )
-            throw MHA_Error(__FILE__,__LINE__,
-                            "Not able to insert AC waveform variable '%s':\n%s",
-                            name.c_str(),ac.get_error(err));
-    }
+    comm_var_t var;
+    var.data_type = MHA_AC_MHAREAL;
+    var.num_entries = num_frames * num_channels;
+    var.stride = num_channels;
+    var.data = buf;
+    ac.handle->insert_var(name,var);
 }
 
 void MHA_AC::spectrum_t::insert()
 {
-    if( name.size() ){
-        comm_var_t var;
-        var.data_type = MHA_AC_MHACOMPLEX;
-        var.num_entries = num_frames * num_channels;
-        var.stride = num_frames;
-        var.data = buf;
-        int err;
-        if( (err = ac.insert_var(ac.handle,name.c_str(),var)) )
-            throw MHA_Error(__FILE__,__LINE__,
-                            "Not able to insert AC spectrum variable '%s':\n%s",
-                            name.c_str(),ac.get_error(err));
-    }
+    comm_var_t var;
+    var.data_type = MHA_AC_MHACOMPLEX;
+    var.num_entries = num_frames * num_channels;
+    var.stride = num_frames;
+    var.data = buf;
+    ac.handle->insert_var(name,var);
 }
 
 MHA_AC::ac2matrix_helper_t::ac2matrix_helper_t(algo_comm_t iac,const std::string& iname)
@@ -983,7 +867,7 @@ void MHA_AC::ac2matrix_t::update()
 
 void MHA_AC::ac2matrix_t::insert(algo_comm_t ac)
 {
-    ac.insert_var(ac.handle,getname().c_str(),get_comm_var());
+    ac.handle->insert_var(getname(),get_comm_var());
 }
 
 MHA_AC::acspace2matrix_t::acspace2matrix_t(algo_comm_t iac,const std::vector<std::string>& names)

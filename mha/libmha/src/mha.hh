@@ -286,10 +286,6 @@ namespace MHAKernel {class algo_comm_class_t;}
 
 typedef struct algo_comm_t {
     MHAKernel::algo_comm_class_t * handle;
-    int (*insert_var)(void*,const char*,comm_var_t);
-    int (*insert_var_int)(void*,const char*,int*);
-    int (*insert_var_float)(void*,const char*,float*);
-    int (*insert_var_double)(void*,const char*,double*);
     int (*is_var)(void*,const char*);
     int (*get_var)(void*,const char*,comm_var_t*);
     int (*get_var_int)(void*,const char*,int*);

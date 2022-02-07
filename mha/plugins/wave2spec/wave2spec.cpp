@@ -73,11 +73,7 @@ void wave2spec_t::publish_ac_variables()
 
     // insert window shape with name <configured_name>_wnd
     comm_var_t cv = {MHA_AC_MHAREAL, window.num_frames, 1U, window.buf};
-    int err = ac.insert_var(ac.handle,ac_wndshape_name.c_str(), cv);
-    if (err) // insert_var returns non-zero error code in case of error
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Unable to insert wave2spec window into AC space as '%s':\n%s",
-                        ac_wndshape_name.c_str(), ac.get_error(err));
+    ac.handle->insert_var(ac_wndshape_name, cv);
 }
 
 wave2spec_t::~wave2spec_t()

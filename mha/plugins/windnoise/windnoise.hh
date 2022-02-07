@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -187,10 +188,10 @@ namespace windnoise {
                 .stride = 1,
                 .data = detected.data.size() ? &detected.data[0] : nullptr
             };
-            ac.insert_var(ac.handle, detected_acname.c_str(), cv);
+            ac.handle->insert_var(detected_acname, cv);
             cv.data_type = MHA_AC_FLOAT;
             cv.data = cv.num_entries ? &lowpass_quotient.data[0] : nullptr;
-            ac.insert_var(ac.handle, lowpass_quotient_acname.c_str(), cv);
+            ac.handle->insert_var(lowpass_quotient_acname, cv);
         }
 
         // make poll_config public for unit tests
