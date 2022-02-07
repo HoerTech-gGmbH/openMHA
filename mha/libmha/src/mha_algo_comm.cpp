@@ -18,91 +18,6 @@
 #include "mha_algo_comm.hh"
 #include "mha_defs.h"
 
-/**
-
-\ingroup algocomm
-\struct algo_comm_t
-\brief A reference handle for algorithm communication variables.
-
-This structure contains a coontrol handle and a set of function
-pointers for sharing variables within one processing chain. See also
-section \ref algocomm.
-
-*/
-
-/** \var algo_comm_t::handle
-    \brief AC variable control handle
-*/
-/** \var algo_comm_t::is_var
-    \brief Test if an AC variable exists
-    
-    This function tests if an AC variable of a given name
-    exists. Use ac.get_var to get information about the
-    variables type and dimension.
-    
-    \param h    AC handle
-    \param n    name of variable
-    \return 1 if the variable exists, 0 otherwise
-*/
-/** \var algo_comm_t::get_var
-    \brief Get the variable handle of an AC variable
-  
-    This function returns the variable handle \ref comm_var_t of a
-    variable of the given name. If no variable of that name
-    exists, an error code is returned.
-    
-    \param h    AC handle
-    \param n    name of variable
-    \param v    pointer to a AC variable object
-    \return Error code or zero on success
-*/
-/** \var algo_comm_t::get_var_int
-    \brief Get the value of an int AC variable
-            
-    This function returns the value of an int AC variable of the given
-    name. If no variable exists, the variable type is mismatching or
-    more than one entry is registered, a corresponding error code is
-    returned. This is a special version of ac.get_var.
-    
-    \param h AC handle   
-    \param n    name of variable
-    \param v    pointer on an int variable to store the result
-    \return Error code or zero on success
-*/
-/** \var algo_comm_t::get_var_float
-    \brief Get the value of a float AC variable
-            
-    This function returns the value of a float AC variable of the
-    given name. If no variable exists, the variable type is
-    mismatching or more than one entry is registered, a corresponding
-    error code is returned. This is a special version of ac.get_var.
-    
-    \param h AC handle   
-    \param n    name of variable
-    \param v    pointer on a float variable to store the result
-    \return Error code or zero on success
-*/
-/** \var algo_comm_t::get_entries
-    \brief Return a space separated list of all variable names
-            
-    This function returns the names of all registered variables,
-    separated by a single space.
-    
-    \param h    AC handle
-    \retval ret Character buffer for return value
-    \param len length of character buffer
-    \return Error code or zero on success.
-             -1: invalid ac handle.
-             -3: not enough room in character buffer to store all variable
-                 names.
-*/
-/** \var algo_comm_t::get_error
-    \brief Convert AC error codes into human readable error messages
-    
-    \param e    Error code
-    \return Error message
-*/
-
 /** 
 
 \ingroup algocomm
@@ -300,7 +215,7 @@ MHAKernel::comm_var_map_t::retrieve(const std::string & name) const
                         name.c_str());
 }
 
-const std::string & MHAKernel::comm_var_map_t::get_entries() const
+const std::vector<std::string> & MHAKernel::comm_var_map_t::get_entries() const
 {
     return entries;
 }
@@ -313,76 +228,14 @@ void MHAKernel::comm_var_map_t::update_entries()
         throw MHA_Error(__FILE__, __LINE__, "Internal error: comm_var_map_t::"
                         "update_entries was called while is_prepared == true");
     }
-    std::string r(""); //  build list of all entries in this string
-    for(const auto & pair : map) { // loop over all AC space entries
-        r += pair.first; // append name of current AC variable
-        r += ' '; // append space as separator after each entry
+    entries.clear();
+    for(const auto & pair : map) { // Loop over all AC space entries.
+        entries.push_back(pair.first); // Append name of current AC variable to list.
     }
-    // Remove space after last entry
-    if(r.size()) // but only if there is at least one entry (there may be zero)
-        r.resize(r.size() - 1U);
-    entries = r; // replace member variable "entries" with updated list
-}
-
-#define AC_SUCCESS 0
-#define AC_INVALID_HANDLE -1
-#define AC_INVALID_NAME -2
-#define AC_STRING_TRUNCATED -3
-#define AC_INVALID_OUTPTR -4
-#define AC_TYPE_MISMATCH -5
-#define AC_DIM_MISMATCH -6
-
-const char* MHAKernel::algo_comm_class_t::get_error(int e)
-{
-    switch( e ){
-    case AC_SUCCESS:
-        return "Success";
-    case AC_INVALID_HANDLE:
-        return "Invalid handle";
-    case AC_INVALID_NAME:
-        return "Invalid or non-existing variable name";
-    case AC_STRING_TRUNCATED:
-        return "string truncated";
-    case AC_INVALID_OUTPTR:
-        return "Invalid output pointer";
-    case AC_TYPE_MISMATCH:
-        return "The variable has unexpected type";
-    case AC_DIM_MISMATCH:
-        return "The variable has unexpected dimension";
-    default:
-        return "Unknwon error";
-    }
-}
-
-algo_comm_t algo_comm_default = {
-    NULL,
-    MHAKernel::algo_comm_class_t::is_var,
-    MHAKernel::algo_comm_class_t::get_var,
-    MHAKernel::algo_comm_class_t::get_var_int,
-    MHAKernel::algo_comm_class_t::get_var_float,
-    MHAKernel::algo_comm_class_t::get_var_double,
-    MHAKernel::algo_comm_class_t::get_entries,
-    MHAKernel::algo_comm_class_t::get_error
-};
-
-MHAKernel::algo_comm_class_t* MHAKernel::algo_comm_safe_cast(void* h)
-{
-    if( !h )
-        return NULL;
-    algo_comm_class_t* p = (algo_comm_class_t*)h;
-    if( strncmp(p->algo_comm_id_string,ALGO_COMM_ID_STR,strlen(ALGO_COMM_ID_STR)) != 0 )
-        return NULL;
-    return p;
 }
 
 MHAKernel::algo_comm_class_t::algo_comm_class_t()
-    : algo_comm_id_string(NULL),
-      algo_comm_id_string_len(strlen(ALGO_COMM_ID_STR)+1)
 {
-    algo_comm_id_string = new char[algo_comm_id_string_len];
-    strncpy(algo_comm_id_string,ALGO_COMM_ID_STR,algo_comm_id_string_len);
-    algo_comm_id_string[algo_comm_id_string_len-1] = 0;
-    ac = algo_comm_default;
     ac.handle = this;
 }
 
@@ -393,8 +246,6 @@ algo_comm_t MHAKernel::algo_comm_class_t::get_c_handle()
 
 MHAKernel::algo_comm_class_t::~algo_comm_class_t()
 {
-    memset(algo_comm_id_string,0,algo_comm_id_string_len);
-    delete [] algo_comm_id_string;
 }
 
 void MHAKernel::algo_comm_class_t::
@@ -445,25 +296,19 @@ void MHAKernel::algo_comm_class_t::remove_ref(void* addr)
     vars.erase_by_pointer(addr);
 }
 
-void MHAKernel::algo_comm_class_t::local_get_var(const char* name,
-                                                 comm_var_t* var) const
+comm_var_t MHAKernel::algo_comm_class_t::
+get_var(const std::string & name) const
 {
-    if( !var ){
-        throw MHA_ErrorMsg("Invalid variable pointer.");
-    }
-    if (name == 0) {
-        throw MHA_ErrorMsg("String pointer for variable name must not be NULL");
-    }
-    *var = vars.retrieve(name);
+    return vars.retrieve(name);
 }
 
-bool MHAKernel::algo_comm_class_t::local_is_var(const char* name) const
+bool MHAKernel::algo_comm_class_t::is_var(const std::string & name) const
 {
-    if (name == 0) return false;
     return vars.has_key(name);
 }
 
-const std::string & MHAKernel::algo_comm_class_t::local_get_entries() const
+const std::vector<std::string> & MHAKernel::algo_comm_class_t::
+get_entries() const
 {
     return vars.get_entries();
 }
@@ -473,124 +318,51 @@ size_t MHAKernel::algo_comm_class_t::size() const
     return vars.size();
 }
 
-/*
- *
- * Here begins the static function implementation:
- *
- */
-
-int MHAKernel::algo_comm_class_t::get_var(void* handle,const char* name,comm_var_t* var)
+int MHAKernel::algo_comm_class_t::get_var_int(const std::string & name) const
 {
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if (!p)
-            return AC_INVALID_HANDLE;
-        if (!p->local_is_var(name))
-            return AC_INVALID_NAME;
-        p->local_get_var(name,var);
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error&e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
+    comm_var_t var = get_var(name);
+    if( var.data_type != MHA_AC_INT )
+        throw MHA_Error(__FILE__, __LINE__, "algo_comm_class_t::get_var_int: "
+                        "AC variable \"%s\" has unexpected data type %u, "
+                        "expected MHA_AC_INT (%d).", name.c_str(),
+                        var.data_type, MHA_AC_INT);
+    if( var.num_entries != 1 )
+        throw MHA_Error(__FILE__, __LINE__, "algo_comm_class_t::get_var_int: "
+                        "AC variable \"%s\" has unexpected size %u, "
+                        "expected 1.", name.c_str(), var.num_entries);
+    return *static_cast<int*>(var.data);
 }
 
-int MHAKernel::algo_comm_class_t::get_var_int(void* handle,const char* name,int* ivar)
+float MHAKernel::algo_comm_class_t::
+get_var_float(const std::string & name) const
 {
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if (!p)
-            return AC_INVALID_HANDLE;
-        if (!p->local_is_var(name))
-            return AC_INVALID_NAME;
-        comm_var_t var;
-        if( !ivar ){
-            return AC_INVALID_OUTPTR;
-        }
-        p->local_get_var(name,&var);
-        if( var.data_type != MHA_AC_INT )
-            return AC_TYPE_MISMATCH;
-        if( var.num_entries != 1 )
-            return AC_DIM_MISMATCH;
-        *ivar = *((int*)(var.data));
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error&e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
+    comm_var_t var = get_var(name);
+    if( var.data_type != MHA_AC_FLOAT )
+        throw MHA_Error(__FILE__, __LINE__,"algo_comm_class_t::get_var_float: "
+                        "AC variable \"%s\" has unexpected data type %u, "
+                        "expected MHA_AC_FLOAT (%d).", name.c_str(),
+                        var.data_type, MHA_AC_FLOAT);
+    if( var.num_entries != 1 )
+        throw MHA_Error(__FILE__, __LINE__,"algo_comm_class_t::get_var_float: "
+                        "AC variable \"%s\" has unexpected size %u, "
+                        "expected 1.", name.c_str(), var.num_entries);
+    return *static_cast<float*>(var.data);
 }
 
-int MHAKernel::algo_comm_class_t::get_var_float(void* handle,const char* name,float* ivar)
+double MHAKernel::algo_comm_class_t::
+get_var_double(const std::string & name) const
 {
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if (!p)
-            return AC_INVALID_HANDLE;
-        if (!p->local_is_var(name))
-            return AC_INVALID_NAME;
-        comm_var_t var;
-        if( !ivar )
-            return AC_INVALID_OUTPTR;
-        p->local_get_var(name,&var);
-        if( var.data_type != MHA_AC_FLOAT )
-            return AC_TYPE_MISMATCH;
-        if( var.num_entries != 1 )
-            return AC_DIM_MISMATCH;
-        *ivar = *((float*)(var.data));
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error&e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
-}
-
-int MHAKernel::algo_comm_class_t::get_var_double(void* handle,const char* name,double* ivar)
-{
-    try{
-        algo_comm_class_t* p = algo_comm_safe_cast(handle);
-        if (!p)
-            return AC_INVALID_HANDLE;
-        if (!p->local_is_var(name))
-            return AC_INVALID_NAME;
-        comm_var_t var;
-        if( !ivar )
-            return AC_INVALID_OUTPTR;
-        p->local_get_var(name,&var);
-        if( var.data_type != MHA_AC_DOUBLE )
-            return AC_TYPE_MISMATCH;
-        if( var.num_entries != 1 )
-            return AC_DIM_MISMATCH;
-        *ivar = *((double*)(var.data));
-        return AC_SUCCESS;
-    }
-    catch(MHA_Error&e){
-        (void)e;
-        return AC_INVALID_NAME;
-    }
-}
-
-int MHAKernel::algo_comm_class_t::get_entries(void* handle,char* ret,unsigned int len)
-{
-    algo_comm_class_t* p = algo_comm_safe_cast(handle);
-    if(!p) 
-        return AC_INVALID_HANDLE;
-    memset(ret,0,len);
-    std::string sres = p->local_get_entries();
-    strncpy(ret,sres.c_str(),len-1);
-    if( sres.size() >= len )
-        return AC_STRING_TRUNCATED;
-    return AC_SUCCESS;
-}
-
-int MHAKernel::algo_comm_class_t::is_var(void* handle,const char* name)
-{
-    algo_comm_class_t* p = algo_comm_safe_cast(handle);
-    if(!p)
-        return 0;
-    return p->local_is_var(name);
+    comm_var_t var = get_var(name);
+    if( var.data_type != MHA_AC_DOUBLE )
+        throw MHA_Error(__FILE__,__LINE__,"algo_comm_class_t::get_var_double: "
+                        "AC variable \"%s\" has unexpected data type %u, "
+                        "expected MHA_AC_DOUBLE (%d).", name.c_str(),
+                        var.data_type, MHA_AC_DOUBLE);
+    if( var.num_entries != 1 )
+        throw MHA_Error(__FILE__,__LINE__,"algo_comm_class_t::get_var_double: "
+                        "AC variable \"%s\" has unexpected size %u, "
+                        "expected 1.", name.c_str(), var.num_entries);
+    return *static_cast<double*>(var.data);
 }
 
 void MHAKernel::algo_comm_class_t::set_prepared(bool prepared)
@@ -600,10 +372,7 @@ void MHAKernel::algo_comm_class_t::set_prepared(bool prepared)
 
 mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)
 {
-    comm_var_t var;
-    int err = ac.get_var(ac.handle,n.c_str(),&var);
-    if( err )
-        throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
+    comm_var_t var = ac.handle->get_var(n);
     if( (var.stride == 0) || (var.num_entries!=0 && var.stride > var.num_entries) )
         throw MHA_Error(__FILE__,__LINE__,
                         "The variable \"%s\" has invalid stride settings (%u).",
@@ -626,10 +395,7 @@ mha_spec_t MHA_AC::get_var_spectrum(algo_comm_t ac,const std::string& n)
 
 mha_wave_t MHA_AC::get_var_waveform(algo_comm_t ac,const std::string& n)
 {
-    comm_var_t var;
-    int err = ac.get_var(ac.handle,n.c_str(),&var);
-    if( err )
-        throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
+    comm_var_t var = ac.handle->get_var(n);
     if( (var.stride == 0) || (var.num_entries!=0 && var.stride > var.num_entries) )
         throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid stride settings (%u).",n.c_str(),var.stride);
     mha_wave_t s;
@@ -655,24 +421,16 @@ mha_wave_t MHA_AC::get_var_waveform(algo_comm_t ac,const std::string& n)
 
 int MHA_AC::get_var_int(algo_comm_t ac,const std::string& n)
 {
-    comm_var_t var;
-    int err = ac.get_var(ac.handle,n.c_str(),&var);
-    if( err )
-        throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
-    if( var.num_entries != 1 )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" contains not exactly one entry.",n.c_str());
-    if( var.data_type != MHA_AC_INT )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid data type.",n.c_str());
-    return *((int*)var.data);
+    return ac.handle->get_var_int(n);
 }
 
 std::vector<float> MHA_AC::get_var_vfloat(algo_comm_t ac,const std::string& name)
 {
-    comm_var_t cv;
-    int err = ac.get_var(ac.handle,name.c_str(),&cv);
-    if( err )
-        throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",name.c_str(),ac.get_error(err));
-    if (cv.data_type != MHA_AC_MHAREAL) {
+    comm_var_t cv = ac.handle->get_var(name);
+    unsigned types[2] = {MHA_AC_FLOAT, MHA_AC_FLOAT};
+    if (std::is_same<float,mha_real_t>::value)
+        types[0] = MHA_AC_MHAREAL;
+    if (cv.data_type != types[0] && cv.data_type != types[1]) {
         throw MHA_Error(__FILE__,__LINE__,
                         "Algorithm communication variable %s has unexpected"
                         " data type %u", name.c_str(), cv.data_type);
@@ -687,30 +445,7 @@ std::vector<float> MHA_AC::get_var_vfloat(algo_comm_t ac,const std::string& name
 
 float MHA_AC::get_var_float(algo_comm_t ac,const std::string& n)
 {
-    float ret;
-    comm_var_t var;
-    int err = ac.get_var(ac.handle,n.c_str(),&var);
-    if( err )
-        throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",n.c_str(),ac.get_error(err));
-    if( var.num_entries != 1 )
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" contains not exactly one entry.",n.c_str());
-    switch( var.data_type ){
-    case MHA_AC_INT :
-        ret = *((int*)var.data);
-        break;
-    case MHA_AC_FLOAT :
-        ret = *((float*)var.data);
-        break;
-    case MHA_AC_DOUBLE :
-        ret = *((double*)var.data);
-        break;
-    case MHA_AC_MHAREAL :
-        ret = *((mha_real_t*)var.data);
-        break;
-    default:
-        throw MHA_Error(__FILE__,__LINE__,"The variable \"%s\" has invalid data type.",n.c_str());
-    }
-    return ret;
+    return ac.handle->get_var_float(n);
 }
 
 MHA_AC::spectrum_t::spectrum_t(algo_comm_t iac,
@@ -833,9 +568,7 @@ MHA_AC::ac2matrix_helper_t::ac2matrix_helper_t(algo_comm_t iac,const std::string
 
 void MHA_AC::ac2matrix_helper_t::getvar()
 {
-    int err = ac.get_var(ac.handle,name.c_str(),&acvar);
-    if( err )
-        throw MHA_Error(__FILE__,__LINE__,"AC error (%s): %s",name.c_str(),ac.get_error(err));
+    acvar = ac.handle->get_var(name);
     if( acvar.stride == 0 )
         throw MHA_Error(__FILE__,__LINE__,"Stride of AC variable %s is zero.",name.c_str());
     switch( acvar.data_type ){
@@ -875,13 +608,7 @@ MHA_AC::acspace2matrix_t::acspace2matrix_t(algo_comm_t iac,const std::vector<std
 {
     std::vector<std::string> entries(names);
     if( len == 0 ){
-        unsigned int cstr_len = 8192;
-        char* temp_cstr = new char[cstr_len];
-        iac.get_entries(iac.handle,temp_cstr,cstr_len);
-        std::string entr = temp_cstr;
-        delete [] temp_cstr;
-        entr = std::string("[") + entr + std::string("]");
-        MHAParser::StrCnv::str2val(entr,entries);
+        entries = iac.handle->get_entries();
         len = entries.size();
     }
     data = new MHA_AC::ac2matrix_t*[mha_min_1(len)];

@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -272,8 +273,7 @@ using Test_save_var_string_t_discard=Test_save_var_string_t<lsl2ac::overrun_beha
 TEST_F(Test_save_var_string_t_discard,OverrunBehavior){
   var->receive_frame();
   comm_var_t v;
-  int err=ac.get_var(ac.handle,name.c_str(),&v);
-  ASSERT_TRUE(err==0);
+  ASSERT_NO_THROW(v = ac.handle->get_var(name));
   std::string actual((const char*)v.data);
   // We discarded the overrun, so we expect the last string we sent to be the current value
   EXPECT_EQ("Very Very Long String, m"s,actual);
@@ -284,8 +284,7 @@ using Test_save_var_string_t_ignore=Test_save_var_string_t<lsl2ac::overrun_behav
 TEST_F(Test_save_var_string_t_ignore,OverrunBehavior){
   var->receive_frame();
   comm_var_t v;
-  int err=ac.get_var(ac.handle,name.c_str(),&v);
-  ASSERT_TRUE(err==0);
+  ASSERT_NO_THROW(v = ac.handle->get_var(name));
   std::string actual((const char*)v.data);
   // We ignored overrun, so the value of the AC variable should be the first string we sent.
   EXPECT_EQ(expected.front(),actual);

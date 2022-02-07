@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -45,8 +46,8 @@ acrec_t::acrec_t(algo_comm_t iac, const std::string & )
 template <class mha_signal_t> mha_signal_t* acrec_t::process(mha_signal_t* s)
 {
     poll_config();
-    if (ac.get_var(ac.handle,cfg->get_varname(),&cv) == 0)
-        cfg->process(&cv);
+    cv = ac.handle->get_var(cfg->get_varname());
+    cfg->process(&cv);
     return s;
 }
 
@@ -131,12 +132,13 @@ void acwriter_t::process(comm_var_t* s)
         if (num_channels != s->stride) {
             throw MHA_Error(__FILE__,__LINE__,"Number of channels of AC"
                             " variable %s has changed from %u to %u",
-                            get_varname(), num_channels, s->stride);
+                            get_varname().c_str(), num_channels, s->stride);
         }
         if (is_complex != (s->data_type == MHA_AC_MHACOMPLEX)) {
             throw MHA_Error(__FILE__,__LINE__,"AC variable %s has changed from"
                             " %s numeric type to %s numeric type",
-                            get_varname(), is_complex ? "complex" : "real",
+                            get_varname().c_str(),
+                            is_complex ? "complex" : "real",
                             (s->data_type==MHA_AC_MHACOMPLEX)?"complex":"real");
         }
         // We save complex values as alternating real and imaginary part, i.e.

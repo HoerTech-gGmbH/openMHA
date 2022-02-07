@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2009 2013 2014 2017 2018 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -26,11 +27,7 @@ acmon::ac_monitor_t::ac_monitor_t(MHAParser::parser_t & parent,
       p_parser(parent),
       use_mat(use_mat_)
 {
-    comm_var_t v;
-    if( ac.get_var(ac.handle,name.c_str(),&v) ){
-        throw MHA_Error(__FILE__,__LINE__,
-                        "No such variable: \"%s\"",name.c_str());
-    }
+    comm_var_t v = ac.handle->get_var(name);
     switch( v.data_type ){
         case MHA_AC_INT :
         case MHA_AC_FLOAT :
@@ -64,11 +61,7 @@ acmon::ac_monitor_t::ac_monitor_t(MHAParser::parser_t & parent,
 void acmon::ac_monitor_t::getvar(algo_comm_t ac)
 {
     unsigned int ndim, k, stride;
-    comm_var_t v;
-    if( ac.get_var(ac.handle,name.c_str(),&v) ){
-        throw MHA_Error(__FILE__,__LINE__,
-                        "No such variable: \"%s\"",name.c_str());
-    }
+    comm_var_t v = ac.handle->get_var(name);
     switch( v.data_type ){
         case MHA_AC_INT :
         case MHA_AC_FLOAT :

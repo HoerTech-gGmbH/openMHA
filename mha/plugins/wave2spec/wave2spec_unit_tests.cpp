@@ -102,7 +102,7 @@ TEST_F(wave2spec_testing, ac_variables)
   comm_var_t cv = {0,0,0,nullptr};
   // AC variables exist already after prepare:
   // "algo_name" is a spectrum with 2 channels and 401 (fftlen/2+1) bins
-  ASSERT_EQ(0, ac.get_var(ac.handle, "algo_name", &cv)); // exists
+  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name")); // exists
   EXPECT_EQ(unsigned(MHA_AC_MHACOMPLEX), cv.data_type);
   EXPECT_EQ(signal_dimensions.channels * (fftlen / 2 + 1), cv.num_entries);
   EXPECT_EQ(fftlen/2+1, cv.stride);
@@ -110,7 +110,7 @@ TEST_F(wave2spec_testing, ac_variables)
   void const * const spec_ptr = cv.data;
 
   // "algo_name_wnd" is a real array with wndlen entries
-  ASSERT_EQ(0, ac.get_var(ac.handle, "algo_name_wnd", &cv)); // exists
+  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name_wnd")); // exists
   EXPECT_EQ(unsigned(MHA_AC_MHAREAL), cv.data_type);
   EXPECT_EQ(wndlen, cv.num_entries);
   EXPECT_EQ(1U, cv.stride);
@@ -122,16 +122,16 @@ TEST_F(wave2spec_testing, ac_variables)
   int shadow1 = 0, shadow2 = 0;
   ac.handle->insert_var_int("algo_name", &shadow1);
   ac.handle->insert_var_int("algo_name_wnd", &shadow2);
-  ASSERT_EQ(0, ac.get_var(ac.handle, "algo_name", &cv)); // exists
+  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name")); // exists
   EXPECT_NE(spec_ptr, cv.data);
-  ASSERT_EQ(0, ac.get_var(ac.handle, "algo_name_wnd", &cv)); // exists
+  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name_wnd")); // exists
   ASSERT_NE(wnd_ptr, cv.data); // was shadowed
 
   // Calling process should restore the AC variables
   w2s.process(&waveform, &spectrum);
-  ASSERT_EQ(0, ac.get_var(ac.handle, "algo_name", &cv)); // exists
+  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name")); // exists
   EXPECT_EQ(spec_ptr, cv.data);
-  ASSERT_EQ(0, ac.get_var(ac.handle, "algo_name_wnd", &cv)); // exists
+  ASSERT_NO_THROW(cv = ac.handle->get_var("algo_name_wnd")); // exists
   EXPECT_EQ(wnd_ptr, cv.data);
 }
 

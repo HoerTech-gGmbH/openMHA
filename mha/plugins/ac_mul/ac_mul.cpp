@@ -1,5 +1,6 @@
 // This file is part of the open HörTech Master Hearing Aid (openMHA)
 // Copyright © 2006 2009 2010 2013 2014 2015 2018 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -173,13 +174,7 @@ void ac_mul_t::get_arg_type_and_dimension(
     unsigned int& num_channels
     )
 {
-    comm_var_t v;
-    int err;
-    err = ac.get_var(ac.handle,name.c_str(),&v);
-    if( err )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "Unable to access AC variable %s:\n%s",
-                        name.c_str(),ac.get_error(err));
+    comm_var_t v = ac.handle->get_var(name);
     switch( v.data_type ){
     case MHA_AC_MHAREAL :
     case MHA_AC_FLOAT :

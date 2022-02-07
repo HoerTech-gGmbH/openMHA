@@ -155,8 +155,7 @@ namespace testplugin {
     }
 
     void do_get_var() {
-      comm_var_t c;
-      local_get_var(get_var.data.c_str(), &c);
+      comm_var_t c = MHAKernel::algo_comm_class_t::get_var(get_var.data);
 
       char_data.data.clear();  int_data.data.clear();
       float_data.data.clear(); complex_data.data.clear();

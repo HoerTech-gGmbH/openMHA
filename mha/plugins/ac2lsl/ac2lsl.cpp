@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -213,11 +214,6 @@ namespace ac2lsl{
         /** Release fct. Unlocks variable name list */
         void release();
     private:
-        /** Retrieves all variable names from the AC space
-         * @param ac AC space
-         * @returns Vector of variable names
-         */
-        std::vector<std::string> get_all_names_from_ac_space(const algo_comm_t& ac) const;
         /** Construct new runtime configuration */
         void update();
         MHAParser::vstring_t vars;
@@ -262,7 +258,7 @@ void ac2lsl::ac2lsl_t::prepare(mhaconfig_t&)
         //No variable names were given in the configuration,
         //meaning we have to scan the whole ac space
         if( !vars.data.size() ){
-            vars.data=get_all_names_from_ac_space(ac);
+            vars.data=ac.handle->get_entries();
         }
         update();
     }
@@ -312,38 +308,6 @@ void ac2lsl::ac2lsl_t::update(){
     }
 }
 
-std::vector<std::string> ac2lsl::ac2lsl_t::get_all_names_from_ac_space(const algo_comm_t& ac_) const
-{
-    int get_entries_error_code;
-    unsigned int cstr_len = 512;
-    std::string entr;
-    //error code -3 means buffer too short to save
-    //list of ac variables, so we double the buffer size
-    //try again until we succeed, aborting when we reach
-    //1MiB. After that, we add brackets and tokenize the
-    //space separated list, getting a vector of strings
-    do {
-        cstr_len <<= 1;
-        if (cstr_len > 0x100000)
-            throw MHA_ErrorMsg("list of all ac variables is longer than"
-                               " 1MiB. You should select a subset by setting"
-                               " the configuration variable \"vars\".");
-        char* temp_cstr;
-        temp_cstr = new char[cstr_len];
-        temp_cstr[0] = 0;
-        get_entries_error_code =
-            ac_.get_entries(ac_.handle, temp_cstr, cstr_len);
-        entr = temp_cstr;
-        delete [] temp_cstr; temp_cstr = 0;
-    } while (get_entries_error_code == -3);
-    if (get_entries_error_code == -1)
-        throw MHA_ErrorMsg("Bug: ac handle used is invalid");
-    entr = std::string("[") + entr + std::string("]");
-    std::vector<std::string> entrl;
-    MHAParser::StrCnv::str2val(entr,entrl);
-    return entrl;
-}
-
 ac2lsl::cfg_t::cfg_t(const algo_comm_t& ac_, unsigned skip_, const std::string& source_id_,
                      const std::vector<std::string>& varnames_, double rate_):
     skipcnt(skip_),
@@ -353,10 +317,7 @@ ac2lsl::cfg_t::cfg_t(const algo_comm_t& ac_, unsigned skip_, const std::string& 
     ac(ac_)
 {
     for(auto& name : varnames_) {
-        comm_var_t v;
-        if( ac.get_var(ac.handle,name.c_str(),&v) )
-            throw MHA_Error(__FILE__,__LINE__,
-                            "No such variable: \"%s\"",name.c_str());
+        comm_var_t v = ac.handle->get_var(name);
         create_or_replace_var(name, v);
     }
 }
@@ -373,10 +334,7 @@ void ac2lsl::cfg_t::process(){
 
 void ac2lsl::cfg_t::check_and_send() {
     for(auto& var : varlist){
-        comm_var_t v;
-        if( ac.get_var(ac.handle,var.first.c_str(),&v) )
-            throw MHA_Error(__FILE__,__LINE__,
-                            "No such variable: \"%s\"",var.first.c_str());
+        comm_var_t v = ac.handle->get_var(var.first);
         if( var.second->get_buf_address()!=v.data and
             // static_cast is safe b/c LSL stores channel count as uint32_t
             static_cast<unsigned>(var.second->info().channel_count()) == v.stride and

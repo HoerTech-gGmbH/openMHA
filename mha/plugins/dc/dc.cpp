@@ -301,18 +301,21 @@ void dc_if_t::update_monitors()
     const unsigned int naudiochannels = tftype.channels / fbands;
     const mha_real_t * cf = 0, * ef = 0, * bw = 0;
     comm_var_t v;
-    if (ac.get_var(ac.handle, cf_name.c_str(), &v) == 0
-        && v.data_type == MHA_AC_MHAREAL
-        && v.num_entries == fbands)
-        cf = (mha_real_t *)v.data;
-    if (ac.get_var(ac.handle, ef_name.c_str(), &v) == 0
-        && v.data_type == MHA_AC_MHAREAL
-        && v.num_entries == (fbands+1U))
-        ef = (mha_real_t *)v.data;
-    if (ac.get_var(ac.handle, bw_name.c_str(), &v) == 0
-        && v.data_type == MHA_AC_MHAREAL
-        && v.num_entries == (fbands))
-        bw = (mha_real_t *)v.data;
+    if (ac.handle->is_var(cf_name)) {
+        v = ac.handle->get_var(cf_name);
+        if (v.data_type == MHA_AC_MHAREAL && v.num_entries == fbands)
+            cf = static_cast<mha_real_t *>(v.data);
+    }
+    if (ac.handle->is_var(ef_name)) {
+        v = ac.handle->get_var(ef_name);
+        if (v.data_type == MHA_AC_MHAREAL && v.num_entries == (fbands+1U))
+            ef = static_cast<mha_real_t *>(v.data);
+    }
+    if (ac.handle->is_var(bw_name)) {
+        v = ac.handle->get_var(bw_name);
+        if (v.data_type == MHA_AC_MHAREAL && v.num_entries == fbands)
+            bw = static_cast<mha_real_t *>(v.data);
+    }
     for (band = 0; band < fbands; ++band) {
         if (cf) center_frequencies.data[band] = cf[band];
         if (ef) edge_frequencies.data[band] = ef[band];

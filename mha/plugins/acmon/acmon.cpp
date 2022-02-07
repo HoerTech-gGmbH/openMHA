@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2008 2009 2010 2013 2014 2015 HörTech gGmbH
 // Copyright © 2017 2018 2019 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -75,29 +76,7 @@ void acmon_t::update_recmode()
 
 void acmon_t::prepare(mhaconfig_t&)
 {
-    int get_entries_error_code;
-    unsigned int cstr_len = 512;
-    std::string entr;
-    do {
-        cstr_len <<= 1;
-        if (cstr_len > 0x100000)
-            throw MHA_ErrorMsg("list of all ac variables is longer than 1MB."
-                             " acmon cannot handle a list that long.");
-        char* temp_cstr;
-        temp_cstr = new char[cstr_len];
-        temp_cstr[0] = 0;
-        get_entries_error_code = 
-            ac.get_entries(ac.handle, temp_cstr, cstr_len);
-        entr = temp_cstr;
-        delete [] temp_cstr; temp_cstr = 0;
-    } while (get_entries_error_code == -3);
-    if (get_entries_error_code == -1)
-        throw MHA_ErrorMsg("Bug: ac handle used is invalid");
-    
-    entr = std::string("[") + entr + std::string("]");
-    std::vector<std::string> entrl;
-    MHAParser::StrCnv::str2val(entr,entrl);
-    //varlist.data = entrl;
+    const std::vector<std::string> & entrl = ac.handle->get_entries();
     varlist.data.clear();
     dimensions.data.clear();
     unsigned int k;

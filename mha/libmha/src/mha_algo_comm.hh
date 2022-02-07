@@ -108,6 +108,9 @@ namespace MHA_AC {
 
        \brief Return value of an floating point vector AC variable as standard vector of floats.
 
+        Because this function allocates memory for the return value, it
+        should not be called during signal processing, but only from the plugin
+        prepare() method.
        \param ac AC handle
        \param name Name of the variable
        \return Variable value
@@ -371,16 +374,16 @@ namespace MHAKernel {
         /** The std::map used for organizing the AC space */
         std::map<std::string, comm_var_t> map;
 
-        /// A string containing the names of all AC variables, space-separated.
-        std::string entries;
+        /// A list containing the names of all AC variables.
+        std::vector<std::string> entries;
 
         /* In order to avoid complicated size types, assert that the map's
          * size_type is the same as size_t. */
         static_assert(std::is_same<std::map<std::string,comm_var_t>::size_type,
                                    size_t>::value);
 
-        /** Update the string entries because a variable has been inserted or
-         * removed.  Only permitted if is_prepared == false. */
+        /** Update the member variable \ref entries because an AC variable has
+         * been inserted or removed. Only permitted if is_prepared == false. */
         void update_entries();
     public:
         /** is_prepared stores whether the provider of the AC space has entered
@@ -424,19 +427,14 @@ namespace MHAKernel {
          * @throw MHA_Error if no such variable exists in the AC space. */
         const comm_var_t & retrieve(const std::string & name) const;
 
-        /** @return A string with names of all AC variables in this AC
-         *          space, separated by spaces. */
-        const std::string & get_entries() const;
+        /** @return A list of names of all AC variables in this AC space. */
+        const std::vector<std::string> & get_entries() const;
 
         /** @return number of stored AC variables */
         size_t size() const {return map.size();}
     };
 
-    /** AC variable space.  This class is used by AC variable space providers
-     * to create and manage their AC space.  AC variable space users, i.e.
-     * plugins that provide, read, or alter AC variables, have to use the
-     * \c algo_comm_t handle that they receive as a constructor parameter
-     * instead of this class. */
+    /** AC variable space. */
     class algo_comm_class_t {
     public:
 
@@ -450,34 +448,6 @@ namespace MHAKernel {
         /// Generates the client handle for users for this AC space.
         virtual algo_comm_t get_c_handle();
 
-        /** Trampoline to be referenced by algo_comm_t::is_var.
-         * Redirects to local_is_var(). */
-        static int is_var(void*,const char*);
-
-        /** Trampoline to be referenced by algo_comm_t::get_var.
-         * Redirects to local_get_var(). */
-        static int get_var(void*,const char*,comm_var_t*);
-
-        /** Convenience function accessible through algo_comm_t::get_var_int.
-         * Forwards to local_get_var(), checks type and stores result. */
-        static int get_var_int(void*,const char*,int*);
-
-        /** Convenience function accessible through algo_comm_t::get_var_float.
-         * Forwards to local_get_var(), checks type and stores result. */
-        static int get_var_float(void*,const char*,float*);
-
-        /** Convenience function accessible through algo_comm_t::get_var_double
-         * Forwards to local_get_var(), checks type and stores result. */
-        static int get_var_double(void*,const char*,double*);
-
-        /** Trampoline to be referenced by algo_comm_t::get_entries.
-         * Redirects to local_get_entries(). */
-        static int get_entries(void*,char*,unsigned int);
-
-        /** Trampoline to be referenced by algo_comm_t::get_error.
-         * Redirects to local_get_error(). */
-        static const char* get_error(int);
-        
         /** Interacts with AC space storage to create or replace an AC variable
          * 
          * When the AC space is already prepared, only replacing existing
@@ -601,19 +571,51 @@ namespace MHAKernel {
         virtual void remove_ref(void* addr);
 
         /** Interacts with AC space storage to check if an AC variable with
-         * the given name exists. Always permitted. */
+         * the given name exists.
+         * @param name Name of the AC variable to check. */
         virtual
-        bool local_is_var(const char*) const;
+        bool is_var(const std::string & name) const;
+
 
         /** Interacts with AC space storage to retrieve the metadata for an
-         * AC variable with the given name. Always permitted. */
+         * AC variable with the given name.
+         * @param name Name of the AC variable to retrieve. 
+         * @return a struct describing the AC variable's data type, memory
+         *         location and size.
+         * @throw MHA_Error if no AC variable with the given name exists. */
         virtual
-        void local_get_var(const char*,comm_var_t*) const;
+        comm_var_t get_var(const std::string & name) const;
 
-        /** Interacts with AC space storage to retrieve a single string
-         * containing the names of all existing AC variables. */
+        /** Convenience method for retrieving a scalar integer AC
+         * variable from AC space.  Checks data type and size. 
+         * @param name Name of the AC variable to read.
+         * @return Value of the AC varible.
+         * @throw MHA_Error if no AC variable with the given name exists.
+         * @throw MHA_Error if AC variable \c name is not an integer or not a
+         *                  scalar. */
+        virtual int get_var_int(const std::string & name) const;
+
+        /** Convenience method for retrieving a scalar float AC
+         * variable from AC space.  Checks data type and size. 
+         * @param name Name of the AC variable to read.
+         * @return Value of the AC varible.
+         * @throw MHA_Error if no AC variable with the given name exists.
+         * @throw MHA_Error if AC variable \c name is not a float or not a
+         *                  scalar. */
+        virtual float get_var_float(const std::string & name) const;
+
+         /** Convenience method for retrieving a scalar double AC
+         * variable from AC space.  Checks data type and size. 
+         * @param name Name of the AC variable to read.
+         * @return Value of the AC varible.
+         * @throw MHA_Error if no AC variable with the given name exists.
+         * @throw MHA_Error if AC variable \c name is not a double or not a
+         *                  scalar. */
+        virtual double get_var_double(const std::string & name) const;
+
+        /** @return a list of the names of all existing AC variables. */
         virtual
-        const std::string & local_get_entries() const;
+        const std::vector<std::string> & get_entries() const;
 
         /** Interacts with AC space storage to return the number of AC
          * variables currently stored in the AC space.  Always permitted. */
@@ -625,15 +627,10 @@ namespace MHAKernel {
          * beginning of its own release() operation. */
         virtual void set_prepared(bool prepared);
 
-        char* algo_comm_id_string;
     private:
         algo_comm_t ac;
-        int algo_comm_id_string_len;
         comm_var_map_t vars;
     };
-
-    algo_comm_class_t* algo_comm_safe_cast(void*);
-
 }
 
 namespace MHA_AC {

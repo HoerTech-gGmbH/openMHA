@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2009 2011 2013 2016 2017 2018 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -30,14 +31,11 @@ std::string strdom( mha_domain_t d )
 
 void print_ac(MHAKernel::algo_comm_class_t& ac,std::string txt)
 {
-    std::string stmp;
-    std::vector<std::string> vstmp;
-    stmp = ac.local_get_entries();
-    if( stmp.size() ){
+    const std::vector<std::string> & vstmp = ac.get_entries();
+    if( vstmp.size() ){
         std::cout << "AC variables " << txt << ":" << std::endl;
-        MHAParser::StrCnv::str2val(std::string("[")+stmp+std::string("]"),vstmp);
-        for( unsigned int k=0;k<vstmp.size();k++)
-            std::cout << "  " << vstmp[k] << std::endl;
+        for ( const std::string & name : vstmp )
+            std::cout << "  " << name << std::endl;
         std::cout << std::endl;
     }else{
         std::cout << "empty AC space " << txt << "." << std::endl;

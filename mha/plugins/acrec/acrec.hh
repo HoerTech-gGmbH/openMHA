@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -61,7 +62,7 @@ public:
     /// Terminate output thread.
     void exit_request();
     /// getter for ac variable name @return name as char* as needed by get_var
-    const char * get_varname() const {return varname.c_str();}
+    const std::string & get_varname() const {return varname;}
 private:
     /// Main method of the disk writer thread.  Periodically wakes up and checks
     /// if data needs to be written to disk.

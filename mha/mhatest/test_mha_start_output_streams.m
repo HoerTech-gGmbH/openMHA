@@ -3,6 +3,7 @@
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2020 2021 HörTech gGmbH
+% Copyright © 2022 Hörzentrum Oldenburg gGmbH
 
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -71,8 +72,8 @@ function test_mha_start_output_streams
   % Now the same error should be present in asyncerror and stderr
   expected_asyncerror = ...
     sprintf(['(mhapluginloader) Error in module "route:route":\n'...
-             '(mha_algo_comm) AC error (AC): '...
-             'Invalid or non-existing variable name']);
+             '(mha_algo_comm) No algorithm communication variable "AC".']);
+             
   actual_asyncerror = mha_get(mha, 'asyncerror');
   expected_stderr = sprintf('MHA Error: %s\n', expected_asyncerror);
 

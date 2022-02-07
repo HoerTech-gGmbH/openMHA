@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2005 2006 2007 2009 2010 2012 2013 2014 2015 HörTech gGmbH
 // Copyright © 2017 2018 2020 2021 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -98,29 +99,7 @@ cfg_t::cfg_t(const algo_comm_t& iac,
     max_frames(imax_frames)
 {
     if( !varnames.size() ){
-        int get_entries_error_code;
-        unsigned int cstr_len = 512;
-        std::string entr;
-        do {
-            cstr_len <<= 1;
-            if (cstr_len > 0x100000)
-                throw MHA_ErrorMsg("list of all ac variables is longer than 1MB."
-                                 " You should select a subset using vars.");
-            char* temp_cstr;
-            temp_cstr = new char[cstr_len];
-            temp_cstr[0] = 0;
-            get_entries_error_code = 
-                ac.get_entries(ac.handle, temp_cstr, cstr_len);
-            entr = temp_cstr;
-            delete [] temp_cstr; temp_cstr = 0;
-        } while (get_entries_error_code == -3);
-        if (get_entries_error_code == -1)
-            throw MHA_ErrorMsg("Bug: ac handle used is invalid");
-        
-        entr = std::string("[") + entr + std::string("]");
-        std::vector<std::string> entrl;
-        MHAParser::StrCnv::str2val(entr,entrl);
-        varnames = entrl;
+        varnames = ac.handle->get_entries();
     }
     nvars = varnames.size();
     if( !nvars )
@@ -311,10 +290,7 @@ typedef struct {
 save_var_t::save_var_t(const std::string& nm,int n,const algo_comm_t& iac)
     : data(NULL),name(nm),nframes(n),ndim(0), maxframe(0), ac(iac), framecnt(0), b_complex(false)
 {
-    comm_var_t v;
-    if( ac.get_var(ac.handle,name.c_str(),&v) )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "No such variable: \"%s\"",name.c_str());
+    comm_var_t v = ac.handle->get_var(name);
     switch( v.data_type ){
     case MHA_AC_INT :
     case MHA_AC_FLOAT :
@@ -352,10 +328,7 @@ void save_var_t::store_frame()
         return;
     if( framecnt >= nframes )
         return;
-    comm_var_t v;
-    int err;
-    if( (err = ac.get_var(ac.handle,name.c_str(),&v)) )
-        throw MHA_ErrorMsg(ac.get_error(err));
+    comm_var_t v = ac.handle->get_var(name);
     unsigned int local_ndim = v.num_entries;
     if( local_ndim > ndim )
         local_ndim = ndim;
