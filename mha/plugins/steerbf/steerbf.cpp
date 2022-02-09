@@ -156,7 +156,7 @@ MHAPLUGIN_CALLBACKS(steerbf,steerbf,spec,spec)
  */
 MHAPLUGIN_DOCUMENTATION\
 (steerbf,
- "filter spatial audio-channels beamformer binaural",
+ "filter spatial audio-channels beamforming binaural",
  "Implements frequency-domain beamformer processing (filter and sum) using"
  " externally provided filters. "
  "A plugin called {\\tt acSteer} can be used to provide the filter coefficients. "

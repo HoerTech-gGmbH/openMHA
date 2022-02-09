@@ -167,7 +167,7 @@ MHAPLUGIN_CALLBACKS(acSteer,acSteer,spec,spec)
  */
 MHAPLUGIN_DOCUMENTATION\
 (acSteer,
- "data-import disk-files beamformer binaural adaptive",
+ "data-import disk-files beamforming binaural adaptive",
  "The {\\tt acSteer} plugin loads a file contaning pre-computed steering"
  " filters (e.g. MVDR filters) to be used within a beamformer."
  " The steering filters can be monaural ({\\bf nrefmic = 1})"

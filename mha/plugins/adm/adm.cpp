@@ -404,7 +404,7 @@ MHAPLUGIN_CALLBACKS(adm,adm_if_t,wave,wave)
 
 MHAPLUGIN_DOCUMENTATION\
 (adm,
- "spatial signal-enhancement beamformer adaptive",
+ "spatial signal-enhancement beamforming adaptive",
  "This plugin implements one or more adaptive first-order differential\n"
  "microphones, each based on the output of two omnidirectional microphones,\n"
  "e.g. two hearing-aid microphones (cf. Elko \\& Nguyen Pong, 1995). This is\n"

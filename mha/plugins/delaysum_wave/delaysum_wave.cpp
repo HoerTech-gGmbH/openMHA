@@ -156,7 +156,7 @@ namespace delaysum{
 MHAPLUGIN_CALLBACKS(delaysum_wave,delaysum::delaysum_wave_if_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (delaysum_wave,
- "spatial beamformer",
+ "spatial beamforming",
  "This plugin allows to delay and "
  "sum multiple input channels using individual "
  "delays and weights. After each channel is delayed "
