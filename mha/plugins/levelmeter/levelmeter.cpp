@@ -99,7 +99,7 @@ void levelmeter_t::prepare(mhaconfig_t& cf)
 
 MHAPLUGIN_CALLBACKS(levelmeter,levelmeter_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION(levelmeter,
-                        "level compression",
+                        "level-meter compression",
                         "This level meter calculates the RMS level of the input signal in"
                         " the last {\\em tau} seconds."
                         )

@@ -224,7 +224,7 @@ MHAPLUGIN_PROC_CALLBACK(level_matching,level_matching::level_matching_t,spec,spe
  * argument is a LaTeX-compatible character array with some detailed
  * documentation of the plugin.
  */
-MHAPLUGIN_DOCUMENTATION(level_matching_t,"level",
+MHAPLUGIN_DOCUMENTATION(level_matching_t,"level-modification",
                         "This plugin implements automatic pairwaise matching of input levels. This algorithm can be used to"
                         " e.g.\\ compensate for microphone gain drift.\n"
                         " Microphone gain matching relies on the assumption that the input signal on"
