@@ -1,7 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2009 2010 2013 2014 2015 2017 2018 2019 HörTech gGmbH
 // Copyright © 2021 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2022 Hoerzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -58,6 +58,8 @@ public:
     mha_wave_t* process(mha_wave_t*);
     /// Adapts range of channel variable and prepares.
     void prepare(mhaconfig_t&);
+    /// Reset channel range to default
+    void release();
 private:
     /// Computes new runtime configuration
     void update_cfg();
@@ -87,7 +89,7 @@ sine_t::sine_t(MHA_AC::algo_comm_t & iac, const std::string &)
       mode("Replace input signal with tone or mix tone into input signal", 
            "replace", "[replace mix]"),
       channels("0-based indices of audio channels to feed with tone\n"
-               "(all other audio channels are not affected)", "[]")
+               "(all other audio channels are not affected)", "[]", "[0,]")
 {
     insert_item("lev",&lev);
     insert_item("f", &frequency);
@@ -103,7 +105,14 @@ void sine_t::prepare(mhaconfig_t& tf)
 {
     if( tf.domain != MHA_WAVEFORM )
         throw MHA_ErrorMsg("sine: Only waveform processing is supported.");
-    channels.set_range("[0," + val2str(int(tf.channels)) + "[");
+    if (tf.channels <= static_cast<unsigned>(std::numeric_limits<int>::max()))
+      channels.set_range("[0," + std::to_string(tf.channels) + "[");
+    try {
+      channels.validate(channels.data);
+    } catch (...) {
+      channels.set_range("[0,[");
+      throw;
+    }
     tftype = tf;
     update_cfg();
 }
@@ -130,6 +139,11 @@ mha_wave_t* sine_t::process(mha_wave_t* s)
     }
     return s;
 }
+
+void sine_t::release(){
+  channels.set_range("[0,[");
+}
+
 
 MHAPLUGIN_CALLBACKS(sine,sine_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
