@@ -107,23 +107,26 @@ namespace lsl2ac{
               bufsize = chunksize*nchannels;
             else
               bufsize=nchannels;
+
             buf.resize(bufsize);
             std::fill(buf.begin(), buf.end(), 0.0f);
-            ts_buf.resize(bufsize / nchannels);
-            std::fill(ts_buf.begin(),ts_buf.end(),0.0);
-            stream.open_stream();
-            // According to lsl doc the first call to time_correction takes several ms,
-            // subsequent calls are 'instant'. Calling it here to avoid blocking later.
-            tc = stream.time_correction();
             cv.stride = info_.channel_count();
             cv.num_entries = info_.channel_count() * nsamples; // Not problematic if zero initially - will be reset on first pull
             cv.data_type = type_;
             cv.data = buf.data();
-            ac.insert_var(info_.name(), cv);
-            ts.stride = 1;
-            ts.num_entries = nsamples;
-            ts.data_type = MHA_AC_DOUBLE;
-            ts.data = ts_buf.data();
+
+            stream.open_stream();
+            auto initialize=[&](std::vector<double>& buf, MHA_AC::comm_var_t& cv, double val){
+              buf.resize(bufsize / nchannels);
+              std::fill(buf.begin(),buf.end(),val);
+              cv.stride = 1;
+              cv.num_entries = buf.size();
+              cv.data_type = MHA_AC_DOUBLE;
+              cv.data = buf.data();
+            };
+
+            initialize(tc_buf,tc,stream.time_correction());
+            initialize(ts_buf,ts,0.0);
             insert_vars();
           } catch (MHA_Error &e) {
       // The framework can handle MHA_Errors. Just re-throw
@@ -168,14 +171,17 @@ namespace lsl2ac{
     std::vector<T> buf;
     /** Timestamp buffer */
     std::vector<double> ts_buf;
+    /** Clock correction buffer */
+    std::vector<double> tc_buf;
+
     /** Handle to AC space */
     MHA_AC::algo_comm_t & ac;
     /** Timeseries AC variable */
     MHA_AC::comm_var_t cv;
     /** Timestamp AC variable */
     MHA_AC::comm_var_t ts;
-    /** Current time correction */
-    double tc=0.0;
+    /** Time correction AC variable*/
+    MHA_AC::comm_var_t tc;
     /** Timestamp AC variable name */
     std::string ts_name;
     /** Time correction AC variable name */
@@ -220,6 +226,7 @@ namespace lsl2ac{
         } else {
           cv.num_entries = n;
           ts.num_entries = n / nchannels;
+          tc.num_entries = n / nchannels;
         }
         n_new_samples = n / nchannels;
       }
@@ -253,6 +260,7 @@ namespace lsl2ac{
           } else {
             cv.num_entries = n;
             ts.num_entries = n / nchannels;
+            tc.num_entries = n / nchannels;
           }
           n_new_samples += n / nchannels;
         } while (stream.samples_available());
@@ -270,16 +278,16 @@ namespace lsl2ac{
     void get_time_correction() {
       auto toc=std::chrono::steady_clock::now();
       if(toc-tic>std::chrono::seconds(5)){
-        tc=stream.time_correction();
+        std::fill(tc_buf.begin(),tc_buf.end(),stream.time_correction());
         tic=toc;
       }
     };
     /** Insert stream value, time stamp and time offset into ac space*/
     void insert_vars(){
-      ac.insert_var(name,cv);
-      ac.insert_var(ts_name, ts);
-      ac.insert_var_double(tc_name, &tc);
-      ac.insert_var_int(new_name, &n_new_samples);
+      ac.insert_var(name.c_str(),cv);
+      ac.insert_var(ts_name.c_str(), ts);
+      ac.insert_var(tc_name.c_str(), tc);
+      ac.insert_var_int(new_name.c_str(), &n_new_samples);
     };
   };
 
