@@ -55,6 +55,7 @@ coverage
 
 # Apple-specific
 .DS_Store
+*dSYM*
 
 # octave specific files
 mha/tools/mfiles/classpath.txt
@@ -86,6 +87,11 @@ compile_commands.json
 
 #Windows packaging artifacts
 *.exe
+
+# macOS packaging artifacts
+mha/tools/packaging/pkg/tmp/
+mha/tools/packaging/pkg/openMHA-*.pkg
+
 
 #Node-red auto-backup files
 *.flow.backup
