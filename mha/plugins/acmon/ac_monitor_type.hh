@@ -45,6 +45,7 @@ namespace acmon {
         MHAParser::mfloat_mon_t mon_mat; /**< Monitor used for real matrices */
         MHAParser::vcomplex_mon_t mon_complex; /**< monitor used for complex vectors */
         MHAParser::mcomplex_mon_t mon_mat_complex; /**< monitor used for complex matrices */
+        MHAParser::string_mon_t mon_string;
         MHAParser::parser_t& p_parser; /**< parent parser to insert monitor into */
     private:
         bool use_mat; /**< if true, use matrix monitor, else use vector monitor */

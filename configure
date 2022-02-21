@@ -115,7 +115,7 @@ done
             fi
             if [ -d "/opt/local/lib" ]; then
                 MACLDFLAGS+=" -L/opt/local/lib"
-                echo LDLIBS+=" -L/opt/local/lib"
+                echo LDFLAGS+=" -L/opt/local/lib"
             fi
             # On arm macs homebrew saves its stuff into /opt/homebrew/...
             if [ -d "/opt/homebrew/include" ]; then
@@ -123,7 +123,7 @@ done
             fi
             if [ -d "/opt/homebrew/lib" ]; then
                 MACLDFLAGS+=" -L/opt/homebrew/lib"
-                echo LDLIBS+=" -L/opt/homebrew/lib"
+                echo LDFLAGS+=" -L/opt/homebrew/lib"
             fi
             MACCXXFLAGS+="-Wno-error=unused-command-line-argument -Wimplicit-fallthrough"
     esac

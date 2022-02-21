@@ -25,6 +25,7 @@ acmon::ac_monitor_t::ac_monitor_t(MHAParser::parser_t & parent,
       mon_mat(""),
       mon_complex(""),
       mon_mat_complex(""),
+      mon_string(""),
       p_parser(parent),
       use_mat(use_mat_)
 {
@@ -45,6 +46,9 @@ acmon::ac_monitor_t::ac_monitor_t(MHAParser::parser_t & parent,
             else
                 p_parser.insert_item(name,&mon_complex);
             break;
+       case MHA_AC_CHAR :
+           p_parser.insert_item(name,&mon_string);
+           break;
         default:
             break;
     }
@@ -69,6 +73,7 @@ void acmon::ac_monitor_t::getvar(MHA_AC::algo_comm_t & ac)
         case MHA_AC_DOUBLE :
         case MHA_AC_MHAREAL :
         case MHA_AC_MHACOMPLEX :
+        case MHA_AC_CHAR:
             ndim = v.num_entries;
             break;
         default:
@@ -88,6 +93,7 @@ void acmon::ac_monitor_t::getvar(MHA_AC::algo_comm_t & ac)
             mon_mat_complex.data[k].resize(stride);
         }
     }
+    mon_string.data.resize(ndim);
     mon.data.resize(ndim);
     mon_complex.data.resize(ndim);
     if( ndim == 0 )
@@ -127,6 +133,10 @@ void acmon::ac_monitor_t::getvar(MHA_AC::algo_comm_t & ac)
                     mon_mat_complex.data[k/stride][k % stride] = ((mha_complex_t*)v.data)[k];
                 else
                     mon_complex.data[k] = ((mha_complex_t*)v.data)[k];
+            break;
+        case MHA_AC_CHAR:
+            for( k=0;k<ndim;k++)
+                mon_string.data[k] = ((char*)v.data)[k];
             break;
     }
 }

@@ -1,0 +1,15 @@
+This example demonstrates how to use the lsl2ac plugin to receive marker streams. It contains three files:
+
+Makefile: To conveniently compile SendStringMarkers.cpp 
+SendStringMarkers: Sends string markers into the network via an LSL stream named "MyEventStream"
+string_markers.cfg: openMHA configuration file
+
+To run this example, first compile SendStringMarkers:
+> make SendStringMarkers
+
+Then start SendStringMarkers and in a separate shell, start mha and inspect the recieved values:
+
+> ./SendStringMarkers
+...
+> mha ?read:string_markers.cfg --interactive cmd=start
+> mha.acmon.MyEventStream?val

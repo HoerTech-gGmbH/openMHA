@@ -330,6 +330,9 @@ namespace lsl2ac{
             stream.open_stream();
             if(stream.info().channel_count()!=1)
               throw MHA_Error(__FILE__,__LINE__,"Expected exactly one channel for marker streams. Got %i",stream.info().channel_count());
+            // nsamples was not set, but we need to have some buffer size, use a sensible default
+            if(strlen_==0)
+              strlen_=32;
             // According to lsl doc the first call to time_correction takes several ms,
             // subsequent calls are 'instant'. Calling it here to avoid blocking later.
             tc = stream.time_correction();
