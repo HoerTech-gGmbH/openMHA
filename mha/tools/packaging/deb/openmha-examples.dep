@@ -1,1 +1,1 @@
-openmha (>=${FULLVERSIONALL}-gcc-5), openmha (<<${FULLVERSIONALL}-gcc-99)
+openmha (>=${FULLVERSIONALL}-gcc-5), openmha (<<${FULLVERSIONALL}-gcc-99), hoertech-openmha-keyring
