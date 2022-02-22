@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2016 2017 2018 2019 2021 HörTech gGmbH
+# Copyright © 2022 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +19,7 @@ include ../magic.mk
 
 EXTERNAL_LIBS=$(realpath .)
 
-TARGETS = libemx.is_installed fftw.is_installed network-asio.is_installed
+TARGETS = libxdf.is_installed libemx.is_installed fftw.is_installed network-asio.is_installed
 
 include ../rules.mk
 
@@ -129,6 +130,14 @@ $(BUILD_DIR)/libemx.is_installed: $(BUILD_DIR)/include/.directory $(BUILD_DIR)/l
 	cd libemx/. && $(MAKE) -j 1
 	cp libemx/$(BUILD_DIR)/libemx.a $(BUILD_DIR)/lib/libemx.a
 	cp libemx/src/*.h* $(BUILD_DIR)/include/.
+	touch $@
+
+libxdf: $(BUILD_DIR)/libxdf.is_installed 
+
+$(BUILD_DIR)/libxdf.is_installed: $(BUILD_DIR)/include/.directory $(BUILD_DIR)/lib/.directory
+	cd libxdf/. && $(MAKE) -j 1
+	cp libxdf/$(BUILD_DIR)/libxdf.a $(BUILD_DIR)/lib/libxdf.a
+	cp libxdf/src/*.h* $(BUILD_DIR)/include/.
 	touch $@
 
 # Local Variables:
