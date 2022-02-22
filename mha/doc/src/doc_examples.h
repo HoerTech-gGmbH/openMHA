@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2007 2009 2013 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +16,8 @@
 
 /**
 \defgroup example_tut Writing \mha Plugins. A step-by-step tutorial 
+
+\brief \latexonly % \endlatexonly \htmlonly <!-- --> \endhtmlonly
 
 Plugins are C++ code that is compiled and linked against the \mha library.
 The compiler needs be instructed on how to find the \mha headers and library
