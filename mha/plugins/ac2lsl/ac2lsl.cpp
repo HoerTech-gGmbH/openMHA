@@ -226,6 +226,7 @@ namespace ac2lsl{
         MHAParser::bool_t rt_strict;
         MHAParser::bool_t activate;
         MHAParser::int_t skip;
+        MHAParser::float_t nominal_srate;
         MHAEvents::patchbay_t<ac2lsl_t> patchbay;
         bool is_first_run;
     };
@@ -239,18 +240,21 @@ ac2lsl::ac2lsl_t::ac2lsl_t(MHA_AC::algo_comm_t & iac, const std::string &)
     rt_strict("Abort if used in real-time thread?","yes"),
     activate("Send frames to network?","yes"),
     skip("Number of frames to skip after sending","0","[0,]"),
+    nominal_srate("Nominal sampling rate of AC variables","0","[0,]"),
     is_first_run(true)
 {
     insert_member(vars);
     insert_member(source_id);
     insert_member(rt_strict);
     insert_member(activate);
+    insert_member(nominal_srate);
     insert_member(skip);
     //Nota bene: Activate should not be connected to the patchbay because we skip processing
     //in the plugin class when necessary. If activate used update() as callback, streams
     //would get recreated everytime activate is toggled.
     patchbay.connect(&source_id.writeaccess,this,&ac2lsl_t::update);
     patchbay.connect(&rt_strict.writeaccess,this,&ac2lsl_t::update);
+    patchbay.connect(&nominal_srate.writeaccess,this,&ac2lsl_t::update);
     patchbay.connect(&skip.writeaccess,this,&ac2lsl_t::update);
     patchbay.connect(&vars.writeaccess,this,&ac2lsl_t::update);
 }
@@ -307,8 +311,7 @@ void ac2lsl::ac2lsl_t::process()
 
 void ac2lsl::ac2lsl_t::update(){
     if(is_prepared()){
-        auto c=new cfg_t(ac, skip.data, source_id.data, vars.data,
-                         input_cfg().srate/input_cfg().fragsize/(skip.data+1.0f));
+      auto c=new cfg_t(ac, skip.data, source_id.data, vars.data,nominal_srate.data);
         push_config(c);
     }
 }
