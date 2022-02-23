@@ -41,7 +41,7 @@ function sGt = gainrule_NAL_NL2(sAud,sFitmodel)
     % sFitmodel.levels - The input band levels in dB SPL for which to compute
     %                    insertion gains.
     % sFitmodel.channels - The number of ears to fit (1 or 2).
-    % sFitmodel.sides    - Which ears to fit: 'l', 'r', or 'lr'
+    % sFitmodel.side     - Which ears to fit: 'l', 'r', or 'lr'
     %
     % The vector sFitmodel.edge_frequencies always contains one more element than
     % the vector sFitmodel.frequencies.
