@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2003 2004 2005 2006 2007 2008 2009 2010 2011 HörTech gGmbH
-// Copyright © 2012 2013 2014 2016 2017 2018 2019 2020 HörTech gGmbH
+// Copyright © 2012 2013 2014 2016 2017 2018 2019 2020 2021 HörTech gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -137,12 +137,12 @@ void MHAFilter::filter_t::filter(mha_real_t* dest,
         throw MHA_Error(__FILE__,__LINE__,
                         "channels out of range (dest:%u-%u filter:%u)",
                         channel_begin,channel_end,channels);
-    unsigned int ch, fr, nfr = dframes, n, idx;
+    unsigned int ch, fr, n, idx;
     // direct form II, one delay line for each channel
     // A[k] are the recursive filter coefficients (A[0] is typically 1)
     // B[k] are the non recursive filter coefficients
     // loop through all frames, and all channels:
-    for(fr=0;fr<nfr;fr++){
+    for(fr=0;fr<dframes;fr++){
         for(ch=channel_begin;ch<channel_end;ch++){
             // index into input/output buffer:
             idx = frame_dist * fr + channel_dist * (ch - channel_begin);

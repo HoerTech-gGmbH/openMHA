@@ -22,98 +22,71 @@
 // Feedback Paths in Hearing Aids", IEEE/ACM Transactions on Audio,
 // Speech and Language Processing, vol 24, no 2, February 2016.
 
-/*
- * This plugin is an extension of the nlms_wave plugin and computes
- * not only the nlms estimate of the feedback path but also performs
- * the necessary steps for delaying the input and output signals as
- * well as the prewhitening using the LPC coefficients.
- */
+/* This plugin implements an adaptive feedback canceller based on the paper by Ann Spriet
+ * 'Feedback control in hearing aids'. */
 
 #include "adaptive_feedback_canceller.h"
+#include <iostream>
 
 #define PATCH_VAR(var) patchbay.connect(&var.valuechanged, this, &adaptive_feedback_canceller::update_cfg)
 #define INSERT_PATCH(var) insert_member(var); PATCH_VAR(var)
 
-adaptive_feedback_canceller_config::
-adaptive_feedback_canceller_config(MHA_AC::algo_comm_t & ac,
-                                   const mhaconfig_t in_cfg,
-                                   adaptive_feedback_canceller *afc)
-    : ac(ac),
-      ntaps(afc->ntaps.data),
+std::vector<int> calcDelayValues(const std::vector<int>& raw_latency, const unsigned int correction){
+    std::vector<int> delay_values;
+    for(const int& elem : raw_latency)
+        delay_values.push_back(elem - correction);
+    return delay_values;
+}
+
+adaptive_feedback_canceller_config::adaptive_feedback_canceller_config(algo_comm_t &ac,
+                                                                       const mhaconfig_t in_cfg,
+                                                                       adaptive_feedback_canceller *afc)
+    : ntaps(afc->filter_length.data),
       frames(in_cfg.fragsize),
-      channels(in_cfg.channels), //all input channels processed
-      s_E(ac, afc->name_e.data, in_cfg.fragsize, in_cfg.channels, false), // Prediction error
-      F(ac,afc->name_f.data, afc->ntaps.data,in_cfg.channels,false), // Estimated filter is saved in the AC space
-      Pu(afc->ntaps.data,in_cfg.channels),                                // and thereby made accessible to other
-      name_lpc_(afc->name_lpc.data),                                      // plugins in the same chain
-      n_no_update_(afc->n_no_update.data),
-      no_iter(0),
-      iter(0),
-      v_G(1, channels),
-      s_U(frames, channels),
-      s_E_afc_delay(afc->afc_delay.data, channels),
-      s_W(afc->delay_w.data, in_cfg.channels),
-      s_Wflt(afc->ntaps.data, in_cfg.channels, afc->ntaps.data),
-      s_U_delay(afc->delay_d.data, channels),
-      s_U_delayflt(afc->lpc_order.data + 1, in_cfg.channels, afc->lpc_order.data + 1),
-      F_Uflt(1, channels), // Filtered output signal is saved to be recalled in the next iteration to compute the error signal
-      s_Y_delay(afc->delay_d.data, in_cfg.channels),
-      s_Y_delayflt(afc->lpc_order.data + 1, in_cfg.channels, afc->lpc_order.data + 1),
-      UbufferPrew(afc->ntaps.data, in_cfg.channels, afc->ntaps.data)
+      channels(in_cfg.channels),
+      n_no_update_(afc->blocks_no_update.data),
+      no_update_count(0),
+      fragsize((afc->fragsize.data == 0) ? frames : afc->fragsize.data),
+      stepsize(afc->stepsize.data),
+      min_const(afc->min_const.data),
+      forward_sig(frames, channels),
+      LSsig_initializer(frames, channels),
+      LSsig(&LSsig_initializer),
+      LSsig_output(frames, channels),
+      delay_forward_path(afc->delay_forward_path.data, channels),
+      forward_path_proc(afc->plugloader),
+      delay_roundtrip(calcDelayValues(afc->measured_roundtrip_latency.data, fragsize), channels),
+      delay_update(calcDelayValues(afc->measured_roundtrip_latency.data, 1), channels),
+      FBfilter_estim(channels, MHAFilter::filter_t(1,1,ntaps)),
+      FBfilter_estim_ac(ac, "FBfilter_estim", ntaps, channels, false),
+      FBsig_estim(frames, channels),
+      ERRsig(frames, channels),
+      ERRsig_ac(ac, "ERRsig", frames, channels,false),
+      use_lpc_decorr(afc->use_lpc_decorr.data),
+      lpc_filter(channels, MHAFilter::filter_t(1,1,ntaps)),
+      white_LSsig(frames, channels),
+      white_LSsig_smpl(1, channels),
+      rb_white_LSsig(ntaps, channels, ntaps),
+      current_power(channels, mha_real_t(0.0f)),
+      white_MICsig(frames, channels),
+      white_FBsig_estim(frames, channels),
+      white_ERRsig(frames, channels),
+      debug_mode(afc->debug_mode.data),
+      current_power_ac(ac, "current_power", frames, channels, false),
+      estim_err_ac(ac, "estim_err", frames, channels, false)
 {
-    //initialize plugin state for a new configuration
+    /* MHAFilter::filter_t is initialized with 1.0 at the first B-coefficient, since the adaption works by
+     * adding new values to the previous coefficients there will always be an offset of 1.0 at the first
+     * B-coefficient. That is why it is set to 0.0 here */
+    for (unsigned ch{0U}; ch < channels; ch++)
+        FBfilter_estim[ch].B[0] = 0.0;
+}
 
-    if( (afc->gains.data.size() != channels) && (afc->gains.data.size() != 1) )
-        throw MHA_Error(__FILE__,__LINE__,
-                        "The number of entries in the gain vector must be"
-                        " either %u (one per channel) or 1 (same gains for all channels)", channels);
-
-    if( afc->gains.data.size() == 1 ){
-
-        for(unsigned int ch = 0; ch < channels;ch++)
-            v_G.value(0, ch) = pow(10.0, 0.05 * afc->gains.data[0]);
-    }else{
-        for(unsigned int ch = 0; ch < channels; ch++)
-            v_G.value(0, ch) = pow(10.0, 0.05 * afc->gains.data[ch]);
-    }
-
-    EPrew.buf = new mha_real_t[in_cfg.channels];
-    EPrew.num_frames = 1;
-    EPrew.num_channels = in_cfg.channels;
-
-    UPrew.buf = new mha_real_t[in_cfg.channels];
-    UPrew.num_frames = 1;
-    UPrew.num_channels = in_cfg.channels;
-
-    YPrew.buf = new mha_real_t[in_cfg.channels];
-    YPrew.num_frames = 1;
-    YPrew.num_channels = in_cfg.channels;
-
-    UPrewW.buf = new mha_real_t[in_cfg.channels];
-    UPrewW.num_frames = 1;
-    UPrewW.num_channels = in_cfg.channels;
-
-    smpl.buf = new mha_real_t[in_cfg.channels];
-    smpl.num_frames = 1;
-    smpl.num_channels = in_cfg.channels;
-
-    for (unsigned int ch = 0; ch < channels; ch++)
-        smpl.buf[ch] = 0;
-
-    s_Usmpl = &smpl;
+adaptive_feedback_canceller_config::~adaptive_feedback_canceller_config() {
 
 }
 
-adaptive_feedback_canceller_config::~adaptive_feedback_canceller_config()
-{
-    delete EPrew.buf;
-    delete UPrew.buf;
-    delete YPrew.buf;
-    delete UPrewW.buf;
-    delete smpl.buf;
-}
-
-inline void make_friendly_number_by_limiting( mha_real_t& x )
+inline void make_friendly_number_by_limiting( double& x )
 {
     if( x > 1.0e20 )
         x = 1.0e20;
@@ -121,163 +94,105 @@ inline void make_friendly_number_by_limiting( mha_real_t& x )
         x = -1.0e20;
 }
 
-// the actual processing implementation
-// In the input buffer (s_Y), the oldest sample ist the first sample (0th) of the buffer
-mha_wave_t *adaptive_feedback_canceller_config::process(mha_wave_t *s_Y, mha_real_t rho, mha_real_t c)
-{
-    //do actual processing here using configuration state
+mha_wave_t *adaptive_feedback_canceller_config::process(mha_wave_t *MICsig) {
+    /* Compute the error signal */
+    ERRsig.copy(*MICsig);
+    ERRsig -= FBsig_estim;
+    /* Copy error signal into other waveform_t objects to be processed individually */
+    if (debug_mode)
+        ERRsig_ac.copy(ERRsig);
+    forward_sig.copy(ERRsig);
 
-    // Read in the LPC coefficients
-    s_LPC = MHA_AC::get_var_waveform(ac, name_lpc_);
+    /* --- FORWARD PATH --- */
+    /* Add the current error signal (here forward_sig) into the delay line simulating the hearing aid algorithm delay */
+    delay_forward_path.process(&forward_sig);
+    /* Put the forward_sig into the plugloader which processes it with the selected plugins and puts the
+     * result into LSsig */
+    forward_path_proc.process(&forward_sig,&LSsig);
+    /* Copy the forward path signal to the output signal. */
+    LSsig_output.copy(*LSsig);
 
-    if ( s_LPC.num_channels != channels )
-        {
-            throw MHA_Error(__FILE__,__LINE__,"The number of input channels %u doesn't match"
-                            " the number of channels %u in name_d:%s",
-                            channels, s_LPC.num_channels, name_lpc_.c_str());
+    /* --- BACKWARD PATH --- */
+    if (use_lpc_decorr) {
+        for(unsigned ch{0}; ch < channels; ch++) {
+            /* Prewhitening the delayed input and output signals using LPC */
+            lpc_filter[ch].filter(white_MICsig.buf,MICsig->buf,MICsig->num_frames,1,1,ch,ch+1);
+            lpc_filter[ch].filter(white_LSsig.buf,LSsig->buf,LSsig->num_frames,1,1,ch,ch+1);
         }
-
-    unsigned int ch, kf, tap, fidx;
-    mha_real_t err;
-
-
-    for(kf = 0; kf < frames; kf++) {
-
-        iter++;
-
-        if (no_iter < n_no_update_)
-            no_iter++;
-
-
-        // Discard the oldest sample of the buffer compensating for the transducer delays
-        s_Wflt.discard(1);
-
-        // Discard the oldest sample of the delayed buffer of the desired signal
-        s_Y_delayflt.discard(1);
-
-        // Discard the oldest sample of the buffer output signal
-        s_U_delayflt.discard(1);
-
-        // Add the current output sample into the delayline for prewhitening with the LPC coefficients
-        s_U_delayflt.write(*s_U_delay.process(s_Usmpl));
-
-
-        // Add the current input sample into the delayline for prewhitening with the LPC coefficients
-        for(ch = 0; ch < channels; ch++)
-            value(smpl, 0, ch) = value(s_Y, kf, ch);
-
-        s_Y_delayflt.write(*s_Y_delay.process(&smpl));
-
-
-        // Forward path
-        for(ch = 0; ch < channels; ch++) {
-
-            // Compute the power of the prewhitened output buffer without the oldest sample
-            // The buffer will be shifted and this sample will be removed from the buffer to make place for the new sample
-            Pu[ch] = 0;
-            for(unsigned int i = 1; i < ntaps; i++) {
-                PSD_val = UbufferPrew.value(i, ch) * UbufferPrew.value( i, ch); // index = 0 corresponds to the oldest sample
-       
-            Pu[ch] += PSD_val;
-            }
-       
-            // Compute the a priori prediction error
-            s_E.value(kf, ch) = value(s_Y, kf, ch) - F_Uflt.value(0, ch);
-            smpl.buf[ch] = s_E.value(kf,ch);
-        }
-
-        // Add the current prediction error into the prediction error delay line
-        // Get the delayed sample out of it
-        s_Usmpl = s_E_afc_delay.process(&smpl);
-
-        // Compute the gain in the forward path
-        for (ch = 0; ch < channels; ch++)
-            s_Usmpl->buf[ch] *= v_G.value(0, ch);
-
-        s_U.copy_from_at(kf, 1, *s_Usmpl, 0);
-
-        // Add the output sample into the delay line compensating for the transducer delays
-        s_Usmpl = s_W.process(s_Usmpl);
-
-        // Add the current output sample into the buffer for computing the a priori prediction error
-        s_Wflt.write(*s_Usmpl);
-
-        // Backward Path
-        for(ch = 0; ch < channels; ch++) {
-            // Prewhitening the delayed input and output signals using LPC
-            value(YPrew, 0, ch) = 0;
-            value(UPrew, 0, ch) = 0;
-
-            for (unsigned int i = 0; i < s_LPC.num_frames; i++) {
-                value(YPrew, 0, ch) += value(s_LPC, s_LPC.num_frames - i - 1, ch) * s_Y_delayflt.value(i, ch);
-                value(UPrew, 0, ch) += value(s_LPC, s_LPC.num_frames - i - 1, ch) * s_U_delayflt.value(i, ch);
-            }
-
-            // Updating the power of the prewhitened output signal
-            PSD_val = value(UPrew, 0, ch) * value(UPrew, 0, ch);
-            Pu[ch] += PSD_val;
-
-            // Updating the prewhitened filtered output signal
-            // by filtering the delayed prewhitened output signal with the last estimate of the feedback path
-            // Note that UbufferPrew should first be shifted, before doing the scalar product.
-            // Here we simulate the shift by using indexing (tap - 1)
-            value(UPrewW, 0, ch) = F.value(0, ch) * value(UPrew, 0, ch);
-            for(tap = 1; tap < ntaps; tap++)
-                value(UPrewW, 0, ch) += F.value(tap, ch) * UbufferPrew.value(ntaps - tap, ch);
-
-            // Computing the prewhitened error signal
-            value(EPrew, 0, ch) = value(YPrew, 0, ch) - value(UPrewW, 0, ch);
-             
-            // err = rho * EPrew
-            err = rho * value(EPrew, 0, ch);
-
-            // err = err / (UbufferPrew' * uBufferPrew + epsilon)
-            err /= (Pu[ch] + c);
-            
-            // Initialize the filtered output signal to 0
-            F_Uflt.value(0, ch) = 0;
-
-            // Updating the filter coefficients and applying it to the input signal
-            for(tap = ntaps - 1; tap > 0; tap--) {
-
-                fidx = ch+channels*tap;
-
-                // Updating the filter coefficients
-                if (no_iter >= n_no_update_) {
-                    F.value(tap, ch) += err * UbufferPrew.value(ntaps - tap, ch);
-                    make_friendly_number_by_limiting( F.buf[fidx] );
-                }
-
-                // Applying the filter to the delayed output signal, which compensates for the transducer delays:
-                F_Uflt.value(0, ch) += F.value(tap, ch) * s_Wflt.value(ntaps - tap - 1, ch);
-            }
-
-            // Updating the filter coefficients for the current input sample
-            if (no_iter >= n_no_update_) {
-                F.value(0, ch) += err * value(UPrew, 0, ch);
-                make_friendly_number_by_limiting( F.buf[ch] );
-            }
-
-            // Applying the filter to the delayed output signal, which compensates for the transducer delays:
-            F_Uflt.value(0, ch) += F.value(0, ch) * s_Wflt.value(ntaps - 1, ch);
-        }
-
-        // Discard the last sample of the prewhitened output signal
-        UbufferPrew.discard(1);
-        UbufferPrew.write(UPrew);
+    }
+    else {
+        white_MICsig.copy(*MICsig);
+        white_LSsig.copy(*LSsig);
+        white_ERRsig.copy(ERRsig);
     }
 
-    // Insert the updated AC variables into the AC space
-    insert();
+    /* Add a delay before updating the filter, compensating for the roundtrip delay - 1 */
+    delay_update.process(&white_LSsig);
 
-    // Forward the output signal into the processing chain
-    return &s_U;
+    mha_real_t estim_err;
+    for(unsigned kf{0}; kf < frames; kf++) {
+        for(unsigned ch{0}; ch < channels; ch++) {
+            /* Recalculate power of rb_white_LSsig, starting with the existing buffer state
+             * (updating the buffer first and then computing the power will cause the system to explode) */
+            current_power[ch] = 0.0f;
+            for(unsigned tap{0}; tap < ntaps; tap++)
+                current_power[ch] += std::pow(rb_white_LSsig.value(tap,ch),2);
+            /* Calculate the estimation power in the NLMS fashion. */
+            estim_err = stepsize * value(white_ERRsig,kf,ch) / (current_power[ch] + min_const);
+            /* Updating the filter coefficients */
+            if (no_update_count >= n_no_update_) {
+                for(unsigned tap{0}; tap < ntaps; tap++) {
+                    FBfilter_estim[ch].B[tap] += estim_err * rb_white_LSsig.value(ntaps - tap - 1, ch);
+                    make_friendly_number_by_limiting(FBfilter_estim[ch].B[tap]);
+                }
+            }
+            /* If you set debug_mode to yes in your configuration this will update AC-variables
+             * to be monitored later. */
+            if (debug_mode) {
+                current_power_ac.assign(kf,ch,current_power[ch]);
+                estim_err_ac.assign(kf,ch,estim_err);
+            }
+            /* Add new value to a one-sample wave_t object that will eventually be written into
+             * rb_white_LSsig. */
+            white_LSsig_smpl.buf[ch] = white_LSsig.value(kf,ch);
+        }
+        /* The contents of rb_white_LSsig are updated here because we still needed the oldest value to compute
+         * current_power. */
+        rb_white_LSsig.discard(1);
+        rb_white_LSsig.write(white_LSsig_smpl);
+    }
+
+    /* Add a delay before filtering the loudspeaker signal, compensating for the roundtrip delay - fragsize */
+    delay_roundtrip.process(LSsig);
+
+    for(unsigned ch{0}; ch < channels; ch++) {
+        /* Applying the filter to the delayed output signal */
+        FBfilter_estim[ch].filter(FBsig_estim.buf,LSsig->buf,LSsig->num_frames,1,1,ch,ch+1);
+        if (debug_mode) {
+            for(unsigned tap{0}; tap < ntaps; tap++) {
+                /* Writing the filter coefficients to the AC variable to be accessible from outside */
+                FBfilter_estim_ac.assign(tap,ch,FBfilter_estim[ch].B[tap]);
+            }
+        }
+    }
+
+    if (no_update_count < n_no_update_)
+        no_update_count++;
+
+    /* Insert the updated AC variables into the AC space */
+    if (debug_mode)
+        insert();
+
+    /* Forward the output signal into the processing chain */
+    return &LSsig_output;
 }
 
 void adaptive_feedback_canceller_config::insert()
 {
-    F.insert();
-    s_E.insert();
+    FBfilter_estim_ac.insert();
+    ERRsig_ac.insert();
+    current_power_ac.insert();
+    estim_err_ac.insert();
 }
 
 /** Constructs our plugin. */
@@ -286,35 +201,30 @@ adaptive_feedback_canceller(MHA_AC::algo_comm_t & iac,
                             const std::string & configured_name)
     : MHAPlugin::plugin_t<adaptive_feedback_canceller_config>
     ("Prediction error method for adaptive feedback cancellation",iac),
-    rho("Step size","0.01","]0,2]"),
-    c("Regularization parameter","1e-5","]0,]"),
-    ntaps("Length of the feedback path filter in taps","32","]0,]"),
-    gains("Gain in dB","[0]","[-60,60]"),
-    name_e("Name of the AC variable for saving the prediction error", "E"),
-    name_f("Name of the AC variable for saving the adapive filter", "F"),
-    name_lpc("Name of the AC variable for the LPC coefficients", "lpc"),
-    lpc_order("Length of the lpc filter in taps", "20", "]0, 1024]"),
-    afc_delay("Delay in the forward path in taps", "96", "]0,["),
-    delay_w("Delay in the adaptive filtering path due to the microphone and loudspeaker transducers in taps", "130", "[0,["),
-    delay_d("Delay in the adaptive filtering path for the LPC in taps", "161", "[0,["),
-    n_no_update("Number of iterations without updating the filter coefficients", "0", "[0,1024[")
+      stepsize("Step size","0.01","]0,2]"),
+      min_const("Regularization parameter","1e-20","]0,]"),
+      filter_length("Length of the feedback path filter in taps","32","]0,]"),
+      plugloader(*this,ac),
+      fragsize("Fragsize used for internal delay computation, defaults to MHA's fragsize", "0", "[0,["),
+      measured_roundtrip_latency("Latency between playback and recording of the same signal", "0", "[0,["),
+      use_lpc_decorr("Make use of LPC decorrelation, NOTE: not yet implemented!","no"),
+      lpc_order("Length of the lpc filter in taps", "20", "]0, 1024]"),
+      delay_forward_path("Delay in the forward path processing in taps", "96", "]0,["),
+      blocks_no_update("Number of iterations without updating the filter coefficients", "0", "[0,["),
+      debug_mode("Set to true to get variable states from within the processing", "no")
 {
-    // make the plug-in findable via "?listid"
+    /* make the plug-in findable via "?listid" */
     set_node_id(configured_name);
 
-    insert_member(rho);
-    insert_member(c);
-    INSERT_PATCH(ntaps);
-    INSERT_PATCH(gains);
-    INSERT_PATCH(name_e);
-    INSERT_PATCH(name_f);
-    INSERT_PATCH(name_lpc);
-    INSERT_PATCH(lpc_order);
-    INSERT_PATCH(afc_delay);
-    INSERT_PATCH(delay_w);
-    INSERT_PATCH(delay_d);
-    insert_member(n_no_update);
-
+    /* add parser variables and connect them to methods here INSERT_PATCH(foo_parser); */
+    INSERT_PATCH(stepsize);
+    INSERT_PATCH(min_const);
+    INSERT_PATCH(filter_length);
+    INSERT_PATCH(fragsize);
+    INSERT_PATCH(measured_roundtrip_latency);
+    INSERT_PATCH(delay_forward_path);
+    INSERT_PATCH(blocks_no_update);
+    INSERT_PATCH(debug_mode);
 }
 
 adaptive_feedback_canceller::~adaptive_feedback_canceller() {}
@@ -342,6 +252,7 @@ void adaptive_feedback_canceller::prepare(mhaconfig_t & signal_info)
         throw MHA_Error(__FILE__, __LINE__,
                         "This plugin can only process waveform signals.");
 
+    plugloader.prepare(signal_info);
     /* make sure that a valid runtime configuration exists: */
     update_cfg();
     poll_config()->insert();
@@ -351,23 +262,24 @@ void adaptive_feedback_canceller::update_cfg()
 {
     if ( is_prepared() ) {
 
-        //when necessary, make a new configuration instance
-        //possibly based on changes in parser variables
+        /* when necessary, make a new configuration instance
+         * possibly based on changes in parser variables */
         adaptive_feedback_canceller_config *config;
         config = new adaptive_feedback_canceller_config( ac, input_cfg(), this );
         push_config( config );
     }
 }
 
-/**
- * Checks for the most recent configuration and defers processing to it.
- */
+/* Checks for the most recent configuration and defers processing to it. */
 mha_wave_t * adaptive_feedback_canceller::process(mha_wave_t * signal)
 {
-    //this stub method defers processing to the configuration class
-    return poll_config()->process( signal, rho.data, c.data );
+    /* this stub method defers processing to the configuration class */
+    return poll_config()->process( signal );
 }
 
+void adaptive_feedback_canceller::release(){
+    plugloader.release();
+}
 /*
  * This macro connects the plugin1_t class with the MHA plugin C interface
  * The first argument is the class name, the other arguments define the
