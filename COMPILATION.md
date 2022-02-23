@@ -191,6 +191,13 @@ These tests include some reproducibility checks that will fail if openMHA
 source code was changed and not checked into git, or if different components
 were compiled from different git commits.
 
+##### Known issue:
+* The test mha/mhatest/test_addsndfile may fail by a small margin
+  (sample values have relative errors in the order of 10^-5) on macOS.
+  This is too small to be perceptually relevant. The pre-compiled
+  openMHA from the pkg installer is not affected.  We are investigating
+  the cause and will address the issue in a future update.
+
 ## III. Compilation on 64-bit Windows (advanced)
 
 ### Windows prerequisites
@@ -256,6 +263,11 @@ Not following this procedure can result in MHA not being able to find
 all necessary DLLs.
 
 ### Testing self-compiled openMHA on Windows:
+#### Known issues on Windows:
+Many of our automated tests (e.g. the unit tests testing plugin lsl2ac) are
+using network communication during test execution.  This can result in
+problems like failed or hanging tests on Windows machines with restrictive
+firewall or network settings.
 
 #### Testing self-compiled openMHA with unit tests on Windows:
 ```
