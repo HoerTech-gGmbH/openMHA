@@ -7,7 +7,7 @@ include luggage.make
 REPO=../../../..
 
 #Include meta-information in the package
-PACKAGE_VERSION=4.17.0
+PACKAGE_VERSION=4.16.1
 TITLE=openMHA
 REVERSE_DOMAIN=org.openmha
 
