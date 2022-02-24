@@ -2,7 +2,7 @@
 
 Open Master Hearing Aid (openMHA) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4569575.svg)](https://doi.org/10.5281/zenodo.4569575)
 
-Current release: 4.16.1 (2021-09-20)
+Current release: 4.17.0 (2022-02-24)
 
 ## Content of the openMHA
 
