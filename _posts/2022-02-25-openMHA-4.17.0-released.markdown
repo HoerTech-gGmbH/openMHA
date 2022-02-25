@@ -1,0 +1,89 @@
+---
+layout: post
+title:  "openMHA 4.17.0 released"
+date:   2022-02-25 08:00:00
+category: software
+tags: [release, 4.17.0]
+---
+
+__openMHA 4.17.0__ provides several updates, extensions, and new features such as enhanced lsl support, a re-worked adaptive feedback cancelling framework which implements a simple NLMS method (see example [31-adaptive-feedback-canceller]([https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/31-adaptive-feedback-canceller)), compatibility with GCC-11, and more support for mac developers. 
+
+Please note that a new publication on openMHA the openMHA software is available, see [here](/publication/2021/12/30/openMHA-journal-publication.html) for details and please cite it when publishing your openMHA-based research.
+
+### Detailed Changelog 4.17.0
+
+__New and changed plugins__  
+- MHAIODummy: new IO plugin for testing configurations, generates zero samples as fast as openMHA can process them and discards openMHA output.
+- ac2xdf: new plugin, writes AC variables into XDF files as used by the the LSL community. It functions much like acrec, but can record multiple variables.
+- trigger2lsl: new plugin, sends LSL messages when audio data passes simple threshold criteria.
+- adaptive_feedback_canceller: now implements a simple NLMS adaptive feedback cancelling algorithm, supports arbitrary fragsize and allows to load other plugins for hearing aid processing   
+	- Examples for this plugin are available in example directory 31-adaptive-feedback-canceller.
+- prediction_error: The previous implementation of adaptive_feedback_canceller is still available in plugin prediction_error (the original name of the plugin).
+	- Examples for this plugin are still available in example directory 08-feedback-suppression.
+- sine: additional check for valid channel indices.
+- acmon: Add capability to handle AC variables containing strings.
+	- See example [30-marker-streams](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/30-marker-streams)
+- lsl2ac: make time correction variable the same size as the timestamp variable.
+	- Enable lsl2ac to receive marker streams.
+- rmslevel: correct rmslevel AC variable handling and documentation.
+- ac2lsl: respect the stride of AC variables.
+
+__Changes for developers__
+
+- Document how to run automated tests on self-compiled openMHA in COMPILATION.md, including potential issues.
+- Avoid duplication of first paragraph in dev manual section 3.2
+- Extend support for Mac developers:
+    - Build dependencies are also found when installed through Homebrew instead of MacPorts.
+    - ./configure and compilation now works for ARM-based Macs.  We cannot yet provide ARM binaries in our pkg installers, however.
+    - Extended .gitignore with more macOS build and packaging artifacts.
+- Algorithm communication variables:
+    - Replace C interface to AC variables space with C++ interface.
+      - All included openMHA plugins have been updated to reflect this change.
+    - Replace portions of the AC variables space implementation that were not strictly real-time safe with a real-time safe solution.
+    - Interface change: AC variable names now have to be passed through const std::string & parameters.
+    - Violations of best practices and non-realtime-safe AC space usages are now detected and exceptions are raised if they are tried. Please refer to AC variables best practices in the developer manual.
+    - Convenience classes for publishing numeric scalars as AC variables have been extended with an insert-now flag which allows to use these classes in plugin runtime configuration in more cases than before.
+    - Combine both algo_comm header files into a single header file (merged mha_algo_comm.h into mha_algo_comm.hh).
+    - Document stride of AC variables containing audio signals.
+
+__Updates regarding installation of pre-compiled openMHA installers__
+
+- Windows
+	- Windows openMHA installer was built with Jack 1.9.20. Earlier versions of Jack may be incompatible. Please remove your previous Jack installation and install Jack 1.9.20 for Windows if you want to use openMHA with Jack.
+    - Update of compiler used to generate binaries from GCC-10 to GCC-11.
+    - Plugins using open sound control and labstreaminglayer were accidentally missing from the previous Windows installer. This release contains them again.
+- Linux
+	- The package signing key has been extended to be valid until 2025.
+    - URL for downloading key the public key has changed to http://apt.hoertech.de/openmha-packaging.pub (see INSTALLATION.md).
+    - openMHA deb packages now depend on a keyring package that will automatically update our users' apt to the latest version of this key.
+    - Fix starting MHA instances from Octave in Ubuntu 20.04
+		- The openMHA deb package for Ubuntu 20.04 contains an extra file for Octave 5.2.0  which fixes a bug in the ubuntu Octave package for that release, see [https://savannah.gnu.org/bugs/?59310](https://savannah.gnu.org/bugs/?59310)
+
+__Documentation updates__
+
+- Rename manual documents.
+- Consolidate plugin tags (visible in the plugin documentation):
+	- Change plugin tag "level" to "level-meter" or "level-modification".
+    - Merge plugin tags "beamforming" and "beamformer" into "beamforming".
+- Update example 17 (config as used on Mahalia) after [bugfix in Mahalia](https://github.com/mahalia-dependencies/mahalia-dependencies/blob/master/etc/mahalia_generic-hearing-aid/generic-hearing-aid/index.cfg)
+- Update openMHA reference publication.
+- Correct rmslevel AC variable handling and documentation in plugin rmslevel.
+- Several documentation improvements for users and developers.
+
+__Robustness and reproducibility__
+
+- Add Wimplicit-fallthrough to Clang compiler flags to have the same compiler checks with clang as with GCC.
+- Ensure that liblo and liblsl have been found as dependencies before creating a Windows installer.
+- Remove unused preprocessor definitions.
+- Make openMHA GCC-11 compatible.
+- Improve liblo inclusion on Windows for compiling OSC plugins.
+- Extend reproducibility checks during tests:
+    - Check that exactly the expected git hash is present.
+    - Check that each of the expected files actually contains a hash.
+
+
+
+
+
+
+
