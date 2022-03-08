@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2018 2019 2020 2021 HörTech gGmbH
+# Copyright © 2022 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -52,8 +53,9 @@ PACKAGEVER=$(shell cd $(REPO) && git log --abbrev=7 --pretty='format:%h' |wc -l)
 
 # MHAVERSION is the <major>.<minor>.<release> version of MHA extracted from
 # header file mha.hh
+H := \#
 MHAVERSION = $(shell \
-    (echo "\#include \"$(REPO)/mha/libmha/src/mha.hh\"";\
+    (echo "$H""include \"$(REPO)/mha/libmha/src/mha.hh\"";\
      echo 'mhaversion=MHA_VERSION_MAJOR  MHA_VERSION_MINOR  MHA_VERSION_RELEASE') | \
      cpp -x c++ | grep -e 'mhaversion='|sed -e 's/mhaversion=//1' -e 's/ /./g')
 

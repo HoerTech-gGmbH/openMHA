@@ -4,6 +4,7 @@
 %%
 %% This file is part of the HörTech Open Master Hearing Aid (openMHA)
 %% Copyright © 2020 HörTech gGmbH
+%% Copyright © 2022 Hörzentrum Oldenburg gGmbH
 
 %% openMHA is free software: you can redistribute it and/or modify
 %% it under the terms of the GNU Affero General Public License as published by
@@ -53,6 +54,24 @@ function test_windnoise()
     f2=1000;
     f=f1:(f2-f1)/(length(t)-1):f2;
     y=sin(2*pi.*f.*t);
+    
+    % Octave 6.2.0 on ARMv7 as distributed by Debian 11 in package
+    % octave_6.2.0-1_armhf.deb flips the sign of sample values near
+    % 1.0 to negative int16 values when saved with audiowrite.
+    % Affected samples in y are at indices with values:
+    % 74246    0.99999999997675959
+    % 110009   0.99999999984769128
+    % 117503   0.99999999999940503
+    % 200009   0.99999999984769128
+    % 270009   0.99999999984769139
+    % 308744   0.99999999991071953
+    % 319994   0.99999999991071953
+    % 352507   0.99999999995180855
+    % 360009   0.99999999984769139
+    % 416254   0.99999999999698808
+    % 437756   0.99999999997675959
+    % The test in this file would fail if the signs were flipped. Prevent.
+    y = y * (32767/32768);
  
     audiowrite(inwav, y, dsc.srate);
     unittest_teardown(@delete, inwav);

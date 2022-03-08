@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2021 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -168,21 +169,29 @@ pipeline {
                         archiveArtifacts 'mha/plugins/matlabcoder_skeleton/**'
                     }
                 }
-                stage(                         "focal && x86_64 && mhadoc") {
-                    agent {label               "focal && x86_64 && mhadoc"}
-                    steps {openmha_build_steps("focal && x86_64 && mhadoc")}
+                stage(                         "jammy && x86_64 && mhadoc") {
+                    agent {label               "jammy && x86_64 && mhadoc"}
+                    steps {openmha_build_steps("jammy && x86_64 && mhadoc")}
+                }
+                stage(                         "focal && x86_64 && mhadev") {
+                    agent {label               "focal && x86_64 && mhadev"}
+                    steps {openmha_build_steps("focal && x86_64 && mhadev")}
                 }
                 stage(                         "bionic && x86_64 && mhadev") {
                     agent {label               "bionic && x86_64 && mhadev"}
                     steps {openmha_build_steps("bionic && x86_64 && mhadev")}
                 }
+                stage(                         "bullseye && armv7 && mhadev") {
+                    agent {label               "bullseye && armv7 && mhadev"}
+                    steps {openmha_build_steps("bullseye && armv7 && mhadev")}
+                }
+                stage(                         "bullseye && aarch64 && mhadev") {
+                    agent {label               "bullseye && aarch64 && mhadev"}
+                    steps {openmha_build_steps("bullseye && aarch64 && mhadev")}
+                }
                 stage(                         "bionic && armv7 && mhadev") {
                     agent {label               "bionic && armv7 && mhadev"}
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
-                }
-                stage(                         "bionic && aarch64 && mhadev") {
-                    agent {label               "bionic && aarch64 && mhadev"}
-                    steps {openmha_build_steps("bionic && aarch64 && mhadev")}
                 }
                 stage(                         "windows && x86_64 && mhadev") {
                     agent {label               "windows && x86_64 && mhadev"}
@@ -270,7 +279,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-            mail to: 't.herzke@hoertech.de,m.zimmermann@hoertech.de',
+            mail to: 'tobiasherzke@openmha.com',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }
