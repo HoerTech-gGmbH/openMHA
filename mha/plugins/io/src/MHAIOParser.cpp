@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2008 2009 2013 2014 2015 2016 2017 2020 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -358,6 +359,12 @@ extern "C" {
 #endif
     }
 }
+
+MHAIO_DOCUMENTATION(MHAIOParser,"io","The plugin ’MHAIOParser’ provides an interface between the configuration"
+                    " interface and the mha processing i/o. The processing armed by issuing the "
+                    " cmd=start command, after that every write access to io.input triggers the processing of the input "
+                    " by the processing framework. The output of the audio processing is written into the output"
+                    " monitor variable.")
 
 /*
  * Local Variables:
