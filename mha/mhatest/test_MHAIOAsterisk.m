@@ -4,6 +4,7 @@
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2020 HörTech gGmbH
+% Copyright © 2022 Hörzentrum Oldenburg gGmbH
 
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +37,11 @@ function test_MHAIOAsterisk
   mha_set(mha,'mha.plugin_name','mhachain');
   mha_set(mha,'mha.mhachain.algos',{'rmslevel','gain'});
   mha_set(mha,'mha.mhachain.gain.gains', 20*log10(0.5));
+  
+  mha_set(mha,'io.port',0); % Let operating system choose a free port ...
+  assert_equal(0, mha_get(mha,'io.port')); % during prepare:
   mha_set(mha,'cmd', 'prepare');
+  assert_not_equal(0, mha_get(mha,'io.port'));
 
   assert_equal('stopped', mha_get(mha,'state'));
   
