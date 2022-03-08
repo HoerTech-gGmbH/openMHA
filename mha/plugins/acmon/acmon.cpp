@@ -58,7 +58,7 @@ private:
     MHAParser::kw_t dispmode;
     /** Configuration variable for the record mode */
     MHAParser::kw_t recmode;
-    /** Vector containing pointers to the ac to monitor bridge variables. This plugin does not clean up after itself */
+    /** Vector containing pointers to the ac to monitor bridge variables. */
     std::vector<std::unique_ptr<ac_monitor_t>> vars;
     /** Patchbay*/
     MHAEvents::patchbay_t<acmon_t> patchbay;
