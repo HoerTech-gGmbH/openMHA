@@ -68,7 +68,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-            mail to: 'tobiasherzke@openmha.com',
+            mail to: 'tobiasherzke@openmha.com,paulmaanen@openmha.com',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }

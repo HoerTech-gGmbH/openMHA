@@ -218,10 +218,12 @@ pipeline {
             // when { anyOf { branch 'master'; branch 'development' } }
             steps {
                 // receive all deb packages from openmha build
-                unstash "x86_64_bionic"
+                unstash "x86_64_jammy"
                 unstash "x86_64_focal"
+                unstash "x86_64_bionic"
+                unstash "armv7_bullseye"
+                unstash "aarch64_bullseye"
                 unstash "armv7_bionic"
-                unstash "aarch64_bionic"
 
                 // Copies the new debs to the stash of existing debs,
                 sh "make storage"
@@ -279,7 +281,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-            mail to: 'tobiasherzke@openmha.com',
+            mail to: 'tobiasherzke@openmha.com,paulmaanen@openmha.com',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }

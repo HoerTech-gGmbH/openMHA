@@ -117,7 +117,7 @@ pipeline {
                 sh ("rm -rf external_libs_")
 
                 // unpack the sources only once
-                unstash "x86_64_bionic"
+                unstash "x86_64_jammy"
                 sh ("tar xzf sources.tgz")
                 // manipulate timestamps of sources so that compilation is newer
                 sh ("find external_libs -type f | xargs touch -t 200501010000")
@@ -126,9 +126,13 @@ pipeline {
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_focal"
                 sh ("tar xzf installation.tgz && rm *.tgz")
-                unstash "armv7_bionic"
+                unstash "x86_64_bionic"
                 sh ("tar xzf installation.tgz && rm *.tgz")
-                unstash "aarch64_bionic"
+                unstash "armv7_bullseye"
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "aarch64_bullseye"
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "armv7_bionic"
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_windows"
                 sh ("tar xzf installation.tgz && rm *.tgz")
@@ -148,7 +152,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-                 mail to: 'tobiasherzke@openmha.com',
+                 mail to: 'tobiasherzke@openmha.com,paulmaanen@openmha.com',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }
