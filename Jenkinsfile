@@ -218,7 +218,7 @@ pipeline {
             // when { anyOf { branch 'master'; branch 'development' } }
             steps {
                 // receive all deb packages from openmha build
-                // unstash "x86_64_jammy" // Disabling publishing to apt in order to investigate compression format vs aptly
+                unstash "x86_64_jammy"
                 unstash "x86_64_focal"
                 unstash "x86_64_bionic"
                 unstash "armv7_bullseye"
