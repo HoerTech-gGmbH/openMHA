@@ -153,13 +153,15 @@ mhachain::plugs_t::plugs_t(std::vector<std::string> algos,
 
 void mhachain::plugs_t::update_proc_load()
 {
-    prof_process_load.data = prof_process.data;
-    prof_process_tt.data = (float)proc_cnt*(float)prof_cfg.fragsize/prof_cfg.srate;
-    mha_real_t t_sum = 0;
-    for(unsigned int k=0;k<prof_process_load.data.size();k++)
-        t_sum += prof_process_load.data[k];
-    for(unsigned int k=0;k<prof_process_load.data.size();k++)
-        prof_process_load.data[k] *= 100.0f/prof_process_tt.data;
+  // update_proc_load() executes in the configuration thread.  The next 2
+  // lines read data from memory locations that are concurrently written to
+  // by the signal processing thread.  For cumulative profiling, the
+  // resulting possible inaccuracies are acceptable.
+  prof_process_load.data = prof_process.data;
+  prof_process_tt.data =
+      (float)proc_cnt * (float)prof_cfg.fragsize / prof_cfg.srate;
+  for (unsigned int k = 0; k < prof_process_load.data.size(); k++)
+    prof_process_load.data[k] *= 100.0f / prof_process_tt.data;
 }
 
 void mhachain::plugs_t::alloc_plugs(std::vector<std::string> algonames)
