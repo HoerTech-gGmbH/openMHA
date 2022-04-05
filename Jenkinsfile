@@ -226,7 +226,7 @@ pipeline {
                 unstash "armv7_bionic"
 
                 // Copies the new debs to the stash of existing debs,
-                sh "make storage"
+                sh "./configure || true; make storage"
                 build job:         "/Packaging/hoertech-aptly/$BRANCH_NAME",
                       quietPeriod: 300,
                       wait:        false
