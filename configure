@@ -233,6 +233,16 @@ done
     fi
 ) | tee config.mk
 
+RET=0
+for lib in EIGEN JACK LSL OSC
+do if grep -q WITH_$lib=yes config.mk
+   then true # Library found, all is well
+   else echo Error: $lib library was not found. 1>&2
+        RET=1
+   fi
+done
+exit $RET
+
 # Local Variables:
 # coding: utf-8-unix
 # indent-tabs-mode: nil
