@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2018 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -36,15 +37,13 @@ TEST(fft_find_bin,symmetry){
 
 TEST(fft_find_bin,rounding){
   mha_real_t bin_width=16000.0f/512.0f;
+  auto eps = bin_width - nextafterf(bin_width,0);
 
-  // The value of std::numeric_limits<T>::digits10 is the number of base-10 digits that can be represented
-  // by the type T without change. We expect the rounding to be at least this exact.
-
-  EXPECT_EQ(1,fshift::fft_find_bin(bin_width,512,16000));
-  EXPECT_EQ(0,fshift::fft_find_bin(bin_width/2.0f-std::pow(10,-std::numeric_limits<float>::digits10),512,16000));
+  EXPECT_EQ(1,fshift::fft_find_bin(bin_width/2,512,16000));
+  EXPECT_EQ(0,fshift::fft_find_bin(bin_width/2.0f-eps,512,16000));
 
   EXPECT_EQ(-1,fshift::fft_find_bin(-bin_width/2.0f,512,16000));
-  EXPECT_EQ(0,fshift::fft_find_bin(-bin_width/2.0f+std::pow(10,-std::numeric_limits<float>::digits10),512,16000));
+  EXPECT_EQ(0,fshift::fft_find_bin(-bin_width/2.0f+eps,512,16000));
 }
 
 TEST(fft_find_bin,out_of_range){

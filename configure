@@ -221,7 +221,7 @@ done
         echo 'COMPILERPREFIX:=ccache $(COMPILERPREFIX)'
     fi
 
-    echo 'OPTIM=-O3 $(SSE) -ffast-math -fomit-frame-pointer -fno-finite-math-only'
+    echo 'OPTIM=-O3 $(SSE) -fomit-frame-pointer'
     echo 'CXXFLAGS+=-Wall -Wextra -Wnon-virtual-dtor -Wformat -Werror -std=$(CXXSTANDARD) -fPIC $(OPTIM)' ${MACINCLUDES} ${MACCXXFLAGS} $DEBUG
     echo 'CFLAGS+=-Wall -Wextra -Werror -std=gnu11 -fPIC $(OPTIM)' ${MACINCLUDES} ${MACCXXFLAGS} $DEBUG
     if [[ $(type -P octave) ]] ; then
