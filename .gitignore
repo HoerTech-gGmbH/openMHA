@@ -77,6 +77,7 @@ mha/tools/packaging/deb
 
 #local editor configuration
 .clang_complete
+.cache
 .dir-locals.el
 GPATH
 GRTAGS
