@@ -57,7 +57,8 @@ https://forum.openmha.org/
 
 ## Known issues
 ### macOS
-* There are some known issues with Octave under macOS. The openMHA GUI may not work correctly with octave. As an alternative Matlab can be used.
+* There are some known issues with Octave under macOS.  The openMHA GUI may
+  not work correctly with Octave. As an alternative Matlab can be used.
 
 ## Proprietary fitting rules
 It is possible to fit a dynamic compressor in openMHA with the
