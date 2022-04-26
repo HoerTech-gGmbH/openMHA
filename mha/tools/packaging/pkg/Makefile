@@ -57,7 +57,9 @@ reference_algorithms: l_usr_local_share
 
 mfiles: l_usr_local_lib
 	@mkdir -p ${WORK_D}/usr/local/lib/openmha/mfiles
+	@mkdir -p ${WORK_D}/usr/local/lib/openmha/mfiles/mhagui_PHL_generic_hearing_aid_callbacks
 	@${CP} ${REPO}/mha/tools/mfiles/*m ${WORK_D}/usr/local/lib/openmha/mfiles
+	@${CP} ${REPO}/mha/tools/mfiles/mhagui_PHL_generic_hearing_aid_callbacks/*m ${WORK_D}/usr/local/lib/openmha/mfiles/mhagui_PHL_generic_hearing_aid_callbacks
 	@${CP} ${REPO}/mha/tools/mfiles/mhactl_java.jar ${WORK_D}/usr/local/lib/openmha/mfiles
 
 matfiles: l_usr_local_share

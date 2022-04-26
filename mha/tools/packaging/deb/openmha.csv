@@ -6,6 +6,7 @@ mha/frameworks/${BUILD_DIR}/generatemhaplugindoc,usr/bin/
 mha/frameworks/${BUILD_DIR}/mha,usr/bin/
 mha/frameworks/${BUILD_DIR}/testalsadevice,usr/bin/
 mha/tools/mfiles/*.m,usr/lib/openmha/mfiles/
+mha/tools/mfiles/mhagui_PHL_generic_hearing_aid_callbacks/*.m,usr/lib/openmha/mfiles/mhagui_PHL_generic_hearing_aid_callbacks/
 mha/tools/mfiles/*.mat,usr/share/openmha/
 mha/tools/mfiles/mhactl_java.jar,usr/lib/openmha/mfiles/
 mha/tools/mfiles/*.cfg,usr/share/openmha/
