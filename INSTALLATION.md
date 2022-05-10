@@ -109,5 +109,5 @@ The folder`C:\Program Files\openMHA\mfiles` contains Matlab / Octave files for
 interacting with openMHA.  Folder `C:\Program Files\openMHA\doc` contains
 documentation.
 
-Due to compatibility issues the Windows build requires Jack version 1.9.20, which can
+Due to compatibility issues the Windows build requires Jack version 1.9.21, which can
 be downloaded here: https://jackaudio.org/downloads/
