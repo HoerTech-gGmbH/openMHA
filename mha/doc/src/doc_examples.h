@@ -26,7 +26,7 @@ can compile openMHA and then create a copy of an example plugin directory
 and customize from there. See COMPILATION.md for more information on how to
 compile \mha.
 
-On Ubuntu is is also possible to install the openmha-dev package and include
+On Ubuntu is is also possible to install the libopenmha-dev package and include
 config.mk into the user's Makefile. Example 21 provides an example plugin and
 Makefile for this scenario.
 

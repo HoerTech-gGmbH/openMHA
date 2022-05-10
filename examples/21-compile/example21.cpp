@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2007 2009 2010 2012 2013 2014 2015 2017 2018 HörTech gGmbH
+// Copyright © 2022 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -30,9 +31,7 @@ public:
   /** Do-nothing constructor.  The constructor has to take these three
    * arguments, but it does not have to use them. However, the base
    * class has to be initialized. */
-  example21_t(algo_comm_t & ac,
-            const std::string & chain_name,
-            const std::string & algo_name)
+  example21_t(algo_comm_t & ac, const std::string &)
       : MHAPlugin::plugin_t<int>("",ac)
   {/* Do nothing in constructor */}
 
