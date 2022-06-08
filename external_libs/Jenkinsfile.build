@@ -65,7 +65,7 @@ def depndcy_build_steps(stage_name) {
 }
 
 pipeline {
-    agent any
+    agent pipeline
     options {
         buildDiscarder(logRotator(daysToKeepStr: '7', artifactDaysToKeepStr: '7'))
     }
