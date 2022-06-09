@@ -162,7 +162,7 @@ def openmha_build_steps(stage_name) {
 }
 
 pipeline {
-    agent {label "arcanist && ! armv7 && ! aarch64 && ! mac"}
+    agent {label "pipeline"}
     parameters {
         string(name: 'PHID', defaultValue: 'invalidDefault', description: '')
         string(name: 'DIFF_ID', defaultValue: 'invalidDefault', description: '')

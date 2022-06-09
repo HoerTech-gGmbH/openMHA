@@ -151,7 +151,7 @@ def openmha_build_steps(stage_name) {
 }
 
 pipeline {
-    agent any
+    agent {label "pipeline"}
     options {
         buildDiscarder(logRotator(daysToKeepStr: '7', artifactDaysToKeepStr: '7'))
     }
