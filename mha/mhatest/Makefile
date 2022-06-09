@@ -16,7 +16,7 @@
 
 include ../../config.mk
 include ../../magic.mk
-ifeq "$(PLATFORM)" "Linux"
+ifeq "$(PLATFORM)" "linux"
 ifeq "$(findstring arm, $(ARCH))" "arm"
 all: paralleloctavetests reproducibilitytest
 else ifeq "$(findstring aarch64, $(ARCH))" "aarch64"
