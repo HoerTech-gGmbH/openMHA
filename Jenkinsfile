@@ -186,14 +186,7 @@ pipeline {
                     steps {openmha_build_steps("bullseye && armv7 && mhadev")}
                 }
                 stage(                         "bullseye && aarch64 && mhadev") {
-                    agent {
-                        docker {
-                            image "hoertech/docker-buildenv:mha_aarch64-linux-gcc-10"
-                            label "dockerARM64"
-                            alwaysPull true
-                            args "-v /home/u:/home/u --hostname docker"
-                        }
-                    }
+                    agent {label               "bullseye && aarch64 && mhadev"}
                     steps {openmha_build_steps("bullseye && aarch64 && mhadev")}
                 }
                 stage(                         "bionic && armv7 && mhadev") {
