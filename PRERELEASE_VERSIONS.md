@@ -27,8 +27,7 @@ separate apt repository.  Please be aware that
 
 In Ubuntu 22.04:
 
-    wget -qO- http://apt.hoertech.de/openmha-packaging.pub | sudo tee
-/etc/apt/trusted.gpg.d/openmha-packaging.asc
+    wget -qO- http://apt.hoertech.de/openmha-packaging.pub | sudo tee /etc/apt/trusted.gpg.d/openmha-packaging.asc
     sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de jammy universe'
     sudo apt-add-repository 'deb [arch=amd64] http://aptdev.hoertech.de jammy universe'
     sudo apt install openmha openmha-examples
