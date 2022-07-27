@@ -86,7 +86,7 @@ endif
 # an explicit dependency.
 $(BUILD_DIR)/unit-test-runner: $(unit_tests_test_files) $(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT)
 	@echo dependencies = $^
-	$(CXX) $(CXXFLAGS) --coverage -o $@ $(unit_tests_test_files) $(LDFLAGS) $(LDLIBS) $(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT) -lgmock_main -lpthread
+	$(CXX) $(CXXFLAGS) --coverage -o $@ $(unit_tests_test_files) $(LDFLAGS) $(LDLIBS) $(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT) -lgmock_main -lgmock -lgtest -lpthread
 
 # Local Variables:
 # coding: utf-8-unix

@@ -70,7 +70,7 @@ loaded.
 
 #### Testing self-compiled openMHA with unit tests on Linux:
 ```
-sudo apt install libboost-dev
+sudo apt install libboost-dev cmake
 make unit-tests
 ```
 
@@ -157,7 +157,7 @@ loaded.
 ### Testing self-compiled openMHA on macOS:
 
 #### Testing self-compiled openMHA with unit tests on macOS:
-Install the boost library headers, then
+Install the boost library headers and cmake, then
 ```
 make unit-tests
 ```
@@ -248,6 +248,7 @@ firewall or network settings.
 
 #### Testing self-compiled openMHA with unit tests on Windows:
 ```
+pacman -S  mingw-w64-x86_64-cmake
 make unit-tests
 ```
 

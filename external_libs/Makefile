@@ -93,25 +93,30 @@ $(BUILD_DIR)/fftw.is_configured: $(BUILD_DIR)/.directory
 
 googlemock: $(BUILD_DIR)/googlemock.is_installed
 
-$(BUILD_DIR)/googlemock.is_installed: googletest/WORKSPACE \
+ifeq "MinGW" "$(PLATFORM)"
+    cmake_generator='MSYS Makefiles'
+else
+    cmake_generator='Unix Makefiles'
+endif
+
+googletest/build/.directory: googletest/WORKSPACE
+$(BUILD_DIR)/googlemock.is_installed: googletest/build/.directory \
 	$(BUILD_DIR)/lib/.directory $(BUILD_DIR)/include/.directory
-	sed -e s/-std=c++11//g -e \
-	  's/^libgmock_main.a : gmock_main.o$$/libgmock_main.a : gmock-all.o gtest-all.o gmock_main.o/' \
-	  <googletest/googlemock/make/Makefile \
-	  >googletest/googlemock/make/Makefile.full_gmock_main
-	grep -q '^libgmock_main.a : gmock-all.o gtest-all.o gmock_main.o$$' \
-	  googletest/googlemock/make/Makefile.full_gmock_main \
-	  # error: inspect & adapt googlemock Makefile changes!
-	cd googletest/googlemock/make && $(MAKE) \
-	  -f Makefile.full_gmock_main
-	cp googletest/googlemock/make/*gmock_main.a $(BUILD_DIR)/lib/libgmock_main.a
+
+	git -C googletest fetch
+	git -C googletest checkout main
+	git -C googletest pull
+	
+	cd googletest/build && cmake .. -G $(cmake_generator)
+	$(MAKE) -C googletest/build
+	cp googletest/build/lib/*.a $(BUILD_DIR)/lib/
 	cp -a googletest/googletest/include/gtest $(BUILD_DIR)/include/
 	cp -a googletest/googlemock/include/gmock $(BUILD_DIR)/include/
 	touch $@
 
 googletest/WORKSPACE:
 	git clone https://github.com/google/googletest
-	cd googletest && git checkout dc792bc607a4c7d6644b9b9b8a1cf31f9aafb9bb
+	cd googletest && git pull
 
 network-asio: $(BUILD_DIR)/network-asio.is_installed
 

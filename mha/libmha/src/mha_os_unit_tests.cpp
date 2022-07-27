@@ -36,7 +36,7 @@ TEST(mha_os, mha_getenv)
 {
   using ::testing::StartsWith;
 #ifdef _WIN32
-  EXPECT_THAT(mha_getenv("PATH"), StartsWith("C:\\"));
+  EXPECT_THAT(mha_getenv("PATH"), AnyOf(StartsWith("C:\\"), StartsWith("D:\\")));
 #else
   EXPECT_THAT(mha_getenv("PATH"), StartsWith("/"));
 #endif
