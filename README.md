@@ -1,6 +1,11 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4569575.svg)](https://doi.org/10.5281/zenodo.4569575)
+![GitHub](https://img.shields.io/github/license/HoerTech-gGmbH/openMHA)
+
 # openMHA
 
-Open Master Hearing Aid (openMHA) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4569575.svg)](https://doi.org/10.5281/zenodo.4569575)
+[Open Master Hearing Aid (openMHA)](https://www.openmha.org)
+
+DOI:[10.5281/zenodo.4569575](https://doi.org/10.5281/zenodo.4569575)
 
 Current release: 4.17.0 (2022-02-24)
 
@@ -27,7 +32,8 @@ See below for a list of available reference implementations.
 
 ## Citation in publications
 
-In publications using openMHA please use the DOI assigned to this Github repository
+In publications using openMHA please use the DOI assigned to this Github repository,
+[10.5281/zenodo.4569575](https://doi.org/10.5281/zenodo.4569575),
 and cite the following open-access publication:
 
 
