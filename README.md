@@ -110,7 +110,7 @@ Available methods:
 * Bilateral adaptive differential microphones
 * Delay-and-subtract beamformer
 
-For references and more information see README.txt in the
+For references and more information see file README.md in the
  *reference_algorithms* directory.
 
 ## References for individual algorithms
