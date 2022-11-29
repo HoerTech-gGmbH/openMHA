@@ -100,6 +100,7 @@ void io_dummy_t::release(){
 }
 
 void io_dummy_t::start(){
+    stop_request.store(false);
     main_loop=std::thread([this](){
         while(!stop_request.load()){
             start_event(start_handle);
