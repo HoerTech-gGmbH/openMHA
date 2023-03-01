@@ -223,8 +223,15 @@ TEST(Test_mha_fifo_t,test_placement_new)
     while (atoi(in[0].s) < 13*14*2) {
         fifo.write(in.data(), 13);
         for (auto & c : in) {
-            snprintf(c.s, L-1, "%hd", short(atoi(c.s) + 13));
-            c.s[L-1] = '\0';
+            int str_sz=snprintf(c.s, L-1, "%hd", short(atoi(c.s) + 13));
+            if(str_sz<0)
+              throw MHA_Error(__FILE__, __LINE__,
+                              "Implementation bug: Encoding error in snprintf");
+            if ( str_sz > static_cast<int>(L-1) ) // Static cast uncritical: L is constexpr 12
+              throw MHA_Error(__FILE__, __LINE__,
+                              "Implementation bug: String of size %i does not "
+                              "fit in buffer.",
+                              str_sz);
         }
         if (fifo.get_fill_count() >= 14) {
             fifo.read(out.data(), 14);

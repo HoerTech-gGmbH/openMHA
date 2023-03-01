@@ -119,8 +119,15 @@ void double2acvar_t::on_configuration_update()
 {
     double new_double = atof(this->data.c_str());
     char converted_back_to_string[0x100];
-    snprintf(converted_back_to_string,0xFF,"%.17g",new_double);
-    converted_back_to_string[0xFF] = '\0';
+    int str_sz=snprintf(converted_back_to_string,0xFF,"%.17g",new_double);
+    if (str_sz < 0)
+      throw MHA_Error(__FILE__, __LINE__,
+                      "Implementation bug: Encoding error in snprintf.");
+    if (str_sz > 0x100-1)
+      throw MHA_Error(
+          __FILE__, __LINE__,
+          "Implementation bug: String of size %i does not fit in buffer.",
+          str_sz);
     this->data = converted_back_to_string;
     
     push_config(new double(new_double));

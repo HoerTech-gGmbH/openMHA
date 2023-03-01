@@ -161,7 +161,15 @@ TEST_F(dc_simple_testing, test_parameter_tau_attack)
 {
   // default value is 0.005f
   char expected [32];
-  sprintf(expected, "[%.9g]", 0.005f);
+  int str_sz=snprintf(expected,32, "[%.9g]", 0.005f);
+  if (str_sz < 0)
+    throw MHA_Error(__FILE__, __LINE__,
+                    "Implementation bug: Encoding error in snprintf");
+  if (str_sz > 31)
+    throw MHA_Error(
+        __FILE__, __LINE__,
+        "Implementation bug: String of size %i does not fit in buffer.",
+        str_sz);
   EXPECT_EQ(expected, dc_simple.parse("tau_attack?val"));
 
   // limits are [0,]
@@ -173,7 +181,15 @@ TEST_F(dc_simple_testing, test_parameter_tau_decay)
 {
   // default value is 0.05f
   char expected [32];
-  sprintf(expected, "[%.9g]", 0.05f);
+  int str_sz=snprintf(expected,32, "[%.9g]", 0.05f);
+  if (str_sz < 0)
+    throw MHA_Error(__FILE__, __LINE__,
+                    "Implementation bug: Encoding error in snprintf");
+  if (str_sz > 31)
+    throw MHA_Error(
+        __FILE__, __LINE__,
+        "Implementation bug: String of size %i does not fit in buffer.",
+        str_sz);
   EXPECT_EQ(expected, dc_simple.parse("tau_decay?val"));
 
   // limits are [0,]

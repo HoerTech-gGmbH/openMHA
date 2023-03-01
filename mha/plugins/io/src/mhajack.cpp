@@ -144,15 +144,29 @@ MHAJack::port_t::port_t(jack_client_t* ijc,dir_t dir,int id)
       jc(ijc)
 {
     char cs_pname[64];
+    int str_sz=0;
     switch( dir ){
     case input :
-        sprintf(cs_pname,"in_%d",id);
+        str_sz=snprintf(cs_pname,64,"in_%d",id);
+        if (str_sz < 0)
+          throw MHA_Error(__FILE__, __LINE__,
+                          "Implementation bug: Encoding error in snprintf.");
+        if(str_sz>63)
+            throw MHA_Error(__FILE__,__LINE__,"Implementation bug: String of size %i does not fit in buffer.",str_sz);
         port = jack_port_register(jc,cs_pname,
                                   JACK_DEFAULT_AUDIO_TYPE,
                                   JackPortIsInput,0);
         break;
     case output :
-        sprintf(cs_pname,"out_%d",id);
+        str_sz=snprintf(cs_pname,64,"out_%d",id);
+        if (str_sz < 0)
+          throw MHA_Error(__FILE__, __LINE__,
+                          "Implementation bug: Encoding error in snprintf");
+        if (str_sz > 63)
+          throw MHA_Error(
+              __FILE__, __LINE__,
+              "Implementation bug: String of size %i does not fit in buffer.",
+              str_sz);
         port = jack_port_register(jc,cs_pname,
                                   JACK_DEFAULT_AUDIO_TYPE,
                                   JackPortIsOutput,0);

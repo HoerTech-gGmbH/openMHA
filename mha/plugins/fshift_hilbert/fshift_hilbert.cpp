@@ -239,7 +239,15 @@ void fshift_hilbert::frequency_translator_t::prepare(mhaconfig_t& tf)
                 df.data[k] = -frate;
         }
         char tmp[140];
-        sprintf(tmp,"[%g,%g]",-frate,frate);
+        int str_sz=snprintf(tmp,140,"[%g,%g]",-frate,frate);
+        if (str_sz < 0)
+          throw MHA_Error(__FILE__, __LINE__,
+                          "Implementation bug: Encoding error in snprintf");
+        if (str_sz > 139)
+          throw MHA_Error(
+              __FILE__, __LINE__,
+              "Implementation bug: String of size %i does not fit in buffer.",
+              str_sz);
         df.set_range(tmp);
     }
     tftype = tf;
