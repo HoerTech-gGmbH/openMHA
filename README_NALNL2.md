@@ -29,7 +29,7 @@ needs to be purchased from the National Acoustic Laboratories independently.
 ### Windows:
   1) Install closed-source MHA or openMHA as documented
   2) Download and install
-     http://mha.hoertech.de/fitting/nalnl2wrapper-2021.06-installer.exe
+     http://mha.hoertech.de/fitting/nalnl2wrapper-2023.08-installer.exe
   3) Store a licensed copy of NAL-NL2.dll in directory 
      C:\Program Files\nalnl2wrapper\bin
 

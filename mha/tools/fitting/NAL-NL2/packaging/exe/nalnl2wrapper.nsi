@@ -1,5 +1,5 @@
 !define PRODUCT_NAME nalnl2wrapper
-!define PRODUCT_VERSION 2021.06
+!define PRODUCT_VERSION 2023.08
 !define PRODUCT_PUBLISHER HoerTech
 BrandingText "A command line wrapper for the NAL NL2 fitting rule"
 RequestExecutionLevel admin

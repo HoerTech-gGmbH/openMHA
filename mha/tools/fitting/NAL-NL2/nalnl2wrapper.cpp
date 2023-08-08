@@ -28,15 +28,15 @@ int main(int argc, char* argv[])
 
     for(const auto lvl : fitmodel.level){
         for( int i = 0; i < 19; i++ ){
-                    data[i] = -99;
-                }
+            data[i] = -99;
+        }
         RealEarInsertionGain_NL2(data, client.ac.data(), client.bc.data(), lvl, fitmodel.limiting, fitmodel.channels, fitmodel.direction, fitmodel.mic, client.acOther.data(), fitmodel.bilateral);
           
           
         // output to console
-                for( int i = 0; i < 19; i++ ){
-                    std::cout << data[i] << " ";
-                }
+        for( int i = 0; i < 19; i++ ){
+            std::cout << data[i] << " ";
+        }
         std::cout << "\n";
     }
     return 0;

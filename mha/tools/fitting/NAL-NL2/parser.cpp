@@ -82,7 +82,7 @@ std::pair<Client,Fitmodel> parser(int argc, char **argv) {
       case 'i': // --compSpeed=...
         {
           auto arg=parseSingle<int>(optarg,option_index);
-          if(arg!=0 and arg!=1)
+          if(arg<=0 and arg>=2)
             throw std::invalid_argument("Invalid compSpeed: Expected: 0, 1, or 2. Got: "+std::to_string(arg));
           fitmodel.compSpeed=arg;
         }
