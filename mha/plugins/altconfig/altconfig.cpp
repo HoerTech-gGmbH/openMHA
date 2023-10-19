@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2009 2010 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2022 2023 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -31,8 +31,8 @@ altconfig_t::altconfig_t(MHA_AC::algo_comm_t & iac, const std::string &)
 {
     set_node_id( "altconfig" );
     insert_item("algos",&parser_algos);
-    insert_item("select",&select_plug);
     insert_member(selectall);
+    insert_item("select",&select_plug);
     patchbay.connect(&parser_algos.writeaccess,this,&altconfig_t::on_set_algos);
     patchbay.connect(&select_plug.writeaccess,this,&altconfig_t::on_set_select);
     patchbay.connect(&selectall.writeaccess,this,&altconfig_t::event_select_all);
@@ -120,6 +120,13 @@ void altconfig_t::on_set_algos()
             }
         }
         select_plug.data.set_entries(MHAParser::StrCnv::val2str(parser_algos.data));
+
+        // Remove and reinsert selectall and select to ensure they are exported
+        // last by ?save and ?saveshort.
+        force_remove_item("selectall");
+        force_remove_item("select");
+        insert_member(selectall);
+        insert_item("select",&select_plug);
     }
     //This clause catches all MHA_Errors that may be thrown in force_remove_item() and insert_item() or during the loop itself in line 112
     //Possible fail conditions are: Bad parser name( insert_item() ), usage of reserved words (line 112)
