@@ -23,4 +23,3 @@ function [cProf,sJack] = mha_profiling_get( mhah )
   for k=1:size(cProf,1)
     cProf{k,2} = mha_get(mhah,cProf{k,1},'monitor');
   end
-  

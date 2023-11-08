@@ -30,7 +30,7 @@ function mha_profiling_plot( cProf )
     set(gca,'YDir','reverse','YTick',ytick,'YTickLabel',sProf.algos,'YLim',[min(ytick)-1,max(ytick)+1]);
     xlabel('process load / percent');
     text(1,1,sprintf('total load = %1.1f%% ',100*sum(sProf.process)/sProf.process_tt),...
-	 'Units','normalized','Fontsize',14,'fontweight','bold',...
-	 'Color',[1,0,0],'horizontalalign','right','verticalalign','top');
+         'Units','normalized','Fontsize',14,'fontweight','bold',...
+         'Color',[1,0,0],'horizontalalign','right','verticalalign','top');
   end
 end
