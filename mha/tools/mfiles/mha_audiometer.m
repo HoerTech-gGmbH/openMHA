@@ -290,7 +290,7 @@ function cb_select_right( varargin )
 function cb_toggle_sound( varargin )
   sData = get(gcf, 'UserData');
   sData.b_sig = 1-sData.b_sig;
-  upload_sound_level(sData);
+  upload_sound_set(sData);
   set(gcf,'UserData',sData);
   mha_htl_update_plot(sData);
 
