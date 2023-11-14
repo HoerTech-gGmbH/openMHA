@@ -204,7 +204,8 @@ were compiled from different git commits.
   pacman -S mingw-w64-x86_64-libsndfile mingw-w64-x86_64-portaudio
   pacman -S mingw64/mingw-w64-x86_64-nsis mingw-w64-x86_64-eigen3 msys/wget
   pacman -S msys/unzip msys/zip dos2unix mingw64/mingw-w64-x86_64-curl
-  ```
+  pacman -S mingw-w64-x86_64-liblo
+```
 - Copy the Jack for Windows developer resources to directories where the
   MSYS2 MinGW64 toolchain can find them (renaming import lib in the process):
   ```
