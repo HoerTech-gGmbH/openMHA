@@ -1,6 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2005 2009 2011 2013 2015 2017 2018 HörTech gGmbH
-# Copyright © 2022 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -16,15 +15,14 @@
 
 include ../../config.mk
 include ../../magic.mk
-ifeq "$(PLATFORM)" "linux"
 ifeq "$(findstring arm, $(ARCH))" "arm"
 all: paralleloctavetests reproducibilitytest
 else ifeq "$(findstring aarch64, $(ARCH))" "aarch64"
 all: paralleloctavetests reproducibilitytest
-endif
 else
 all: octavetest reproducibilitytest
 endif
+
 unit-tests:
 
 
