@@ -127,7 +127,7 @@ def openmha_build_steps(stage_name) {
   }
 
   if (windows) {
-    sh ("make -j $cpus exe")
+    sh ("make exe")
     // Store windows installer
     archiveArtifacts 'mha/tools/packaging/exe/*.exe'
   }
