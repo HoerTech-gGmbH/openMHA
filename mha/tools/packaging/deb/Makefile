@@ -38,6 +38,10 @@ all: build pack
 # Include Makefile variables from config.mk
 include $(REPO)/config.mk
 
+# Rule to create a version of config.mk without the PREFIX= line.
+config.mk: $(REPO)/config.mk
+	sed -e '/^PREFIX=/d' $< > $@
+
 # If the git repository contains any non-committed modifications, then
 # GITMODIFIED is set to "-modified", else it is empty.  GITMODIFIED is used
 # as part of the debian package version to easily spot non-reproducible debs
@@ -144,7 +148,10 @@ hoertech/$(CODENAME)/.directory:
 
 # Rules for creating the debian packages.  First they are created in the base
 # directory $(REPO) with mhamakedeb and then moved to the target directory.
-hoertech/$(CODENAME)/%_$(FULLVERSIONGCC)_$(DEBARCH).deb: hoertech/$(CODENAME)/.directory %.csv %.control %.dep
+hoertech/$(CODENAME)/%_$(FULLVERSIONGCC)_$(DEBARCH).deb: \
+  hoertech/$(CODENAME)/.directory \
+  %.csv %.control %.dep \
+  config.mk
 	cd $(REPO) && BUILD_DIR=$(BUILD_DIR) mhamakedeb $(CURRENTPATH)/$*.csv $(FULLVERSIONGCC)
 	mv $(REPO)/$(notdir $@) hoertech/$(CODENAME)/
 
