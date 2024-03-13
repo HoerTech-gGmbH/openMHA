@@ -18,7 +18,7 @@ LDFLAGS=-L$(LIB_DIR)
 VERSION=${shell cat version}-${shell lsb_release -sr}
 # CODENAME is the name of the debian or ubuntu distribution on which this
 # Makefile executes and for which the debian packages are created.
-# CODENAME is e.g. "bionic" for ubuntu 18.04 or "focal" for ubuntu 20.04
+# CODENAME is e.g. "jammy" for ubuntu 22.04 or "focal" for ubuntu 20.04
 CODENAME=$(shell lsb_release -sc)
 
 export ARCH
@@ -75,7 +75,7 @@ $(BUILD_DIR)/.directory:
 # aptdev.hoertech.de. BRANCH_NAME is set by Jenkins
 #
 # SYSTEMs:
-# xenial, bionic, jessie, etc. Available SYSTEMs that
+# focal, jammy, bullseye, etc. Available SYSTEMs that
 # contain packages are detected automatically with $(wildcard)
 
 # There will by $SYSTEM subdirectories below this directory.

@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2018 2019 2020 2021 HörTech gGmbH
-// Copyright © 2021 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2021 2022 2024 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
 
 // Encapsulation of the build steps to perform when compiling openMHA
 // @param stage_name the stage name is "system && arch && devenv" where system
-//                   is bionic, focal, windows, or mac, arch is x86_64, aarch64,
+//                   is focal, jammy, windows, or mac, arch is x86_64, aarch64,
 //                   or armv7, and devenv is either mhadev or mhadoc.
 //                   All parts are separated by an && operator and spaces.
 //                   This string is also used as a valid label expression for
@@ -177,10 +177,6 @@ pipeline {
                     agent {label               "focal && x86_64 && mhadev"}
                     steps {openmha_build_steps("focal && x86_64 && mhadev")}
                 }
-                stage(                         "bionic && x86_64 && mhadev") {
-                    agent {label               "bionic && x86_64 && mhadev"}
-                    steps {openmha_build_steps("bionic && x86_64 && mhadev")}
-                }
                 stage(                         "bullseye && armv7 && mhadev") {
                     agent {label               "bullseye && armv7 && mhadev"}
                     steps {openmha_build_steps("bullseye && armv7 && mhadev")}
@@ -220,7 +216,6 @@ pipeline {
                 // receive all deb packages from openmha build
                 unstash "x86_64_jammy"
                 unstash "x86_64_focal"
-                unstash "x86_64_bionic"
                 unstash "armv7_bullseye"
                 unstash "aarch64_bullseye"
                 unstash "armv7_bionic"

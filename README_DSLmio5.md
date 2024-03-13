@@ -13,7 +13,7 @@ contains instructions for Windows users.
 
 In order to fit openMHA with *DSLmio 5*, you need to
 
-1) Have a 64-bit PC with Ubuntu 18.04 or Ubuntu 20.04 installed.
+1) Have a 64-bit PC with Ubuntu 20.04 installed.
 2) Purchase the DLL version of the fitting rule *DSLmio 5* from UWO for 64 bit
    Linux.  Copy all files and symbolic links named 
    - libDSLmio-core.so

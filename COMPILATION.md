@@ -9,7 +9,7 @@ This guide describes how to compile openMHA from sources for developers.
 ## I. Compiling from source on Linux
 
 ### Linux prerequisites
-64-bit version of Ubuntu 18.04 or later,
+64-bit version of Ubuntu 20.04 or later,
 or a Beaglebone Black running Debian Buster.
 
 ... with the following software packages installed:

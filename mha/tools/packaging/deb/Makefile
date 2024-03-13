@@ -1,6 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2018 2019 2020 2021 HörTech gGmbH
-# Copyright © 2022 Hörzentrum Oldenburg gGmbH
+# Copyright © 2022 2024 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ ALL_CSV=$(wildcard *.csv)
 
 # CODENAME is the name of the debian or ubuntu distribution on which this
 # Makefile executes and for which the debian packages are created.
-# CODENAME is e.g. "bionic" for ubuntu 18.04 or "focal" for ubuntu 20.04
+# CODENAME is e.g. "jammy" for ubuntu 22.04 or "focal" for ubuntu 20.04
 CODENAME=$(shell lsb_release -sc)
 
 # REPO is the location of the base of this git workspace relative to the
