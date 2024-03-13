@@ -104,8 +104,8 @@ $(BUILD_DIR)/googlemock.is_installed: googletest/build/.directory \
 	$(BUILD_DIR)/lib/.directory $(BUILD_DIR)/include/.directory
 
 	git -C googletest fetch
-	git -C googletest checkout main
-	git -C googletest pull
+	git -C googletest checkout 4fed5f28 # For bionic. Change to checkout main.
+	# git -C googletest pull
 	
 	cd googletest/build && cmake .. -G $(cmake_generator)
 	$(MAKE) -C googletest/build
