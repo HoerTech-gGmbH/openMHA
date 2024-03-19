@@ -433,8 +433,10 @@ calibrator_t::calibrator_t(MHA_AC::algo_comm_t & iac, bool is_input)
     patchbay.connect(&vars.nbits.writeaccess,this,&calibrator_t::update);
     patchbay.connect(&vars.tau_level.writeaccess,this,&calibrator_t::update_tau_level);
     patchbay.connect(&vars.rmslevel.prereadaccess,this,&calibrator_t::read_levels);
-    if (not is_input)
+    if (not is_input) {
         patchbay.connect(&vars.softclip.writeaccess,this,&calibrator_t::update);
+        patchbay.connect(&vars.do_clipping.writeaccess,this,&calibrator_t::update);
+    }
 }
 
 void calibrator_t::update()

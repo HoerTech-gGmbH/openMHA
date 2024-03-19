@@ -14,6 +14,7 @@
 %% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 function test_transducers_softclipper
+    global mha
 
     % Create MHA instance for testing: transducers+identity, Parser IO
     mha=mha_start;
@@ -40,3 +41,8 @@ function test_transducers_softclipper
     mha_set(mha,'mha.calib_out.softclip.threshold',0.25)
     mha_set(mha, 'io.input', [1 1]);
     assert_equal([0.25 0.25], mha_get(mha, 'io.output'));
+
+    % Switching off softclipper during signal processing should remove effect
+    mha_set(mha,'mha.calib_out.do_clipping',false);
+    mha_set(mha, 'io.input', [1 1]);
+    assert_equal([1 1], mha_get(mha, 'io.output'));
