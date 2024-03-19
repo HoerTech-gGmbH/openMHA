@@ -22,6 +22,7 @@ or a Beaglebone Black running Debian Buster.
 - liblo-dev
 - liblsl
 - libeigen3-dev
+- libtorch-dev
 
 ### Compilation on Linux
 
@@ -242,10 +243,13 @@ all necessary DLLs.
 
 ### Testing self-compiled openMHA on Windows:
 #### Known issues on Windows:
-Many of our automated tests (e.g. the unit tests testing plugin lsl2ac) are
-using network communication during test execution.  This can result in
-problems like failed or hanging tests on Windows machines with restrictive
-firewall or network settings.
+* Many of our automated tests (e.g. the unit tests testing plugin lsl2ac) are
+  using network communication during test execution.  This can result in
+  problems like failed or hanging tests on Windows machines with restrictive
+  firewall or network settings.
+* openMHA plugins using libtorch are not compiled on Windows.  openMHA
+  is compiled using the MinGW toolchain, which is not compatible with the
+  libtorch library.
 
 #### Testing self-compiled openMHA with unit tests on Windows:
 ```
