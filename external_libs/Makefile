@@ -94,9 +94,7 @@ $(BUILD_DIR)/fftw.is_configured: $(BUILD_DIR)/.directory
 googlemock: $(BUILD_DIR)/googlemock.is_installed
 
 ifeq "MinGW" "$(PLATFORM)"
-    cmake_generator='MSYS Makefiles'
-else
-    cmake_generator='Unix Makefiles'
+    cmake_generator=-G 'MSYS Makefiles'
 endif
 
 googletest/build/.directory: googletest/WORKSPACE
@@ -107,7 +105,7 @@ $(BUILD_DIR)/googlemock.is_installed: googletest/build/.directory \
 	git -C googletest checkout 4fed5f28 # For bionic. Change to checkout main.
 	# git -C googletest pull
 	
-	cd googletest/build && cmake .. -G $(cmake_generator)
+	cd googletest/build && cmake .. $(cmake_generator)
 	$(MAKE) -C googletest/build
 	cp googletest/build/lib/*.a $(BUILD_DIR)/lib/
 	cp -a googletest/googletest/include/gtest $(BUILD_DIR)/include/
