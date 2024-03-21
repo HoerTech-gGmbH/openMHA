@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2006 2008 2012 2013 2014 2015 2016 2017 2018 HörTech gGmbH
-// Copyright © 2019 HörTech gGmbH
+// Copyright © 2019 2021 HörTech gGmbH
+// Copyright © 2024 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -93,7 +94,7 @@ std::list<std::string> mha_library_paths()
     lp = mha_getenv("MHA_LIBRARY_PATH");
 #ifdef __APPLE__
     if (lp.size() == 0)
-        lp = "/usr/local/lib/openmha";
+        lp = "/usr/local/lib";
 #endif //  __APPLE__
     if( !lp.size() )
         lp += ";";

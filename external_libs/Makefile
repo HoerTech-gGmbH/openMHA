@@ -1,6 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2016 2017 2018 2019 2021 HörTech gGmbH
-# Copyright © 2022 Hörzentrum Oldenburg gGmbH
+# Copyright © 2022 2024 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -125,7 +125,7 @@ $(BUILD_DIR)/network-asio.is_installed: network-asio/.gitignore \
 
 network-asio/.gitignore:
 	git clone https://github.com/chriskohlhoff/asio network-asio
-	cd network-asio && git checkout 22afb86 # release 1.12.2
+	cd network-asio && git checkout asio-1-20-0 # release 1.20.0
 
 libemx: $(BUILD_DIR)/libemx.is_installed
 

@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2005 2009 2011 2013 2015 2017 2018 HörTech gGmbH
+# Copyright © 2005 2009 2011 2013 2015 2017 2018 2019 2020 2021 HörTech gGmbH
+# Copyright © 2022 2024 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -51,6 +52,12 @@ octavetest:
 endif
 endif
 
+find_executable_arg = -executable
+ifeq "$(PLATFORM)" "Darwin"
+	find_executable_arg = -perm +111
+endif
+
+
 reproducibilitytest:
 	# Fail if there are any modifications not checked into git
 	@if [ -n "`git status --porcelain -uno`" ]; then (echo; echo "*******************************************************************"; echo "***" The following files have been modified since git check-out: "***";  echo "*******************************************************************"; git status --porcelain -uno; exit 1); fi
@@ -58,7 +65,7 @@ reproducibilitytest:
 	@if [ -n "`find ../plugins ../frameworks ../libmha -type f -exec grep -- -modified '{}' ';'`" ] ; then (echo; echo "***********************************************************************"; echo "***" The following files carry a modified-since-git-check-out stamp: "***";  echo "***********************************************************************"; find ../plugins ../frameworks ../libmha -type f -exec grep -- -modified '{}' ';'; exit 1); fi
 	# Fail if any compiled artifact is missing the git commit hash or has a wrong git commit hash
 	find ../plugins -type f -name "*"$(DYNAMIC_LIB_EXT) | xargs ./check_git_commit_hash $(GITCOMMITHASH)
-	find ../frameworks -type f -executable | grep -v unit-test-runner | xargs ./check_git_commit_hash $(GITCOMMITHASH)
+	find ../frameworks -type f $(find_executable_arg) | grep -v unit-test-runner | xargs ./check_git_commit_hash $(GITCOMMITHASH)
 	./check_git_commit_hash $(GITCOMMITHASH) ../libmha/*/*$(DYNAMIC_LIB_EXT)
 
 install: all

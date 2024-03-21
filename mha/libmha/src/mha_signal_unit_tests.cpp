@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2017 2018 2019 HörTech gGmbH
+// Copyright © 2024 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -485,17 +486,6 @@ TEST(blockprocessing_polyphase_resampling_t,test_44100_17400_512_64) {
   }
 }
 
-/*
-  void pfile(FILE * f, mha_wave_t & s) {
-    for (unsigned frame = 0; frame < s.num_frames; ++frame) {
-      for (unsigned ch = 0; ch < s.num_channels; ++ch)
-        fprintf(f, "%.7f\t", value(s,frame,ch));
-      fprintf(f,"\n");
-    }
-    fprintf(f,"\n");
-  }
-*/
-
 TEST(blockprocessing_polyphase_resampling_t, test_44100_17400_512_64_roundtrip)
 {
   unsigned nchannels = 2U;
@@ -525,18 +515,17 @@ TEST(blockprocessing_polyphase_resampling_t, test_44100_17400_512_64_roundtrip)
       s512.value(frame,channel) =
         sin(frame/44100.0*2.0*M_PI*f) * (channel*2.0-1.0);
 
-  //FILE * fo =  fopen("output","w");
   for (unsigned i = 0U; i <= 44100U/512U; ++i) {
     to.write(s512);
     for(unsigned j = 0U; to.can_read(); j++) {
+      // numeric value of j is never read, avoid compiler warning
+      (void)j;
       to.read(s64);
       fro.write(s64);
     }
     ::assign(p512,o512);
     fro.read(o512);
-    //pfile(fo,o512);
   }
-  //fclose(fo);
   mha_real_t min = 1.0f, max = -1.0f, zero = -1.0f;
   for (unsigned frame = 0U; frame < 512U; ++frame) {
     min = std::min(min, o512.value(frame, 0));
@@ -586,6 +575,8 @@ TEST(blockprocessing_polyphase_resampling_t, test_48k_16k_64_20_roundtrip)
   for (unsigned i = 0U; i <= unsigned(outer_srate)/outer_fragsize; ++i) {
     to.write(s64);
     for(unsigned j = 0U; to.can_read(); j++) {
+      // numeric value of j is never read, avoid compiler warning
+      (void)j;
       to.read(s20);
       fro.write(s20);
     }
