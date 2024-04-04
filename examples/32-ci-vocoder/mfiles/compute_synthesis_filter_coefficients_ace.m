@@ -20,7 +20,7 @@
 % and Windows batch files included in this openMHA example
 % 
 % This script depends on the gammatone toolbox by Hohmann and Herzke (2007), 
-% which must be downloaded and then added to the Matlab search path:
+% which must be downloaded and then added to the Matlab/Octave search path:
 % 
 % Hohmann, V., & Herzke, T. (2007). Software for "Frequency analysis and 
 % synthesis using a Gammatone filterbank" (Version 1.1). Zenodo. 
