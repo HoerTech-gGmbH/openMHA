@@ -244,6 +244,12 @@ Funding
 This work was funded by the EU (ERDF) as part of the VIBHear research project.
 
 
+Acknowledgments
+
+We would like to thank Ben Williges for his extremely helpful cooperation and 
+willingness to share his expertise in the development of the CI vocoder.
+
+
 References
 
 Bräcker, T., Hohmann, V., Kollmeier, B., & Schulte, M. (2009). Simulation und 
