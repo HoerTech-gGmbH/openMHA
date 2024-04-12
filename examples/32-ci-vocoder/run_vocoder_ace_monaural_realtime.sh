@@ -40,14 +40,14 @@
 # respectively:
 
 # JACK preset name:
-export JACK_PRESET_NAME=vocoder
+export JACK_PRESET_NAME=vocoder_ace
 
 # Pause length / s to allow the JACK audio server to be running before 
 # continuing:
 export JACK_PAUSE_LENGTH=5
 
 # Outer fragment size / frames:
-export FRAGSIZE=1024
+export FRAGSIZE=60
 
 # Sampling rate / Hz (must be equal to 16000 * RESAMPLE_RATIO):
 export SRATE=48000
@@ -101,7 +101,7 @@ export DBASYNC_FRAGSIZE=60
 
 # Delay for the asynchronous double buffer / frames (must be equal to 
 # DBASYNC_FRAGSIZE - gcd(DBASYNC_FRAGSIZE, FRAGSIZE)):
-export DBASYNC_DELAY=56
+export DBASYNC_DELAY=0
 
 # Time constant / s for exponentially averaged RMS:
 export GET_RMS_TAU=1
@@ -126,7 +126,7 @@ export RESAMPLE_RATIO=3
 export RESAMPLE_ANTIALIAS_B="[0.0260777 0.104311 0.156466 0.104311 0.0260777]"
 export RESAMPLE_ANTIALIAS_A="[1 -1.30661 1.03045 -0.362369 0.0557639]"
 
-# Window length / samples (= 2 * DBASYNC_FRAGSIZE/RESAMPLE_RATIO):
+# Window length / frames (= 2 * DBASYNC_FRAGSIZE/RESAMPLE_RATIO):
 export WND_LEN=40
 
 # For the ACE strategy, filterbank coefficients for analysis 

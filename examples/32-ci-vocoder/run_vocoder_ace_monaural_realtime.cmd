@@ -40,14 +40,14 @@ rem Set preset name, pause length, fragment size, and sampling rate for JACK and
 rem openMHA, respectively:
 
 rem JACK preset name:
-set JACK_PRESET_NAME=vocoder
+set JACK_PRESET_NAME=vocoder_ace
 
 rem Pause length / s to allow the JACK audio server to be running before 
 rem continuing:
 set JACK_PAUSE_LENGTH=5
 
 rem Outer fragment size / frames:
-set FRAGSIZE=1024
+set FRAGSIZE=60
 
 rem Sampling rate / Hz (must be equal to 16000 * RESAMPLE_RATIO):
 set SRATE=48000
@@ -100,7 +100,7 @@ set DBASYNC_FRAGSIZE=60
 
 rem Delay for the asynchronous double buffer / frames (must be equal to 
 rem DBASYNC_FRAGSIZE - gcd(DBASYNC_FRAGSIZE, FRAGSIZE)):
-set DBASYNC_DELAY=56
+set DBASYNC_DELAY=0
 
 rem Time constant / s for exponentially averaged RMS:
 set GET_RMS_TAU=1
@@ -125,7 +125,7 @@ set RESAMPLE_RATIO=3
 set RESAMPLE_ANTIALIAS_B=[0.0260777 0.104311 0.156466 0.104311 0.0260777]
 set RESAMPLE_ANTIALIAS_A=[1 -1.30661 1.03045 -0.362369 0.0557639]
 
-rem Window length / samples (= 2 * DBASYNC_FRAGSIZE/RESAMPLE_RATIO):
+rem Window length / frames (= 2 * DBASYNC_FRAGSIZE/RESAMPLE_RATIO):
 set WND_LEN=40
 
 rem For the ACE strategy, filterbank coefficients for analysis 

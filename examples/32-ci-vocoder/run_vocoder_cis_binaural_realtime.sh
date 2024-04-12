@@ -40,14 +40,14 @@
 # respectively:
 
 # JACK preset name:
-export JACK_PRESET_NAME=vocoder
+export JACK_PRESET_NAME=vocoder_cis
 
 # Pause length / s to allow the JACK audio server to be running before 
 # continuing:
 export JACK_PAUSE_LENGTH=5
 
 # Outer fragment size / frames:
-export FRAGSIZE=1024
+export FRAGSIZE=24
 
 # Sampling rate / Hz:
 export SRATE=48000
@@ -83,7 +83,7 @@ export DBASYNC_FRAGSIZE=24
 
 # Delay for the asynchronous double buffer / frames (must be equal to 
 # DBASYNC_FRAGSIZE - gcd(DBASYNC_FRAGSIZE, FRAGSIZE)):
-export DBASYNC_DELAY=16
+export DBASYNC_DELAY=0
 
 # Thread platform to use (for single-thread processing: "dummy"; 
 # for Linux: "posix"; for Windows: "win32"):

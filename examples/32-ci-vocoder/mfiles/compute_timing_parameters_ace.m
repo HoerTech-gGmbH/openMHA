@@ -38,7 +38,7 @@ end
 
 desired_stimulation_rate = 800;  % desired (per-electrode) stimulation rate / pps
 srate = 48000;                   % audio sampling rate / Hz
-fragsize = 1024;                 % fragment size / frames
+fragsize = 60;                   % fragment size / frames
 n = 4;                           % filter order
 precision = 6;                   % precision (significant digits)
 
@@ -51,10 +51,13 @@ if mod(resample_ratio, 1) ~= 0
     error('The audio sampling rate (currently %u Hz) must be an integer multiple of the vocoder sampling rate (%u Hz).', srate, vocoder_srate);
 end
 dbasync_fragsize = vocoder_fragsize * resample_ratio;  % inner fragment size / frames
+if fragsize < dbasync_fragsize
+    error('The fragment size (currently %u frames) must be at least %u frames.', fragsize, dbasync_fragsize);
+end
 dbasync_delay = dbasync_fragsize - gcd(dbasync_fragsize, fragsize);  % delay for dbasync / frames
-wnd_len = 2 * dbasync_fragsize/resample_ratio;  % window length / samples
+wnd_len = 2 * dbasync_fragsize/resample_ratio;  % window length / frames
 if wnd_len > fftlen
-    error('The window length (currently %u samples) must be less than or equal to the FFT length (%u bins). To fix this, consider increasing the stimulation rate (currently %u pps).', wnd_len, fftlen, desired_stimulation_rate);
+    error('The window length (currently %u frames) must be less than or equal to the FFT length (%u bins). To fix this, consider increasing the stimulation rate (currently %u pps).', wnd_len, fftlen, desired_stimulation_rate);
 end
 closest_stimulation_rate = vocoder_srate/vocoder_fragsize;  % closest achievable stimulation rate / pps
 

@@ -40,14 +40,14 @@ rem Set preset name, pause length, fragment size, and sampling rate for JACK and
 rem openMHA, respectively:
 
 rem JACK preset name:
-set JACK_PRESET_NAME=vocoder
+set JACK_PRESET_NAME=vocoder_cis
 
 rem Pause length / s to allow the JACK audio server to be running before 
 rem continuing:
 set JACK_PAUSE_LENGTH=5
 
 rem Outer fragment size / frames:
-set FRAGSIZE=1024
+set FRAGSIZE=24
 
 rem Sampling rate / Hz:
 set SRATE=48000
@@ -82,7 +82,7 @@ set DBASYNC_FRAGSIZE=24
 
 rem Delay for the asynchronous double buffer / frames (must be equal to 
 rem DBASYNC_FRAGSIZE - gcd(DBASYNC_FRAGSIZE, FRAGSIZE)):
-set DBASYNC_DELAY=16
+set DBASYNC_DELAY=0
 
 rem Thread platform to use (for single-thread processing: "dummy"; 
 rem for Linux: "posix"; for Windows: "win32"):

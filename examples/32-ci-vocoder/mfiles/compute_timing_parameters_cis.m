@@ -26,13 +26,16 @@ clc;
 % -------------------------------------------------------------------------
 
 desired_stimulation_rate = 2000;  % desired (per-electrode) stimulation rate / pps
-fragsize = 1024;                  % outer fragment size / frames
+fragsize = 24;                    % outer fragment size / frames
 
 % Compute the resulting parameters:
 vocoder_srate = 48000;  % vocoder sampling rate / Hz
 srate = 48000;  % audio sampling rate / Hz
 vocoder_fragsize = round(vocoder_srate/desired_stimulation_rate);  % vocoder fragment size / frames
 dbasync_fragsize = vocoder_fragsize;  % inner fragment size / frames
+if fragsize < dbasync_fragsize
+    error('The fragment size (currently %u frames) must be at least %u frames.', fragsize, dbasync_fragsize);
+end
 dbasync_delay = dbasync_fragsize - gcd(dbasync_fragsize, fragsize);  % delay for dbasync / frames
 closest_stimulation_rate = vocoder_srate/vocoder_fragsize;  % closest achievable stimulation rate / pps
 
