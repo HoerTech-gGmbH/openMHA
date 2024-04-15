@@ -204,8 +204,27 @@ Matlab/Octave scripts to help you find and format appropriate values):
 - Bimodal stimulation (binaural configurations only; electric stimulation on 
   one side, acoustic stimulation on the other)
 
-The following properties are not implemented in this example, but configuration 
-interfaces are provided and labeled as such:
+By default, the binaural configurations in this example use identical parameter 
+settings on both sides, reflected by a single set of variables in the 
+corresponding shell scripts and batch files. However, side-specific settings can 
+easily be realized by duplicating and appropriately renaming the variables in 
+the configurations for the two sides (vocoder_*_1ch_left.cfg and 
+vocoder_*_1ch_right.cfg) as well as in the corresponding shell scripts and batch 
+files, thus replacing, e.g., ELECTRODOGRAM_THRESHOLD_LEVEL by 
+ELECTRODOGRAM_THRESHOLD_LEVEL_LEFT and ELECTRODOGRAM_THRESHOLD_LEVEL_RIGHT, 
+respectively.
+
+Also, when using random electrode stimulation order (which is the default 
+setting when the vocoder output is used for auralization, because otherwise 
+audible artifacts can occur at the frequency corresponding to the stimulation 
+rate), the binaural link between the two sides can be turned on (same 
+randomization seed for left and right; default) or off (different randomization 
+seeds for left and right).
+
+The following properties are not implemented in this example, but many of the 
+corresponding functionalities can be realized with existing openMHA plugins. The 
+respective configuration interfaces are provided and labeled as such in this 
+example:
 
 - Preprocessing of the electric signal (e.g., beamforming)
 
