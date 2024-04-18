@@ -1,6 +1,0 @@
-libFLAC.dylib
-libogg.dylib
-libportaudio.dylib
-libsndfile.dylib
-libvorbis.dylib
-libvorbisenc.dylib

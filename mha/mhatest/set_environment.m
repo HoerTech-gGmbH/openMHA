@@ -2,6 +2,7 @@ function plugins = set_environment
 % Prepare this matlab/octave instance to start and communicate with MHA
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2014 2015 2016 2017 2018 HörTech gGmbH
+% Copyright © 2024 Hörzentrum Oldenburg gGmbH
 %
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -60,7 +61,12 @@ else
   setenv('MHA_LIBRARY_PATH',strjoin(dirs,';'));
 end
 if isoctave()
-  pkg load signal;
+  % Load signal package.
+  try
+    pkg load signal;
+  catch
+    error 'signal package not found. Please install.';
+  end
 end
 
 function result = find_all_plugins(git_dir, build_dir)

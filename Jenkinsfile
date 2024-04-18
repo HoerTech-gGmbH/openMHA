@@ -133,9 +133,9 @@ def openmha_build_steps(stage_name) {
   }
 
   if (mac) {
-    sh ("make -j $cpus pkg")
-    // Store mac installer
-    archiveArtifacts 'mha/tools/packaging/pkg/*.pkg'
+    sh ("mkdir homebrew")
+    sh ('make PREFIX="$(realpath homebrew)" -j $cpus homebrew')
+    archiveArtifacts 'homebrew/**'
   }
 
   // Check reproducibility: No package should contain "modified" in its name

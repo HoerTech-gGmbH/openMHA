@@ -139,9 +139,9 @@ exe: installer-exe unit-tests
 installer-exe: install
 	$(MAKE) -C mha/tools/packaging/exe exe
 
-pkg: installer-pkg unit-tests
-installer-pkg: install
-	$(MAKE) -C mha/tools/packaging/pkg all
+homebrew: installer-homebrew
+installer-homebrew: unit-tests
+	$(MAKE) -C mha/tools/packaging/homebrew install
 
 release: test unit-tests install
 	@./mha/tools/release.sh openMHA # 'openMHA' is passed to prevent user from calling script accidentally
