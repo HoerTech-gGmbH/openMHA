@@ -34,8 +34,11 @@ addpath(genpath('functions'));
 
 if isunix
     addpath(genpath('/usr/lib/openmha/mfiles'));
+elseif ismac
+    addpath(genpath('/usr/local/lib/openmha/mfiles'));
 elseif ispc
-    addpath(genpath('C:/Program Files/openMHA/mfiles'));
+    sProgramFilesPath = getenv('PROGRAMFILES');
+    addpath(genpath([sProgramFilesPath '\openMHA\mfiles']));
 end
 
 if isoctave
