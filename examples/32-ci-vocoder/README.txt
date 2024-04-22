@@ -93,6 +93,21 @@ configurations. No further adjustments are necessary if the prerequisites
 specified above and in the respective shell scripts and batch files have been 
 met.
 
+The latency (i.e., algorithmic delay) of the CI vocoder depends on the specified 
+so-called "outer" fragment size (represented by the variable FRAGSIZE). The 
+minimum possible value for the outer fragment size is the so-called "inner" 
+fragment size (variable DBASYNC_FRAGSIZE), which in turn depends on the desired 
+(per-electrode) stimulation rate. By default, this stimulation rate is set to 
+800 pps (pulses per second) for the ACE strategy and 2000 pps for the CIS 
+strategy, respectively, resulting in minimum algorithmic delays 
+(= FRAGSIZE/SRATE) of 1.25 ms for ACE and 0.5 ms for CIS. However, to avoid 
+dropouts in the signal processing on computers with lower computing power, the 
+outer fragment size is set to 1024 frames for both strategies by default, which 
+results in an algorithmic delay of 21.3 ms. Matlab/Octave scripts 
+(compute_timing_parameters_*.m) are provided to help users find appropriate sets 
+of values for the relevant parameters if a different (e.g., smaller) outer 
+fragment size is desired.
+
 As always with the openMHA, any of the functionalities provided can in principle 
 be modified. As a first step, the parameter values given in the shell scripts 
 and batch files can be changed within certain limits. To make this task easier, 
