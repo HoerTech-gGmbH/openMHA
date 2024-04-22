@@ -29,7 +29,7 @@ rem 3. openMHA plugin libraries must be on MHA_LIBRARY_PATH
 rem Set fragment size and sampling rate for openMHA:
 
 rem Outer fragment size / frames:
-set FRAGSIZE=24
+set FRAGSIZE=1024
 
 rem Sampling rate / Hz:
 set SRATE=48000
@@ -56,7 +56,7 @@ set DBASYNC_FRAGSIZE=24
 
 rem Delay for the asynchronous double buffer / frames (must be equal to 
 rem DBASYNC_FRAGSIZE - gcd(DBASYNC_FRAGSIZE, FRAGSIZE)):
-set DBASYNC_DELAY=0
+set DBASYNC_DELAY=16
 
 rem Thread platform to use (for single-thread processing: "dummy"; 
 rem for Linux: "posix"; for Windows: "win32"):

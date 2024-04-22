@@ -29,7 +29,7 @@
 # Set fragment size and sampling rate for openMHA:
 
 # Outer fragment size / frames:
-export FRAGSIZE=60
+export FRAGSIZE=1024
 
 # Sampling rate / Hz (must be equal to 16000 * RESAMPLE_RATIO):
 export SRATE=48000
@@ -74,7 +74,7 @@ export DBASYNC_FRAGSIZE=60
 
 # Delay for the asynchronous double buffer / frames (must be equal to 
 # DBASYNC_FRAGSIZE - gcd(DBASYNC_FRAGSIZE, FRAGSIZE)):
-export DBASYNC_DELAY=0
+export DBASYNC_DELAY=56
 
 # Time constant / s for exponentially averaged RMS:
 export GET_RMS_TAU=1

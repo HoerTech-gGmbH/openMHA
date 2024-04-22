@@ -26,7 +26,7 @@ clc;
 % -------------------------------------------------------------------------
 
 desired_stimulation_rate = 2000;  % desired (per-electrode) stimulation rate / pps
-fragsize = 24;                    % outer fragment size / frames
+fragsize = 1024;                    % outer fragment size / frames
 
 % Compute the resulting parameters:
 vocoder_srate = 48000;  % vocoder sampling rate / Hz

@@ -41,7 +41,7 @@ end
 
 desired_stimulation_rate = 800;  % desired (per-electrode) stimulation rate / pps
 srate = 48000;                   % audio sampling rate / Hz
-fragsize = 60;                   % fragment size / frames
+fragsize = 1024;                   % fragment size / frames
 n = 4;                           % filter order
 precision = 6;                   % precision (significant digits)
 

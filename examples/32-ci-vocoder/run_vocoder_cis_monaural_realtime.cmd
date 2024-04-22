@@ -47,7 +47,7 @@ rem continuing:
 set JACK_PAUSE_LENGTH=5
 
 rem Outer fragment size / frames:
-set FRAGSIZE=24
+set FRAGSIZE=1024
 
 rem Sampling rate / Hz:
 set SRATE=48000
@@ -100,7 +100,7 @@ set DBASYNC_FRAGSIZE=24
 
 rem Delay for the asynchronous double buffer / frames (must be equal to 
 rem DBASYNC_FRAGSIZE - gcd(DBASYNC_FRAGSIZE, FRAGSIZE)):
-set DBASYNC_DELAY=0
+set DBASYNC_DELAY=16
 
 rem Time constant / s for exponentially averaged RMS:
 set GET_RMS_TAU=1
