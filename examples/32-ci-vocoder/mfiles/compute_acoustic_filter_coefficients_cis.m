@@ -26,7 +26,9 @@ clc;
 if isunix
     addpath(genpath('/usr/lib/openmha/mfiles'));
 elseif ismac
-    addpath(genpath('/usr/local/lib/openmha/mfiles'));
+    error('Depending on the Mac processor type, the correct path to the openMHA mfiles directory must be specified manually.');
+    % addpath(genpath('/usr/local/lib/openmha/mfiles'));  % Macs with Intel processor
+    % addpath(genpath('/opt/homebrew/lib/openmha/mfiles'));  % Macs with ARM processor
 elseif ispc
     sProgramFilesPath = getenv('PROGRAMFILES');
     addpath(genpath([sProgramFilesPath '\openMHA\mfiles']));
