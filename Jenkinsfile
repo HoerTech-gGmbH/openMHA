@@ -169,6 +169,10 @@ pipeline {
                         archiveArtifacts 'mha/plugins/matlabcoder_skeleton/**'
                     }
                 }
+                stage(                         "noble && x86_64 && mhadev") {
+                    agent {label               "noble && x86_64 && mhadev"}
+                    steps {openmha_build_steps("noble && x86_64 && mhadev")}
+                }
                 stage(                         "jammy && x86_64 && mhadoc") {
                     agent {label               "jammy && x86_64 && mhadoc"}
                     steps {openmha_build_steps("jammy && x86_64 && mhadoc")}
@@ -210,6 +214,7 @@ pipeline {
             // when { anyOf { branch 'master'; branch 'development' } }
             steps {
                 // receive all deb packages from openmha build
+                unstash "x86_64_noble"
                 unstash "x86_64_jammy"
                 unstash "x86_64_focal"
                 unstash "armv7_bullseye"

@@ -72,6 +72,10 @@ pipeline {
     stages {
         stage("build") {
             parallel {
+                stage(                         "noble && x86_64 && mhadev") {
+                    agent {label               "noble && x86_64 && mhadev"}
+                    steps {depndcy_build_steps("noble && x86_64 && mhadev")}
+                }
                 stage(                         "jammy && x86_64 && mhadev") {
                     agent {label               "jammy && x86_64 && mhadev"}
                     steps {depndcy_build_steps("jammy && x86_64 && mhadev")}
@@ -112,12 +116,14 @@ pipeline {
                 sh ("rm -rf external_libs_")
 
                 // unpack the sources only once
-                unstash "x86_64_jammy"
+                unstash "x86_64_noble"
                 sh ("tar xzf sources.tgz")
                 // manipulate timestamps of sources so that compilation is newer
                 sh ("find external_libs -type f | xargs touch -t 200501010000")
 
                 // unpack compiled results from all platforms
+                sh ("tar xzf installation.tgz && rm *.tgz")
+                unstash "x86_64_jammy"
                 sh ("tar xzf installation.tgz && rm *.tgz")
                 unstash "x86_64_focal"
                 sh ("tar xzf installation.tgz && rm *.tgz")
