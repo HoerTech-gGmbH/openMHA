@@ -25,6 +25,13 @@ separate apt repository.  Please be aware that
 
 ### 1.1 Installation of development versions on Ubuntu
 
+In Ubuntu 24.04:
+
+    wget -qO- http://apt.hoertech.de/openmha-packaging.pub | sudo tee /etc/apt/trusted.gpg.d/openmha-packaging.asc
+    sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de noble universe'
+    sudo apt-add-repository 'deb [arch=amd64] http://aptdev.hoertech.de noble universe'
+    sudo apt install openmha openmha-examples
+
 In Ubuntu 22.04:
 
     wget -qO- http://apt.hoertech.de/openmha-packaging.pub | sudo tee /etc/apt/trusted.gpg.d/openmha-packaging.asc
@@ -52,7 +59,7 @@ For ARM systems based on Debian 10 or Ubuntu 20.04:
     sudo apt update
     sudo apt install openmha openmha-examples
 
-For ARM systems based on Debian 11 or Ubuntu 22.04:
+For ARM systems based on Debian 11 or Ubuntu 22.04 or later:
 
     wget -qO- http://apt.hoertech.de/openmha-packaging.pub | sudo tee /etc/apt/trusted.gpg.d/openmha-packaging.asc
     echo 'deb http://apt.hoertech.de bullseye universe' | sudo tee /etc/apt/sources.list.d/openmha.list
@@ -65,6 +72,11 @@ For ARM systems based on Debian 11 or Ubuntu 22.04:
 In order to remove openMHA development packages from Ubuntu e.g. to use
 a regular openMHA release again on a computer that has been configured
 to install development versions,
+
+In Ubuntu 24.04:
+
+    sudo apt-add-repository --remove 'deb [arch=amd64] http://aptdev.hoertech.de noble universe'
+    sudo apt purge libopenmha
 
 In Ubuntu 22.04:
 

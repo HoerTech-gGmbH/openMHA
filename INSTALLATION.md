@@ -7,6 +7,11 @@ Linux (__I.__),  macOS(__II.__), and Windows (__III.__) operating systems.
 
 First, add the openMHA package repository to your system:
 
+In Ubuntu 24.04:
+
+    wget -qO- http://apt.hoertech.de/openmha-packaging.pub | sudo tee /etc/apt/trusted.gpg.d/openmha-packaging.asc
+    sudo apt-add-repository 'deb [arch=amd64] http://apt.hoertech.de noble universe'
+
 In Ubuntu 22.04:
 
     wget -qO- http://apt.hoertech.de/openmha-packaging.pub | sudo tee /etc/apt/trusted.gpg.d/openmha-packaging.asc
@@ -28,7 +33,7 @@ For ARM systems based on Debian 10 or Ubuntu 20.04:
     echo 'deb http://apt.hoertech.de bionic universe' | sudo tee /etc/apt/sources.list.d/openmha.list
     sudo apt update
 
-For ARM systems based on Debian 11 or Ubuntu 22.04:
+For ARM systems based on Debian 11 or Ubuntu 22.04 or later:
 
     wget -qO- http://apt.hoertech.de/openmha-packaging.pub | sudo tee /etc/apt/trusted.gpg.d/openmha-packaging.asc
     echo 'deb http://apt.hoertech.de bullseye universe' | sudo tee /etc/apt/sources.list.d/openmha.list
