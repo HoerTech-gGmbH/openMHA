@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2013 2014 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+# Copyright © 2024 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -47,15 +48,29 @@ CXXFLAGS += $(GITCOMMITHASHCFLAGS)
 
 LDFLAGS += -L../../external_libs/$(PLATFORM_CC)/lib
 
+
+
 ifeq "$(PLATFORM)" "linux"
 LDLIBS += -ldl -lpthread -lsndfile
-else
-ifeq "$(PLATFORM)" "Darwin"
+
+else # not linux
+ifeq "$(PLATFORM)" "Darwin" # Mac
 LDLIBS += -lsndfile
-else
+
+ifeq "$(findstring arm, $(ARCH))" "arm"
+CXXFLAGS += -DOPENMHA_APPLE_ARM
+else ifeq "$(findstring aarch64, $(ARCH))" "aarch64"
+CXXFLAGS += -DOPENMHA_APPLE_ARM
+endif # ARM Macs
+
+else # Not linux, not Mac, so Windows
 LDLIBS += -lsndfile -lws2_32
-endif
-endif
+
+endif # end of (if Mac else Windows)
+
+endif # end of (if linux else not linux)
+
+
 
 FFTW_LIB = ../../external_libs/$(PLATFORM_CC)/lib/libsfftw.a
 RFFTW_LIB = ../../external_libs/$(PLATFORM_CC)/lib/libsrfftw.a

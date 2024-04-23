@@ -1,6 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2011 2012 2013 HörTech gGmbH
 // Copyright © 2014 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+// Copyright © 2024 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -339,12 +340,21 @@ std::string mhaserver_t::on_received_line(const std::string& cmd)
 #define VERSION_EXTENSION "+"
 #endif
 
+#ifdef HOMEBREW_OPENMHA_TAG
+#define BUILDHOST_INFO "Built with Homebrew on host " \
+  HOMEBREW_BUILD_HOST \
+  " from tag " HOMEBREW_OPENMHA_TAG "\n\n"
+#else
+#define BUILDHOST_INFO ""
+#endif
+
 #define GREETING_TEXT \
 NORELEASE_WARNING \
 "The Open Master Hearing Aid (openMHA) server version " \
 MHA_RELEASE_VERSION_STRING    VERSION_EXTENSION    "\n" \
+BUILDHOST_INFO \
 "Copyright (c) 2005-2021 HoerTech gGmbH, D-26129 Oldenburg, Germany\n"\
-"Copyright (c) 2021-2022 Hoerzentrum Oldenburg gGmbH, D-26129 Oldenburg, Germany"\
+"Copyright (c) 2021-2024 Hoerzentrum Oldenburg gGmbH, D-26129 Oldenburg, Germany"\
 "\n\n"\
 "This program comes with ABSOLUTELY NO WARRANTY; "\
 "for details see file COPYING.\n"\

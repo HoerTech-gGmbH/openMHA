@@ -66,27 +66,34 @@ sudo apt install openmha
 
 This will upgrade all installed openmha packages to their latest version.
 
-## II. macOS installer
+## II. Mac installation with Homebrew
 
-An openMHA installer for macOS can be downloaded from our
-Github releases page, https://github.com/HoerTech-gGmbH/openMHA/releases.
+Install and update Homebrew. Instructions can be found at https://brew.sh.
 
-To use the Jack audio plugin, the [JackOSX distribution](http://www.jackaudio.org)
-needs to be installed.
+Install openMHA with the following command:
 
-On some machines macOS refuses to open the installer because it is from an
-unverified developer. Opening the installer while holding Ctrl makes macOS
-offer an override option.
+```
+brew install openmha/tap/openmha
+```
 
-The installer installs openMHA example setups and some tools. We recommend to
+Homebrew installs openMHA example setups and some tools. We recommend to
 copy the examples folder to a writable location inside your user directory.
 
-On macOS, you can find the examples folder in
-`/usr/local/share/openmha/examples/` and the reference algorithms can be found in
-`/usr/local/share/openmha/reference_algorithms`. m-files for interacting with the openMHA
-from Matlab or Octave are installed in `/usr/local/lib/openmha/mfiles/`, and
-documentation can be found in `/usr/local/doc/openmha/`.
+The default installation locations depend on the processor type of your Mac:
 
+On Macs with Intel CPU, you can find the examples folder in
+`/usr/local/share/openmha/examples/` and the reference algorithms can be found
+in `/usr/local/share/openmha/reference_algorithms`. m-files for interacting
+with the openMHA from Matlab or Octave are installed in
+`/usr/local/lib/openmha/mfiles/`, and documentation can be found in
+`/usr/local/share/doc/openmha/`.
+
+On Macs with ARM processor ("Apple Silicon"), you can find the examples
+folder in `/opt/homebrew/share/openmha/examples/` and the reference algorithms
+can be found in `/opt/homebrew/share/openmha/reference_algorithms`. m-files
+for interacting with the openMHA from Matlab or Octave are installed in
+`/opt/homebrew/lib/openmha/mfiles/`, and documentation can be found in
+`/opt/homebrew/share/doc/openmha/`.
 
 
 ## III. Windows installer

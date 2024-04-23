@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+# Copyright © 2024 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -21,10 +22,22 @@ CXXFLAGS += $(GITCOMMITHASHCFLAGS)
 
 ifeq "x${BRANCH_NAME}" "xmaster" # If we are in a Jenkins build of branch master
 ifeq "x" "x$(findstring modified,$(GITCOMMITHASH))" # and if git is unmodified,
-# then this is is a relase build, do not output a non-release warning.
+# then this is is a relase build, do not output a non-release warning ...
 CXXFLAGS += -DNORELEASE_WARNING='""'
-# and also add git commit hash to version output for a relase build
+# and also add git commit hash to version output for a relase build.
 CXXFLAGS += -DVERSION_EXTENSION='" (" GITCOMMITHASH ")"'
+endif
+endif
+
+ifneq "x$(HOMEBREW_OPENMHA_TAG)" "x" # If we are building for Homebrew
+ifeq "x" "x$(findstring modified,$(GITCOMMITHASH))" # and if git is unmodified,
+# then this is is a relase build, do not output a non-release warning ...
+CXXFLAGS += -DNORELEASE_WARNING='""'
+# and also add git commit hash to version output for a relase build ...
+CXXFLAGS += -DVERSION_EXTENSION='" (" GITCOMMITHASH ")"'
+# and add build info for homebrew builds (build host, tag = homebrew version).
+CXXFLAGS += -DHOMEBREW_OPENMHA_TAG='"$(HOMEBREW_OPENMHA_TAG)"'
+CXXFLAGS += -DHOMEBREW_BUILD_HOST='"$(shell hostname)"'
 endif
 endif
 

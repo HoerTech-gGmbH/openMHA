@@ -93,8 +93,13 @@ std::list<std::string> mha_library_paths()
     std::string lp;
     lp = mha_getenv("MHA_LIBRARY_PATH");
 #ifdef __APPLE__
-    if (lp.size() == 0)
+    if (lp.size() == 0) {
+#ifdef OPENMHA_APPLE_ARM
+        lp = "/opt/homebrew/lib";
+#else
         lp = "/usr/local/lib";
+#endif
+    }
 #endif //  __APPLE__
     if( !lp.size() )
         lp += ";";
