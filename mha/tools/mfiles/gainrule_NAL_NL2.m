@@ -227,11 +227,32 @@ function sGt = gainrule_NAL_NL2(sAud,sFitmodel)
             
             % Add the windows emulator to command line if OS is Linux.
             if (~ispc() && ~ismac()) % linux
-                cmd=['wine /usr/share/nalnl2wrapper/' cmd];
+                if isoctave()
+                    cmd=['wine /usr/share/nalnl2wrapper/' cmd];
+                else % Matlab
+                    % Matlab puts its C++ library directories into LD_LIBRARY_PATH
+                    % which can cause failures when running commands through system().
+                    % Clear LD_LIBRARY_PATH when running from Matlab.
+                    cmd=['LD_LIBRARY_PATH='''' wine /usr/share/nalnl2wrapper/' cmd];
+                end
             end
 
             % Execute the NAL-NL2 wrapper, catch the response in output
             [status, output] = system(cmd);
+
+            % On some systems, the output of the NAL-NL2 wrapper has been observed
+            % to contain terminal escape sequences, bracketed by ASCII 27 (ESC).
+            % Remove these escape sequences from the output before parsing.
+            idx_garbage = find(output==27);
+            if( (mod(numel(idx_garbage),2) == 0) && (numel(idx_garbage)>0) )
+              % Remove the escape sequences from the output. Work from last pair
+              % to first pair to avoid changing the indices of the pairs still
+              % to be removed.
+              for k=numel(idx_garbage):-2:1
+                idx = idx_garbage((k-1)):(idx_garbage(k)+1)
+                output(idx) = '';
+              end
+            end
 
             % Parse insertion gains computed by NAL-NL2.
             insertion_gains = sscanf(output, '%f', [19,inf])';
