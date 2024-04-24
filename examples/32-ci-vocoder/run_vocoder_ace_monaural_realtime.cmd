@@ -40,7 +40,7 @@ rem Set preset name, pause length, fragment size, and sampling rate for JACK and
 rem openMHA, respectively:
 
 rem JACK preset name:
-set JACK_PRESET_NAME=vocoder_ace
+set JACK_PRESET_NAME=vocoder
 
 rem Pause length / s to allow the JACK audio server to be running before 
 rem continuing:

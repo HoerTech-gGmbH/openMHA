@@ -40,7 +40,7 @@
 # respectively:
 
 # JACK preset name:
-export JACK_PRESET_NAME=vocoder_cis
+export JACK_PRESET_NAME=vocoder
 
 # Pause length / s to allow the JACK audio server to be running before 
 # continuing:
