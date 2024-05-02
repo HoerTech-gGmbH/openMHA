@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2004 2007 2009 2010 2012 2013 2014 2015 2017 2018 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2022 2024 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -16,24 +16,20 @@
 
 
 /*
- * The simplest example of an \mha plugin.
+ * example of an \mha plugin.
  *
  * This plugin scales one channel of the input signal, working in the
  * time domain.
  */
 #include "mha_plugin.hh"
 
-/** This C++ class implements the simplest example plugin for the
- * step-by-step tutorial.  It inherits from MHAPlugin::plugin_t for
- * correct integration in the configuration language interface.  */
+/** This C++ class implements a simple example plugin. */
 class example21_t : public MHAPlugin::plugin_t<int> {
 public:
-  /** Do-nothing constructor.  The constructor has to take these three
-   * arguments, but it does not have to use them. However, the base
-   * class has to be initialized. */
+  /** Do-nothing constructor. */
   example21_t(algo_comm_t & ac, const std::string &)
       : MHAPlugin::plugin_t<int>("",ac)
-  {/* Do nothing in constructor */}
+  {}
 
   /** Release may be empty */
   void release(void)
@@ -101,7 +97,6 @@ MHAPLUGIN_CALLBACKS(example21,example21_t,wave,wave)
 MHAPLUGIN_DOCUMENTATION\
 (example21,
  "example level-modification audio-channels",
- "The {\\bf simplest} example of an \\mha{} plugin.\n\n"
  "This plugin scales one channel of the input signal, working in the "
  "time domain."
  )

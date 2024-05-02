@@ -54,3 +54,5 @@ mkdir -p doc
 cp ../../../../*pdf doc/.
 cp ../../../../*md doc/.
 cp ../../../../COPYING doc/.
+# build configuration (for plugin developers)
+sed '/^PREFIX=/d' ../../../../config.mk > config.mk # Remove line "PREFIX=..."

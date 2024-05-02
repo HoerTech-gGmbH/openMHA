@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2020 HörTech gGmbH
+# Copyright © 2024 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -34,8 +35,10 @@ all: example21
 
 # Convenience target: Remove compiled products
 clean:
-	rm -f example21.so
+	rm -f example21$(DYNAMIC_LIB_EXT)
+# DYNAMIC_LIB_EXT is defined in config.mk. Its value is .so for Linux, .dll
+# for Windows, and .dylib for Mac (always including the dot).
 
 # Compile the plugin
 example21: example21.cpp
-	$(CC) -shared -o example21.so $(CXXFLAGS) $(INCLUDES) $(LIBS) $<
+	$(CXX) -shared -o example21$(DYNAMIC_LIB_EXT) $(CXXFLAGS) $(INCLUDES) $(LIBS) $<

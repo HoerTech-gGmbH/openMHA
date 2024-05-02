@@ -79,6 +79,12 @@ Section "Reference algorithms"
   File /r reference_algorithms\*
 SectionEnd
 
+; Build configuration
+Section "Build configuration"
+  SetOutPath $INSTDIR
+  File config.mk
+SectionEnd
+
 ; Manuals
 Section "Documentation"
   SetOutPath $INSTDIR\doc

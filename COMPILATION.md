@@ -4,7 +4,9 @@ Please see file INSTALLATION.md for installing pre-compiled binary packages on
 Windows, macOS, and Linux.  It is not necessary to compile openMHA yourself unless
 you want to make changes to openMHA itself.
 
-This guide describes how to compile openMHA from sources for developers.
+This guide describes how to compile openMHA from original source code
+for developers.
+
 
 ## I. Compiling from source on Linux
 

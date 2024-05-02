@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2005 2007 2009 2013 2017 2018 2019 2020 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2022 2024 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -29,6 +29,10 @@ compile \mha.
 On Ubuntu is is also possible to install the libopenmha-dev package and include
 config.mk into the user's Makefile. Example 21 provides an example plugin and
 Makefile for this scenario.
+
+On the personal hearing lab (PHL) running mahalia, the required packages for
+compiling openMHA plugins are already installed since version 4.17.0-r1.
+Example 21 can also be used here.
 
 \mha contains a small number of example plugins as C++ source code.
 They are meant to help developers in understanding the concepts 
