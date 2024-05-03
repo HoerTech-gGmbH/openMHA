@@ -64,7 +64,7 @@ reproducibilitytest:
 	# Fail if during compilation there were any modifications not checked into git
 	@if [ -n "`find ../plugins ../frameworks ../libmha -type f -exec grep -- -modified '{}' ';'`" ] ; then (echo; echo "***********************************************************************"; echo "***" The following files carry a modified-since-git-check-out stamp: "***";  echo "***********************************************************************"; find ../plugins ../frameworks ../libmha -type f -exec grep -- -modified '{}' ';'; exit 1); fi
 	# Fail if any compiled artifact is missing the git commit hash or has a wrong git commit hash
-	find ../plugins -type f -name "*"$(DYNAMIC_LIB_EXT) | xargs ./check_git_commit_hash $(GITCOMMITHASH)
+	./check_git_commit_hash $(GITCOMMITHASH) ../plugins/*/$(BUILD_DIR)/*$(DYNAMIC_LIB_EXT)
 	find ../frameworks -type f $(find_executable_arg) | grep -v unit-test-runner | xargs ./check_git_commit_hash $(GITCOMMITHASH)
 	./check_git_commit_hash $(GITCOMMITHASH) ../libmha/*/*$(DYNAMIC_LIB_EXT)
 

@@ -2,7 +2,7 @@
 
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
-# Copyright © 2022 Hörzentrum Oldenburg gGmbH
+# Copyright © 2022 2024 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -16,8 +16,12 @@
 # You should have received a copy of the GNU Affero General Public License,
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+if [ "x$CXXSTANDARD" = "x" ]; then
+    CXXSTANDARD=c++17
+fi
+
 chkhdr(){
-    echo "#include <$1>" | cc -E -x c++ - $MACINCLUDES -o /dev/null 2>/dev/null 1>/dev/null && true || false;
+    echo "#include <$1>" | cc -E -x c++ - -std=$CXXSTANDARD $MACINCLUDES -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 chklib(){
     echo "int main(){return 0;}"| cc -x c++ - $MACLDFLAGS -l$1 -o /tmp/tmp.openmha.config.out.exe 2>/dev/null 1>/dev/null && true || false;
@@ -54,6 +58,9 @@ for arg in "$@"; do
         --with-eigen)
             WITH_EIGEN=yes
             ;;
+        --with-torch)
+            WITH_TORCH=yes
+            ;;
         --with-jack=*)
             WITH_JACK=`echo $arg | sed 's/--with-jack=//'`
             ;;
@@ -65,6 +72,9 @@ for arg in "$@"; do
             ;;
         --with-osc=*)
             WITH_OSC=`echo $arg | sed 's/--with-osc=//'`
+            ;;
+        --with-torch=*)
+            WITH_TORCH=`echo $arg | sed 's/--with-torch=//'`
             ;;
         --help)
             echo 'usage: ./configure [options]'
@@ -110,13 +120,6 @@ done
             echo TOOLSET=clang
             WITH_JACK=yes
             # We do not want warnings from external headers, so use -isystem instead of -I
-            if [ -d "/opt/local/include" ]; then
-                MACINCLUDES+=" -isystem/opt/local/include"
-            fi
-            if [ -d "/opt/local/lib" ]; then
-                MACLDFLAGS+=" -L/opt/local/lib"
-                echo LDFLAGS+=" -L/opt/local/lib"
-            fi
             # On arm macs homebrew saves its stuff into /opt/homebrew/...
             if [ -d "/opt/homebrew/include" ]; then
                 MACINCLUDES+=" -isystem/opt/homebrew/include"
@@ -174,13 +177,21 @@ done
         chkhdr eigen3/Eigen/Eigen && (echo "WITH_EIGEN=yes");
     fi
 
-    if [ "x$CXXSTANDARD" = "x" ]; then
-        case "$GCC_VER" in
-            *)
-                CXXSTANDARD=c++17
-                ;;
-        esac
+    if [ "x$WITH_TORCH" = "xyes" ]; then
+        echo "WITH_TORCH=yes"
+        echo "TORCH_LIBS=-ltorch_cpu -lc10"
+    elif [ "x$WITH_TORCH" = "xno" ]; then
+        echo "WITH_TORCH=no";
+    elif chkhdr torch/csrc/autograd/InferenceMode.h; then
+        if (chklib torch_cpu_openMHA && chklib c10_openMHA); then
+            echo "WITH_TORCH=yes"
+            echo "TORCH_LIBS=-ltorch_cpu_openMHA -lc10_openMHA"
+        elif (chklib torch_cpu && chklib c10); then
+            echo "WITH_TORCH=yes"
+            echo "TORCH_LIBS=-ltorch_cpu -lc10"
+        fi
     fi
+
     echo "CXXSTANDARD=$CXXSTANDARD";
 
     if test -n "$GCC_VER"
