@@ -172,9 +172,10 @@ class MHAConnection:
         data_type = self.get_type(path)
         data = self.get_val_raw(path)
 
-        # Return plain strings immediately since they contain no quotes, which
-        # would cause the below literal_eval() to fail.
-        if data_type == 'string':
+        # Return MHA's plain strings, booleans and keyword lists immediately
+        # since they contain no quotes, which would cause the below
+        # literal_eval() to fail.
+        if data_type in ['string', 'bool', 'keyword_list']:
             return data.decode()
 
         # Types returned by OpenMHA contain additional type information (e.g.,
