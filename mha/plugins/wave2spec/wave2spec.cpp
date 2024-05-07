@@ -86,11 +86,16 @@ mha_spec_t* wave2spec_t::process(mha_wave_t* wave_in)
 {
     if( nwndshift > nwnd )
         throw MHA_Error(__FILE__,__LINE__,
-                        "The window shift (%u) is greater than the window size (%u).",
-                        nwndshift,nwnd);
+                        "The window shift (%u) is greater"
+                        " than the window size (%u).", nwndshift, nwnd);
+    // In_buf stores the un-windowed input signal for the window region. Copy
+    // current input signal to the end of in_buf.
     in_buf.copy_from_at(in_buf.num_frames - nwndshift,nwndshift,*wave_in,0);
+    // Copy this input signal from in_buf to calc_in, apply window, zero-pad.
     calc_pre_wnd(calc_in,in_buf);
+    // Prepare for the next iteration: shift in_buf by nwndshift samples.
     in_buf.copy_from_at(0,in_buf.num_frames-nwndshift,in_buf,nwndshift);
+    // Perform forward FFT.
     mha_fft_wave2spec( ft, &calc_in, &spec_in );
     copy(spec_in);
     publish_ac_variables(); // AC vars must be updated in every process callback
@@ -284,12 +289,12 @@ MHAPLUGIN_DOCUMENTATION\
  "\n\n"
 
  "The plugin performs the following scaling of the signal: "
- "The effect on the level of applying the analysis window to "
+ "The attenuation effect on the level of applying the analysis window to "
  "the input signal is compensated by "
  "dividing by the RMS (root mean square) of the window. "
  "To account for the zero-padding, which would reduce the RMS of the "
  "signal block\\footnote{The same sum of squared samples would be divided "
- "by fftlen instead of wndlen to compute the mean after zero-padding}, "
+ "by fftlen instead of wndlen to compute the mean after zero-padding.}, "
  "the signal is multiplied with $\\sqrt{\\mathrm{fftlen} / \\mathrm{wndlen}}$. "
  "Finally, the forward FFT operation in the MHA will apply a factor "
  "$1 / \\sqrt{\\mathrm{fftlen}}$ "
