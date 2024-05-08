@@ -64,8 +64,8 @@ devfiles: build
 	mkdir -p "$(DESTDIR)$(PREFIX)/share/openmha"
 	cp "$(REPO)/"config.mk "$(DESTDIR)$(PREFIX)/share/openmha/"
 	mkdir -p "$(DESTDIR)$(PREFIX)/include/openmha"
-	cp "$(REPO)/mha/libmha/src/*.h "$(DESTDIR)$(PREFIX)/include/openmha"
-	cp "$(REPO)/mha/libmha/src/*.hh "$(DESTDIR)$(PREFIX)/include/openmha"
+	cp "$(REPO)/mha/libmha/src/"*.h "$(DESTDIR)$(PREFIX)/include/openmha"
+	cp "$(REPO)/mha/libmha/src/"*.hh "$(DESTDIR)$(PREFIX)/include/openmha"
 
 clean:
 	@rm -rf homebrew-build-dir
