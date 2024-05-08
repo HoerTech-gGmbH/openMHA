@@ -13,6 +13,7 @@ install: usr-local-bin \
          examples \
          reference_algorithms \
          docfiles \
+         config-mk
 
 build: 
 	rm -rf homebrew-build-dir
@@ -58,6 +59,10 @@ docfiles: build
 		pdf=openMHA_$$d.pdf; \
 		git show origin/gh-pages:docs/$$pdf >"$(DESTDIR)$(PREFIX)/share/doc/openmha/"$$pdf; \
 	done
+
+config-mk: build
+	mkdir -p "$(DESTDIR)$(PREFIX)/share/openmha"
+	cp "$(REPO)/"config.mk "$(DESTDIR)$(PREFIX)/share/openmha/"
 
 clean:
 	@rm -rf homebrew-build-dir
