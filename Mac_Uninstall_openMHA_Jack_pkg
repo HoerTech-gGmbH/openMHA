@@ -1,0 +1,144 @@
+#!/bin/bash
+
+# Move files to recycle bin instead of deleting them
+TRASHDATE="$HOME/.Trash/$(date "+%Y-%m-%d-%H-%M-%S")"
+move_to_recycle_bin() {
+    echo "Moving $1 to the recycle bin..."
+    mkdir -p "$TRASHDATE"/$(dirname $1)
+    sudo /bin/mv -v $1 "$TRASHDATE"/$(dirname $1)
+}
+RM=move_to_recycle_bin
+# User may permanently delete the files later by emptying the recycle bin
+
+# Check if openMHA is installed from pkg installer
+if pkgutil --pkgs | grep -q '^org.openmha.openMHA$'
+then
+    echo "openMHA package found. Uninstalling..."
+    # Only the following three files are installed in common locations
+    for file in usr/local/bin/analysemhaplugin \
+                usr/local/bin/generatemhaplugindoc \
+                usr/local/bin/mha
+    do
+        if [ -f /$file ] && \
+           pkgutil --only-files --files org.openmha.openMHA | grep -q ^$file'$'
+        then
+           $RM /$file
+        fi
+    done
+    # The rest of the files are installed in openMHA-specific locations
+    for dir in usr/local/share/openmha \
+               usr/local/lib/openmha \
+               usr/local/doc/openmha
+    do
+        if [ -d /$dir ] && \
+           pkgutil --only-dirs --files org.openmha.openMHA | grep -q ^$dir'$'
+        then
+           $RM /$dir
+        fi
+    done
+    # Finally, forget the package
+    echo "Forgetting package org.openmha.openMHA..."
+    sudo pkgutil --forget org.openmha.openMHA
+else
+    echo "openMHA package not found."
+fi
+
+# Check if Jack is installed from pkg installer
+if pkgutil --pkgs | grep -q '^org.jackaudio.jack2$'
+then
+    echo "Jack package found. Uninstalling..."
+    # Only the following two directories are specific to jack:
+    for dir in include/jack lib/jack
+    do
+        if [ -d /usr/local/$dir ] && \
+           pkgutil --only-dirs --files org.jackaudio.jack2 | grep -q ^$dir'$'
+        then
+           $RM /usr/local/$dir
+        fi
+    done
+    # The rest of jack's files are installed in common locations, delete them
+    # individually
+    for file in bin/jack_alias \
+                bin/jack_bufsize \
+                bin/jack_connect \
+                bin/jack_control_client \
+                bin/jack_cpu_load \
+                bin/jack_evmon \
+                bin/jack_freewheel \
+                bin/jack_impulse_grabber \
+                bin/jack_iodelay \
+                bin/jack_latent_client \
+                bin/jack_load \
+                bin/jack_load_test \
+                bin/jack_lsp \
+                bin/jack_metro \
+                bin/jack_midi_dump \
+                bin/jack_midi_latency_test \
+                bin/jack_midiseq \
+                bin/jack_midisine \
+                bin/jack_monitor_client \
+                bin/jack_net_master \
+                bin/jack_net_slave \
+                bin/jack_netsource \
+                bin/jack_property \
+                bin/jack_rec \
+                bin/jack_samplerate \
+                bin/jack_server_control \
+                bin/jack_showtime \
+                bin/jack_simdtests \
+                bin/jack_simple_client \
+                bin/jack_thru_client \
+                bin/jack_transport \
+                bin/jack_transport_client \
+                bin/jack_tw \
+                bin/jack_unload \
+                bin/jack_wait \
+                bin/jack_zombie \
+                bin/jackd \
+                lib/libjack.0.dylib \
+                lib/libjacknet.0.dylib \
+                lib/libjackserver.0.dylib \
+                lib/pkgconfig/jack.pc \
+                share/man/man1/jack_bufsize.1 \
+                share/man/man1/jack_connect.1 \
+                share/man/man1/jack_disconnect.1 \
+                share/man/man1/jack_freewheel.1 \
+                share/man/man1/jack_impulse_grabber.1 \
+                share/man/man1/jack_iodelay.1 \
+                share/man/man1/jack_load.1 \
+                share/man/man1/jack_lsp.1 \
+                share/man/man1/jack_metro.1 \
+                share/man/man1/jack_monitor_client.1 \
+                share/man/man1/jack_netsource.1 \
+                share/man/man1/jack_property.1 \
+                share/man/man1/jack_rec.1 \
+                share/man/man1/jack_samplerate.1 \
+                share/man/man1/jack_showtime.1 \
+                share/man/man1/jack_simple_client.1 \
+                share/man/man1/jack_transport.1 \
+                share/man/man1/jack_unload.1 \
+                share/man/man1/jack_wait.1
+    do
+        if [ -f /usr/local/$file ] && \
+           pkgutil --only-files --files org.jackaudio.jack2 | grep -q ^$file'$'
+        then
+           $RM /usr/local/$file
+        fi
+    done
+    # Finally, forget the package
+    echo "Forgetting package org.jackaudio.jack2..."
+    sudo pkgutil --forget org.jackaudio.jack2
+else
+    echo "Jack package not found."
+fi
+
+echo
+
+# Check if QJackCtl is installed as app bundle
+if [ -d /Applications/QjackCtl.app ] || [ -d ~/Applications/QjackCtl.app ]
+then
+    echo "You have QJackCtl.app installed. Please uninstall by dragging the "
+    echo "app from the Applications folder to the recycle bin."
+else
+    echo "Uninstallation complete."
+fi

@@ -73,6 +73,10 @@ This will upgrade all installed openmha packages to their latest version.
 
 ## II. Mac installation with Homebrew
 
+(Note: If you upgrade an older version of openMHA (up to 4.17.0), which used a
+pkg installer instead of Homebrew, then you need to remove the old version
+first. See the next section on "Uninstalling openMHA on Mac".)
+
 Install and update Homebrew. Instructions can be found at https://brew.sh.
 
 Install openMHA with the following command:
@@ -80,6 +84,14 @@ Install openMHA with the following command:
 ```
 brew install openmha/tap/openmha
 ```
+
+openMHA executes some tests during installation. You may be asked to grant
+permissions like network access during the installation process.
+
+(Note: If the installation fails, because some homebrew packages could not be
+linked, then you have older, non-Homebrew versions of openMHA or its
+dependencies installed. Uninstall them and retry. See also the next section on
+"Uninstalling openMHA on Mac".)
 
 Homebrew installs openMHA example setups and some tools. We recommend to
 copy the examples folder to a writable location inside your user directory.
@@ -100,6 +112,28 @@ for interacting with the openMHA from Matlab or Octave are installed in
 `/opt/homebrew/lib/openmha/mfiles/`, and documentation can be found in
 `/opt/homebrew/share/doc/openmha/`.
 
+### II.a Uninstalling openMHA on Mac
+
+If you have openMHA v4.17.0 or older installed on your Mac, then you need
+to uninstall it and its dependencies before you can install the new version
+with Homebrew. You can use our script
+[Mac_Uninstall_openMHA_Jack_pkg](Mac_Uninstall_openMHA_Jack_pkg)
+to uninstall openMHA and Jack installed with the old pkg installer.
+Download the file and execute it with bash:
+```
+bash Mac_Uninstall_openMHA_Jack_pkg
+```
+
+If you have installed openMHA with Homebrew, you can uninstall it with the
+following command:
+```
+brew uninstall openmha
+```
+There is no need to uninstall a Homebrew-installed openMHA before upgrading,
+in this case you can upgrade to the new version with:
+```
+brew update && brew upgrade
+```
 
 ## III. Windows installer
 
