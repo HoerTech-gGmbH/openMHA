@@ -172,7 +172,7 @@ mha_spec_t* gcfsnet_bin_t::process(mha_spec_t * signal)
                         "This plugin can only process 4  channels.");
         }
     }
-    // #pragma omp parallel for default(none) shared(state_L, state_R, out_frameL_r, out_frameL_i, out_frameR_r, out_frameR_i, in_frameL_r, in_frameL_i, in_frameR_r, in_frameR_i)
+    
     rnnoise_process_frame(state_L, out_frameL_r, out_frameL_i, in_frameL_r, in_frameL_i);
     rnnoise_process_frame(state_R, out_frameR_r, out_frameR_i, in_frameR_r, in_frameR_i);
     
@@ -197,6 +197,7 @@ MHAPLUGIN_DOCUMENTATION\
  "This plugin implements the binaural GCFSnet, a deep speech-enhancement model"
  " built for low-latency and low-complexity speech enhancenment in hearing"
  " aids."
+ "For more information, see the preprint: https://arxiv.org/abs/2405.01967"
  "\n\n"
  "The model was trained with Keras and the weights were exported to"
  " file rnn\\_data.c in the plugin's source code directory. "

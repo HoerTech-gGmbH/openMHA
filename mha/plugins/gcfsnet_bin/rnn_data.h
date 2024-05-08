@@ -101,7 +101,6 @@ struct RNNModel {
 };
 
 
-
 // state definition
 struct RNNState {
   const RNNModel *model;

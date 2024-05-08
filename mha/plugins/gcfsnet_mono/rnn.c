@@ -1,6 +1,8 @@
-/* Copyright (c) 2008-2011 Octasic Inc.
-                 2012-2017 Jean-Marc Valin 
-                 2020-2024 Nils L. Westhausen*/
+/*
+   Copyright (c) 2008-2011 Octasic Inc.
+   Copyright (c) 2012-2017 Jean-Marc Valin 
+   Copyright (c) 2020-2024 Nils L. Westhausen
+*/
 /*
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -33,27 +35,35 @@
 #include <stdio.h>
 
 
-
 static inline float tansig_approx(float x)
 {
     return tanhf(x);
 }
+
 
 static inline float sigmoid_approx(float x)
 {
    return .5 + .5*tansig_approx(.5*x);
 }
 
+
 static inline float relu(float x)
 {
    return x < 0 ? 0 : x;
 }
 
+/*
+Function to compute a dense layer.
+layer: Pointer to the layer weights
+output: Pointer to the output buffer
+input: Pointer to the input buffer
+*/
 void compute_dense(const DenseLayer *layer, float *output, const float *input)
 {
    int N, M;
    M = layer->nb_inputs;
    N = layer->nb_neurons;
+
    for (int i=0;i<N;i++)
    {
       /* Compute update gate. */
@@ -61,7 +71,7 @@ void compute_dense(const DenseLayer *layer, float *output, const float *input)
       float bias = (float) WEIGHTS_SCALE_BIAS * layer->bias[i];
 
       for (int j=0;j<M;j++)
-         sum += layer->input_weights[i*M + j]*input[j]; // * (float) WEIGHTS_SCALE;
+         sum += layer->input_weights[i*M + j]*input[j];
       sum *= (float) WEIGHTS_SCALE;
       sum += bias;
       output[i] = sum;
@@ -87,13 +97,20 @@ void compute_dense(const DenseLayer *layer, float *output, const float *input)
    }
 }
 
-
+/*
+Function to compute a grouped dense layer. The same weights are applied to 
+ equal patches of the input.
+layer: Pointer to the layer weights
+output: Pointer to the output buffer
+input: Pointer to the input buffer
+*/
 void compute_dense_grouped(const DenseLayer *layer, float *output, const float *input)
 {
    int N, M, G;
    M = layer->nb_inputs;
    N = layer->nb_neurons;
    G = NUM_GROUPS;
+
    for (int g=0;g<G;g++)
    {
       for (int i=0;i<N;i++)
@@ -103,7 +120,7 @@ void compute_dense_grouped(const DenseLayer *layer, float *output, const float *
          float bias = (float) WEIGHTS_SCALE_BIAS * layer->bias[i];
 
          for (int j=0;j<M;j++)
-            sum += layer->input_weights[i*M + j]*input[M*g + j]; // * (float) WEIGHTS_SCALE;
+            sum += layer->input_weights[i*M + j]*input[M*g + j];
          sum *= (float) WEIGHTS_SCALE;
          sum += bias;
          output[N*g + i] = sum;
@@ -130,7 +147,13 @@ void compute_dense_grouped(const DenseLayer *layer, float *output, const float *
    }
 }
 
-
+/*
+Function to apply a grouped pointwise scaling with bisas (1x1 dconv).
+The same weights are applied to equal patches of the input.
+dclayer: Pointer to the layer weights
+output: Pointer to the output buffer
+input: Pointer to the input buffer
+*/
 void compute_dconv_1x1_grouped(const DConvLayer1x1 *dclayer, float *output, const float *input, const float *input_skip)
 {
    int N, G;
@@ -172,14 +195,25 @@ void compute_dconv_1x1_grouped(const DConvLayer1x1 *dclayer, float *output, cons
    
 }
 
-
+/*
+Function to apply an additive skip connection.
+input_size: Size of the input
+output: Pointer to the output buffer
+input: Pointer to the input buffer
+input_skip: Pointer to the skip connection buffer
+*/
 void add_skip(int input_size, float *output, const float *input, const float *input_skip)
 {
    for (int i=0;i<input_size;i++)
          output[i] = input[i] + input_skip[i];
 }
 
-
+/*
+Function to apply an input scaling with bias.
+dclayer: Pointer to the layer weights
+output: Pointer to the output buffer
+input: Pointer to the input buffer
+*/
 void compute_scale(const ScalerLayer *dclayer, float *output, const float *input)
 {
    int N;
@@ -192,7 +226,16 @@ void compute_scale(const ScalerLayer *dclayer, float *output, const float *input
    }
 }
 
-
+/*
+Function to apply a grouped 1xX depthwise convolution. The same weights are applied to 
+ equal patches of the input.
+dclayer: Pointer to the layer weights
+idx_start: Pointer to the start index of the buffer
+idx_write: Pointer to the write index of the buffer
+buffer: Pointer to the filtering ring buffer
+output: Pointer to the output buffer
+input: Pointer to the input buffer
+*/
 void compute_dconv_1xX_grouped(const DConvLayer *dclayer, counter *idx_start, counter *idx_write, float *buffer, float *output, const float *input)
 {
    int N, L, G;
@@ -216,8 +259,7 @@ void compute_dconv_1xX_grouped(const DConvLayer *dclayer, counter *idx_start, co
 
       for (int j=0;j<L;j++)
       {
-         sum += buffer[(((j+*idx_start)%L) * G + g) * N + i] * dclayer->input_weights[j*N+i]; // * (float) WEIGHTS_SCALE;
-
+         sum += buffer[(((j+*idx_start)%L) * G + g) * N + i] * dclayer->input_weights[j*N+i];
       }
       sum *= (float) WEIGHTS_SCALE;
       output[N * g + i] += sum;
@@ -244,13 +286,18 @@ void compute_dconv_1xX_grouped(const DConvLayer *dclayer, counter *idx_start, co
    {
       ;
    }
-
    }
    *idx_start = (*idx_start + 1) % L;
    *idx_write = (*idx_write + 1) % L;
 }
 
-
+/*
+Function to compute a grouped GRU layer. The same weights are applied to 
+ equal patches of the input.
+GRULayer: Pointer to the layer weights
+state: Pointer to the state buffer (same as the output buffer)
+input: Pointer to the input buffer
+*/
 void compute_gru_grouped(const GRULayer *gru, float *state, const float *input)
 {
 
@@ -285,7 +332,6 @@ void compute_gru_grouped(const GRULayer *gru, float *state, const float *input)
          }
          MM_out_r[i] *= (float) WEIGHTS_SCALE;
          MM_out_r[i] += gru->bias[(3*N) + i] * (float) WEIGHTS_SCALE_BIAS;
-
       }
 
 
@@ -301,7 +347,13 @@ void compute_gru_grouped(const GRULayer *gru, float *state, const float *input)
 
 }
 
-
+/*
+Function to compute the full model.
+rnn: Pointer to the model weights.
+filter_b: Pointer to the output buffer for the spatial filter
+filter_t: Pointer to the output buffer for the temporal post filter
+input: Pointer to the input/feature buffer
+*/
 void compute_rnn(RNNState *rnn, float *filter_b, float *filter_t, const float *input) {
    
    float scale_out[260];
@@ -317,7 +369,6 @@ void compute_rnn(RNNState *rnn, float *filter_b, float *filter_t, const float *i
    float gru_out_main[256];
    float filter_b_tmp[260];
    float filter_t_tmp[650];
-   
 
    // scale input
    compute_scale(rnn->model->scaler, scale_out, input);
@@ -357,7 +408,4 @@ void compute_rnn(RNNState *rnn, float *filter_b, float *filter_t, const float *i
 
    compute_scale(rnn->model->scaler_b, filter_b, filter_b_tmp);
    compute_scale(rnn->model->scaler_t, filter_t, filter_t_tmp);
-
-  
-  
 }

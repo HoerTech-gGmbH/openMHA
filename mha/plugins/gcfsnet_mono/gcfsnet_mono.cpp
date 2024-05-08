@@ -167,6 +167,7 @@ MHAPLUGIN_DOCUMENTATION\
  "This plugin implements the monaural GCFSnet, a deep speech-enhancement model"
  " built for low-latency and low-complexity speech enhancenment in hearing"
  " aids."
+ "For more information, see the preprint: https://arxiv.org/abs/2405.01967"
  "\n\n"
  "The model was trained with Keras and the weights were exported to"
  " file rnn\\_data.c in the plugin's source code directory. "

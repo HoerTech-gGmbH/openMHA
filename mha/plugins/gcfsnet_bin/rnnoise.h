@@ -1,8 +1,9 @@
-/* Copyright (c) 2018 Gregor Richards
- * Copyright (c) 2017 Mozilla 
+/*
+   Copyright (c) 2017 Mozilla
+   Copyright (c) 2018 Gregor Richards
    Copyright (c) 2020 Nils L. Westhausen 
    Copyright (c) 2023 Nils L. Westhausen
-   */
+*/
 /*
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions

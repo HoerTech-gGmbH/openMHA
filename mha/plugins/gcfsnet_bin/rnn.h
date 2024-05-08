@@ -1,7 +1,9 @@
-/* Copyright (c) 2017 Jean-Marc Valin 
-                 2020 Nils L. Westhausen 
-                 2023 Nils L. Westhausen (Heavily modified)
-                 */
+/*
+  Copyright (c) 2017 Jean-Marc Valin 
+  Copyright (c) 2020 Nils L. Westhausen
+  Copyright (c) 2023 Nils L. Westhausen (Heavily modified)
+*/
+
 /*
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
