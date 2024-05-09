@@ -1,11 +1,15 @@
 #!/bin/bash
 
+# This script uninstalls older versions of openMHA (up to version v4.17.0) and
+# and Jack (its main dependency) that were installed using the pkg installer.
+# It moves their files to the recycle bin and deregisters the packages.
+
 # Move files to recycle bin instead of deleting them
 TRASHDATE="$HOME/.Trash/$(date "+%Y-%m-%d-%H-%M-%S")"
 move_to_recycle_bin() {
     echo "Moving $1 to the recycle bin..."
-    mkdir -p "$TRASHDATE"/$(dirname $1)
-    sudo /bin/mv -v $1 "$TRASHDATE"/$(dirname $1)
+    mkdir -p "$TRASHDATE"/$(dirname "$1")
+    sudo /bin/mv -v "$1" "$TRASHDATE"/$(dirname "$1")
 }
 RM=move_to_recycle_bin
 # User may permanently delete the files later by emptying the recycle bin
@@ -58,71 +62,82 @@ then
     done
     # The rest of jack's files are installed in common locations, delete them
     # individually
-    for file in bin/jack_alias \
-                bin/jack_bufsize \
-                bin/jack_connect \
-                bin/jack_control_client \
-                bin/jack_cpu_load \
-                bin/jack_evmon \
-                bin/jack_freewheel \
-                bin/jack_impulse_grabber \
-                bin/jack_iodelay \
-                bin/jack_latent_client \
-                bin/jack_load \
-                bin/jack_load_test \
-                bin/jack_lsp \
-                bin/jack_metro \
-                bin/jack_midi_dump \
-                bin/jack_midi_latency_test \
-                bin/jack_midiseq \
-                bin/jack_midisine \
-                bin/jack_monitor_client \
-                bin/jack_net_master \
-                bin/jack_net_slave \
-                bin/jack_netsource \
-                bin/jack_property \
-                bin/jack_rec \
-                bin/jack_samplerate \
-                bin/jack_server_control \
-                bin/jack_showtime \
-                bin/jack_simdtests \
-                bin/jack_simple_client \
-                bin/jack_thru_client \
-                bin/jack_transport \
-                bin/jack_transport_client \
-                bin/jack_tw \
-                bin/jack_unload \
-                bin/jack_wait \
-                bin/jack_zombie \
-                bin/jackd \
-                lib/libjack.0.dylib \
-                lib/libjacknet.0.dylib \
-                lib/libjackserver.0.dylib \
-                lib/pkgconfig/jack.pc \
-                share/man/man1/jack_bufsize.1 \
-                share/man/man1/jack_connect.1 \
-                share/man/man1/jack_disconnect.1 \
-                share/man/man1/jack_freewheel.1 \
-                share/man/man1/jack_impulse_grabber.1 \
-                share/man/man1/jack_iodelay.1 \
-                share/man/man1/jack_load.1 \
-                share/man/man1/jack_lsp.1 \
-                share/man/man1/jack_metro.1 \
-                share/man/man1/jack_monitor_client.1 \
-                share/man/man1/jack_netsource.1 \
-                share/man/man1/jack_property.1 \
-                share/man/man1/jack_rec.1 \
-                share/man/man1/jack_samplerate.1 \
-                share/man/man1/jack_showtime.1 \
-                share/man/man1/jack_simple_client.1 \
-                share/man/man1/jack_transport.1 \
-                share/man/man1/jack_unload.1 \
-                share/man/man1/jack_wait.1
+    for file in /usr/local/bin/jack_alias \
+                /usr/local/bin/jack_bufsize \
+                /usr/local/bin/jack_connect \
+                /usr/local/bin/jack_control_client \
+                /usr/local/bin/jack_cpu_load \
+                /usr/local/bin/jack_evmon \
+                /usr/local/bin/jack_freewheel \
+                /usr/local/bin/jack_impulse_grabber \
+                /usr/local/bin/jack_iodelay \
+                /usr/local/bin/jack_latent_client \
+                /usr/local/bin/jack_load \
+                /usr/local/bin/jack_load_test \
+                /usr/local/bin/jack_lsp \
+                /usr/local/bin/jack_metro \
+                /usr/local/bin/jack_midi_dump \
+                /usr/local/bin/jack_midi_latency_test \
+                /usr/local/bin/jack_midiseq \
+                /usr/local/bin/jack_midisine \
+                /usr/local/bin/jack_monitor_client \
+                /usr/local/bin/jack_net_master \
+                /usr/local/bin/jack_net_slave \
+                /usr/local/bin/jack_netsource \
+                /usr/local/bin/jack_property \
+                /usr/local/bin/jack_rec \
+                /usr/local/bin/jack_samplerate \
+                /usr/local/bin/jack_server_control \
+                /usr/local/bin/jack_showtime \
+                /usr/local/bin/jack_simdtests \
+                /usr/local/bin/jack_simple_client \
+                /usr/local/bin/jack_thru_client \
+                /usr/local/bin/jack_transport \
+                /usr/local/bin/jack_transport_client \
+                /usr/local/bin/jack_tw \
+                /usr/local/bin/jack_unload \
+                /usr/local/bin/jack_wait \
+                /usr/local/bin/jack_zombie \
+                /usr/local/bin/jackd \
+                /usr/local/lib/libjack.*dylib \
+                /usr/local/lib/libjacknet.*dylib \
+                /usr/local/lib/libjackserver.*dylib \
+                /usr/local/lib/pkgconfig/jack.pc \
+                /usr/local/share/man/man1/jack_bufsize.1 \
+                /usr/local/share/man/man1/jack_connect.1 \
+                /usr/local/share/man/man1/jack_disconnect.1 \
+                /usr/local/share/man/man1/jack_freewheel.1 \
+                /usr/local/share/man/man1/jack_impulse_grabber.1 \
+                /usr/local/share/man/man1/jack_iodelay.1 \
+                /usr/local/share/man/man1/jack_load.1 \
+                /usr/local/share/man/man1/jack_lsp.1 \
+                /usr/local/share/man/man1/jack_metro.1 \
+                /usr/local/share/man/man1/jack_monitor_client.1 \
+                /usr/local/share/man/man1/jack_netsource.1 \
+                /usr/local/share/man/man1/jack_property.1 \
+                /usr/local/share/man/man1/jack_rec.1 \
+                /usr/local/share/man/man1/jack_samplerate.1 \
+                /usr/local/share/man/man1/jack_showtime.1 \
+                /usr/local/share/man/man1/jack_simple_client.1 \
+                /usr/local/share/man/man1/jack_transport.1 \
+                /usr/local/share/man/man1/jack_unload.1 \
+                /usr/local/share/man/man1/jack_wait.1
     do
-        if [ -f /usr/local/$file ] && \
-           pkgutil --only-files --files org.jackaudio.jack2 | grep -q ^$file'$'
+        file_without_usr_local="${file#/usr/local/}"
+        # If the file is a symlink and its name begins with /usr/local/lib/libjack
+        if [ -L "$file" ] && [[ "$file" == "/usr/local/lib/libjack"* ]] 
         then
-           $RM /usr/local/$file
+            # Check if the symlink points to a file from the jack package
+            if pkgutil --only-files --files org.jackaudio.jack2 | grep -q "^lib/$(readlink "$file")"'$'
+            then
+                echo "Removing symlink $file pointing to /usr/local/lib/$(readlink "$file")" ...
+                $RM "$file"
+            fi
+        fi
+        if [ -f "$file" ] && \
+           pkgutil --only-files --files org.jackaudio.jack2 | grep -q "^$file_without_usr_local"'$'
+        then
+           $RM "$file"
         fi
     done
     # Finally, forget the package
@@ -139,6 +154,4 @@ if [ -d /Applications/QjackCtl.app ] || [ -d ~/Applications/QjackCtl.app ]
 then
     echo "You have QJackCtl.app installed. Please uninstall by dragging the "
     echo "app from the Applications folder to the recycle bin."
-else
-    echo "Uninstallation complete."
 fi
