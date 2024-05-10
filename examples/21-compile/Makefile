@@ -15,17 +15,29 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
 # This Makefile illustrates how to compile and link a plugin against openMHA
-# on an ubuntu system with the libopenmha-dev package installed
+# on an Ubuntu system with the libopenmha-dev package installed
+# as well as under macOS systems on Intel and ARM Mac computers with openMHA
+# installed via homebrew
 # For more information on how to
 # set up a build environment for openMHA see COMPILATION.md and your compiler
 # and/or OS vendor's documentation. For more information on Makefiles, see
 # GNU make's manual
 
 
-include /usr/share/openmha/config.mk
+# Ubuntu
+-include /usr/share/openmha/config.mk
+# Intel Macs 
+-include /usr/local/share/openmha/config.mk
+# ARM Macs 
+-include /opt/homebrew/share/openmha/config.mk
 
 # Include openmha headers
 INCLUDES=-I/usr/include/openmha
+# Intel Macs
+INCLUDES=-I/usr/local/include/openmha
+# ARM Macs:
+INCLUDES=-I/opt/homebrew/include/openmha
+
 
 # Link against libopenmha
 LIBS=-lopenmha

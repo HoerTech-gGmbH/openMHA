@@ -9,9 +9,9 @@ source code is described in this README file.
 This directory contains the source code of an example plugin in
 example21.cpp, and a Makefile which can be used to compile the plugin.
 
-## Compiling the example plugin on Linux
+## Compiling the example plugin on Linux and macOS
 
-1) Install openMHA including the libopenmha-dev package as described in file
+1) Install openMHA (including the libopenmha-dev package for Linux) as described in file
    ../../INSTALLATION.md.
 
 2) In a directory containing the files example21.cpp and Makefile, execute
@@ -19,26 +19,14 @@ example21.cpp, and a Makefile which can be used to compile the plugin.
    make
    ```
 
-3) Copy the generated *.so file to directory /usr/lib:
+3) Copy the generated library file to your global library directory:
+   __Linux__ 
    ```
    sudo cp example21.so /usr/lib
    ```
-
-### Compiling the example plugin on the Portable Hearing Lab (PHL)
-
-For PHLs running mahalia 4.17.0-r1 or later,
-
-1) Transfer the example21.cpp and Makefile files to the PHL with scp.
-
-2) Connect to the PHL with ssh and in the directory containing the source code
-   and the Makefile execute
+   __macOS__
    ```
-   make
-   ```
-
-3) Copy the generated *.so file to directory /usr/lib:
-   ```
-   sudo cp example21.so /usr/lib
+   sudo cp example21.dylib /usr/local/lib
    ```
 
 ## Compiling the example plugin on Windows
