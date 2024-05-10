@@ -27,18 +27,18 @@ INCLUDES=-I/usr/include/openmha
 # Link against libopenmha
 LIBS=-lopenmha
 
-# Explicitely use g++-7
+# Explicitely use g++-7 under Mahalia
 CXX=g++-7
 
-# Default target is example21
-all: example21
+# Default target is example33
+all: example33
 
 # Convenience target: Remove compiled products
 clean:
-	rm -f example21$(DYNAMIC_LIB_EXT)
+	rm -f example33$(DYNAMIC_LIB_EXT)
 # DYNAMIC_LIB_EXT is defined in config.mk. Its value is .so for Linux, .dll
 # for Windows, and .dylib for Mac (always including the dot).
 
 # Compile the plugin
-example21: example21.cpp
-	$(CXX) -shared -o example21$(DYNAMIC_LIB_EXT) $(CXXFLAGS) $(INCLUDES) $(LIBS) $<
+example33: example33.cpp
+	$(CXX) -shared -o example33$(DYNAMIC_LIB_EXT) $(CXXFLAGS) $(INCLUDES) $(LIBS) $<

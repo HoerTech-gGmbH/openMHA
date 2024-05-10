@@ -3,76 +3,53 @@
 openMHA's Plugin Development Guide linked from 
 http://www.openmha.org/documentation/
 contains a tutorial how to write openMHA plugins in C++. The C++ code needs to
-be compiled before it can be used in the openMHA. How to compile plugins from
+be compiled before it can be used in openMHA. How to compile plugins from
 source code is described in this README file.
 
 This directory contains the source code of an example plugin in
-example21.cpp, and a Makefile which can be used to compile the plugin.
+example33.cpp, and a Makefile which can be used to compile the plugin on the 
+Portable Hearing Laboratory (PHL) running Mahalia 4.18.0-r0 or later.
 
-## Compiling the example plugin on Linux
+### Transfer the plugin source code to the PHL
 
-1) Install openMHA including the libopenmha-dev package as described in file
-   ../../INSTALLATION.md.
+Since the code must be compiled on the PHL you need to transfer it to the
+device first. To do so connect your computer with the PHL via Wifi and copy the
+code from this example to the PHL (PW:mahalia):
+```
+scp example33.cpp Makefile mha@10.0.0.1:
+```
+copies the required files in the home directory of the user mha on the PHL.
+Answer "yes" if your asked if you are sure you want to continue connecting
+in case you connect to your device the first time.
 
-2) In a directory containing the files example21.cpp and Makefile, execute
-   ```
-   make
-   ```
+If you have trouble to connect and you have connected to a different PHL device
+before the connection will be refused for security reasons. This can be solved 
+by executing 
+```
+ssh-keygen -R 10.0.0.1
+```
 
-3) Copy the generated *.so file to directory /usr/lib:
-   ```
-   sudo cp example21.so /usr/lib
-   ```
+### Compiling the example plugin on the PHL
 
-### Compiling the example plugin on the Portable Hearing Lab (PHL)
+Connect to the PHL with ssh (PW:mahalia): 
+```
+ssh mha@10.0.0.1
+```
 
-For PHLs running mahalia 4.17.0-r1 or later,
+In the directory containing the source code and the Makefile (in this case the
+current directory after login, i.e., the mha home directory) execute
+```
+make
+```
 
-1) Transfer the example21.cpp and Makefile files to the PHL with scp.
+This takes around 1 minute. To make the plugin available to openMHA on the PHL
+copy the generated *.so file to directory /usr/lib:
+```
+sudo cp example33.so /usr/lib
+```
 
-2) Connect to the PHL with ssh and in the directory containing the source code
-   and the Makefile execute
-   ```
-   make
-   ```
+### Using the example plugin on the PHL 
 
-3) Copy the generated *.so file to directory /usr/lib:
-   ```
-   sudo cp example21.so /usr/lib
-   ```
-
-## Compiling the example plugin on Windows
-
-1) Install openMHA as described in file ..\..\INSTALLATION.md.
-
-2) Install a build environment for openMHA on Windows as described in file
-   ..\..\COMPILATION.md. Ensure the version of the installed GCC compiler
-   matches the version listed in file C:\Program Files\openMHA\config.mk.
-
-3) Git clone the openMHA source code from git in order to get the openMHA
-   header files.
-
-4) Edit the example Makefile from this directory:
-   - Change the include line to
-     ```
-     include /c/Progra~1/openMHA/config.mk
-     ```
-   - Extend the LIBS setting to
-     ```
-     LIBS = -L/c/Progra~1/openMHA/bin -lopenmha
-     ```
-   - Change the INCLUDES setting so that include files are found in directory
-     mha/libmha/src inside the openMHA directory that you cloned in step 3.
-
-5) In a MinGW64 bash shell, execute
-   ```
-   make
-   ```
-
-6) Copy the generated *.dll file to directory C:\Program Files\openMHA\bin.
-
-# Using the self-compiled plugin in openMHA
-
-In the openMHA configuration, load the self-compiled plugin like any other
-plugin. The example plugin compiled here is referenced as "example21" in the
-configuration, i.e. the file name without the extension.
+Now the self-compiled plugin can be used in your openMHA configuration like any
+other plugin. The example plugin compiled here is referenced as "example33", 
+i.e., the file name without the extension.

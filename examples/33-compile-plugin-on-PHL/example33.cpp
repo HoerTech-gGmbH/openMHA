@@ -24,10 +24,10 @@
 #include "mha_plugin.hh"
 
 /** This C++ class implements a simple example plugin. */
-class example21_t : public MHAPlugin::plugin_t<int> {
+class example33_t : public MHAPlugin::plugin_t<int> {
 public:
   /** Do-nothing constructor. */
-  example21_t(algo_comm_t & ac, const std::string &)
+  example33_t(algo_comm_t & ac, const std::string &)
       : MHAPlugin::plugin_t<int>("",ac)
   {}
 
@@ -79,11 +79,11 @@ public:
 };
 
 /*
- * This macro connects the example21_t class with the \mha plugin C interface
+ * This macro connects the example33_t class with the \mha plugin C interface
  * The first argument is the class name, the other arguments define the 
  * input and output domain of the algorithm.
  */
-MHAPLUGIN_CALLBACKS(example21,example21_t,wave,wave)
+MHAPLUGIN_CALLBACKS(example33,example33_t,wave,wave)
 
 /*
  * This macro creates code classification of the plugin and for
@@ -95,7 +95,7 @@ MHAPLUGIN_CALLBACKS(example21,example21_t,wave,wave)
  * documentation of the plugin.
  */
 MHAPLUGIN_DOCUMENTATION\
-(example21,
+(example33,
  "example level-modification audio-channels",
  "This plugin scales one channel of the input signal, working in the "
  "time domain."
