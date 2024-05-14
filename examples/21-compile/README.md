@@ -29,6 +29,11 @@ example21.cpp, and a Makefile which can be used to compile the plugin.
    sudo cp example21.dylib /usr/local/lib
    ```
 
+### Compiling an example plugin on the PHL (Portable Hearing Laboratory)
+
+Please refer to the README.md file in the directory
+examples/33-compile-plugin-on-PHL.
+
 ## Compiling the example plugin on Windows
 
 1) Install openMHA as described in file ..\..\INSTALLATION.md.

@@ -18,8 +18,8 @@ code from this example to the PHL (PW:mahalia):
 ```
 scp example33.cpp Makefile mha@10.0.0.1:
 ```
-copies the required files in the home directory of the user mha on the PHL.
-Answer "yes" if your asked if you are sure you want to continue connecting
+copies the required files into the home directory of the user mha on the PHL.
+Answer "yes" if you are asked if you are sure you want to continue connecting
 in case you connect to your device the first time.
 
 If you have trouble to connect and you have connected to a different PHL device
