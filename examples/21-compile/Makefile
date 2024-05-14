@@ -33,11 +33,11 @@
 
 # Include openmha headers
 INCLUDES=-I/usr/include/openmha
-# Intel Macs
-INCLUDES=-I/usr/local/include/openmha
-# ARM Macs:
-INCLUDES=-I/opt/homebrew/include/openmha
 
+ifeq "x$(PLATFORM)" "xDarwin"
+  # Include openmha headers on Macs
+  INCLUDES=-I$(PREFIX)/include/openmha -L$(PREFIX)/lib
+endif
 
 # Link against libopenmha
 LIBS=-lopenmha
