@@ -252,7 +252,7 @@ in section \ref{sec:ac_variables} of this manual.
   \begin{itemize}
   \item \textcolor{orange}{\textbf{Linux:}} Ubuntu 20.04 or later, 64 bits
   \item \textcolor{orange}{\textbf{Windows:}} Windows 10, 64 bits
-  \item \textcolor{orange}{\textbf{macOS:}} High Sierra or later
+  \item \textcolor{orange}{\textbf{macOS:}} macOS Monterey (version 12) or later
   \end{itemize}
 
 \item \large{{openMHA}}   \\
@@ -263,9 +263,12 @@ in section \ref{sec:ac_variables} of this manual.
     \begin{itemize}
     \item \textcolor{orange}{\textbf{\large{Linux:}}} \\
       $\rightarrow$ {\ttfamily sudo apt install octave-signal}
-    \item \textcolor{orange}{\textbf{Windows, macOS:}} \\
+    \item \textcolor{orange}{\textbf{Windows:}} \\
       \footnotesize{\url{%
           https://www.gnu.org/software/octave/download.html}}
+    \item \textcolor{orange}{\textbf{macOS:}} \\
+      $\rightarrow$ Automatically installed as a recommended dependency
+      when installing openMHA via Homebrew.
     \end{itemize}
   \item \large{{Matlab:}} \\
     \footnotesize{\url{https://www.mathworks.com/downloads/}}
@@ -274,19 +277,14 @@ in section \ref{sec:ac_variables} of this manual.
   \begin{itemize}
   \item \textcolor{orange}{\textbf{Linux:}} \\
     $\rightarrow$ {\ttfamily sudo apt install jackd2 qjackctl}
-  \item \textcolor{orange}{\textbf{Windows, macOS:}} \\
+  \item \textcolor{orange}{\textbf{Windows}} \\
     \footnotesize{\url{http://jackaudio.org/downloads/}}
+  \item \textcolor{orange}{\textbf{macOS:}} \\
+    $\rightarrow$
+    Automatically installed as dependency when installing openMHA via Homebrew.
   \end{itemize}
 \end{itemize}
 
-\begin{comment}
-\subsection{Path Setup (\textcolor{orange}{Windows only})}
-\label{subsec:windows_path_setup}
-
-\begin{itemize}
-\item \textbf{Rightclick Windows "Start" Icon} $\rightarrow$ \textbf{System} $\rightarrow$ search for \textbf{Erweiterte Systemeinstellungen anzeigen} $\rightarrow$ \textbf{Umgebungsvariablen} $\rightarrow$ \textbf{Systemvariablen} $\rightarrow$ look for variable \textbf{"Path"} $\rightarrow$ \textbf{Bearbeiten} $\rightarrow$ \textbf{Neu} $\rightarrow$ type in \textbf{C:\textbackslash Program Files\textbackslash openMHA\textbackslash bin\textbackslash} $\rightarrow$ close all open windows by pressing \textbf{OK}
-\end{itemize}
-\end{comment}
 
 
 \subsection{Update to Latest Version}
@@ -295,10 +293,17 @@ This guide was released with openMHA version \MHAversion.
 If you have already installed openMHA on your system, make
 sure that you are using the latest version. \\
 \begin{itemize}
-\item \textcolor{orange}{\textbf{Windows, macOS}} \\
-  Repeat the installation process using the latest \textbf{Windows installer}
-  or the latest \textbf{macOS installer} respectively.
+\item \textcolor{orange}{\textbf{Windows}} \\
+  Repeat the installation process using the latest \textbf{Windows installer}.
   The installation instructions can be found at
+  \url{https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md}
+\item \textcolor{orange}{\textbf{macOS}} \\
+  When upgrading from openMHA 4.17.0 or earlier, you need to uninstall
+  the old version first. When upgrading from openMHA 4.18.0 or leater, you can
+  update via Homebrew: \\
+  {\ttfamily brew update} \\
+  {\ttfamily brew upgrade} \\
+  Please refer to the installation instructions which can be found at
   \url{https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md}
 \item \textcolor{orange}{\textbf{Linux}} \\
   In Linux, all installed openMHA packages need to be updated.
@@ -328,7 +333,7 @@ This will upgrade all installed openmha packages to their latest version.
   $\rightarrow$ {\ttfamily javaclasspath} \\
   If this responds with "STATIC JAVA PATH ... DYNAMIC JAVA PATH ..." then
   Java is set up correctly (even if there is also a warning).
-  \\ If Octave/Matlab responds with an error then you need to install a
+  \\ If Octave/Matlab responds with an error, then you need to install a
   suitable Java Runtime Environment on your computer, restart Octave/Matlab
   and test again. Refer to Octave/Matlab documentation for details.
 \end{itemize}
@@ -394,37 +399,6 @@ followed by \textbf{Enter} into the terminal.
 
 
 \newpage
-\begin{comment}
-\section{Use Matlab Function "jack\_playrec" to Communicate with JACK Server}   
-
-One possibility to transfer audio signals to a JACK server is the jack\_playrec. To do this following the steps below:
-
-\begin{enumerate}
-\item Start a JACK server (sample rate = 44100)
-\item Check if you already followed the instructions from \textbf{section \ref{sec:beforeplayrec}}
-    \item \textbf{Start Matlab} 
-    \item \textbf{Go to} $\rightarrow$ \textbf{/Users/usr/local/lib YourUserName/usr/local/lib Documents/usr/local/lib jack-playrec/usr/local/lib mfiles}
-      using the Matlab/Octave \textbf{"Current Folder"} control
-    
-      You can now copy the following lines of code into the Matlab/Octave command windows.
-      This simple code below shows a minimal example of how to send an audio signal to a JACK client (here system:playback\_1). 
-
-
-\begin{verbatim}
-sampling_rate = 44100; %needs to fit sample rate of JACK server
-frequency = 440; %Frequency in Hertz
-signal_duration = 1; %Signal duration in seconds
-
-t= 0:1./sampling_rate:signal_duration-1./sampling_rate;
-sinus = transpose(sin(2*pi*frequency*t));
-jack_playrec(sinus,'output',{'system:playback_1'});
-\end{verbatim}  
-
-\end{enumerate}
-
-
-\newpage
-\end{comment}
 
 \section{Step-by-Step Exercise: Gain Application}
 
@@ -436,7 +410,8 @@ We will start by applying a gain factor to an audio file named {{\ttfamily \text
 \begin{itemize}\label{list:examples-location}
 \item \textcolor{orange}{\textbf{Linux}}: \textit{/usr/share/openmha/examples/00-gain} 
 \item \textcolor{orange}{\textbf{Windows}}: \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 00-gain}
-\item \textcolor{orange}{\textbf{macOS}}: \textit{/usr/local/share/openmha/examples/00-gain} 
+\item \textcolor{orange}{\textbf{macOS with Intel processor}}: \textit{/usr/local/share/openmha/examples/00-gain} 
+\item \textcolor{orange}{\textbf{macOS with ARM processor}}: \textit{/opt/homebrew/share/openmha/examples/00-gain}
 \end{itemize}
 
 A shortened version of the gain.cfg file is shown below.
@@ -546,9 +521,9 @@ In order to set up and connect a JACK server you can follow the steps below:
     \item \textbf{Start Jack Audio Connection Kit} 
     
     \begin{itemize}
-\item \textcolor{orange}{\textbf{Linux}}: \\ Type {\ttfamily qjackctl} into your \textbf{terminal}. 
+\item \textcolor{orange}{\textbf{Linux}}: \\ Type {\ttfamily qjackctl} into a \textbf{terminal}. 
 \item \textcolor{orange}{\textbf{Windows}}: \\ Use the \textbf{JACK Control} start menu entry.
-\item \textcolor{orange}{\textbf{macOS}}: \\ \textbf{Start} the \textbf{Jack Audio Connection Kit} GUI by starting the \textit{qjackctl} application found in \textit{/Applications/Jack/}.
+\item \textcolor{orange}{\textbf{macOS}}: \\ Type {\ttfamily qjackctl} into a \textbf{terminal}. If asked, then you need to allow access to your sound devices.
 \end{itemize}
 
 \begin{figure}[H]
@@ -620,8 +595,10 @@ To do this, start openMHA in the same directory as before:
   $\rightarrow$ setenv(\textquotesingle
   LD\_LIBRARY\_PATH\textquotesingle,\textquotesingle\textquotesingle)} \\
   into the \textbf{Command Window} \\
-\textcolor{orange}{\textbf{MacOS only:}} \\Type: \\{\ttfamily $\rightarrow$ setenv(\textquotesingle PATH\textquotesingle, [getenv(\textquotesingle PATH\textquotesingle) \textquotesingle :/usr/local/bin\textquotesingle]);} \\
-into the \textbf{Command Window} \\  
+  \textcolor{orange}{\textbf{MacOS with Intel processor:}} Type: \\{\ttfamily $\rightarrow$ setenv(\textquotesingle PATH\textquotesingle, [getenv(\textquotesingle PATH\textquotesingle) \textquotesingle :/usr/local/bin\textquotesingle]);} \\
+  into the \textbf{Command Window} \\  
+  \textcolor{orange}{\textbf{MacOS with ARM processor:}} Type: \\{\ttfamily $\rightarrow$ setenv(\textquotesingle PATH\textquotesingle, [getenv(\textquotesingle PATH\textquotesingle) \textquotesingle :/opt/homebrew/bin\textquotesingle]);} \\
+  into the \textbf{Command Window} \\  
 \item Use the Matlab/Octave \textbf{"Current Folder"} control to navigate to:
 
 \begin{itemize}
@@ -629,8 +606,10 @@ into the \textbf{Command Window} \\
   \textit{/usr/share/openmha/examples/05-frequency-shifting}
 \item \textcolor{orange}{\textbf{Windows}}: \\
   \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 05-frequency-shifting}
-\item \textcolor{orange}{\textbf{macOS}}: \\
+\item \textcolor{orange}{\textbf{macOS with Intel processor}}: \\
   \textit{/usr/local/share/openmha/examples/05-frequency-shifting}
+\item \textcolor{orange}{\textbf{macOS with ARM processor}}: \\
+  \textit{/opt/homebrew/share/openmha/examples/05-frequency-shifting}
 \end{itemize}
 
 \item In order to use the Matlab functions of openMHA type the following using the \textbf{Command Window:} 
@@ -640,8 +619,10 @@ into the \textbf{Command Window} \\
   {\ttfamily addpath(\textquotesingle{}/usr/lib/openmha/mfiles\textquotesingle{})}
 \item \textcolor{orange}{\textbf{Windows}}: \\ $\rightarrow$
   {\ttfamily addpath(\textquotesingle{}C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textquotesingle{})}
-\item \textcolor{orange}{\textbf{macOS}}: \\ $\rightarrow$
+\item \textcolor{orange}{\textbf{macOS with Intel processor}}: \\ $\rightarrow$
   {\ttfamily addpath(\textquotesingle{}/usr/local/lib/openmha/mfiles/\textquotesingle{})}
+\item \textcolor{orange}{\textbf{macOS with ARM processor}}: \\ $\rightarrow$
+  {\ttfamily addpath(\textquotesingle{}/opt/homebrew/lib/openmha/mfiles/\textquotesingle{})}
 \end{itemize}
 
 
@@ -686,14 +667,17 @@ into the \textbf{Command Window} \\
   $\rightarrow$ setenv(\textquotesingle
   LD\_LIBRARY\_PATH\textquotesingle,\textquotesingle\textquotesingle)} \\
   into the \textbf{Command Window} \\
-\textcolor{orange}{\textbf{MacOS only:}} \\Type: \\{\ttfamily $\rightarrow$ setenv(\textquotesingle PATH\textquotesingle, [getenv(\textquotesingle PATH\textquotesingle) \textquotesingle :/usr/local/bin\textquotesingle]);} \\
+\textcolor{orange}{\textbf{MacOS with Intel processor:}} Type: \\{\ttfamily $\rightarrow$ setenv(\textquotesingle PATH\textquotesingle, [getenv(\textquotesingle PATH\textquotesingle) \textquotesingle :/usr/local/bin\textquotesingle]);} \\
+into the \textbf{Command Window} \\  
+\textcolor{orange}{\textbf{MacOS with ARM processor:}} Type: \\{\ttfamily $\rightarrow$ setenv(\textquotesingle PATH\textquotesingle, [getenv(\textquotesingle PATH\textquotesingle) \textquotesingle :/opt/homebrew/bin\textquotesingle]);} \\
 into the \textbf{Command Window} \\  
 \item Use the Matlab/Octave \textbf{"Current Folder"} Section to navigate to:
 
 \begin{itemize}
 \item \textcolor{orange}{\textbf{Linux}}: \textit{/usr/share/openmha/examples/01-dynamic-compression} 
 \item \textcolor{orange}{\textbf{Windows}}: \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 01-dynamic-compression}
-\item \textcolor{orange}{\textbf{macOS}}: \textit{/usr/local/share/openmha/examples/01-dynamic-compression} 
+\item \textcolor{orange}{\textbf{macOS with Intel processor}}: \textit{/usr/local/share/openmha/examples/01-dynamic-compression} 
+\item \textcolor{orange}{\textbf{macOS with ARM processor}}: \textit{/opt/homebrew/share/openmha/examples/01-dynamic-compression} 
 \end{itemize}
 
 \item In order to use the Matlab functions of openMHA type the following using the \textbf{Command Window:} 
@@ -701,7 +685,8 @@ into the \textbf{Command Window} \\
 \begin{itemize}
 \item \textcolor{orange}{\textbf{Linux}}: {\ttfamily addpath(\textquotesingle{}/usr/lib/openmha/mfiles\textquotesingle{})}
 \item \textcolor{orange}{\textbf{Windows}}: {\ttfamily addpath(\textquotesingle{}C:\textbackslash Program Files\textbackslash openMHA\textbackslash mfiles\textquotesingle{})}
-\item \textcolor{orange}{\textbf{macOS}}: {\ttfamily addpath(\textquotesingle{}/usr/local/lib/openmha/mfiles/\textquotesingle{})}
+\item \textcolor{orange}{\textbf{macOS with Intel processor}}: {\ttfamily addpath(\textquotesingle{}/usr/local/lib/openmha/mfiles/\textquotesingle{})}
+\item \textcolor{orange}{\textbf{macOS with ARM processor}}: {\ttfamily addpath(\textquotesingle{}/opt/homebrew/lib/openmha/mfiles/\textquotesingle{})}
 \end{itemize}
 
 
@@ -713,7 +698,7 @@ into the \textbf{Command Window} \\
 
 
 \item The current gaintable {\ttfamily gtdata} and relevant parameters such as {\ttfamily gtmin} and {\ttfamily gtstep} (more information on these can be found under {\url{%
-          {http://www.openmha.org/docs/openMHA_plugins.pdf#subsection.2.1}}}
+          {http://www.openmha.org/docs/openMHA_plugins.pdf#subsection.5.1}}}
 \large) can be read out by: \\
 
 {\ttfamily gaintable = mha\_get(openmha,\textquotesingle{}mha.overlapadd.mhachain.dc.gtdata\textquotesingle{});}\\
@@ -787,7 +772,8 @@ The coherence between two live microphone signals is investigated. A JACK server
 \begin{itemize}
 \item \textcolor{orange}{\textbf{Linux}}: \textit{/usr/share/openmha/examples/15-ac-variables} 
 \item \textcolor{orange}{\textbf{Windows}}: \textit{C:\textbackslash Program Files\textbackslash openMHA\textbackslash examples\textbackslash 15-ac-variables}
-\item \textcolor{orange}{\textbf{macOS}}: \textit{/usr/local/share/openmha/examples/15-ac-variables} 
+\item \textcolor{orange}{\textbf{macOS with Intel processor}}: \textit{/usr/local/share/openmha/examples/15-ac-variables} 
+\item \textcolor{orange}{\textbf{macOS with ARM processor}}: \textit{/opt/homebrew/share/openmha/examples/15-ac-variables}
 \end{itemize}
 
 \item Open the Matlab script \textbf{\textit{acmatlab.m}} \\
@@ -887,7 +873,7 @@ For an input file with two channels and a sampling rate of 44.1 kHz. This could 
 
 \item \textbf{Configuration variables:} Each plugin has \textit{configuration variables} which can be adjusted accordingly. For each plugin the configuration variables are listed in the \textit{plugin manual} 
 \\(\footnotesize{\url{%
-          {http://www.openmha.org/docs/openMHA_plugins.pdf#subsection.16.3}}}
+          {http://www.openmha.org/docs/openMHA_plugins.pdf#subsection.19.3}}}
 \normalsize for sine plugin). These variables can be adjusted according to your requirements, such as the frequency of the sine wave ({\ttfamily f}), the RMS level ({\ttfamily lev}) or if the input signal should be added to the sine wave or replaced completely ({\ttfamily mode}). An extract from the \textit{plugin manual} is shown below in Figure \ref{fig:config_variables_sine}. 
 
 \begin{figure}[H]
