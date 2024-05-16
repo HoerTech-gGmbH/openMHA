@@ -4,16 +4,17 @@ layout: startpage
 
 ## Open community platform for hearing aid algorithm research
 
-The project *Open community platform for hearing aid algorithm research* funded by the National Institutes of Health (NIH Grant 1R01DC015429-01) aims at sustainable, focused research towards improvement and new types of assistive hearing systems. 
+The project *Open community platform for hearing aid algorithm research* funded by the National Institutes of Health (NIH Grant 1R01DC015429-01) and by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany's Excellence Strategy – EXC 2177/1 - Project ID 390895286 aims at sustainable, focused research towards improvement and new types of assistive hearing systems. 
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+<img src="/images/logo_nih.png" class="logo_large" style="margin-left: 10px; margin-right: 10px">
+<img src="/images/logo_dfg.jpg" class="logo_large" style="margin-left: 10px; margin-right: 10px">
+<img src="/images/logo_h4a.jpg" class="logo_large" style="margin-left: 10px; margin-right: 10px"> 
 
 [Project Overview (pdf)](/docs/ProjectOverview.pdf)
 
 **openMHA** is an open-source software platform for real-time audio signal processing, licensed under [AGPL-3.0](https://github.com/HoerTech-gGmbH/openMHA/blob/master/COPYING).
 For download instructions see [Download](/download).
-
-
-
-
 
 
 ### Project Partners
