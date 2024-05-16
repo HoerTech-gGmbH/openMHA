@@ -10,6 +10,7 @@ function [r,state] = mhactl_java(handle, eval, query)
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2011 2013 2014 2017 2020 2021 HörTech gGmbH
+% Copyright © 2024 Hörzentrum Oldenburg gGmbH
 
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -27,7 +28,10 @@ function [r,state] = mhactl_java(handle, eval, query)
 % A connection is identified by the triple host, portname, timeout
 persistent connections;
 persistent last_mhactl_java_invocation;
-
+global MHA_TCP_RETIRE_TIMEOUT;
+if isempty(MHA_TCP_RETIRE_TIMEOUT)
+  MHA_TCP_RETIRE_TIMEOUT = 1.2;
+end
 if isequal(handle, 'retire_connections')
   if ~isempty(connections)
     retire_connections(connections(2,:));
@@ -36,7 +40,7 @@ if isequal(handle, 'retire_connections')
 end
 
 if ~isempty(last_mhactl_java_invocation)
-  if (now() - last_mhactl_java_invocation) * 24 * 3600 > 1.2 && ~isempty(connections)
+  if (now() - last_mhactl_java_invocation) * 24 * 3600 > MHA_TCP_RETIRE_TIMEOUT && ~isempty(connections)
     retire_connections(connections(2,:));
     connections={};
   end
