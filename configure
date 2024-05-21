@@ -121,12 +121,22 @@ done
             WITH_JACK=yes
             # We do not want warnings from external headers, so use -isystem instead of -I
             # On arm macs homebrew saves its stuff into /opt/homebrew/...
-            if [ -d "/opt/homebrew/include" ]; then
-                MACINCLUDES+=" -isystem/opt/homebrew/include"
-            fi
-            if [ -d "/opt/homebrew/lib" ]; then
-                MACLDFLAGS+=" -L/opt/homebrew/lib"
-                echo LDFLAGS+=" -L/opt/homebrew/lib"
+            if [ "$ARCH" = "x86_64" ]; then
+                if [ -d "/usr/local/include" ]; then
+                    MACINCLUDES+=" -isystem/usr/local/include"
+                fi
+                if [ -d "/usr/local/lib" ]; then
+                    MACLDFLAGS+=" -L/usr/local/lib"
+                    echo LDFLAGS+=" -L/usr/local/lib"
+                fi
+            elif [ "$ARCH" = "arm64" ]; then
+                if [ -d "/opt/homebrew/include" ]; then
+                    MACINCLUDES+=" -isystem/opt/homebrew/include"
+                fi
+                if [ -d "/opt/homebrew/lib" ]; then
+                    MACLDFLAGS+=" -L/opt/homebrew/lib"
+                    echo LDFLAGS+=" -L/opt/homebrew/lib"
+                fi
             fi
             MACCXXFLAGS+="-Wno-error=unused-command-line-argument -Wimplicit-fallthrough"
     esac
