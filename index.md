@@ -18,11 +18,11 @@ For download instructions see [Download](/download).
 
 
 ### Project Partners
-<a class="link_inline" href="http://www.uol.de" > <img src="/images/logo_uol.png" class="logo" style="margin-left: 10px; margin-right: 20px">Carl von Ossietzky University Oldenburg
+<a class="link_inline" href="http://www.uol.de" > <img src="/images/logo_uol.png" class="logo" style="margin-left: 10px; margin-right: 20px">Carl von Ossietzky Universität Oldenburg
 
                           [Auditory Signal Processing and Hearing Devices](https://uol.de/en/auditory-signal-processing)
 
-<a class="link_inline" href="http://www.hoertech.de" > <img src="/images/logo_hoertech.png" class="logo" style="margin-left: 26px; margin-right: 20px">HörTech gGmbH, Oldenburg
+<a class="link_inline" href="http://www.hz-ol.de" > <img src="/images/logo_hzo.png" class="logo" style="margin-left: 26px; margin-right: 20px">Hörzentrum Oldenburg gGmbH
   
                           [HörTech Research & Development](https://www.hoertech.de/en/research/openmha.html) 
 
