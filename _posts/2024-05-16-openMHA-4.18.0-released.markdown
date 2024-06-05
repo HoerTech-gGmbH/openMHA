@@ -1,0 +1,45 @@
+---
+layout: post
+title:  "openMHA 4.18.0 released"
+date:   2024-05-16 08:00:00
+category: software
+tags: [release, 4.18.0]
+---
+
+__openMHA 4.18.0__ contains new examples and adds support for the latest versions of the supported operating systems.  
+
+Please note that a publication about the openMHA software is available, see [here](/publication/2021/12/30/openMHA-journal-publication.html) for details and please cite it when publishing your openMHA-based research.
+
+__New examples__  
+
+Example [32-ci-vocoder](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/32-ci-vocoder)
+
+- CI vocoder: Several new plugins and configurations for simulating and auralizing the (pulse-based) output of a CI for a given input signal (audio file or real-time microphone signal) are provided. Two signal processing methods have been implemented: the ACE ("advanced combination encoder", "n-of-m") strategy and the CIS ("continuous interleaved sampling") strategy. This example includes shell scripts for easy user interaction as well as numerous Matlab/Octave helper tools.
+
+Example [33-compile-plugin-on-PHL](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/33-compile-plugin-on-PHL)
+
+- Compilation of openMHA plugins on the Portable Hearing Lab (PHL): Tools and an example have been added to easily compile single plugins directly on the PHL. Please note that the current operating system for the PHL [Mahalia 4.18.0-r0](http://mahalia.openmha.org/mahalia_4.18.0-r0.img.gz) is required which has been released together with openMHA 4.18.0.
+
+Example [34-DNN-based-speech-enhancement](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/34-DNN-based-speech-enhancement)
+
+
+- Deep machine learning-based low-latency, real-time speech enhancement: Three approaches that use deep neural networks (DNN) trained in PyTorch for real-time speech enhancement in openMHA are provided. The methods run with an algorithmic delay of 5.4 ms using the four microphone input signals of the behind-the-ear ear-level device available with the PHL (but not using the PHL for processing). This is the first set of DNN-based algorithms provided with openMHA. This example also contains configurations for bilateral Adaptive Differential Microphones (ADM) and a binaural Minimum-Variance Distortionless-Response (MVDR) beamformer for reference.  
+
+Example [35-hearing-loss-simulation](https://github.com/HoerTech-gGmbH/openMHA/tree/master/examples/35-hearing-loss-simulation)
+
+- Hearing loss simulation: Two effects are implemented: A level-dependent amplification in 32 frequency bands is applied to simulate loss of sensitivity and spectral smearing is introduced to simulate a reduced frequency selectivity of the impaired cochlea. Two versions of the configuration are provided, one for live signal processing, one for sound file processing. Parameters can be customized according to the user requirements.
+
+
+
+__Support for operating systems__ 
+
+- Mahalia (Linux operating system for the PHL): The [Mahalia 4.18.0-r0 disk image](http://mahalia.openmha.org/mahalia_4.18.0-r0.img.gz) is available for download under [mahalia.openmha.org](https://mahalia.openmha.org). 
+
+- Ubuntu 24.04: Support for the latest Ubuntu LTS version has been added.
+
+- macOS: A [Homebrew](https://brew.sh/) formula for the installation of openMHA replaces the .pkg installer. Please note that for an upgrade from the .pkg-installed version of openMHA the uninstallation of the previous version is required - for details, see the [installation manual](https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md#ii-mac-installation-with-homebrew).   
+  ARM-based Mac computers (Apple Silicon) are also supported by this installer.  
+
+
+
+
