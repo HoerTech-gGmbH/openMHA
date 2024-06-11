@@ -208,6 +208,8 @@ done
         armhf)
             # User wants to cross-compile for 32 bit ARM Linux
             echo "COMPILERPREFIX=arm-linux-gnueabihf-"
+            echo "CXXFLAGS += -D_FILE_OFFSET_BITS=64"
+            echo "CFLAGS += -D_FILE_OFFSET_BITS=64"
             ;;
         arm64)
             # This is most likely an ARM Mac. No extra settings.
@@ -215,15 +217,23 @@ done
         arm*)
             # Some variants of 32 bit ARM Linux, native compilation.
             echo "SSE+=-mcpu=cortex-a8 -mfloat-abi=hard -mfpu=neon"
+            echo "CXXFLAGS += -D_FILE_OFFSET_BITS=64"
+            echo "CFLAGS += -D_FILE_OFFSET_BITS=64"
             ;;
         aarch64)
             # 64 bit ARM Linux, native compilation
             echo "SSE+=-mcpu=cortex-a73.cortex-a53" # Remove this line if the
             # generated binaries do not execute correctly on your aarch64 board.
             ;;
-        x86_64*|i686*)
-            # PC (Windows, Linux, or Mac)
+        x86_64*)
+            # 64 bit PC (Windows, Linux, or Mac)
             echo "SSE+=-msse -msse2 -mfpmath=sse"
+            ;;
+        i686*)
+            # 32 bit PC (Windows, Linux, or Mac)
+            echo "SSE+=-msse -msse2 -mfpmath=sse"
+            echo "CXXFLAGS += -D_FILE_OFFSET_BITS=64"
+            echo "CFLAGS += -D_FILE_OFFSET_BITS=64"
             ;;
     esac
 
