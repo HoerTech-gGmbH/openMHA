@@ -36,10 +36,10 @@ def openmha_build_steps(stage_name) {
   def mac = (system == "mac")
   def docs = (devenv == "mhadoc") //Create PDFs only on 1 of the parallel builds
 
-  // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
-  def cpus = 2 // default on other systems is 2 cores
+  // Compilation on ARM is the slowest, assign 7 CPU cores to each ARM build job
+  def cpus = 3 // default on other systems is 3 cores
   if (arch == "armv7" || arch == "aarch64") {
-    cpus = 5
+    cpus = 7
   }
   if (system == "windows") {
     cpus = 5

@@ -32,10 +32,10 @@ def openmha_build_steps(stage_name) {
   def mac = (system == "mac")
   def docs = (devenv == "mhadoc") //Create PDFs only on 1 of the parallel builds
 
-  // Compilation on ARM is the slowest, assign 5 CPU cores to each ARM build job
-  def cpus = 2 // default on other systems is 2 cores
+  // Compilation on ARM is the slowest, assign 7 CPU cores to each ARM build job
+  def cpus = 3 // default on other systems is 3 cores
   if (arch == "armv7" || arch == "aarch64") {
-    cpus = 5
+    cpus = 7
   }
   if (system == "windows") {
     cpus = 5
@@ -170,27 +170,69 @@ pipeline {
                     }
                 }
                 stage(                         "noble && x86_64 && mhadev") {
-                    agent {label               "noble && x86_64 && mhadev"}
+                    agent {
+                        docker {
+                            image "hoertech/docker-buildenv:mha_x86_64-linux-gcc-13"
+                            label "docker_x86_64"
+                            alwaysPull true
+                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                        }
+                    }
                     steps {openmha_build_steps("noble && x86_64 && mhadev")}
                 }
                 stage(                         "jammy && x86_64 && mhadoc") {
-                    agent {label               "jammy && x86_64 && mhadoc"}
+                    agent {
+                        docker {
+                            image "hoertech/docker-buildenv:mha_x86_64-linux-gcc-11-doc"
+                            label "docker_x86_64"
+                            alwaysPull true
+                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                        }
+                    }
                     steps {openmha_build_steps("jammy && x86_64 && mhadoc")}
                 }
                 stage(                         "focal && x86_64 && mhadev") {
-                    agent {label               "focal && x86_64 && mhadev"}
+                    agent {
+                        docker {
+                            image "hoertech/docker-buildenv:mha_x86_64-linux-gcc-9"
+                            label "docker_qemu"
+                            alwaysPull true
+                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                        }
+                    }
                     steps {openmha_build_steps("focal && x86_64 && mhadev")}
                 }
                 stage(                         "bullseye && armv7 && mhadev") {
-                    agent {label               "bullseye && armv7 && mhadev"}
+                    agent {
+                        docker {
+                            image "hoertech/docker-buildenv:mha_armv7-linux-gcc-10"
+                            label "docker_qemu"
+                            alwaysPull true
+                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                        }
+                    }
                     steps {openmha_build_steps("bullseye && armv7 && mhadev")}
                 }
                 stage(                         "bullseye && aarch64 && mhadev") {
-                    agent {label               "bullseye && aarch64 && mhadev"}
+                    agent {
+                        docker {
+                            image "hoertech/docker-buildenv:mha_aarch64-linux-gcc-10"
+                            label "docker_qemu"
+                            alwaysPull true
+                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                        }
+                    }
                     steps {openmha_build_steps("bullseye && aarch64 && mhadev")}
                 }
                 stage(                         "bionic && armv7 && mhadev") {
-                    agent {label               "bionic && armv7 && mhadev"}
+                    agent {
+                        docker {
+                            image "hoertech/docker-buildenv:mha_armv7-linux-gcc-7"
+                            label "docker_qemu"
+                            alwaysPull true
+                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                        }
+                    }
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
                 }
                 stage(                         "windows && x86_64 && mhadev") {
