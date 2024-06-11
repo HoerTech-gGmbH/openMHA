@@ -175,7 +175,7 @@ pipeline {
                             image "hoertech/docker-buildenv:mha_x86_64-linux-gcc-13"
                             label "docker_x86_64"
                             alwaysPull true
-                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                            args "-v /home/u:/home/u --hostname docker"
                         }
                     }
                     steps {openmha_build_steps("noble && x86_64 && mhadev")}
@@ -186,7 +186,7 @@ pipeline {
                             image "hoertech/docker-buildenv:mha_x86_64-linux-gcc-11-doc"
                             label "docker_x86_64"
                             alwaysPull true
-                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                            args "-v /home/u:/home/u --hostname docker"
                         }
                     }
                     steps {openmha_build_steps("jammy && x86_64 && mhadoc")}
@@ -197,7 +197,7 @@ pipeline {
                             image "hoertech/docker-buildenv:mha_x86_64-linux-gcc-9"
                             label "docker_qemu"
                             alwaysPull true
-                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                            args "-v /home/u:/home/u --hostname docker"
                         }
                     }
                     steps {openmha_build_steps("focal && x86_64 && mhadev")}
@@ -208,7 +208,7 @@ pipeline {
                             image "hoertech/docker-buildenv:mha_armv7-linux-gcc-10"
                             label "docker_qemu"
                             alwaysPull true
-                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                            args "-v /home/u:/home/u --hostname docker"
                         }
                     }
                     steps {openmha_build_steps("bullseye && armv7 && mhadev")}
@@ -219,7 +219,7 @@ pipeline {
                             image "hoertech/docker-buildenv:mha_aarch64-linux-gcc-10"
                             label "docker_qemu"
                             alwaysPull true
-                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                            args "-v /home/u:/home/u --hostname docker"
                         }
                     }
                     steps {openmha_build_steps("bullseye && aarch64 && mhadev")}
@@ -230,7 +230,7 @@ pipeline {
                             image "hoertech/docker-buildenv:mha_armv7-linux-gcc-7"
                             label "docker_qemu"
                             alwaysPull true
-                            args "-v /home/jenkinsagent:/home/u --hostname docker"
+                            args "-v /home/u:/home/u --hostname docker"
                         }
                     }
                     steps {openmha_build_steps("bionic && armv7 && mhadev")}
