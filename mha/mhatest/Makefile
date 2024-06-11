@@ -16,16 +16,10 @@
 
 include ../../config.mk
 include ../../magic.mk
-ifeq "$(findstring arm, $(ARCH))" "arm"
-all: paralleloctavetests reproducibilitytest
-else ifeq "$(findstring aarch64, $(ARCH))" "aarch64"
-all: paralleloctavetests reproducibilitytest
-else
+
 all: octavetest reproducibilitytest
-endif
 
 unit-tests:
-
 
 paralleloctavetests: paralleloctavetest_0 paralleloctavetest_1
 
