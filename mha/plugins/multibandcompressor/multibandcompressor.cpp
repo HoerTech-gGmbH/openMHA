@@ -91,7 +91,7 @@ private:
     MHA_AC::waveform_t cfv;
     /** vector of edge frequencies / Hz */
     MHA_AC::waveform_t efv;
-    /** vector of band-weigths (sum of squared fft-bin-weigths)/num_frames */
+    /** vector of band-weights (sum of squared fft-bin-weights)/num_frames */
     MHA_AC::waveform_t bwv;
 };
 

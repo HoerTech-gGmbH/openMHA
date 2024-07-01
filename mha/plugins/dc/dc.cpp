@@ -442,7 +442,7 @@ dc_vars_t::dc_vars_t(MHAParser::parser_t& p)
       center_frequencies("nominal center frequencies of filterbank bands"),
       edge_frequencies("edge frequencies of filterbank bands"),
       band_weights("Weights of the individual frequency bands.\n"
-                   "Computed as (sum of squared fft-bin-weigths) / num_frames.")
+                   "Computed as (sum of squared fft-bin-weights) / num_frames.")
 {
     p.set_node_id("dc");
     p.insert_member(gtmin);
