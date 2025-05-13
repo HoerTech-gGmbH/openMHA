@@ -51,7 +51,7 @@ function output_levels = dc_plot_io(gtmin, gtstep, gtdata, input_levels, log_int
   dsc.mha.dc.tau_decay = zeros(1,channels);
 
   % make sure we can get input and output levels in and out of mha
-  max_level = max(max(input_levels)) + max(max(gtdata)) + 6;
+  max_level = max(max(input_levels)) + max(0,max(max(gtdata))) + 6;
   dsc.mha.calib_in.peaklevel = ones(1,channels) * max_level;
   dsc.mha.calib_out.peaklevel = ones(1,channels) * max_level;
 
