@@ -72,12 +72,16 @@ endif # end of (if linux else not linux)
 
 
 
+ifeq "$(USE_SYSTEM_FFTW)" "yes"
+LDLIBS += -lsfftw -lsrfftw
+else
 FFTW_LIB = ../../external_libs/$(PLATFORM_CC)/lib/libsfftw.a
 RFFTW_LIB = ../../external_libs/$(PLATFORM_CC)/lib/libsrfftw.a
 MHA_FFTW_OBJECTS = $(shell ar t $(FFTW_LIB) | grep -v _.SYMDEF)
 MHA_RFFTW_OBJECTS = $(shell ar t $(RFFTW_LIB) | grep -v _.SYMDEF)
 
 OBJECTS += $(MHA_FFTW_OBJECTS) $(MHA_RFFTW_OBJECTS)
+endif
 
 $(BUILD_DIR)/$(libmha)$(DYNAMIC_LIB_EXT): $(OBJECTS:%.o=$(BUILD_DIR)/%.o)
 
@@ -85,11 +89,13 @@ ifeq "MinGW" "$(PLATFORM)"
 LDLIBS += -Wl,--out-implib,$(basename $@).a
 endif
 
+ifneq "$(USE_SYSTEM_FFTW)" "yes"
 $(MHA_FFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(FFTW_LIB) $(BUILD_DIR)/.directory
 	ar x $< $(notdir $@) && mv $(notdir $@) $@
 
 $(MHA_RFFTW_OBJECTS:%.o=$(BUILD_DIR)/%.o): $(RFFTW_LIB) $(BUILD_DIR)/.directory
 	ar x $< $(notdir $@) && mv $(notdir $@) $@
+endif
 
 ifeq "$(PLATFORM)" "linux"
 FIND_LIBOPENMHA_RPATH = -Wl,-rpath=./$(BUILD_DIR)

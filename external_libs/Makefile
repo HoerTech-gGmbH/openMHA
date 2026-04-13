@@ -19,9 +19,14 @@ include ../magic.mk
 
 EXTERNAL_LIBS=$(realpath .)
 USE_SYSTEM_ASIO ?= no
+USE_SYSTEM_FFTW ?= no
 ASIO_INCLUDE_DIR ?= /usr/include
 
-TARGETS = libxdf.is_installed libemx.is_installed fftw.is_installed network-asio.is_installed
+TARGETS = libxdf.is_installed libemx.is_installed network-asio.is_installed
+
+ifneq "$(USE_SYSTEM_FFTW)" "yes"
+TARGETS += fftw.is_installed
+endif
 
 include ../rules.mk
 
@@ -58,6 +63,7 @@ CROSS_COMPILE=--build=`./config.guess` --host=arm-linux-gnueabi
 endif
 
 # Build fftw-2
+ifneq "$(USE_SYSTEM_FFTW)" "yes"
 $(BUILD_DIR)/fftw.is_installed: $(BUILD_DIR)/fftw.is_configured
 	cd fftw-2.1.5/. && $(MAKE) -j 1 install
 	cd "$(EXTERNAL_LIBS)" && touch $@
@@ -91,6 +97,7 @@ $(BUILD_DIR)/fftw.is_configured: $(BUILD_DIR)/.directory
 	sleep 0.01 && touch fftw-2.1.5/Makefile.in
 	cd fftw-2.1.5/. && ./configure --enable-static --disable-shared --prefix="$(EXTERNAL_LIBS)/$(BUILD_DIR)" --bindir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/bin --libdir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/lib --includedir="$(EXTERNAL_LIBS)/$(BUILD_DIR)"/include  --enable-float --enable-type-prefix --disable-fast-install --disable-fortran $(CROSS_COMPILE)
 	cd "$(EXTERNAL_LIBS)" && touch $@
+endif
 
 
 googlemock: $(BUILD_DIR)/googlemock.is_installed
