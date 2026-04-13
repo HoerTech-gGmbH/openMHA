@@ -47,8 +47,8 @@ endif
 SOURCE_DIR = src
 
 # The git commit SHA is compiled into the binaries for reproducible research.
-# Detect current git commit hash:
-GITCOMMITHASH = $(shell $(GIT_DIR)/mha/tools/get_git_commit_hash.sh)
+# Can be overridden via setting the environment variable.
+GITCOMMITHASH ?= $(shell $(GIT_DIR)/mha/tools/get_git_commit_hash.sh)
 GITCOMMITHASHCFLAGS = -DGITCOMMITHASH="\"$(GITCOMMITHASH)\""
 
 # The name of the toolbox library.
