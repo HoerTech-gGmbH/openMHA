@@ -92,21 +92,21 @@ int rnnoise_init(DenoiseState *st)
 {
   memset(st, 0, sizeof(*st));
   st->rnn.model = &rnnoise_model_orig;
-  st->rnn.gru_2_1_state = calloc(sizeof(float), st->rnn.model->gru_2_1_size * NUM_GROUPS);
-  st->rnn.gru_2_2_state = calloc(sizeof(float), st->rnn.model->gru_2_2_size * NUM_GROUPS);
-  st->rnn.dconv_5_buffer = calloc(sizeof(float), st->rnn.model->dconv_5_size * 5 * NUM_GROUPS);
-  st->rnn.dconv_3_buffer = calloc(sizeof(float), st->rnn.model->dconv_3_size * 3 * NUM_GROUPS);
+  st->rnn.gru_2_1_state = calloc(st->rnn.model->gru_2_1_size * NUM_GROUPS, sizeof(*st->rnn.gru_2_1_state));
+  st->rnn.gru_2_2_state = calloc(st->rnn.model->gru_2_2_size * NUM_GROUPS, sizeof(*st->rnn.gru_2_2_state));
+  st->rnn.dconv_5_buffer = calloc(st->rnn.model->dconv_5_size * 5 * NUM_GROUPS, sizeof(*st->rnn.dconv_5_buffer));
+  st->rnn.dconv_3_buffer = calloc(st->rnn.model->dconv_3_size * 3 * NUM_GROUPS, sizeof(*st->rnn.dconv_3_buffer));
   st->rnn.dconv_3_idx_write = 2;
   st->rnn.dconv_3_idx_start = 0;
   st->rnn.dconv_5_idx_write = 4;
   st->rnn.dconv_5_idx_start = 0;
   st->buffer_start_idx = 0;
   st->buffer_write_idx = LEN_FILT_T - 1;
-  st->filtering_buffer_i = calloc(sizeof(float), FFT_HALF * LEN_FILT_T);
-  st->filtering_buffer_r = calloc(sizeof(float), FFT_HALF * LEN_FILT_T);
-  st->filter_b = calloc(sizeof(float), FFT_HALF * 2 * 2);
-  st->filter_t = calloc(sizeof(float), FFT_HALF * 2 * LEN_FILT_T);
-  st->features = calloc(sizeof(float), FEAT_LEN);
+  st->filtering_buffer_i = calloc(FFT_HALF * LEN_FILT_T, sizeof(*st->filtering_buffer_i));
+  st->filtering_buffer_r = calloc(FFT_HALF * LEN_FILT_T, sizeof(*st->filtering_buffer_r));
+  st->filter_b = calloc(FFT_HALF * 2 * 2, sizeof(*st->filter_b));
+  st->filter_t = calloc(FFT_HALF * 2 * LEN_FILT_T, sizeof(*st->filter_t));
+  st->features = calloc(FEAT_LEN, sizeof(*st->features));
   return 0;
 }
 
