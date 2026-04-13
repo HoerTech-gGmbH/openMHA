@@ -18,6 +18,8 @@ include ../config.mk
 include ../magic.mk
 
 EXTERNAL_LIBS=$(realpath .)
+USE_SYSTEM_ASIO ?= no
+ASIO_INCLUDE_DIR ?= /usr/include
 
 TARGETS = libxdf.is_installed libemx.is_installed fftw.is_installed network-asio.is_installed
 
@@ -118,6 +120,14 @@ googletest/WORKSPACE:
 
 network-asio: $(BUILD_DIR)/network-asio.is_installed
 
+ifeq "$(USE_SYSTEM_ASIO)" "yes"
+$(BUILD_DIR)/network-asio.is_installed: $(BUILD_DIR)/include/.directory
+	test -d "$(ASIO_INCLUDE_DIR)/asio"
+	test -f "$(ASIO_INCLUDE_DIR)/asio.hpp"
+	cp -a "$(ASIO_INCLUDE_DIR)/asio" $(BUILD_DIR)/include/
+	cp -a "$(ASIO_INCLUDE_DIR)/asio.hpp" $(BUILD_DIR)/include/
+	touch $@
+else
 $(BUILD_DIR)/network-asio.is_installed: network-asio/.gitignore \
 	$(BUILD_DIR)/include/.directory
 	cp -a network-asio/asio/include/asio* $(BUILD_DIR)/include/
@@ -126,6 +136,7 @@ $(BUILD_DIR)/network-asio.is_installed: network-asio/.gitignore \
 network-asio/.gitignore:
 	git clone https://github.com/chriskohlhoff/asio network-asio
 	cd network-asio && git checkout asio-1-20-0 # release 1.20.0
+endif
 
 libemx: $(BUILD_DIR)/libemx.is_installed
 
