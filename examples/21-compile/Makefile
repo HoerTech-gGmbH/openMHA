@@ -53,4 +53,4 @@ clean:
 
 # Compile the plugin
 example21: example21.cpp
-	$(CXX) -shared -o example21$(DYNAMIC_LIB_EXT) $(CXXFLAGS) $(INCLUDES) $(LIBS) $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -o example21$(DYNAMIC_LIB_EXT) $< $(LIBS)

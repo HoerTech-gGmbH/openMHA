@@ -38,24 +38,24 @@ all: $(BUILD_DIR)/.directory $(patsubst %,$(BUILD_DIR)/%,$(TARGETS)) $(PLUGIN_AR
 
 # Pattern for building object files from C++ sources - with headers
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(SOURCE_DIR)/%.hh $(BUILD_DIR)/.directory
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 # Pattern for building object files from C++ sources - w/o headers
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(BUILD_DIR)/.directory
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 # Pattern for building object files from C sources - with headers
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c $(SOURCE_DIR)/%.h $(BUILD_DIR)/.directory
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 # Pattern for building object files from C sources - w/o headers
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c $(BUILD_DIR)/.directory
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 
 # Pattern for building object containing the git commit hash for reproducibility
 $(BUILD_DIR)/%_mha_git_commit_hash.o: $(GIT_DIR)/mha/libmha/src/mha_git_commit_hash.cpp $(BUILD_DIR)/.directory
-	$(CXX) $(CXXFLAGS) $(GITCOMMITHASHCFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(GITCOMMITHASHCFLAGS) -c -o $@ $<
 
 # Pattern for linking shared libraries and dynamic plugins
 $(BUILD_DIR)/%$(DYNAMIC_LIB_EXT):
@@ -94,7 +94,7 @@ execute-unit-tests: $(BUILD_DIR)/unit-test-runner
 unit_tests_test_files = $(wildcard $(SOURCE_DIR)/*_unit_tests.cpp)
 
 $(BUILD_DIR)/unit-test-runner: $(BUILD_DIR)/.directory $(unit_tests_test_files) $(patsubst %_unit_tests.cpp, %.cpp , $(unit_tests_test_files))
-	if test -n "$(unit_tests_test_files)"; then $(CXX) $(CXXFLAGS) --coverage -o $@ $(wordlist 2, $(words $^), $^) $(LDFLAGS) $(LDLIBS) -lgmock_main -lgmock -lgtest -lpthread; fi
+	if test -n "$(unit_tests_test_files)"; then $(CXX) $(CPPFLAGS) $(CXXFLAGS) --coverage -o $@ $(wordlist 2, $(words $^), $^) $(LDFLAGS) $(LDLIBS) -lgmock_main -lgmock -lgtest -lpthread; fi
 
 # Static Pattern Rule defines standard prerequisites for plugins
 $(PLUGINS:%=$(BUILD_DIR)/%$(PLUGIN_EXT)): %$(PLUGIN_EXT): %.o %_mha_git_commit_hash.o

@@ -15,7 +15,7 @@
 include ../../config.mk
 
 SendStringMarkers: SendStringMarkers.cpp
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $< -std=$(CXXSTANDARD) -g -o $@ -llsl
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< $(LDFLAGS) -std=$(CXXSTANDARD) -g -o $@ -llsl
 
 ifneq ("$(WITH_LSL)", "yes")
 	$(error This example needs LSL to compile)
