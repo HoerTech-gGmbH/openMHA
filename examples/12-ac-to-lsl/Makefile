@@ -14,7 +14,7 @@
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 include ../../config.mk
 receive_lsl: receive_lsl.cpp
-	$(CXX) receive_lsl.cpp -std=$(CXXSTANDARD) -g -o receive_lsl -llsl
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) receive_lsl.cpp -std=$(CXXSTANDARD) -g -o receive_lsl -llsl
 # Local Variables:
 # compile-command: "make"
 # End:

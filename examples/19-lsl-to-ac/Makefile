@@ -17,7 +17,7 @@
 
 include ../../config.mk
 receive_lsl: send_lsl.cpp
-	$(CXX) send_lsl.cpp -std=$(CXXSTANDARD) -g -o send_lsl -llsl
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) send_lsl.cpp -std=$(CXXSTANDARD) -g -o send_lsl -llsl
 # Local Variables:
 # compile-command: "make"
 # End:
