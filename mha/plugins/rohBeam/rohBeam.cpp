@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2022 2026 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -14,23 +14,23 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <cmath>
 #include "rohBeam.hh"
 #include "mha_utils.hh"
 using namespace Eigen;
 
 using MHAUtils::is_denormal;
-
-#ifdef __clang__ // Clang has the POSIX implementation of the bessel function
-#include <cmath>
 double rohBeam::j0(double x){
+#ifdef __clang__ // Clang has the Posix implementation of the bessel function j0
+#ifdef _WIN32    // But on Windows Clang, it is named _j0
+    return ::_j0(x);
+#else // i.e. still __clang__ but not _WIN32
     return ::j0(x);
+#endif // _Win32 
+#else // i.e. not __clang__, all operating systems
+    return std::cyl_bessel_j(0,x); 
+#endif // __clang__
 }
-#else // GCC has the spherical bessel function in namespace std.
-#include <cmath>
-double rohBeam::j0(double x){
-    return std::cyl_bessel_j(0,x);
-}
-#endif
 
 namespace rohBeam {
 

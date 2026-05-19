@@ -3,6 +3,7 @@
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2021 HörTech gGmbH
+% Copyright © 2026 Hörzentrum Oldenburg gGmbH
 
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -33,8 +34,15 @@ function test_mhaioportaudio
         end
         rethrow(e);
       end
-    else % On other OS, the above error is not ignored.
-      mha_set(mha,'iolib','MHAIOPortAudio');
+    else % On other OS, portaudio can fail in containers without audio.
+      try
+        mha_set(mha,'iolib','MHAIOPortAudio');
+      catch e
+        if ~isempty(strfind(e.message,'Unanticipated host error'))
+          return; % Skip this test in environments without audio devices.
+        end
+        rethrow(e);
+      end
     end
     % Get monitor variables added in T1588. We can only test for presence
     % and correct default values as there's no guarantee the test machine

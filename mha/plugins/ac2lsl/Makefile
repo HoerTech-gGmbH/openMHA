@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2018 2019 2020 HörTech gGmbH
+# Copyright © 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +17,7 @@
 NEEDS_LSL = yes
 
 include ../plugin.mk
+LDLIBS += -lpthread
 
 # Local Variables:
 # compile-command: "make"

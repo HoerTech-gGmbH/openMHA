@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
+# Copyright © 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -184,7 +185,11 @@ LDLIBS += -l$(MHATOOLBOX_NAME)
 # before it.
 
 ifeq "$(NEEDS_LSL)" "yes"
+ifeq "$(PLATFORM)" "Darwin"
+$(PLUGIN_AND_TEST_ARTIFACTS): LDLIBS += -framework lsl
+else
 $(PLUGIN_AND_TEST_ARTIFACTS): LDLIBS += -llsl
+endif
 ifneq "$(WITH_LSL)" "yes"
 # Do not compile unit test if lsl not available.
 $(BUILD_DIR)/unit-test-runner:

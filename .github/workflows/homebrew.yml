@@ -1,0 +1,93 @@
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
+# Copyright © 2026 Hörzentrum Oldenburg gGmbH
+#
+# openMHA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# openMHA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License, version 3 for more details.
+#
+# You should have received a copy of the GNU Affero General Public License,
+# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+name: openMHA Homebrew Formula Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  homebrew:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos-arm64
+            runs_on: macos-latest
+          - name: macos-intel
+            runs_on: macos-26-intel
+
+    runs-on: ${{ matrix.runs_on }}
+
+    steps:
+      - name: Checkout openMHA source repository
+        uses: actions/checkout@v5
+
+      - name: Build openMHA formula for current openMHA commit
+        shell: bash
+        run: |
+          set -eux
+          brew tap labstreaminglayer/tap
+          brew install lsl
+          ls $(brew --prefix)/Frameworks/lsl.framework/Headers/*.h || true
+          ls $(brew --prefix)/
+
+          brew tap openmha/tap
+          brew formula openmha || true
+          brew --repo openmha/tap || true
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SOURCE_REPO='${{ github.event.pull_request.head.repo.full_name }}'
+            SOURCE_REVISION='${{ github.event.pull_request.head.sha }}'
+          else
+            SOURCE_REPO='${{ github.repository }}'
+            SOURCE_REVISION='${{ github.sha }}'
+          fi
+
+          cat > $(brew formula openmha) <<EOF
+          class Openmha < Formula
+            SOURCE_REVISION = "${SOURCE_REVISION}"
+
+            desc "Open Master Hearing Aid (openMHA)"
+            homepage "http://www.openmha.org/"
+            url "https://github.com/${SOURCE_REPO}.git", :using => :git, :revision => SOURCE_REVISION
+            version SOURCE_REVISION[0, 12]
+            license "AGPL-3.0-only"
+
+            depends_on "jack"
+            depends_on "qjackctl" => :recommended
+            depends_on "libsndfile"
+            depends_on "pkgconfig" => :build
+            depends_on "portaudio"
+            depends_on "liblo"
+            depends_on "eigen" => :build
+            depends_on "coreutils" => :build
+            depends_on "labstreaminglayer/tap/lsl"
+            depends_on "pytorch"
+            depends_on "cmake" => :build
+            depends_on "boost" => :build
+            depends_on "openjdk" => :recommended
+            depends_on "octave" => :recommended
+
+            def install
+              system "./configure", "--prefix=#{prefix}"
+              system "HOMEBREW_OPENMHA_TAG=#{SOURCE_REVISION} make homebrew"
+            end
+          end
+          EOF
+
+          cat $(brew formula openmha)
+          brew install openmha

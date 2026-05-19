@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2009 2010 2012 2013 2016 2017 HörTech gGmbH
+// Copyright © 2026 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -205,7 +206,7 @@ namespace MHAFilter {
                                 o << ",";
                         }
                 }
-                o << "] delay=" << (delay?(delay->inspect()):0)
+                o << "] delay=" << (delay?(delay->inspect()):"0")
                   << " envelope_delay=" << MHAParser::StrCnv::val2str(envelope_delay)
                   << " resynthesis_gain=" << MHAParser::StrCnv::val2str(resynthesis_gain)
                   << " cf=" << MHAParser::StrCnv::val2str(cf_)

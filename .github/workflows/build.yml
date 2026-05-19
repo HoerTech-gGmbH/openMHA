@@ -1,0 +1,514 @@
+# This file is part of the HörTech Open Master Hearing Aid (openMHA)
+# Copyright © 2026 Hörzentrum Oldenburg gGmbH
+#
+# openMHA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# openMHA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License, version 3 for more details.
+#
+# You should have received a copy of the GNU Affero General Public License,
+# version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
+
+name: openMHA Github Actions Build
+
+on:
+  push:
+  pull_request:
+
+env:
+  MINGW_LIBLSL_REF: v1.17.7
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # 1) Ubuntu 24.04
+          - name: ubuntu-24.04
+            runs_on: ubuntu-24.04
+            # Only one of the following containers can be non-empty
+            job_container: "" # Job-level docker container
+            step_container: "" # Step-level docker container
+            platform: linux
+            shell: bash
+            arch: amd64
+            
+
+          # 2) Ubuntu 26.04
+          - name: ubuntu-26.04
+            runs_on: ubuntu-latest
+            # Only one of the following containers can be non-empty
+            job_container: ubuntu:26.04 # Job-level docker container
+            step_container: ""          # Step-level docker container
+            platform: linux
+            shell: bash
+            arch: amd64
+
+          # 3) Ubuntu 26.04 ARM64
+          - name: ubuntu-26.04-arm64
+            runs_on: ubuntu-24.04-arm
+            # Only one of the following containers can be non-empty
+            job_container: ubuntu:26.04 # Job-level docker container
+            step_container: ""          # Step-level docker container
+            platform: linux
+            shell: bash
+            arch: arm64
+
+          # 4) Ubuntu 26.04 ARMHF
+          - name: ubuntu-26.04-armhf
+            runs_on: ubuntu-24.04-arm
+            # Only one of the following containers can be non-empty
+            job_container: ""              # Job-level docker container
+            step_container: "ubuntu:26.04" # Step-level docker container
+            docker_platform: "linux/arm/v7"
+            uname_m: armv7l
+            platform: linux
+            shell: bash
+            arch: armhf
+
+          # 5) Windows
+          - name: windows
+            runs_on: windows-latest
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+            platform: windows
+            shell: msys2 {0}
+            arch: x64
+            msystem: UCRT64
+            msys2_root: /ucrt64
+
+          # 6) Windows ARM64
+          - name: windows-arm64
+            runs_on: windows-11-arm
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+            platform: windows
+            shell: msys2 {0}
+            arch: arm64
+            msystem: CLANGARM64
+            msys2_root: /clangarm64
+
+          # 7) macOS ARM (latest)
+          - name: macos-arm64
+            runs_on: macos-latest
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+            platform: macos
+            shell: bash
+
+          # 8) macOS Intel (latest available Intel image)
+          - name: macos-intel
+            runs_on: macos-26-intel
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+            platform: macos
+            shell: bash
+
+          # 9) Ubuntu 22.04
+          - name: ubuntu-22.04
+            runs_on: ubuntu-22.04
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+            platform: linux
+            shell: bash
+            arch: amd64
+
+          # 10) Ubuntu 22.04 ARM64
+          - name: ubuntu-22.04-arm64
+            runs_on: ubuntu-22.04-arm
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+            platform: linux
+            shell: bash
+            arch: arm64
+
+
+    runs-on: ${{ matrix.runs_on }}
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+
+    env:
+      D: ${{ matrix.step_container != '' && 'docker exec build_env' || '' }}
+      DEBIAN_FRONTEND: noninteractive
+
+    # Set container for whole job only if it's needed
+    container: ${{ matrix.job_container != '' && matrix.job_container || null }}
+
+    steps:
+      - name: Set up step container for Linux ARMHF builds
+        if: matrix.step_container != ''
+        run: |
+          set -eux
+          docker create --name build_env --platform ${{ matrix.docker_platform }} -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" --env DEBIAN_FRONTEND=noninteractive ${{ matrix.step_container }} sleep 99999
+          docker start build_env
+          hostarch=$($D uname -m)
+          # Modify uname output for configure scripts
+          $D mv /usr/bin/uname /usr/bin/uname.orig
+          cat <<EOF >uname-wrapper.sh
+          #!/bin/sh
+          /usr/bin/uname.orig "\$@" | sed -e s/$hostarch/${{ matrix.uname_m }}/
+          EOF
+          docker cp uname-wrapper.sh build_env:/usr/bin/uname
+          $D chown root:root /usr/bin/uname
+          $D chmod +x /usr/bin/uname
+          $D ls -l /usr/bin/uname
+          $D cat /usr/bin/uname
+          $D uname -a
+          rm uname-wrapper.sh
+
+      - name: Install sudo for container builds (Linux)
+        if: matrix.job_container != '' || matrix.step_container != ''
+        run: |
+          set -eux
+          $D apt-get update
+          $D apt-get install -y sudo
+
+      # ---------------------------
+      # Linux: Dependencies
+      # ---------------------------
+      - name: Install dependencies (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          set -eux
+
+          $D sudo apt-get update
+          $D sudo apt-get install -y \
+                       git g++ make libsndfile1-dev jackd2 portaudio19-dev \
+                       libjack-jackd2-dev liblo-dev octave-signal patchelf \
+                       zip libx11-dev x11proto-video-dev libxv-dev libeigen3-dev \
+                       ruby-dev libboost-dev patchelf \
+                       libboost-system-dev netcat-openbsd wget \
+                       dpkg-dev lsb-release php-xml gnupg1 cmake
+      - name: Install documentation build dependencies (Linux)
+        if: matrix.name == 'ubuntu-22.04' || matrix.name == 'ubuntu-26.04-when-we-have-a-real-runner-for-it'
+        run: |
+          set -eux
+          $D sudo apt-get update
+          $D sudo apt-get install -y \
+                       doxygen fig2dev graphviz texlive texlive-latex-extra texlive-font-utils
+
+      # ---------------------------
+      # macOS: Dependencies
+      # ---------------------------
+      - name: Install dependencies (macOS)
+        if: matrix.platform == 'macos'
+        run: |
+          set -eux
+          brew update
+          brew tap labstreaminglayer/tap
+          brew install \
+                       jack libsndfile pkgconfig portaudio liblo eigen pytorch \
+                       lsl boost cmake openjdk octave gcc 2>&1 | \
+          sed -E '/is already installed/ s/arning/arping/'
+          ls -l $(brew --prefix gcc)/bin/
+          GCC_BIN="$(brew --prefix gcc)/bin"
+          export FC=$GCC_BIN/gfortran
+          #export CC="$(ls "$GCC_BIN"/gcc-[0-9]* | sort -V | tail -n1)"
+          #export CXX="$(ls "$GCC_BIN"/g++-[0-9]* | sort -V | tail -n1)"
+          "$FC" --version
+          #"$CC" --version
+          #"$CXX" --version
+          # Avoid picking up stale/binary-incompatible cached packages from prior images
+          rm -rf "$HOME/.local/share/octave" "$HOME/.config/octave"
+          PATH="$GCC_BIN:$PATH"
+          octave --no-gui --no-window-system --eval "disp('--- octave:version ---'); disp(version); disp('--- mkoctfile -p ---'); system('mkoctfile -p CC'); system('mkoctfile -p CXX'); system('mkoctfile -p F77'); system('mkoctfile -p LDFLAGS'); system('mkoctfile -p BLAS_LIBS');" || true
+          export MAKEFLAGS="-j1 V=1 VERBOSE=1"
+          find $(brew --prefix) -type f -name "*emutls_w*" -print
+          "$FC" -print-file-name=libemutls_w.a
+          export LDFLAGS="-L$(dirname "$("$FC" -print-file-name=libemutls_w.a )" )"
+          # Add GCC runtime library dirs explicitly so clang/ld can find them
+          ( for lib in libemutls_w.a libgfortran.dylib libquadmath.dylib; \
+            do echo "$lib => $("$FC" -print-file-name="$lib")" 1>&2;      \
+               echo " -L$(dirname "$("$FC" -print-file-name="$lib" )" )";    \
+            done ) | sort -u > gcc_runtime_lib_dirs.txt
+          export LDFLAGS="$(tr -d '\n' < gcc_runtime_lib_dirs.txt)"
+          octave --no-gui --no-window-system --eval "pkg install -verbose -forge control"
+          octave --no-gui --no-window-system --eval "pkg install -verbose -forge signal"
+
+      # Clone the repository after git has been installed in the container
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # ---------------------------
+      # Windows: MSYS2 Setup & Dependencies
+      # ---------------------------
+      - name: Setup MSYS2
+        if: matrix.platform == 'windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: >-
+            dos2unix
+            git
+            make
+            openbsd-netcat
+            tar
+            unzip
+            wget
+            zip
+          pacboy: >-
+            cmake:p
+            gcc:p
+            boost:p
+            libsndfile:p
+            portaudio:p
+            eigen3:p
+            curl:p
+            liblo:p
+            jack2:p
+            7zip:p
+            ninja:p
+
+      # ---------------------------
+      # Fix git
+      # ---------------------------
+      - name: Mark workspace as safe for git in containers and fix line endings on Windows
+        run: |
+          $D git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          $D git checkout .
+
+      # ---------------------------
+      # Install Liblsl dependency
+      # ---------------------------
+      - name: Retrieve liblsl from dependencies repository on Ubuntu
+        if: startsWith(matrix.name, 'ubuntu-')
+        uses: actions/checkout@v6
+        with:
+          repository: openmha/dependencies
+          ref: main
+          path: deps
+      - name: Install liblsl on ubuntu
+        if: startsWith(matrix.name, 'ubuntu-')
+        run: |
+          set -eux
+          lts=$(echo ${{ matrix.name }} | cut -d- -f-2)
+          $D sudo apt-get install -y ./deps/liblsl/$lts/*_${{ matrix.arch }}.deb
+      # On Windows, liblsl is not available as an msys2 package. Other sources
+      # for precompiled binaries will become imcompatible when msys2 updates
+      # the compilers. Best to compile here with caching to ensure the same
+      # compiler version is used for both liblsl and openMHA.
+      - name: Create cache key for liblsl build on Windows
+        if: matrix.platform == 'windows'
+        id: liblsl-cache-key
+        env:
+          COMPILERS: mingw-w64-clang-aarch64-clang mingw-w64-ucrt-x86_64-gcc
+        run: |
+          compiler_version=$( for compiler in $COMPILERS; \
+                              do pacman -Ss $compiler | \
+                                 grep -i "${{ matrix.msystem }}/$compiler .*installed.$" \
+                                 || true; \
+                              done | cut -d" " -f 2 )
+          echo "cache_key=liblsl-${{ matrix.msystem }}-${{ env.MINGW_LIBLSL_REF }}-${compiler_version}" >> $GITHUB_OUTPUT
+      - name: Restore liblsl build cache on Windows
+        if: matrix.platform == 'windows'
+        uses: actions/cache@v5
+        id: liblsl-cache
+        with:
+          path: liblsl/install
+          key: ${{ steps.liblsl-cache-key.outputs.cache_key }}
+      - name: Check out liblsl on Windows on cache miss
+        if: matrix.platform == 'windows' && steps.liblsl-cache.outputs.cache_hit != 'true'
+        uses: actions/checkout@v6
+        with:
+          repository: sccn/liblsl
+          ref: ${{ env.MINGW_LIBLSL_REF }}
+          path: liblsl
+      - name: Build liblsl on Windows
+        if: matrix.platform == 'windows' && steps.liblsl-cache.outputs.cache_hit != 'true'
+        run: |
+          set -eux
+          mkdir -p liblsl/build
+          cmake --version
+          cmake -S liblsl -B liblsl/build \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX="${PWD}/liblsl/install" \
+                -DLSL_UNITTESTS=ON \
+                -Dlslgitrevision=${{ env.MINGW_LIBLSL_REF }} \
+                -Dlslgitbranch=${{ env.MINGW_LIBLSL_REF }} \
+                -DLSL_OPTIMIZATIONS=OFF \
+                -G Ninja
+          cmake --build liblsl/build --target install --config Release -j --verbose
+      - name: Test liblsl on Windows (skip on ARM)
+        if: matrix.msystem == 'UCRT64'
+        run: |
+          set -eux
+          ${PWD}/liblsl/install/bin/lsl_test_internal --order rand --wait-for-keypress never --durations yes
+          ${PWD}/liblsl/install/bin/lsl_test_exported --wait-for-keypress never --durations yes
+      - name: Copy liblsl files to MSYS2 directories on Windows
+        if: matrix.platform == 'windows'
+        run: |
+          cp -rnv liblsl/install/* "${{ matrix.msys2_root }}"
+
+
+      # ---------------------------
+      # Install Libtorch dependency
+      # ---------------------------
+      - name: Install libtorch on ubuntu 22.04 amd64
+        if: matrix.name == 'ubuntu-22.04'
+        run: |
+          set -eux
+          # Download libtorch libraries directly from pytorch download page.
+          libtorchzip="libtorch-cxx11-abi-shared-with-deps-2.3.0%2Bcpu.zip"
+          wget --tries=3 "https://download.pytorch.org/libtorch/cpu/$libtorchzip"
+          # Check the sha512 checksum of the downloaded file, then unpack.
+          chk_a=0d6fb6a58874f0a3099def817a080e6af4afa19adaf6f54c36ffbb3e9f99abd6
+          chk_b=2983bca8f74c28e5064444bfba950d3c135d9708282c88d3f70228b4f4c0fe7c
+          echo "$chk_a$chk_b" libtorch*.zip | sha512sum -c
+          unzip libtorch*.zip
+          rm -f libtorch*.zip
+          # Copy libtorch headers.
+          sudo cp -r libtorch/include /usr/local
+          # Rename libraries while copying them to avoid conflicts on user systems.
+          sudo cp libtorch/lib/libtorch_cpu.so /usr/local/lib/libtorch_cpu_openMHA.so
+          sudo cp libtorch/lib/libc10.so       /usr/local/lib/libc10_openMHA.so
+          sudo cp libtorch/lib/libgomp-98b21ff3.so.1 /usr/local/lib/libgomp_openMHA.so
+          rm -rf libtorch
+          # Also change the soname of the renamed libraries.
+          sudo patchelf --set-soname libtorch_cpu_openMHA.so /usr/local/lib/libtorch_cpu_openMHA.so
+          sudo patchelf --set-soname libc10_openMHA.so /usr/local/lib/libc10_openMHA.so
+          sudo patchelf --set-soname libgomp_openMHA.so /usr/local/lib/libgomp_openMHA.so
+          sudo patchelf --replace-needed libc10.so libc10_openMHA.so /usr/local/lib/libtorch_cpu_openMHA.so
+          sudo patchelf --replace-needed libgomp-98b21ff3.so.1 libgomp_openMHA.so /usr/local/lib/libtorch_cpu_openMHA.so
+          # Update the library cache.
+          sudo ldconfig
+      - name: Install libtorch on ubuntu 26.04 amd64 and arm64
+        if: startsWith(matrix.name, 'ubuntu-26.04')
+        run: |
+          set -eux
+          # Install libtorch-dev from standard ubuntu repository when available.
+          if [ "${{ matrix.arch }}" != "armhf" ]; then
+            sudo apt-get install -y libtorch-dev
+          fi
+
+      # ---------------------------
+      # Install Octave on Windows. The version from MSYS2 does not support Java.
+      # ---------------------------
+      - name: Install Octave on Windows and fix jack
+        if: matrix.platform == 'windows'
+        run: |
+          set -eux
+          OCTAVE_FILE="octave-11.1.0-w64.7z"
+          wget --tries=3 https://ftpmirror.gnu.org/octave/windows/$OCTAVE_FILE || \
+          wget --tries=3 https://ftp.gnu.org/gnu/octave/windows/$OCTAVE_FILE || \
+          wget --tries=3 https://mirrors.ocf.berkeley.edu/gnu/octave/windows/$OCTAVE_FILE
+
+          7z x $OCTAVE_FILE
+          rm -f $OCTAVE_FILE
+          # Add $PWD/octave-*/mingw64/bin to the end of PATH
+          echo "PATH=$PATH:$PWD/octave-*/mingw64/bin" >> $GITHUB_ENV
+          # Fix jack library name
+          if [ -f "${{ matrix.msys2_root }}/lib/libjack64.dll.a" ]; then
+            cp "${{ matrix.msys2_root }}/lib/libjack64.dll.a" "${{ matrix.msys2_root }}/lib/libjack.dll.a"
+          fi
+
+#      # ---------------------------
+#      # ccache: Setup
+#      # ---------------------------
+#      - name: Setup ccache (Linux)
+#        if: matrix.platform == 'linux'
+#        run: |
+#          echo "CCACHE_DIR=$GITHUB_WORKSPACE/.ccache" >> $GITHUB_ENV
+#          echo "PATH=/usr/lib/ccache:$PATH" >> $GITHUB_ENV
+#          ccache --max-size=2G
+#
+#      - name: Setup ccache (Windows MSYS2)
+#        if: matrix.platform == 'windows'
+#        shell: msys2 {0}
+#        run: |
+#          export CCACHE_DIR="$GITHUB_WORKSPACE/.ccache"
+#          mkdir -p "$CCACHE_DIR"
+#          ccache --max-size=2G
+#
+#      # ---------------------------
+#      # ccache: Load
+#      # ---------------------------
+#      - name: Restore ccache
+#        uses: actions/cache@v5
+#        with:
+#          path: .ccache
+#          key: ccache-${{ matrix.name }}
+#          restore-keys: |
+#            ccache-
+
+      # ---------------------------
+      # Build: configure
+      # ---------------------------
+      - name: Configure
+        run: |
+          set -eux
+          $D uname -a
+          $D uname -m
+          $D ./configure
+          $D grep SSE config.mk || true
+        
+      - name: Upload config.mk artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: openmha-build-config-${{ matrix.name }}
+          path: |
+            config.mk
+          if-no-files-found: error
+
+      # ---------------------------
+      # Build: make
+      # ---------------------------
+      - name: Build
+        run: |
+          set -eux
+          JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
+          $D echo make -j"$JOBS"
+          $D make -j"$JOBS"
+
+      - name: Test make install
+        run: |
+          $D make DESTDIR="$GITHUB_WORKSPACE/install/libopenmha" install_libopenmha
+          $D make DESTDIR="$GITHUB_WORKSPACE/install/libopenmha-dev" install_libopenmha-dev
+          $D make DESTDIR="$GITHUB_WORKSPACE/install/openmha" install_openmha
+          $D make DESTDIR="$GITHUB_WORKSPACE/install/openmha-examples" install_openmha-examples
+          $D make DESTDIR="$GITHUB_WORKSPACE/install/full-install" install
+
+      - name: Upload installation artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: openmha-installation-${{ matrix.name }}
+          path: |
+            install/
+
+      # ---------------------------
+      # Build: run tests
+      # ---------------------------
+      - name: Run tests
+        run: |
+          set -eux
+          JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
+          $D make -j"$JOBS" unit-tests test
+
+#      # ---------------------------
+#      # ccache Stats
+#      # ---------------------------
+#      - name: ccache stats (Linux)
+#        if: matrix.platform == 'linux'
+#        run: ccache -s
+#
+#      - name: ccache stats (Windows)
+#        if: matrix.platform == 'windows'
+#        shell: msys2 {0}
+#        run: ccache -s
+
+      - name: Stop step container
+        if: always() && matrix.step_container != ''
+        run: |
+          docker rm -f build_env || true

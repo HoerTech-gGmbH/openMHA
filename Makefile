@@ -1,6 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 HörTech gGmbH
-# Copyright © 2022 2024 Hörzentrum Oldenburg gGmbH
+# Copyright © 2022 2024 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -59,58 +59,96 @@ doc: mha/doc
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
 
-ifeq "$(PLATFORM)" "Darwin"
-install: all
-	@mkdir -p  $(abspath $(DESTDIR)$(PREFIX))/bin
-	@mkdir -p  $(abspath $(DESTDIR)$(PREFIX))/lib
-	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name '*$(DYNAMIC_LIB_EXT)' \
-        ! -name Info.plist \
-				-execdir rm -f $(abspath $(DESTDIR)$(PREFIX))/lib/{} \; \
-        -exec cp {} $(abspath $(DESTDIR)$(PREFIX))/lib/ \; \
-        -execdir install_name_tool -change $(shell pwd)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
-                                           $(PREFIX)/lib/libopenmha$(DYNAMIC_LIB_EXT) \
-                                           $(abspath $(DESTDIR)$(PREFIX))/lib/{} \; \
-        -execdir install_name_tool -id $(PREFIX)/lib/{} \
-                                       $(abspath $(DESTDIR)$(PREFIX))/lib/{} \;
-	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name ".*" ! -name unit-test-runner \
-        ! -name Info.plist \
-				-execdir rm -f $(abspath $(DESTDIR)$(PREFIX))/bin/{} \; \
-        -exec cp {} $(abspath $(DESTDIR)$(PREFIX))/bin/ \; \
-        -execdir install_name_tool -change $(shell pwd)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT) \
-                                           $(PREFIX)/lib/libopenmha$(DYNAMIC_LIB_EXT) \
-                                           $(abspath $(DESTDIR)$(PREFIX))/bin/{} \;
-	@cp mha/tools/thismha.sh $(abspath $(DESTDIR)$(PREFIX))/bin/.
-uninstall:
-	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(abspath $(DESTDIR)$(PREFIX))/lib/{} \;)
-	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(abspath $(DESTDIR)$(PREFIX))/bin/{} \;)
-	@rm -f $(abspath $(DESTDIR)$(PREFIX))/bin/mha.sh
-else ifeq "$(PLATFORM)" "MinGW"
-install: all
-	@mkdir -p  $(abspath $(DESTDIR)$(PREFIX))/bin
-	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) \
-        -exec cp {} $(abspath $(DESTDIR)$(PREFIX))/bin/ \;
-	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name "unit-test-runner*" \
-        -exec cp {} $(abspath $(DESTDIR)$(PREFIX))/bin/ \;
-	@cp mha/tools/thismha.sh $(abspath $(DESTDIR)$(PREFIX))/bin/.
-uninstall:
-	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(abspath $(DESTDIR)$(PREFIX))/bin/{} \;)
-	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(abspath $(DESTDIR)$(PREFIX))/bin/{} \;)
-	@rm -f $(abspath $(DESTDIR)$(PREFIX))/bin/mha.sh
+ifeq "$(PLATFORM)" "MinGW"
+LIB=bin
 else
-install: all
-	@mkdir -p  $(abspath $(DESTDIR)$(PREFIX))/bin
-	@mkdir -p  $(abspath $(DESTDIR)$(PREFIX))/lib
-	@find ./external_libs/ ./mha/ -path '*tools/packaging*' -prune -o -type f -name *$(DYNAMIC_LIB_EXT) \
-        -exec cp {} $(abspath $(DESTDIR)$(PREFIX))/lib/ \;
-	@find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" ! -name ".*" ! -name unit-test-runner \
-        -exec cp {} $(abspath $(DESTDIR)$(PREFIX))/bin/ \;
-	@cp mha/tools/thismha.sh $(abspath $(DESTDIR)$(PREFIX))/bin/.
-uninstall:
-	@rm -f $(shell find ./external_libs/ ./mha/ -type f -name *$(DYNAMIC_LIB_EXT) -execdir echo $(abspath $(DESTDIR)$(PREFIX))/lib/{} \;)
-	@rm -f $(shell find ./mha/frameworks/${BUILD_DIR} -type f ! -name "*.o" -execdir echo $(abspath $(DESTDIR)$(PREFIX))/bin/{} \;)
-	@rm -f $(abspath $(DESTDIR)$(PREFIX))/bin/mha.sh
+LIB=lib
+endif
+ifeq "$(PLATFORM)" "Darwin"
+INSTALL_NAME_TOOL=install_name_tool
+else
+INSTALL_NAME_TOOL=true
 endif
 
+install: install_libopenmha install_openmha install_libopenmha-dev install_openmha-examples
+install_openmha: install_plugins install_executables install_manuals install_mfiles
+
+install_binaries: install_libopenmha install_plugins install_executables
+
+install_libopenmha: mha/libmha install_COPYING_libopenmha
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/$(LIB)"
+	rm -f "$(abspath $(DESTDIR)$(PREFIX))/$(LIB)/libopenmha$(DYNAMIC_LIB_EXT)"
+	cp "mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT)" "$(abspath $(DESTDIR)$(PREFIX))/$(LIB)/"
+	$(INSTALL_NAME_TOOL) -id $(PREFIX)/$(LIB)/libopenmha$(DYNAMIC_LIB_EXT) \
+	                       $(abspath $(DESTDIR)$(PREFIX))/$(LIB)/libopenmha$(DYNAMIC_LIB_EXT)
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/share/openmha"
+	cp config.mk "$(abspath $(DESTDIR)$(PREFIX))/share/openmha/"
+install_plugins: mha/plugins install_COPYING_openmha
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/$(LIB)"
+	find mha/plugins/ -type f -name "*$(DYNAMIC_LIB_EXT)" \
+	    -execdir rm -f $(abspath $(DESTDIR)$(PREFIX))/$(LIB)/{} \; \
+	    -exec cp -v {} $(abspath $(DESTDIR)$(PREFIX))/$(LIB)/ \; \
+	    -execdir $(INSTALL_NAME_TOOL) -change "$(shell pwd)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT)" \
+	                                   "$(PREFIX)/$(LIB)/libopenmha$(DYNAMIC_LIB_EXT)" \
+	                                   "$(abspath $(DESTDIR)$(PREFIX))/$(LIB)/{}" \; \
+	    -execdir $(INSTALL_NAME_TOOL) -id "$(PREFIX)/$(LIB)/{}" \
+	                                   "$(abspath $(DESTDIR)$(PREFIX))/$(LIB)/{}" \;
+install_executables: install_executable_mha install_executable_analysemhaplugin
+install_executable_%: mha/frameworks install_COPYING_openmha
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/bin"
+	rm -f "$(abspath $(DESTDIR)$(PREFIX))/bin/$*"
+	cp "mha/frameworks/$(BUILD_DIR)/$*" "$(abspath $(DESTDIR)$(PREFIX))/bin/"
+	$(INSTALL_NAME_TOOL) -change "$(shell pwd)/mha/libmha/$(BUILD_DIR)/libopenmha$(DYNAMIC_LIB_EXT)" \
+	                       "$(PREFIX)/$(LIB)/libopenmha$(DYNAMIC_LIB_EXT)" \
+	                       "$(abspath $(DESTDIR)$(PREFIX))/bin/$*"
+ifeq "$(BUILD_DOCS)" "yes"
+install_manuals: doc install_COPYING_openmha
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/share/doc/openmha"
+	for pdf in *.pdf; do \
+	    rm -f "$(abspath $(DESTDIR)$(PREFIX))/share/doc/openmha/$$pdf"; \
+	    cp -v "$$pdf" "$(abspath $(DESTDIR)$(PREFIX))/share/doc/openmha/"; \
+	done
+else
+install_manuals:
+	@echo "Documentation not installed. Please download from https://www.openmha.org/."
+endif
+install_libopenmha-dev: install_COPYING_libopenmha-dev
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/include/openmha"
+	for h in mha/libmha/src/*.h mha/libmha/src/*.hh; do \
+	    filename_without_directory=$$(basename "$$h"); \
+	    rm -f "$(abspath $(DESTDIR)$(PREFIX))/include/openmha/$$filename_without_directory"; \
+	    cp -v "$$h" "$(abspath $(DESTDIR)$(PREFIX))/include/openmha/"; \
+	done
+install_openmha-examples: install_COPYING_openmha-examples
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/share/openmha/examples"
+	cp -r "examples/"* "$(abspath $(DESTDIR)$(PREFIX))/share/openmha/examples/"
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/share/openmha/reference_algorithms"
+	cp -r "reference_algorithms/"* "$(abspath $(DESTDIR)$(PREFIX))/share/openmha/reference_algorithms/"
+install_mfiles: install_COPYING_openmha
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/lib/openmha/mfiles/mhagui_PHL_generic_hearing_aid_callbacks" # literal "lib" and not $(LIB) on purpose
+	cp "mha/tools/mfiles/"*.m "$(abspath $(DESTDIR)$(PREFIX))/lib/openmha/mfiles/"
+	cp "mha/tools/mfiles/mhagui_PHL_generic_hearing_aid_callbacks/"*.m "$(abspath $(DESTDIR)$(PREFIX))/lib/openmha/mfiles/mhagui_PHL_generic_hearing_aid_callbacks/"
+	cp "mha/tools/mfiles/mhactl_java.jar" "$(abspath $(DESTDIR)$(PREFIX))/lib/openmha/mfiles/"
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/share/openmha"
+	cp "mha/tools/mfiles/"*.mat "$(abspath $(DESTDIR)$(PREFIX))/share/openmha/"
+	cp "mha/tools/mfiles/"*.cfg "$(abspath $(DESTDIR)$(PREFIX))/share/openmha/"
+install_COPYING_%:
+	mkdir -p "$(abspath $(DESTDIR)$(PREFIX))/share/doc/$*"
+	rm -f "$(abspath $(DESTDIR)$(PREFIX))/share/doc/$*/COPYING"
+	cp "COPYING" "$(abspath $(DESTDIR)$(PREFIX))/share/doc/$*/"
+
+uninstall:
+	find ./mha/plugins -type f -name "*$(DYNAMIC_LIB_EXT)" -execdir rm -vf $(abspath $(DESTDIR)$(PREFIX))/$(LIB)/{} \;
+	rm -vf "$(abspath $(DESTDIR)$(PREFIX))/bin/mha" \
+	      "$(abspath $(DESTDIR)$(PREFIX))/bin/analysemhaplugin" \
+	      "$(abspath $(DESTDIR)$(PREFIX))/$(LIB)/libopenmha$(DYNAMIC_LIB_EXT)"
+	rm -rvf "$(abspath $(DESTDIR)$(PREFIX))/share/doc/openmha"
+	rm -rvf "$(abspath $(DESTDIR)$(PREFIX))/share/doc/libopenmha"
+	rm -rvf "$(abspath $(DESTDIR)$(PREFIX))/share/doc/libopenmha-dev"
+	rm -rvf "$(abspath $(DESTDIR)$(PREFIX))/share/doc/openmha-examples"
+	rm -rvf "$(abspath $(DESTDIR)$(PREFIX))/include/openmha"
+	rm -rvf "$(abspath $(DESTDIR)$(PREFIX))/share/openmha"
+	rm -rvf "$(abspath $(DESTDIR)$(PREFIX))/lib/openmha" # literal "lib" and not $(LIB) on purpose
 
 googletest:
 	$(MAKE) -C external_libs googlemock

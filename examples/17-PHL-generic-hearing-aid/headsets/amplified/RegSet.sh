@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # AMPLIFIED Headset (PGA = 0 dB)
 
 #INPUT

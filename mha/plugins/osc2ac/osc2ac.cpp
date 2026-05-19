@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2012 2013 2014 2015 2018 2019 2020 2021 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2022 2026 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -90,13 +90,11 @@ private:
 osc_variable_t::osc_variable_t(const std::string& name, unsigned int size,
                                MHA_AC::algo_comm_t & hAC, lo_server_thread lost)
     : ac_data(hAC,
-              [&](){
+              [&]() -> std::string {
                   // Split the given name by ':' the left side
                   // is the AC name, if there's none take the right side
                   MHAParser::expression_t expr(name,":");
-                  if(!expr.lval.size())
-                      return expr.rval.c_str();
-                  else return expr.lval.c_str();
+                  return expr.lval.empty() ? expr.rval : expr.lval;
               }(),
               size,1,false),
       osc_data(size,1),

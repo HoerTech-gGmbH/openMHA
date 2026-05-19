@@ -2,7 +2,7 @@
 
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
-# Copyright © 2022 2024 Hörzentrum Oldenburg gGmbH
+# Copyright © 2022 2024 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -24,13 +24,20 @@ chkhdr(){
     echo "#include <$1>" | cc -E -x c++ - -std=$CXXSTANDARD $MACINCLUDES -o /dev/null 2>/dev/null 1>/dev/null && true || false;
 }
 chklib(){
-    echo "int main(){return 0;}"| cc -x c++ - $MACLDFLAGS -l$1 -o /tmp/tmp.openmha.config.out.exe 2>/dev/null 1>/dev/null && true || false;
+    echo "int main(){return 0;}"| cc -x c++ - $MACLDFLAGS "-l$1" -o /tmp/tmp.openmha.config.out.exe 2>/dev/null 1>/dev/null && true || false;
+}
+chkframework(){
+    if [ "x$PLATFORM" = "xDarwin" ]; then
+        echo "int main(){return 0;}"| cc -x c++ - $MACLDFLAGS -framework "$1" -o /tmp/tmp.openmha.config.out.exe 2>/dev/null 1>/dev/null && true || false;
+    else
+        chklib "$1" && true || false;
+    fi
 }
 gccver(){
     gcc -dumpversion | head -1|sed -e 's/.*[[:blank:]]//' -e 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/-\1/' -e 's/^[0-9]/-&/1'
 }
 
-PREFIX=$(pwd)
+PREFIX=/usr/local
 DEBUG="-g"
 for arg in "$@"; do
     case "$arg" in
@@ -97,6 +104,12 @@ done
     if [ "x$ARCH" = "x" ]; then
         ARCH=`uname -m`
     fi
+    # On Windows for ARM, msys uname -m wrongly reports x86_64, but uname -s
+    # reports something like MINGW64_NT-10.0-26200-ARM64. Override ARCH to
+    # arm64 when the output of uname -s ends with ARM64.
+    if [ "x$ARCH" = "xx86_64" ] && [[ `uname -s` == *ARM64 ]]; then
+        ARCH=arm64
+    fi
 
     # Add operating-system specific settings
     case `uname -s` in
@@ -105,12 +118,27 @@ done
             echo PLATFORM=linux
             echo DYNAMIC_LIB_EXT=".so"
             GCC_VER=`gccver`
+            # Check if the deb packages for generating docs are installed
+            BUILD_DOCS=yes
+            for pkg in doxygen fig2dev graphviz texlive texlive-latex-extra texlive-font-utils
+            do if ! dpkg -s $pkg >/dev/null 2>&1
+               then BUILD_DOCS=no
+                    break
+               fi
+            done
+            echo BUILD_DOCS=$BUILD_DOCS
             ;;
         *Cygwin* | *Msys* | *MinGW* | *MINGW* )
             PLATFORM=MinGW
             echo PLATFORM=MinGW
             echo DYNAMIC_LIB_EXT=".dll"
-            GCC_VER=`gccver`
+            # Windows. For x64, we compile with GCC, for ARM64 with clang.
+            if [ "$ARCH" = "x86_64" ]; then
+                GCC_VER=`gccver`
+            else
+                echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
+                echo TOOLSET=clang
+            fi
             ;;
         Darwin)
             PLATFORM=Darwin
@@ -119,15 +147,37 @@ done
             echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
             echo TOOLSET=clang
             WITH_JACK=yes
+            # We use Homebrew to install dependencies. If homebrew is
+            # installed, add include and library paths to the compiler flags.
+            # We do not check for the presence of the dependencies here, but
+            # only add the paths if homebrew is installed.
+            # The actual check for the dependencies is done later in this
+            # script and relies on these paths being already set.
             # We do not want warnings from external headers, so use -isystem instead of -I
-            # On arm macs homebrew saves its stuff into /opt/homebrew/...
-            if [ -d "/opt/homebrew/include" ]; then
-                MACINCLUDES+=" -isystem/opt/homebrew/include"
+            if command -v brew >/dev/null 2>&1
+            then BREW_PREFIX="$(brew --prefix)"
+            else BREW_PREFIX="$HOMEBREW_PREFIX"
             fi
-            if [ -d "/opt/homebrew/lib" ]; then
-                MACLDFLAGS+=" -L/opt/homebrew/lib"
-                echo LDFLAGS+=" -L/opt/homebrew/lib"
+            # Fail early if brew prefix is empty or contains spaces or is not absolute
+            if [[ -z "$BREW_PREFIX" || "$BREW_PREFIX" =~ [[:space:]] || "$BREW_PREFIX" != /* ]]; then
+                echo "invalid Homebrew prefix: '$BREW_PREFIX'"
+                exit 1
             fi
+            if [ -d "$BREW_PREFIX/include" ]; then
+                MACINCLUDES+=" -isystem$BREW_PREFIX/include"
+            fi
+            if [ -d "$BREW_PREFIX/Frameworks/lsl.framework/Headers" ]; then
+                MACINCLUDES+=" -isystem$BREW_PREFIX/Frameworks/lsl.framework/Headers"
+            fi
+            if [ -d "$BREW_PREFIX/lib" ]; then
+                MACLDFLAGS+=" -L$BREW_PREFIX/lib"
+                echo LDFLAGS+=" -L$BREW_PREFIX/lib"
+            fi
+            if [ -d "$BREW_PREFIX/Frameworks" ]; then
+                MACLDFLAGS+=" -F$BREW_PREFIX/Frameworks"
+                echo LDFLAGS+=" -F$BREW_PREFIX/Frameworks"
+            fi
+            
             MACCXXFLAGS+="-Wno-error=unused-command-line-argument -Wimplicit-fallthrough"
     esac
     echo ARCH=$ARCH
@@ -158,7 +208,9 @@ done
     elif [ "x$WITH_LSL" = "xno" ]; then
         echo "WITH_LSL=no";
     else
-        chkhdr lsl_cpp.h && chklib lsl && (echo "WITH_LSL=yes");
+        if chkhdr lsl_cpp.h && chkframework lsl; then
+            echo "WITH_LSL=yes";
+        fi
     fi
 
     if [ "x$WITH_OSC" = "xyes" ]; then

@@ -1,6 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2016 2017 2018 2019 2021 HörTech gGmbH
-# Copyright © 2022 2024 Hörzentrum Oldenburg gGmbH
+# Copyright © 2022 2024 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -132,7 +132,9 @@ libemx: $(BUILD_DIR)/libemx.is_installed
 $(BUILD_DIR)/libemx.is_installed: $(BUILD_DIR)/include/.directory $(BUILD_DIR)/lib/.directory
 	cd libemx/. && $(MAKE) -j 1
 	cp libemx/$(BUILD_DIR)/libemx.a $(BUILD_DIR)/lib/libemx.a
-	cp libemx/src/*.h* $(BUILD_DIR)/include/.
+	cp -v libemx/src/*.h* $(BUILD_DIR)/include/.
+	# Avoid name clash for the types.h header file.
+	cp -v libemx/src/types.h $(BUILD_DIR)/include/libemx_types.h
 	touch $@
 
 libxdf: $(BUILD_DIR)/libxdf.is_installed 

@@ -1,7 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2007 2008 2009 2010 2013 2012 2014 2015 2016 2018 HörTech gGmbH
 // Copyright © 2019 2021 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2022 2026 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -284,8 +284,8 @@ namespace MHAPlugin_Split {
         HANDLE catch_event;
         /// The Event for signalling termination.
         HANDLE termination_event;
-        /// win32 thread priority
-        long priority;
+        /* Thread priority is unused on Windows. /// win32 thread priority
+           long priority; */
         /// The thread object
         HANDLE thread;
     public:

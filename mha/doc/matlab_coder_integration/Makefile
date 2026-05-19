@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2021 HörTech gGmbH
+# Copyright © 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -17,19 +18,20 @@ include ../../../config.mk
 include ../../../magic.mk
 
 MHANAME=openMHA
+PDFLATEX_FLAGS = -interaction=nonstopmode -halt-on-error
 
 all: $(MHANAME)_matlab_coder_integration.pdf
 
 TEXINPUTS = ""
 
 %.pdf: %.tex
-	TEXINPUTS=$(TEXINPUTS) pdflatex $<
-	TEXINPUTS=$(TEXINPUTS) pdflatex $<
+	TEXINPUTS=$(TEXINPUTS) pdflatex $(PDFLATEX_FLAGS) $<
+	TEXINPUTS=$(TEXINPUTS) pdflatex $(PDFLATEX_FLAGS) $<
 	TEXINPUTS=$(TEXINPUTS) makeindex $(basename $<)
-	TEXINPUTS=$(TEXINPUTS) pdflatex $<
+	TEXINPUTS=$(TEXINPUTS) pdflatex $(PDFLATEX_FLAGS) $<
 
 %.aux: %.tex
-	TEXINPUTS=$(TEXINPUTS) pdflatex $<
+	TEXINPUTS=$(TEXINPUTS) pdflatex $(PDFLATEX_FLAGS) $<
 
 clean:
 	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl *.ilg *.ind *.idx *.out \

@@ -11,11 +11,10 @@ for developers.
 ## I. Compiling from source on Linux
 
 ### Linux prerequisites
-64-bit version of Ubuntu 20.04 or later,
-or a Beaglebone Black running Debian Buster.
+64-bit version of Ubuntu 22.04 or later.
 
 ... with the following software packages installed:
-- g++ (minimum version: g++ 7)
+- g++
 - make
 - libsndfile1-dev
 - libjack-jackd2-dev
@@ -32,36 +31,16 @@ Clone openMHA from github, compile openMHA by typing in a terminal
 ```
 git clone https://github.com/HoerTech-gGmbH/openMHA
 cd openMHA
-./configure && make
+./configure --prefix=/usr/local && make
 ```
 
 ### Installation of self-compiled openMHA on Linux:
 
-A very simple installation routine is provided together with the
-source code.  To collect the relevant binaries and libraries execute
+To install openMHA into the prefix directory given to ./configure above, execute
 ```
-make install
+sudo make install
 ```
 
-You can set the make variable PREFIX to point to the desired installation
-location. The default installation location is ".", the current directory.
-
-You should then add the openMHA installation directory to the system search path
-for libraries:
-```
-export LD_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib:$LD_LIBRARY_PATH
-```
-as well as to the search path for executables:
-```
-export PATH=<YOUR-MHA-DIRECTORY>/bin:$PATH
-```
-Alternatively to the two settings above, the thismha.sh script found in
-the openMHA bin directory may be sourced to set these variables correctly for the
-current shell:
-```
-source <YOUR-MHA-DIRECTORY>/bin/thismha.sh
-```
-After this, you can invoke the openMHA command line application.
 Perform a quick test with
 ```
 mha ? cmd=quit
@@ -70,6 +49,7 @@ Which should print the default configuration of the openMHA without any plugins
 loaded.
 
 ### Testing self-compiled openMHA on Linux:
+Execute the following tests within the openMHA git clone directory.
 
 #### Testing self-compiled openMHA with unit tests on Linux:
 ```
@@ -78,13 +58,6 @@ make unit-tests
 ```
 
 #### Executing system tests with self-compiled openMHA on Linux:
-If using Ubuntu 20.04, then edit or create a file
-`/usr/share/octave/5.2.0/m/java/java.opts` and make sure that it contains a line
-```
--Djdk.lang.processReaperUseDefaultStackSize=true
-```
-This works around an error in the Octave package of Ubuntu 20.04, for details
-refer to https://savannah.gnu.org/bugs/?59310.  Then:
 ```
 sudo make install octave-signal default-jre-headless
 ./configure
@@ -99,7 +72,6 @@ were compiled from different git commits.
 ## II. Compiling from source on macOS
 
 ### macOS prerequisites
-- macOS 14.4. Other versions may work, too.
 - Homebrew with the following packages:
   - `brew install jack`
   - `brew install libsndfile pkgconfig portaudio liblo eigen pytorch`
@@ -112,34 +84,25 @@ Clone openMHA from github, compile openMHA by typing in a terminal
 ```
 git clone https://github.com/HoerTech-gGmbH/openMHA
 cd openMHA
-./configure && make
+./configure --prefix=/usr/local && make
 ```
+You can change prefix directory if desired.
 
 ### Installation of self-compiled openMHA on macOS:
 
-A very simple installation routine is provided together with the
-source code.  To collect the relevant binaries and libraries execute
+To install openMHA into the prefix directory given to ./configure above, execute
 ```
 make install
 ```
 
-You can set the make variable PREFIX to point to the desired installation
-location.  The default installation location is ".", the current directory.
-
 You should then add the openMHA library installation directory to the openMHA search
 path for libraries:
 ```
-export MHA_LIBRARY_PATH=<YOUR-MHA-DIRECTORY>/lib
+export MHA_LIBRARY_PATH=<YOUR-PREFIX>/lib
 ```
 as well as to the search path for executables:
 ```
-export PATH=<YOUR-MHA-DIRECTORY>/bin:$PATH
-```
-Alternatively to the two settings above, the thismha.sh script found in
-the openMHA bin directory may be sourced to set these variables correctly for the
-current shell:
-```
-source <YOUR-MHA-DIRECTORY>/bin/thismha.sh
+export PATH=<YOUR-PREFIX>/bin:$PATH
 ```
 After this, you can invoke the openMHA command line application.
 Perform a quick test with
@@ -150,6 +113,7 @@ Which should print the default configuration of the openMHA without any plugins
 loaded.
 
 ### Testing self-compiled openMHA on macOS:
+Execute the following tests within the openMHA git clone directory.
 
 #### Testing self-compiled openMHA with unit tests on macOS:
 Install the following additional Homebrew packages:
@@ -172,9 +136,8 @@ pkg install -forge control signal
 
 Matlab with signal processing toolbox can be used as an alternative.
 
-Then in the shell, in the openMHA directory:
+Then in the shell, in the openMHA git directory:
 ```
-./configure
 make test
 ```
 
@@ -187,98 +150,91 @@ were compiled from different git commits.
 ### Windows prerequisites
 
 - Get **MSYS2 installer** directly from the MSYS2 homepage https://www.msys2.org/ 
- - Installer required for 64-bit Windows would be named as msys2-x86_64-*releasedate*.exe. *Release date is in the format of yyyymmdd*
-- Get Jack Audio Connection Kit from http://jackaudio.org (Use the 64-bit installer for windows)
-- Execute both installers
+ - Installer required for 64-bit Windows would be named msys2-x86_64-*releasedate*.exe. *Release date is in the format of yyyymmdd*
+- Execute the installer
 - If you have older versions of these tools installed and an upgrade fails,
   then uninstall the old versions via Windows Add/Remove Software and install
   the latest version.
 
 ### Windows preparation
-- Run **MSYS2 MinGW 64-bit** from start menu (if it didn't open automatically after finishing installation). In the terminal, update base package using:
+The following instructions are for Windows on x64 processors.
+All shell commands have to be executed in the msys2 ucrt64 shell.
+For compiling on Windows for ARM processors, replace ucrt64 with clangarm64.
+- Run **MSYS2 UCRT64** from start menu (if it didn't open automatically after finishing installation). In the terminal, update base package using:
   ```
   pacman -Syu
   ```
-- Close terminal when prompted
-- Restart **MSYS2 MinGW 64-bit** terminal from start menu (again) and type:
+- Agree to the terminal being closed when prompted
+- Restart **MSYS2 UCRT64** terminal from start menu (again) and type:
   ```
   pacman -Su
   ```
 - Install openMHA build dependencies:
   ```
-  pacman -S msys/git mingw64/mingw-w64-x86_64-gcc msys/make tar
-  pacman -S mingw64/mingw-w64-x86_64-boost openbsd-netcat
-  pacman -S mingw-w64-x86_64-libsndfile mingw-w64-x86_64-portaudio
-  pacman -S mingw64/mingw-w64-x86_64-nsis mingw-w64-x86_64-eigen3 msys/wget
-  pacman -S msys/unzip msys/zip dos2unix mingw64/mingw-w64-x86_64-curl
-  pacman -S mingw-w64-x86_64-liblo
-```
-- Copy the Jack for Windows developer resources to directories where the
-  MSYS2 MinGW64 toolchain can find them (renaming import lib in the process):
+  pacman -S dos2unix git make openbsd-netcat tar unzip wget zip mingw-w64-ucrt-x86_64-boost mingw-w64-ucrt-x86_64-gcc  mingw-w64-ucrt-x86_64-libsndfile mingw-w64-ucrt-x86_64-jack2 mingw-w64-ucrt-x86_64-nsis mingw-w64-ucrt-x86_64-eigen3 mingw-w64-ucrt-x86_64-curl mingw-w64-ucrt-x86_64-liblo mingw-w64-ucrt-x86_64-portaudio mingw-w64-ucrt-x86_64-7zip mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja
+  cp /ucrt64/lib/libjack64.dll.a  /ucrt64/lib/libjack.dll.a
   ```
-  cp -rv /c/Program*Files/Jack2/include/* /mingw64/include/
-  cp /c/Program*Files/Jack2/lib/libjack64.dll.a /mingw64/lib/libjack.dll.a
+- openMHA needs liblsl, compile and install a MinGW version:
   ```
-- openMHA needs liblsl, install a MinGW version:
-  ```
-  wget https://github.com/HoerTech-gGmbH/liblsl/releases/download/v1.14.0-htch/liblsl-1.14.0-MinGW64.zip
-  unzip -d /mingw64 liblsl-1.14.0-MinGW64.zip
-  rm liblsl-1.14.0-MinGW64.zip
+  git clone -b main https://github.com/sccn/liblsl
+  mkdir -p liblsl/build
+  prefix=/ucrt64
+  cmake -S liblsl -B liblsl/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$prefix" -DLSL_UNITTESTS=ON -DLSL_OPTIMIZATIONS=OFF -G Ninja
+  cmake --build liblsl/build --target install --config Release -j --verbose
   ```
 ### Windows compilation
 
-Start a MinGW-64 bash shell from the Windows start menu.
+Start an MSYS2-UCRT64 bash shell from the Windows start menu.
 Clone openMHA from github and compile openMHA by typing in the terminal:
 ```
 git clone https://github.com/HoerTech-gGmbH/openMHA
 cd openMHA
-./configure && make install
+./configure --prefix=/ucrt64 && make install
 ```
 
 The compilation may take a while.
 
 To start a self-compiled openMHA on Windows, you need to 
-1) start the MinGW-64 bash shell in the MSYS2 terminal and there
-2) change directory to the openMHA/bin directory, then
-3) test mha execution by typing 
-   ```
-   ./mha.exe ? cmd=quit
-   ```
-Not following this procedure can result in MHA not being able to find
-all necessary DLLs.
-
+start the MSYS2-UCRT64 bash shell in the MSYS2-UCRT64 terminal and
+execute "mha" from the MSYS2-UCRT64 command line.
+Perform a quick test with
+```
+mha ? mhalib=identity cmd=quit
+```
+ 
 ### Testing self-compiled openMHA on Windows:
+Execute the following tests from an MSYS2-UCRT64 shell
+within the openMHA git clone directory.
+
 #### Known issues on Windows:
 * Many of our automated tests (e.g. the unit tests testing plugin lsl2ac) are
   using network communication during test execution.  This can result in
   problems like failed or hanging tests on Windows machines with restrictive
   firewall or network settings.
 * openMHA plugins using libtorch are not compiled on Windows.  openMHA
-  is compiled using the MinGW toolchain, which is not compatible with the
+  is compiled using the MinGW UCRT toolchain, which is not compatible with the
   libtorch library.
 
 #### Testing self-compiled openMHA with unit tests on Windows:
 ```
-pacman -S  mingw-w64-x86_64-cmake
 make unit-tests
 ```
 
 #### Executing system tests with self-compiled openMHA on Windows:
 - Install a 64-bit version of openJDK Java for Windows from
-  https://jdk.java.net/.
-- Add the `bin` directory of the openJDK installation to the system PATH and
-  create the JAVA_HOME environment variable to point to the parent directory
-  of that bin directory.
+  https://adoptium.net (called "Temurin" there).
+  Select Windows, JDK, MSI-Installer
+- Let the installer create the JAVA_HOME environment variable.
 - Install Octave for 64-bit Windows from http://octave.org.
-- Start the MinGW-64 bash shell in an MSYS2 terminal and there
+- Start a new MSYS2 UCRT-64 terminal and there
 - change directory to the **openMHA/mha/mhatest** directory, then
 - start Octave by typing (insert the correct version of Octave)
 ```
-/c/Octave/Octave->>version<</mingw64/bin/octave-gui.exe --gui
+/<Path-to-Octave>/mingw64/bin/octave-cli
 ```
 - inside Octave, execute the openMHA system tests with
 ```
-set_environement; run_all_tests
+set_environement; run_mha_tests
 ```
 
 ## IV. Regeneration of the documentation on Linux:
@@ -293,9 +249,9 @@ Doxygen documentation is generated in ./mha/doc/mhadoc/html/.
 Please install all dependencies for openMHA compilation on Linux first. The
 following additional prerequisites are needed for recreating the documents:
 
-- Ubuntu 20.04 or Ubuntu 22.04
+- Ubuntu 26.04
 - doxygen
-- xfig
+- fig2dev
 - graphviz
 - texlive
 - texlive-latex-extra

@@ -1,7 +1,7 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2006 2007 2008 2009 2010 2013 2014 2015 2017 2018 HörTech gGmbH
 // Copyright © 2019 2020 2021 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2022 2026 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License, 
 // version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <pthread.h>
 #include "mha_signal.hh"
 #include "mha_fifo.h"
 #include "mha_plugin.hh"

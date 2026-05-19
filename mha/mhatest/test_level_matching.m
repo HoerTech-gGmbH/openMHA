@@ -3,6 +3,7 @@
 %
 % This file is part of the HörTech Open Master Hearing Aid (openMHA)
 % Copyright © 2019 HörTech gGmbH
+% Copyright © 2026 Hörzentrum Oldenburg gGmbH
 
 % openMHA is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Affero General Public License as published by
@@ -18,10 +19,6 @@
 %
 
 function test_level_matching
-  if ~has_plugin('level_matching')
-    warning('Plugin level_matching not found. Skipping tests');
-    return
-  end
   %% Set up clean-up after we are finished
   inwav = 'IN.wav';
   outwav = 'OUT.wav';

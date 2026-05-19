@@ -1,5 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2020 2021 HörTech gGmbH
+// Copyright © 2026 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +21,7 @@
 
 #include "mha.hh"
 #include "mha_signal.hh"
-#include "types.h"
+#include "libemx_types.h"
 
 #include "mha_plugin.hh"
 #include "mha_os.h"
