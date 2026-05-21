@@ -18,8 +18,12 @@ include ../config.mk
 include ../magic.mk
 
 EXTERNAL_LIBS=$(realpath .)
-USE_SYSTEM_ASIO ?= no
-ASIO_INCLUDE_DIR ?= /usr/include
+
+# network-asio is the asynchronous networking library available at
+# https://github.com/chriskohlhoff/asio. Default is to clone it from github.
+# If already available on the system, set to yes and set include dir:
+USE_SYSTEM_NETWORKASIO ?= no
+SYSTEM_NETWORKASIO_INCLUDE_DIR ?= /usr/include
 
 TARGETS = libxdf.is_installed libemx.is_installed fftw.is_installed network-asio.is_installed
 
@@ -120,12 +124,12 @@ googletest/WORKSPACE:
 
 network-asio: $(BUILD_DIR)/network-asio.is_installed
 
-ifeq "$(USE_SYSTEM_ASIO)" "yes"
+ifeq "$(USE_SYSTEM_NETWORKASIO)" "yes"
 $(BUILD_DIR)/network-asio.is_installed: $(BUILD_DIR)/include/.directory
-	test -d "$(ASIO_INCLUDE_DIR)/asio"
-	test -f "$(ASIO_INCLUDE_DIR)/asio.hpp"
-	cp -a "$(ASIO_INCLUDE_DIR)/asio" $(BUILD_DIR)/include/
-	cp -a "$(ASIO_INCLUDE_DIR)/asio.hpp" $(BUILD_DIR)/include/
+	test -d "$(SYSTEM_NETWORKASIO_INCLUDE_DIR)/asio"
+	test -f "$(SYSTEM_NETWORKASIO_INCLUDE_DIR)/asio.hpp"
+	cp -a "$(SYSTEM_NETWORKASIO_INCLUDE_DIR)/asio" $(BUILD_DIR)/include/
+	cp -a "$(SYSTEM_NETWORKASIO_INCLUDE_DIR)/asio.hpp" $(BUILD_DIR)/include/
 	touch $@
 else
 $(BUILD_DIR)/network-asio.is_installed: network-asio/.gitignore \
