@@ -23,12 +23,17 @@ EXTERNAL_LIBS=$(realpath .)
 # https://github.com/chriskohlhoff/asio. Default is to clone it from github.
 # If already available on the system, set to yes and set include dir:
 USE_SYSTEM_NETWORKASIO ?= no
-USE_SYSTEM_FFTW ?= no
 SYSTEM_NETWORKASIO_INCLUDE_DIR ?= /usr/include
+
+# For historical reasons, FFTW2 objects are compiled into libmha/libopenmha.
+# To link against the system's FFTW2 shared library instead, set environment
+# variable USE_SYSTEM_FFTW2 to yes.
+USE_SYSTEM_FFTW2 ?= no
+
 
 TARGETS = libxdf.is_installed libemx.is_installed network-asio.is_installed
 
-ifneq "$(USE_SYSTEM_FFTW)" "yes"
+ifneq "$(USE_SYSTEM_FFTW2)" "yes"
 TARGETS += fftw.is_installed
 endif
 
@@ -66,8 +71,8 @@ ifeq "$(ARCH)" "armhf"
 CROSS_COMPILE=--build=`./config.guess` --host=arm-linux-gnueabi 
 endif
 
+ifneq "$(USE_SYSTEM_FFTW2)" "yes"
 # Build fftw-2
-ifneq "$(USE_SYSTEM_FFTW)" "yes"
 $(BUILD_DIR)/fftw.is_installed: $(BUILD_DIR)/fftw.is_configured
 	cd fftw-2.1.5/. && $(MAKE) -j 1 install
 	cd "$(EXTERNAL_LIBS)" && touch $@
