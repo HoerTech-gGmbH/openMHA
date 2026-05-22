@@ -146,12 +146,12 @@ $(BUILD_DIR)/network-asio.is_installed: $(BUILD_DIR)/include/.directory
 else
 $(BUILD_DIR)/network-asio.is_installed: network-asio/.gitignore \
 	$(BUILD_DIR)/include/.directory
-	cp -a network-asio/asio/include/asio* $(BUILD_DIR)/include/
+	cp -a network-asio/include/asio* $(BUILD_DIR)/include/
 	touch $@
 
 network-asio/.gitignore:
 	git clone https://github.com/chriskohlhoff/asio network-asio
-	cd network-asio && git checkout asio-1-20-0 # release 1.20.0
+	cd network-asio && git checkout asio-1-38-0 # release 1.38.0
 endif
 
 libemx: $(BUILD_DIR)/libemx.is_installed
