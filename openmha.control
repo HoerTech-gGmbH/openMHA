@@ -1,6 +1,8 @@
 Section: contrib/sound
+Suggests: qjackctl
+Recommends: liblsl | liblsl2
 Maintainer: openMHA Packaging Team <packaging@openmha.org>
-Description: HoerTech openMHA library
+Description: HoerTech openMHA
   openMHA is an open community platform for hearing aid algorithm research.
-  This package contains the openMHA library libopenmha.
 Homepage: http://www.openmha.org/
+Depends: libopenmha, libasound2 | libasound2t64, jackd, liblo7, libportaudio2

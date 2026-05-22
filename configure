@@ -111,6 +111,12 @@ done
         ARCH=arm64
     fi
 
+    # Building blocks for the installation paths on Unix. Windows will modify.
+    INSTDIR_OPENMHA=/openmha
+    INSTDIR_SHARE=/share
+    INSTDIR_LIB=/lib
+    INSTDIR_LIB_OPENMHA=/lib/openmha
+
     # Add operating-system specific settings
     case `uname -s` in
         *Linux*)
@@ -127,6 +133,7 @@ done
                fi
             done
             echo BUILD_DOCS=$BUILD_DOCS
+
             ;;
         *Cygwin* | *Msys* | *MinGW* | *MINGW* )
             PLATFORM=MinGW
@@ -139,6 +146,10 @@ done
                 echo BUILD_DIR=${ARCH}-${PLATFORM}-clang
                 echo TOOLSET=clang
             fi
+            INSTDIR_OPENMHA=
+            INSTDIR_SHARE=
+            INSTDIR_LIB=/bin
+            INSTDIR_LIB_OPENMHA=
             ;;
         Darwin)
             PLATFORM=Darwin
@@ -180,6 +191,16 @@ done
             
             MACCXXFLAGS+="-Wno-error=unused-command-line-argument -Wimplicit-fallthrough"
     esac
+    # Directories relative to $PREFIX where to install different components.
+    # The actual installation paths are then $(DESTDIR)$(PREFIX)/$(INSTDIR_LIB) etc.
+    echo INSTDIR_BIN=/bin # for executables
+    echo INSTDIR_LIB=$INSTDIR_LIB # for shared libraries
+    echo INSTDIR_PLUGINS=$INSTDIR_LIB # for plugins, which are loaded with dlopen/LoadLibrary
+    echo INSTDIR_DOC=$INSTDIR_SHARE/doc$INSTDIR_OPENMHA # for documentation
+    echo INSTDIR_INCLUDE=/include/$INSTDIR_OPENMHA # for header files
+    echo INSTDIR_MFILES=$INSTDIR_LIB_OPENMHA/mfiles # for octave/matlab files
+    echo INSTDIR_MISC=$INSTDIR_SHARE$INSTDIR_OPENMHA # for everything else, e.g. config.mk, examples
+
     echo ARCH=$ARCH
     echo PREFIX=$PREFIX
 

@@ -71,6 +71,10 @@ examples/09-localizer-steering-beamformer/Output/*
 
 # debian packages leave intermediate make targets in repository base directory
 *.deb
+debian_*/
+
+# Common test installation artifacts
+install*/
 
 # debian packages
 mha/tools/packaging/deb

@@ -1,6 +1,7 @@
 #!/bin/bash -ex
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2018 2020 HörTech gGmbH
+# Copyright © 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -14,24 +15,32 @@
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-# Copy all binaries into the destination folder
-mkdir -p bin
-cp ../../../../bin/* bin/.
-rm bin/thismha.sh
-# Walk the dependency tree, exclude all files that are already present in ./bin and files in windows/system
-cd ./bin
-for file in $(ls ./); do
+# To create a Windows installer zip from msys2 compiled binaries, (ucrt64 or
+# clangarm64), we need to find all msys2-provided dependencies of the binaries
+# and copy them also into the destination folder.
+
+# Invoke this script with current working directory set to the bin folder
+# that needs to be extended with the dependencies.
+
+# Walk the dependency tree, exclude all files that are already present here and files in windows/system
+for file in $(ls ./)
+do
     cygpath -u $(cygcheck.exe ./$file | tr -d "[:blank:]") | grep -v "$(pwd)" | (grep -iv "/c/" || true) >> ../tmp
-    if grep -iq "not find" ../tmp; then
+    if grep -iq "not find" ../tmp
+    then
         echo "find_and_copy_dependencies:" \n "Error: " `grep -i "not find" ../tmp` >&2
+        exit 1
     fi
 done
 cd ../
 sort -u tmp > tmp2
+echo "Need to copy the following dependencies:" \n
+cat tmp2
 # Sanity check - see if all dependencies that we normally expect are present
-for file in $(cat expected_dependencies.txt); do
+for file in LIBFLAC LIBGCC_S_SEH LIBOGG LIBPORTAUDIO LIBSNDFILE LIBSTDC++ LIBVORBIS LIBVORBISENC LIBWINPTHREAD LIBLO LIBLSL
+do
     if ! grep -iq $file tmp2; then
-        echo "find_and_copy_dependencies:" \n "Expected $file to be in list of dependencies!" >&2
+        echo "find_and_copy_dependencies:" \n "Error: Expected $file to be in list of dependencies!" >&2
         exit 1
     fi
 done
@@ -40,19 +49,3 @@ for file in $(cat tmp2); do
     cp $file bin/.;
 done
 rm tmp*
-# Matlab toolbox files
-cp -r ../../mfiles mfiles
-find ./mfiles -name ".*" -exec rm {} \;
-# Examples
-cp -r ../../../../examples examples
-find ./examples -name ".*" -exec rm {} \;
-# Reference algorithms
-cp -r ../../../../reference_algorithms reference_algorithms
-find ./reference_algorithms -name ".*" -exec rm {} \;
-# Documentation
-mkdir -p doc
-cp ../../../../*pdf doc/.
-cp ../../../../*md doc/.
-cp ../../../../COPYING doc/.
-# build configuration (for plugin developers)
-sed '/^PREFIX=/d' ../../../../config.mk > config.mk # Remove line "PREFIX=..."

@@ -37,6 +37,7 @@ jobs:
             platform: linux
             shell: bash
             arch: amd64
+            prefix: /usr
             
 
           # 2) Ubuntu 26.04
@@ -48,6 +49,7 @@ jobs:
             platform: linux
             shell: bash
             arch: amd64
+            prefix: /usr
 
           # 3) Ubuntu 26.04 ARM64
           - name: ubuntu-26.04-arm64
@@ -58,6 +60,7 @@ jobs:
             platform: linux
             shell: bash
             arch: arm64
+            prefix: /usr
 
           # 4) Ubuntu 26.04 ARMHF
           - name: ubuntu-26.04-armhf
@@ -70,6 +73,7 @@ jobs:
             platform: linux
             shell: bash
             arch: armhf
+            prefix: /usr
 
           # 5) Windows
           - name: windows
@@ -82,6 +86,7 @@ jobs:
             arch: x64
             msystem: UCRT64
             msys2_root: /ucrt64
+            prefix: /openmha
 
           # 6) Windows ARM64
           - name: windows-arm64
@@ -94,6 +99,7 @@ jobs:
             arch: arm64
             msystem: CLANGARM64
             msys2_root: /clangarm64
+            prefix: /openmha
 
           # 7) macOS ARM (latest)
           - name: macos-arm64
@@ -103,6 +109,7 @@ jobs:
             step_container: "" # Step-level docker container
             platform: macos
             shell: bash
+            prefix: /opt/homebrew/Cellar/openmha/4.99.0
 
           # 8) macOS Intel (latest available Intel image)
           - name: macos-intel
@@ -112,6 +119,7 @@ jobs:
             step_container: "" # Step-level docker container
             platform: macos
             shell: bash
+            prefix: /usr/local/Cellar/openmha/4.99.0
 
           # 9) Ubuntu 22.04
           - name: ubuntu-22.04
@@ -122,6 +130,7 @@ jobs:
             platform: linux
             shell: bash
             arch: amd64
+            prefix: /usr
 
           # 10) Ubuntu 22.04 ARM64
           - name: ubuntu-22.04-arm64
@@ -132,6 +141,7 @@ jobs:
             platform: linux
             shell: bash
             arch: arm64
+            prefix: /usr
 
 
     runs-on: ${{ matrix.runs_on }}
@@ -320,14 +330,14 @@ jobs:
           path: liblsl/install
           key: ${{ steps.liblsl-cache-key.outputs.cache_key }}
       - name: Check out liblsl on Windows on cache miss
-        if: matrix.platform == 'windows' && steps.liblsl-cache.outputs.cache_hit != 'true'
+        if: matrix.platform == 'windows' && steps.liblsl-cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v6
         with:
           repository: sccn/liblsl
           ref: ${{ env.MINGW_LIBLSL_REF }}
           path: liblsl
       - name: Build liblsl on Windows
-        if: matrix.platform == 'windows' && steps.liblsl-cache.outputs.cache_hit != 'true'
+        if: matrix.platform == 'windows' && steps.liblsl-cache.outputs.cache-hit != 'true'
         run: |
           set -eux
           mkdir -p liblsl/build
@@ -414,35 +424,6 @@ jobs:
             cp "${{ matrix.msys2_root }}/lib/libjack64.dll.a" "${{ matrix.msys2_root }}/lib/libjack.dll.a"
           fi
 
-#      # ---------------------------
-#      # ccache: Setup
-#      # ---------------------------
-#      - name: Setup ccache (Linux)
-#        if: matrix.platform == 'linux'
-#        run: |
-#          echo "CCACHE_DIR=$GITHUB_WORKSPACE/.ccache" >> $GITHUB_ENV
-#          echo "PATH=/usr/lib/ccache:$PATH" >> $GITHUB_ENV
-#          ccache --max-size=2G
-#
-#      - name: Setup ccache (Windows MSYS2)
-#        if: matrix.platform == 'windows'
-#        shell: msys2 {0}
-#        run: |
-#          export CCACHE_DIR="$GITHUB_WORKSPACE/.ccache"
-#          mkdir -p "$CCACHE_DIR"
-#          ccache --max-size=2G
-#
-#      # ---------------------------
-#      # ccache: Load
-#      # ---------------------------
-#      - name: Restore ccache
-#        uses: actions/cache@v5
-#        with:
-#          path: .ccache
-#          key: ccache-${{ matrix.name }}
-#          restore-keys: |
-#            ccache-
-
       # ---------------------------
       # Build: configure
       # ---------------------------
@@ -451,7 +432,7 @@ jobs:
           set -eux
           $D uname -a
           $D uname -m
-          $D ./configure
+          $D ./configure --prefix="${{ matrix.prefix }}"
           $D grep SSE config.mk || true
         
       - name: Upload config.mk artifact
@@ -472,21 +453,6 @@ jobs:
           $D echo make -j"$JOBS"
           $D make -j"$JOBS"
 
-      - name: Test make install
-        run: |
-          $D make DESTDIR="$GITHUB_WORKSPACE/install/libopenmha" install_libopenmha
-          $D make DESTDIR="$GITHUB_WORKSPACE/install/libopenmha-dev" install_libopenmha-dev
-          $D make DESTDIR="$GITHUB_WORKSPACE/install/openmha" install_openmha
-          $D make DESTDIR="$GITHUB_WORKSPACE/install/openmha-examples" install_openmha-examples
-          $D make DESTDIR="$GITHUB_WORKSPACE/install/full-install" install
-
-      - name: Upload installation artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: openmha-installation-${{ matrix.name }}
-          path: |
-            install/
-
       # ---------------------------
       # Build: run tests
       # ---------------------------
@@ -496,17 +462,274 @@ jobs:
           JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
           $D make -j"$JOBS" unit-tests test
 
-#      # ---------------------------
-#      # ccache Stats
-#      # ---------------------------
-#      - name: ccache stats (Linux)
-#        if: matrix.platform == 'linux'
-#        run: ccache -s
-#
-#      - name: ccache stats (Windows)
-#        if: matrix.platform == 'windows'
-#        shell: msys2 {0}
-#        run: ccache -s
+      # ---------------------------
+      # Build debian packages
+      # ---------------------------
+      - name: Build Debian packages
+        if: startsWith(matrix.name, 'ubuntu-')
+        run: |
+          set -eux
+          JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
+          $D make -j"$JOBS" deb_openmha deb_libopenmha deb_libopenmha-dev deb_openmha-examples
+
+      - name: Upload Debian packages
+        if: startsWith(matrix.name, 'ubuntu-')
+        uses: actions/upload-artifact@v7
+        with:
+          name: openmha-debs-${{ matrix.name }}
+          path: |
+            *.deb
+
+      # ---------------------------
+      # Build zip package for Windows installation
+      # ---------------------------
+      - name: Build Windows zip package
+        if: startsWith(matrix.platform, 'windows')
+        run: |
+          set -eux
+          make install_deps_windows MSYSTEM="${{ matrix.msystem }}" DESTDIR="$GITHUB_WORKSPACE/install"
+          cd install
+          zip -r ../openmha-${{ matrix.name }}.zip ./*
+      - name: Upload Windows zip package
+        if: startsWith(matrix.platform, 'windows')
+        uses: actions/upload-artifact@v7
+        with:
+          name: openmha-zip-${{ matrix.name }}
+          path: |
+            openmha-${{ matrix.name }}.zip
+
+      - name: Stop step container
+        if: always() && matrix.step_container != ''
+        run: |
+          docker rm -f build_env || true
+
+
+  smoke-test:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # 1) Ubuntu 24.04
+          - name: ubuntu-24.04
+            runs_on: ubuntu-24.04
+            # Only one of the following containers can be non-empty
+            job_container: "" # Job-level docker container
+            step_container: "" # Step-level docker container
+
+          # 2) Ubuntu 26.04
+          - name: ubuntu-26.04
+            runs_on: ubuntu-latest
+            # Only one of the following containers can be non-empty
+            job_container: ubuntu:26.04 # Job-level docker container
+            step_container: ""          # Step-level docker container
+
+          # 3) Ubuntu 26.04 ARM64
+          - name: ubuntu-26.04-arm64
+            runs_on: ubuntu-24.04-arm
+            # Only one of the following containers can be non-empty
+            job_container: ubuntu:26.04 # Job-level docker container
+            step_container: ""          # Step-level docker container
+
+          # 4) Ubuntu 26.04 ARMHF
+          - name: ubuntu-26.04-armhf
+            runs_on: ubuntu-24.04-arm
+            # Only one of the following containers can be non-empty
+            job_container: ""              # Job-level docker container
+            step_container: "ubuntu:26.04" # Step-level docker container
+            docker_platform: "linux/arm/v7"
+            uname_m: armv7l
+
+          # 5) Windows
+          - name: windows
+            runs_on: windows-latest
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+
+          # 6) Windows ARM64
+          - name: windows-arm64
+            runs_on: windows-11-arm
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+
+          # 7) macOS ARM (latest)
+          - name: macos-arm64
+            runs_on: macos-latest
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+
+          # 8) macOS Intel (latest available Intel image)
+          - name: macos-intel
+            runs_on: macos-26-intel
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+
+          # 9) Ubuntu 22.04
+          - name: ubuntu-22.04
+            runs_on: ubuntu-22.04
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+
+          # 10) Ubuntu 22.04 ARM64
+          - name: ubuntu-22.04-arm64
+            runs_on: ubuntu-22.04-arm
+            # Only one of the following containers can be non-empty
+            job_container: ""  # Job-level docker container
+            step_container: "" # Step-level docker container
+
+    runs-on: ${{ matrix.runs_on }}
+
+    env:
+      D: ${{ matrix.step_container != '' && 'docker exec build_env' || '' }}
+      DEBIAN_FRONTEND: noninteractive
+
+    # Set container for whole job only if it's needed
+    container: ${{ matrix.job_container != '' && matrix.job_container || null }}
+
+    steps:
+      - name: Set up step container for Linux ARMHF smoke tests
+        if: matrix.step_container != ''
+        run: |
+          set -eux
+          docker create --name build_env --platform ${{ matrix.docker_platform }} -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" --env DEBIAN_FRONTEND=noninteractive ${{ matrix.step_container }} sleep 99999
+          docker start build_env
+          hostarch=$($D uname -m)
+          # Modify uname output for configure scripts
+          $D mv /usr/bin/uname /usr/bin/uname.orig
+          cat <<EOF >uname-wrapper.sh
+          #!/bin/sh
+          /usr/bin/uname.orig "\$@" | sed -e s/$hostarch/${{ matrix.uname_m }}/
+          EOF
+          docker cp uname-wrapper.sh build_env:/usr/bin/uname
+          $D chown root:root /usr/bin/uname
+          $D chmod +x /usr/bin/uname
+          $D ls -l /usr/bin/uname
+          $D cat /usr/bin/uname
+          $D uname -a
+          rm uname-wrapper.sh
+
+      - name: Install sudo for container builds (Linux)
+        if: matrix.job_container != '' || matrix.step_container != ''
+        run: |
+          set -eux
+          $D apt-get update
+          $D apt-get install -y sudo
+
+      # ---------------------------
+      # Linux: smoke test
+      # ---------------------------
+      - name: Download and install openMHA Debian packages for smoke test (Linux)
+        if: startsWith(matrix.name, 'ubuntu')
+        uses: actions/download-artifact@v7
+        with:
+          name: openmha-debs-${{ matrix.name }}
+
+      - name: On Ubuntu 26.04 armhf, libasound2 is provided by libasound2t64
+        if: startsWith(matrix.name, 'ubuntu-26.04-armhf')
+        run: |
+          set -eux
+          $D sudo apt-get update
+          $D sudo apt-get install -y libasound2t64
+
+      - name: Install openMHA Debian packages for smoke test (Linux)
+        if: startsWith(matrix.name, 'ubuntu')
+        run: |
+          set -eux
+          $D sudo apt-get update
+          $D sudo apt-get install -y ./*.deb
+
+      - name: Run smoke test (Linux)
+        if: startsWith(matrix.name, 'ubuntu')
+        run: |
+          set -eux
+          $D which mha
+          $D mha "?" mhalib=wave2spec iolib=MHAIOFile cmd=quit
+
+      # ---------------------------
+      # Windows: Install openMHA from zip package for smoke test  
+      # ---------------------------
+      - name: Download zip package for smoke test (Windows)
+        if: startsWith(matrix.name, 'windows')
+        uses: actions/download-artifact@v7
+        with:
+          name: openmha-zip-${{ matrix.name }}
+
+      - name: Install openMHA from zip package for smoke test (Windows)
+        if: startsWith(matrix.name, 'windows')
+        run: |
+          & "C:\Program Files\7-Zip\7z" x openmha-${{ matrix.name }}.zip -y -bb2
+
+      - name: Run smoke test (Windows)
+        if: startsWith(matrix.name, 'windows')
+        run: |
+          & .\openmha\bin\mha.exe ? mhalib=wave2spec iolib=MHAIOFile cmd=quit
+
+      # ---------------------------
+      # Mac: Install via Homebrew and execute smoke test
+      # ---------------------------
+      - name: Build openMHA formula for current openMHA commit
+        if: startsWith(matrix.name, 'macos')
+        shell: bash
+        run: |
+          set -eux
+          brew tap labstreaminglayer/tap
+          brew install lsl
+          ls $(brew --prefix)/Frameworks/lsl.framework/Headers/*.h || true
+          ls $(brew --prefix)/
+
+          brew tap openmha/tap
+          brew formula openmha || true
+          brew --repo openmha/tap || true
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SOURCE_REPO='${{ github.event.pull_request.head.repo.full_name }}'
+            SOURCE_REVISION='${{ github.event.pull_request.head.sha }}'
+          else
+            SOURCE_REPO='${{ github.repository }}'
+            SOURCE_REVISION='${{ github.sha }}'
+          fi
+
+          cat > $(brew formula openmha) <<EOF
+          class Openmha < Formula
+            SOURCE_REVISION = "${SOURCE_REVISION}"
+
+            desc "Open Master Hearing Aid (openMHA)"
+            homepage "http://www.openmha.org/"
+            url "https://github.com/${SOURCE_REPO}.git", :using => :git, :revision => SOURCE_REVISION
+            version SOURCE_REVISION[0, 12]
+            license "AGPL-3.0-only"
+
+            depends_on "jack"
+            depends_on "qjackctl" => :recommended
+            depends_on "libsndfile"
+            depends_on "pkgconfig" => :build
+            depends_on "portaudio"
+            depends_on "liblo"
+            depends_on "eigen" => :build
+            depends_on "coreutils" => :build
+            depends_on "labstreaminglayer/tap/lsl"
+            depends_on "pytorch"
+            depends_on "cmake" => :build
+            depends_on "boost" => :build
+            depends_on "openjdk" => :recommended
+            depends_on "octave" => :recommended
+
+            def install
+              system "./configure", "--prefix=#{prefix}"
+              system "HOMEBREW_OPENMHA_TAG=#{SOURCE_REVISION} make homebrew"
+            end
+          end
+          EOF
+
+          cat $(brew formula openmha)
+          brew install openmha
+
+          mha "?" mhalib=wave2spec iolib=MHAIOFile cmd=quit
 
       - name: Stop step container
         if: always() && matrix.step_container != ''

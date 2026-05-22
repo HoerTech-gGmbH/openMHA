@@ -1,4 +1,3 @@
-Architecture: all
 Section: contrib/sound
 Maintainer: openMHA Packaging Team <packaging@openmha.org>
 Description: HoerTech openMHA library development files
@@ -6,4 +5,5 @@ Description: HoerTech openMHA library development files
   This package contains the header files required for building custom
   openMHA algorithm plugins.
 Homepage: http://www.openmha.org/
-Recommends: octave, octave-signal, default-jre, liblo-dev, libeigen3-dev, make, libsndfile1-dev, libjack-dev | libjack-jackd2-dev, jackd, portaudio19-dev, g++
+Recommends: octave, octave-signal, default-jre-headless, liblo-dev, libeigen3-dev, make, libsndfile1-dev, libjack-dev | libjack-jackd2-dev, jackd, portaudio19-dev, g++
+Depends: libopenmha

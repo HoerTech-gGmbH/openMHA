@@ -9,7 +9,6 @@ include $(REPO)/config.mk
 install: usr-local-bin \
          usr-local-lib \
          mfiles \
-         matfiles \
          examples \
          reference_algorithms \
          docfiles \
@@ -40,16 +39,9 @@ reference_algorithms: build
 	cp -r "${REPO}/reference_algorithms/"* "$(DESTDIR)$(PREFIX)/share/openmha/reference_algorithms"
 
 mfiles: build
-	mkdir -p "$(DESTDIR)$(PREFIX)/lib/openmha/mfiles"
 	mkdir -p "$(DESTDIR)$(PREFIX)/lib/openmha/mfiles/mhagui_PHL_generic_hearing_aid_callbacks"
-	cp "$(REPO)/mha/tools/mfiles/"*m "$(DESTDIR)$(PREFIX)/lib/openmha/mfiles"
+	cp "$(REPO)/mha/tools/mfiles/"*.* "$(DESTDIR)$(PREFIX)/lib/openmha/mfiles"
 	cp "$(REPO)/mha/tools/mfiles/mhagui_PHL_generic_hearing_aid_callbacks/"*m "$(DESTDIR)$(PREFIX)/lib/openmha/mfiles/mhagui_PHL_generic_hearing_aid_callbacks"
-	cp "$(REPO)/mha/tools/mfiles/mhactl_java.jar" "$(DESTDIR)$(PREFIX)/lib/openmha/mfiles"
-
-matfiles: build
-	mkdir -p "$(DESTDIR)$(PREFIX)/share/openmha"
-	cp "$(REPO)/mha/tools/mfiles/"*.mat "$(DESTDIR)$(PREFIX)/share/openmha/"
-	cp "$(REPO)/mha/tools/mfiles/"*.cfg "$(DESTDIR)$(PREFIX)/share/openmha/"
 
 docfiles: build
 	mkdir -p "$(DESTDIR)$(PREFIX)/share/doc/openmha/"
