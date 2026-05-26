@@ -727,7 +727,7 @@ jobs:
           EOF
 
           cat $(brew formula openmha)
-          brew install openmha
+          brew install --verbose openmha
 
           mha "?" mhalib=wave2spec iolib=MHAIOFile cmd=quit
 

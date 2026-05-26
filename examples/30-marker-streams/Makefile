@@ -1,5 +1,5 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
-# Copyright © 2022 Hörzentrum Oldenburg gGmbH
+# Copyright © 2022 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,8 @@
 include ../../config.mk
 
 SendStringMarkers: SendStringMarkers.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< $(LDFLAGS) -std=$(CXXSTANDARD) -g -o $@ -llsl
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< $(LDFLAGS) -std=$(CXXSTANDARD) -g -o $@ -llsl || \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< $(LDFLAGS) -std=$(CXXSTANDARD) -g -o $@ -F$(shell brew --prefix)/Frameworks -F$(HOMEBREW_PREFIX)/Frameworks -framework lsl
 
 ifneq ("$(WITH_LSL)", "yes")
 	$(error This example needs LSL to compile)

@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2020 HörTech gGmbH
+# Copyright © 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +18,8 @@
 
 include ../../config.mk
 receive_lsl: send_lsl.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) send_lsl.cpp -std=$(CXXSTANDARD) -g -o send_lsl -llsl
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) send_lsl.cpp -std=$(CXXSTANDARD) -g -o send_lsl -llsl || \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) send_lsl.cpp -std=$(CXXSTANDARD) -g -o send_lsl  -F$(shell brew --prefix)/Frameworks -F$(HOMEBREW_PREFIX)/Frameworks -framework lsl
 # Local Variables:
 # compile-command: "make"
 # End:

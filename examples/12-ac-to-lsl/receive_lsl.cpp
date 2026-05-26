@@ -1,5 +1,6 @@
 /* This file is part of the HörTech Open Master Hearing Aid (openMHA)
  * Copyright © 2018 HörTech gGmbH
+ * Copyright © 2026 Hörzentrum Oldenburg gGmbH
  *
  * openMHA is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -89,6 +90,7 @@ int main(int argc, char* argv[]) {
   auto sample=std::vector<float>(sz);
   while (true){
     float ts = inlet.pull_sample(sample.data(),sz);
+    (void) ts; // silence unused variable warning
     for(int ii=0;ii<sz;ii++)
       std::cout<<sample[ii]<<" ";
     std::cout<<std::endl;

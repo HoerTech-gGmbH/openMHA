@@ -37,7 +37,7 @@ all: $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME
 
 empty :=
 space := $(empty) $(empty)
-PLUGINDIRS=$(wildcard ../plugins/*/$(PLATFORM_CC)/)
+PLUGINDIRS=$(filter-out ../plugins/example%/$(PLATFORM_CC)/,$(wildcard ../plugins/*/$(PLATFORM_CC)/))
 MHA_PLUGINDIRS=$(subst $(space),;,$(PLUGINDIRS))
 
 # Get plugin names
