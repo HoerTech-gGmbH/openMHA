@@ -57,7 +57,7 @@ $(MHANAME)_developer_manual.pdf: images mhadoc
 	cp -lv --remove-destination optparams.sty mhadoc/latex
 	cp -lv --remove-destination flowcharts/fmt_png/*.png mhadoc/latex
 	cp -lv --remove-destination flowcharts/fmt_pdf/*.pdf mhadoc/latex
-	$(MAKE) -C mhadoc/latex refman.pdf
+	$(MAKE) -C mhadoc/latex refman.pdf LATEX_CMD="pdflatex $(PDFLATEX_FLAGS)"
 	cp -lv --remove-destination mhadoc/latex/refman.pdf $@
 
 $(MHANAME)_application_manual.pdf: user_manual/$(MHANAME)_application_manual.pdf

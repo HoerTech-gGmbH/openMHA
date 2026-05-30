@@ -1,6 +1,6 @@
 // This file is part of the HörTech Open Master Hearing Aid (openMHA)
 // Copyright © 2018 2019 2020 2021 HörTech gGmbH
-// Copyright © 2022 Hörzentrum Oldenburg gGmbH
+// Copyright © 2022 2026 Hörzentrum Oldenburg gGmbH
 //
 // openMHA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -186,15 +186,15 @@ namespace ac2lsl{
          * @param skip_       Number of frames to skip after each send
          * @param source_id_  LSL identifier for this data stream
          * @param varnames_   Names of AC variables to send over LSL
-         * @param rate        Rate with wich chunks of data are sent to the LSL
+         * @param rate_       Rate with wich chunks of data are sent to the LSL
          *                    stream.  Usually the rate with which process calls
          *                    happen, but may be lower due to the subsampling
          *                    caused by skip_ */
         cfg_t(MHA_AC::algo_comm_t & ac_,
               unsigned skip_,
-              const std::string& source_id,
+              const std::string& source_id_,
               const std::vector<std::string>& varnames_,
-              double rate);
+              double rate_);
         void process();
 
     };

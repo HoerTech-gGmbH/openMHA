@@ -15,7 +15,7 @@
 %%% You should have received a copy of the GNU Affero General Public License, 
 %%% version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-% stylesheet for doxygen 1.8.11
+% stylesheet for doxygen 1.15.0
 % adapted for openMHA
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{openMHAdoxygen}
@@ -27,21 +27,56 @@
 \RequirePackage{float}
 \RequirePackage{ifthen}
 \RequirePackage{verbatim}
+\RequirePackage{varwidth}
 \RequirePackage[table]{xcolor}
-%\RequirePackage{tabu_doxygen}
-\RequirePackage{fancyvrb}
 \RequirePackage{longtable}
-\RequirePackage{tabu}
-\RequirePackage{tabularx}
-\RequirePackage{multirow}
+\RequirePackage{xltabular}
+\RequirePackage{tabularray}
+\ExplSyntaxOn
 \RequirePackage{fancyhdr}
+\IfPackageAtLeastTF{tabularray}{2025-03-11}
+{
+  \IfPackageAtLeastTF{tabularray}{2025-03-12}
+  {
+    %newer version, do nothing
+  }
+  {
+     %the required version
+     \bool_gset_false:N \g__tblr_use_intarray_bool
+  }
+}
+{
+  %older version, do nothing
+}
+\ExplSyntaxOff
+\UseTblrLibrary{varwidth}
+\ExplSyntaxOn
+\int_new:N \g__doxy_nohyper_int
+\AtBeginDocument
+  {
+    \renewenvironment{tblrNoHyper}
+      {
+        \int_compare:nNnT {\g__doxy_nohyper_int} = {0} {\begin{NoHyper}}
+        \int_gincr:N \g__doxy_nohyper_int
+      }
+      {
+        \int_gdecr:N \g__doxy_nohyper_int
+        \int_compare:nNnT {\g__doxy_nohyper_int} = {0} {\end{NoHyper}}
+      }
+  }
+\ExplSyntaxOff
+\RequirePackage{fancyvrb}
+\RequirePackage{tabularx}
+\RequirePackage{multicol}
+\RequirePackage{multirow}
 \RequirePackage{hanging}
 \RequirePackage{ifpdf}
 \RequirePackage[export]{adjustbox}
 \RequirePackage{amssymb}
 \RequirePackage{stackengine}
+\RequirePackage{enumitem}
+\RequirePackage{alphalph}
 \RequirePackage[normalem]{ulem} % for strikeout, but don't modify emphasis
-
 
 %---------- Copied from mha.sty---------------------------------------
 
@@ -135,7 +170,15 @@
 % Necessary for hanging indent
 \newlength{\DoxyCodeWidth}
 
-\newcommand\DoxyCodeLine[1]{\hangpara{\DoxyCodeWidth}{1}{#1}\par}
+\newcommand\DoxyCodeLine[1]{
+  \ifthenelse{\equal{\detokenize{#1}}{}}
+  {
+    \vspace*{\baselineskip}
+  }
+  {
+    \hangpara{\DoxyCodeWidth}{1}{#1}\par
+  }
+}
 
 \newcommand\NiceSpace{%
      \discretionary{}{\kern\fontdimen2\font}{\kern\fontdimen2\font}%
@@ -144,6 +187,7 @@
 % Used by @code ... @endcode
 \newenvironment{DoxyCode}[1]{%
   \par%
+  \vspace{2pt}%
   \scriptsize%
   \normalfont\ttfamily%
   \rightskip0pt plus 1fil%
@@ -151,14 +195,14 @@
   \settowidth{\CodeWidthChar}{?}%
   \settoheight{\CodeHeightChar}{?}%
   \setlength{\parskip}{0ex plus 0ex minus 0ex}%
-  \ifthenelse{\equal{#1}{0}}
-  {
+  \ifthenelse{\equal{#1}{0}}%
+  {%
     {\lccode`~32 \lowercase{\global\let~}\NiceSpace}\obeyspaces%
-  }
-  {
+  }%
+  {%
     {\lccode`~32 \lowercase{\global\let~}}\obeyspaces%
-  }
-
+  }%
+  \vspace{2pt}%
 }{%
   \normalfont%
   \normalsize%
@@ -180,6 +224,7 @@
 
 % Used by @verbatim ... @endverbatim
 \newenvironment{DoxyVerb}{%
+  \par%
   \footnotesize%
   \verbatim%
 }{%
@@ -195,18 +240,34 @@
 }
 
 % Used by numbered lists (using '-#' or <ol> ... </ol>)
-\newenvironment{DoxyEnumerate}{%
-  \enumerate%
-}{%
-  \endenumerate%
-}
+\setlistdepth{12}
+\newlist{DoxyEnumerate}{enumerate}{12}
+\setlist[DoxyEnumerate,1]{label=\arabic*.}
+\setlist[DoxyEnumerate,2]{label=(\enumalphalphcnt*)}
+\setlist[DoxyEnumerate,3]{label=\roman*.}
+\setlist[DoxyEnumerate,4]{label=\enumAlphAlphcnt*.}
+\setlist[DoxyEnumerate,5]{label=\arabic*.}
+\setlist[DoxyEnumerate,6]{label=(\enumalphalphcnt*)}
+\setlist[DoxyEnumerate,7]{label=\roman*.}
+\setlist[DoxyEnumerate,8]{label=\enumAlphAlphcnt*.}
+\setlist[DoxyEnumerate,9]{label=\arabic*.}
+\setlist[DoxyEnumerate,10]{label=(\enumalphalphcnt*)}
+\setlist[DoxyEnumerate,11]{label=\roman*.}
+\setlist[DoxyEnumerate,12]{label=\enumAlphAlphcnt*.}
 
 % Used by bullet lists (using '-', @li, @arg, or <ul> ... </ul>)
-\newenvironment{DoxyItemize}{%
-  \itemize%
-}{%
-  \enditemize%
-}
+\setlistdepth{12}
+\newlist{DoxyItemize}{itemize}{12}
+\setlist[DoxyItemize]{label=\textperiodcentered}
+
+\setlist[DoxyItemize,1]{label=\textbullet}
+\setlist[DoxyItemize,2]{label=\normalfont\bfseries \textendash}
+\setlist[DoxyItemize,3]{label=\textasteriskcentered}
+\setlist[DoxyItemize,4]{label=\textperiodcentered}
+
+% Used for check boxes
+\newcommand{\DoxyUnchecked}{$\square$}
+\newcommand{\DoxyChecked}{\rlap{\raisebox{0.3ex}{\hspace{0.4ex}\tiny \checkmark}}$\square$}
 
 % Used by description lists (using <dl> ... </dl>)
 \newenvironment{DoxyDescription}{%
@@ -219,9 +280,8 @@
 % (only if caption is specified)
 \newenvironment{DoxyImage}{%
   \begin{figure}[H]%
-    \begin{center}%
+    \centering%
 }{%
-    \end{center}%
   \end{figure}%
 }
 
@@ -235,6 +295,13 @@
 
 % Used by @attention
 \newenvironment{DoxyAttention}[1]{%
+  \begin{DoxyDesc}{#1}%
+}{%
+  \end{DoxyDesc}%
+}
+
+% Used by @important
+\newenvironment{DoxyImportant}[1]{%
   \begin{DoxyDesc}{#1}%
 }{%
   \end{DoxyDesc}%
@@ -331,12 +398,6 @@
   \end{DoxyDesc}%
 }
 
-% Used by @internal
-\newenvironment{DoxyInternal}[1]{%
-  \paragraph*{#1}%
-}{%
-}
-
 % Used by @par and @paragraph
 \newenvironment{DoxyParagraph}[1]{%
   \begin{list}{}{%
@@ -351,112 +412,171 @@
   \end{list}%
 }
 
-% Used by parameter lists
-\newenvironment{DoxyParams}[2][]{%
-    \tabulinesep=1mm%
-    \par%
-    \ifthenelse{\equal{#1}{}}%
-      {\begin{longtabu*}spread 0pt [l]{|X[-1,l]|X[-1,l]|}}% name + description
-    {\ifthenelse{\equal{#1}{1}}%
-      {\begin{longtabu*}spread 0pt [l]{|X[-1,l]|X[-1,l]|X[-1,l]|}}% in/out + name + desc
-      {\begin{longtabu*}spread 0pt [l]{|X[-1,l]|X[-1,l]|X[-1,l]|X[-1,l]|}}% in/out + type + name + desc
-    }
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #2}\\[1ex]%
-    \hline%
-    \endfirsthead%
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #2}\\[1ex]%
-    \hline%
-    \endhead%
-}{%
-    \end{longtabu*}%
-    \vspace{6pt}%
+% define a theme for the DoxyTable environment (without caption)
+\NewTblrTheme{DoxyTableBareTheme}{
+    \DefTblrTemplate{firsthead}{default}{}%
+    \DefTblrTemplate{middlehead, lasthead}{default}{}%
+    \DefTblrTemplate{contfoot-text}{default}{}%
 }
+
+% define a theme for the DoxyTable environment (with caption)
+\NewTblrTheme{DoxyTableCaptionTheme}{
+    \SetTblrStyle{firsthead}{font=\bfseries}{}%
+    \DefTblrTemplate{middlehead, lasthead}{default}{}%
+    \DefTblrTemplate{contfoot-text}{default}{}%
+}
+
+% Define a table environment to use with Doxygen
+% parameters:
+% - #1: number of columns
+% - #2: table caption (can be empty)
+% - #3: label to refer to the table (can be empty)
+% - #4: 1=table has a heading row, 0=no heading row
+% - #5: body of the table (part between start{DoxyTable}..\end{DoxyTable}
+\NewDocumentEnvironment{DoxyTable}{m +m m m +b}{%
+\par%
+\def\hascaption{#2}%
+\def\haslabel{#3}%
+\ifx\hascaption\empty% if caption is empty
+  \SetTblrOuter[longtblr]{theme=DoxyTableBareTheme}% table without caption or label
+\else% caption not empty
+  \ifx\haslabel\empty% if label is empty
+    \SetTblrOuter[longtblr]{theme=DoxyTableCaptionTheme,caption={#2}}% set table caption
+  \else% label not empty
+    \SetTblrOuter[longtblr]{theme=DoxyTableCaptionTheme,caption={#2},label={#3}}% set table caption and label
+  \fi%
+\fi%
+\sbox0{% first render the table in a savebox to calculate the width of the table which will be stored in \wd0
+\begin{tblr}{hlines,vlines,measure=vbox,colspec={*{#1}{l}}}%
+#5
+\end{tblr}%
+}% end of sbox0
+\ifdim\wd0>\linewidth% use flexible columns
+% now render the table for real
+\begin{longtblr}{hlines,vlines,% automatically set horizontal and vertical cell lines
+                 measure=vbox,% needed to allow nested lists and tables
+                 colspec={*{#1}{X[-1]}},% set column type for all columns
+                 rowhead=#4} % set which row is the header (0=disable, 1=enable)
+#5
+\end{longtblr}%
+\else% use fixed left aligned columns
+% now render the table for real
+\begin{longtblr}{hlines,vlines,% automatically set horizontal and vertical cell lines
+                 measure=vbox,% needed to allow nested lists and tables
+                 colspec={*{#1}{l}},% set column type for all columns
+                 rowhead=#4} % set which row is the header (0=disable, 1=enable)
+#5
+\end{longtblr}%
+\fi%
+}{% no end marker needed anymore
+}%
+
+% Define a nested table environment to use with Doxygen
+% parameters:
+% - #1: number of columns
+% - #2: 1=table has a heading row, 0=no heading row
+\NewDocumentEnvironment{DoxyTableNested}{m m}{%
+% now render the table for real
+\begin{tblr}{hlines,vlines,% automatically set horizontal and vertical cell lines
+             measure=vbox,% needed to allow nested lists and tables
+	     colspec={*{#1}{X[-1]}},% set column type for all columns
+             rowhead=#2% set which row is the header (0=disable, 1=enable)
+            }
+}{% no end marker needed anymore
+\end{tblr}
+}%
+
+% Defines a parameter table
+% Arguments:
+% #1: Number of columns
+% #2: Initial format for tblr, i.e. format except for last column
+% #3: Title of the table e.g. Params, Enumerator
+% #4: Body
+\NewDocumentCommand{\DoxyParamTable}{m m +m +m}{%
+  \SetTblrOuter[longtblr]{theme=DoxyTableBareTheme}% set table caption and label
+  \sbox0{% render table off-screen first to capture its width in \wd0
+    \begin{tblr}{measure=vbox,colspec={*{#1}{|l}|}}%
+    \SetCell[c=#1]{l} \tf{#3} \\[1ex]%
+    \hline%
+    #4
+    \end{tblr}%
+  }%
+  \ifdim\wd0>\linewidth%
+    \edef\DoxyTableColSpec{#2X[-1]}%
+  \else%
+    \edef\DoxyTableColSpec{#2l}%
+  \fi%
+  \expanded{\noexpand\begin{longtblr}[l,theme=DoxyTableBareTheme]%
+          {vline{1-Z}={2-Z}{solid},%    show vertical lines for all rows except the first
+           measure=vbox,%               needed to allow nested lists and tables
+           colspec=\DoxyTableColSpec}}% set column type for all columns
+  \SetCell[c=#1]{l} \tf{#3} \\[1ex]%
+  \hline%
+  #4
+  \end{longtblr}%
+  \par\addvspace{6pt}%
+}
+
+
+% Used by parameter lists
+\NewDocumentEnvironment{DoxyParams}{O{0} m +b}{%
+  \par
+  \ifnum#1>1
+    \DoxyParamTable{4}{lll}{#2}{#3}
+  \else
+    \ifnum#1>0
+      \DoxyParamTable{3}{ll}{#2}{#3}
+    \else
+      \DoxyParamTable{2}{l}{#2}{#3}
+    \fi
+  \fi
+}{}
+
 
 % Used for fields of simple structs
-\newenvironment{DoxyFields}[1]{%
-    \tabulinesep=1mm%
-    \par%
-    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|X[-1,l]|}%
-    \multicolumn{3}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endfirsthead%
-    \multicolumn{3}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endhead%
-}{%
-    \end{longtabu*}%
-    \vspace{6pt}%
-}
+\NewDocumentEnvironment{DoxyFields}{m +b}{%
+  \par
+  \DoxyParamTable{3}{rl}{#1}{#2}
+}{}
+
 
 % Used for fields simple class style enums
-\newenvironment{DoxyEnumFields}[1]{%
-    \tabulinesep=1mm%
-    \par%
-    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endfirsthead%
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endhead%
-}{%
-    \end{longtabu*}%
-    \vspace{6pt}%
+\NewDocumentEnvironment{DoxyEnumFields}{O{2} m +b}{%
+  \par
+  \ifnum#1>2
+    \DoxyParamTable{3}{lr}{#2}{#3}
+  \else
+    \DoxyParamTable{2}{l}{#2}{#3}
+  \fi
+}{}
+
+\NewDocumentCommand{\tf}{m}{%
+  \hspace{-\tabcolsep}\bfseries #1%
 }
 
 % Used for parameters within a detailed function description
 \newenvironment{DoxyParamCaption}{%
-  \renewcommand{\item}[2][]{\\ \hspace*{2.0cm} ##1 {\em ##2}}% 
+  \renewcommand{\item}[3][]{\\ \hspace*{2.0cm} ##1 {\em ##2}##3}% 
 }{%
 }
 
 % Used by return value lists
-\newenvironment{DoxyRetVals}[1]{%
-    \tabulinesep=1mm%
-    \par%
-    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endfirsthead%
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endhead%
-}{%
-    \end{longtabu*}%
-    \vspace{6pt}%
-}
+\NewDocumentEnvironment{DoxyRetVals}{m +b}{%
+  \par
+  \DoxyParamTable{2}{r}{#1}{#2}
+}{}
 
 % Used by exception lists
-\newenvironment{DoxyExceptions}[1]{%
-    \tabulinesep=1mm%
-    \par%
-    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endfirsthead%
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endhead%
-}{%
-    \end{longtabu*}%
-    \vspace{6pt}%
-}
+\NewDocumentEnvironment{DoxyExceptions}{m +b}{%
+  \par
+  \DoxyParamTable{2}{r}{#1}{#2}
+}{}
 
 % Used by template parameter lists
-\newenvironment{DoxyTemplParams}[1]{%
-    \tabulinesep=1mm%
-    \par%
-    \begin{longtabu*}spread 0pt [l]{|X[-1,r]|X[-1,l]|}%
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endfirsthead%
-    \multicolumn{2}{l}{\hspace{-6pt}\bfseries\fontseries{bc}\selectfont\color{darkgray} #1}\\[1ex]%
-    \hline%
-    \endhead%
-}{%
-    \end{longtabu*}%
-    \vspace{6pt}%
-}
+\NewDocumentEnvironment{DoxyTemplParams}{m +b}{%
+  \par
+  \DoxyParamTable{2}{r}{#1}{#2}
+}{}
 
 % Used for member lists
 \newenvironment{DoxyCompactItemize}{%
@@ -520,14 +640,6 @@
 
 % Used by tables
 \newcommand{\PBS}[1]{\let\temp=\\#1\let\\=\temp}%
-\newenvironment{TabularC}[1]%
-{\tabulinesep=1mm
-\begin{longtabu*}spread 0pt [c]{*#1{|X[-1]}|}}%
-{\end{longtabu*}\par}%
-
-\newenvironment{TabularNC}[1]%
-{\begin{tabu}spread 0pt [l]{*#1{|X[-1]}|}}%
-{\end{tabu}\par}%
 
 % Used for member group headers
 \newenvironment{Indent}{%
@@ -540,17 +652,56 @@
   \end{list}%
 }
 
+% Used when hyperlinks are turned on
+\newcommand{\doxylink}[2]{%
+  \mbox{\hyperlink{#1}{#2}}%
+}
+
+% Used for the cite command
+\newcommand{\DoxyCite}[3]{%
+  \ifthenelse{#3=1}% 1 with square parenthesis
+  {
+    \ifthenelse{\equal{#2}{number}}%
+    { \cite{#1} }%
+    {%
+      \ifthenelse{\equal{#2}{shortauthor}}%
+      { \citetext{\citeauthor{#1}} }%
+      {%
+        \ifthenelse{\equal{#2}{year}}%
+        { \citeyearpar{#1} }%
+        {}%
+      }%
+    }%
+  }%
+  {%
+    \ifthenelse{\equal{#2}{number}}%
+    { \citealp{#1} }%
+    {%
+      \ifthenelse{\equal{#2}{shortauthor}}%
+      { \citeauthor{#1} }%
+      {%
+        \ifthenelse{\equal{#2}{year}}%
+        { \citeyear{#1} }%
+        {}%
+      }%
+    }%
+  }%
+}
+
+% Used when hyperlinks are turned on
+% Third argument is the SectionType, see the doxygen internal
+% documentation for the values (relevant: Page ... Subsubsection).
+\newcommand{\doxysectlink}[3]{%
+  \mbox{\hyperlink{#1}{#2}}%
+}
 % Used when hyperlinks are turned off
 \newcommand{\doxyref}[3]{%
   \textbf{#1} (\textnormal{#2}\,\pageref{#3})%
 }
 
-% Compatibility with newer doxygen LaTeX output that may emit section links.
-\newcommand{\doxysectlink}[3]{%
-  \mbox{\hyperlink{#1}{#2}}%
-}
-
 % Used when hyperlinks are turned off
+% Fourth argument is the SectionType, see the doxygen internal
+% documentation for the values (relevant: Page ... Subsubsection).
 \newcommand{\doxysectref}[4]{%
   \textbf{#1} (\textnormal{#2}\,\pageref{#3})%
 }
@@ -577,6 +728,7 @@
 \definecolor{preprocessor}{rgb}{0.5,0.38,0.125}
 \definecolor{stringliteral}{rgb}{0.0,0.125,0.25}
 \definecolor{charliteral}{rgb}{0.0,0.5,0.5}
+\definecolor{xmlcdata}{rgb}{0.0,0.0,0.0}
 \definecolor{vhdldigit}{rgb}{1.0,0.0,1.0}
 \definecolor{vhdlkeyword}{rgb}{0.43,0.0,0.43}
 \definecolor{vhdllogic}{rgb}{1.0,0.0,0.0}
@@ -591,10 +743,29 @@
 % possibility to have sections etc. be within the margins
 % unfortunately had to copy part of book.cls and add \raggedright
 \makeatletter
+\newcounter{subsubsubsection}[subsubsection]
+\newcounter{subsubsubsubsection}[subsubsubsection]
+\newcounter{subsubsubsubsubsection}[subsubsubsubsection]
+\newcounter{subsubsubsubsubsubsection}[subsubsubsubsubsection]
+\renewcommand{\thesubsubsubsection}{\thesubsubsection.\arabic{subsubsubsection}}
+\renewcommand{\thesubsubsubsubsection}{\thesubsubsubsection.\arabic{subsubsubsubsection}}
+\renewcommand{\thesubsubsubsubsubsection}{\thesubsubsubsubsection.\arabic{subsubsubsubsubsection}}
+\renewcommand{\thesubsubsubsubsubsubsection}{\thesubsubsubsubsubsection.\arabic{subsubsubsubsubsubsection}}
+\newcommand{\subsubsubsectionmark}[1]{}
+\newcommand{\subsubsubsubsectionmark}[1]{}
+\newcommand{\subsubsubsubsubsectionmark}[1]{}
+\newcommand{\subsubsubsubsubsubsectionmark}[1]{}
+\def\toclevel@subsubsubsection{4}
+\def\toclevel@subsubsubsubsection{5}
+\def\toclevel@subsubsubsubsubsection{6}
+\def\toclevel@subsubsubsubsubsubsection{7}
+\def\toclevel@paragraph{8}
+\def\toclevel@subparagraph{9}
+
 \newcommand\doxysection{\@startsection {section}{1}{\z@}%
-                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
-                                   {2.3ex \@plus.2ex}%
-                                   {\raggedright\normalfont\Large\bfseries}}
+                                     {-3.5ex \@plus -1ex \@minus -.2ex}%
+                                     {2.3ex \@plus.2ex}%
+                                     {\raggedright\normalfont\Large\bfseries}}
 \newcommand\doxysubsection{\@startsection{subsection}{2}{\z@}%
                                      {-3.25ex\@plus -1ex \@minus -.2ex}%
                                      {1.5ex \@plus .2ex}%
@@ -603,37 +774,95 @@
                                      {-3.25ex\@plus -1ex \@minus -.2ex}%
                                      {1.5ex \@plus .2ex}%
                                      {\raggedright\normalfont\normalsize\bfseries}}
-% Compatibility with newer doxygen LaTeX output (>=1.9), which emits
-% \doxysubsubsubsection in generated .tex files.
-% Map this level to paragraph to avoid introducing a custom counter.
-\newcommand\doxysubsubsubsection{\doxyparagraph}
-\newcommand\doxysubsubsubsubsection{\doxysubparagraph}
-\newcommand\doxysubsubsubsubsubsection{\doxysubparagraph}
-\newcommand\doxyparagraph{\@startsection{paragraph}{4}{\z@}%
-                                    {3.25ex \@plus1ex \@minus.2ex}%
-                                    {-1em}%
-                                    {\raggedright\normalfont\normalsize\bfseries}}
-\newcommand\doxysubparagraph{\@startsection{subparagraph}{5}{\parindent}%
-                                       {3.25ex \@plus1ex \@minus .2ex}%
-                                       {-1em}%
-                                      {\raggedright\normalfont\normalsize\bfseries}}
+\newcommand\doxysubsubsubsection{\@startsection{subsubsubsection}{4}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\raggedright\normalfont\normalsize\bfseries}}
+\newcommand\doxysubsubsubsubsection{\@startsection{subsubsubsubsection}{5}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\raggedright\normalfont\normalsize\bfseries}}
+\newcommand\doxysubsubsubsubsubsection{\@startsection{subsubsubsubsubsection}{6}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\raggedright\normalfont\normalsize\bfseries}}
+\newcommand\doxysubsubsubsubsubsubsection{\@startsection{subsubsubsubsubsubsection}{7}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\raggedright\normalfont\normalsize\bfseries}}
+\newcommand\doxyparagraph{\@startsection{paragraph}{8}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\raggedright\normalfont\normalsize\bfseries}}
+\newcommand\doxysubparagraph{\@startsection{subparagraph}{9}{\parindent}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\raggedright\normalfont\normalsize\bfseries}}    
+                                  
+\newcommand\l@subsubsubsection{\@dottedtocline{4}{10.0em}{7.8em}}
+\newcommand\l@subsubsubsubsection{\@dottedtocline{5}{13.0em}{9.4em}}
+\newcommand\l@subsubsubsubsubsection{\@dottedtocline{6}{15.0em}{11em}}
+\newcommand\l@subsubsubsubsubsubsection{\@dottedtocline{7}{18.0em}{12.6em}}
+\renewcommand\l@paragraph{\@dottedtocline{8}{21.0em}{14.2em}}
+\renewcommand\l@subparagraph{\@dottedtocline{9}{24.0em}{15.8em}}
 \makeatother
-
+% the sectsty doesn't look to be maintained but gives, in our case, some warning like:
+% LaTeX Warning: Command \underline  has changed.
+%               Check if current package is valid.
+% unfortunately had to copy the relevant part
+\newcommand*{\doxypartfont}          [1]
+   {\gdef\SS@partnumberfont{\SS@sectid{0}\SS@nopart\SS@makeulinepartchap#1}
+    \gdef\SS@parttitlefont{\SS@sectid{0}\SS@titlepart\SS@makeulinepartchap#1}}
+\newcommand*{\doxychapterfont}       [1]
+   {\gdef\SS@chapnumfont{\SS@sectid{1}\SS@nopart\SS@makeulinepartchap#1}
+    \gdef\SS@chaptitlefont{\SS@sectid{1}\SS@titlepart\SS@makeulinepartchap#1}}
+\newcommand*{\doxysectionfont}       [1]
+   {\gdef\SS@sectfont{\SS@sectid{2}\SS@rr\SS@makeulinesect#1}}
+\newcommand*{\doxysubsectionfont}    [1]
+   {\gdef\SS@subsectfont{\SS@sectid{3}\SS@rr\SS@makeulinesect#1}}
+\newcommand*{\doxysubsubsectionfont} [1]
+   {\gdef\SS@subsubsectfont{\SS@sectid{4}\SS@rr\SS@makeulinesect#1}}
+\newcommand*{\doxyparagraphfont}     [1]
+   {\gdef\SS@parafont{\SS@sectid{5}\SS@rr\SS@makeulinesect#1}}
+\newcommand*{\doxysubparagraphfont}  [1]
+   {\gdef\SS@subparafont{\SS@sectid{6}\SS@rr\SS@makeulinesect#1}}
+\newcommand*{\doxyminisecfont}  [1]
+   {\gdef\SS@minisecfont{\SS@sectid{7}\SS@rr\SS@makeulinepartchap#1}}
+\newcommand*{\doxyallsectionsfont}   [1] {\doxypartfont{#1}%
+                                          \doxychapterfont{#1}%
+                                          \doxysectionfont{#1}%
+                                          \doxysubsectionfont{#1}%
+                                          \doxysubsubsectionfont{#1}%
+                                          \doxyparagraphfont{#1}%
+                                          \doxysubparagraphfont{#1}%
+                                          \doxyminisecfont{#1}}%
 % Define caption that is also suitable in a table
+% for usage with hyperlinks
 \makeatletter
 \def\doxyfigcaption{%
-\refstepcounter{figure}%
+\H@refstepcounter{figure}%
 \@dblarg{\@caption{figure}}}
+
+% for usage without hyperlinks
 \def\doxyfigcaptionnolink{%
 \refstepcounter{figure}%
 \@dblarg{\@caption{figure}}}
 \makeatother
 
+% Define alpha enumarative names for counters > 26
+\makeatletter
+\def\enumalphalphcnt#1{\expandafter\@enumalphalphcnt\csname c@#1\endcsname}
+\def\@enumalphalphcnt#1{\alphalph{#1}}
+\def\enumAlphAlphcnt#1{\expandafter\@enumAlphAlphcnt\csname c@#1\endcsname}
+\def\@enumAlphAlphcnt#1{\AlphAlph{#1}}
+\makeatother
+\AddEnumerateCounter{\enumalphalphcnt}{\@enumalphalphcnt}{aa}
+\AddEnumerateCounter{\enumAlphAlphcnt}{\@enumAlphAlphcnt}{AA}
+
 %----------openMHA options --------------------------------------------
 
 \usepackage{amsmath}
 \usepackage{makeidx}
-\usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{multicol}
 \usepackage{float}
@@ -759,9 +988,6 @@ You should have received a copy of the GNU Affero General Public License,
 version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 }
 
-%\newcommand{\Matlab}{MATLAB$^{\textrm{\textregistered{}}}$}
-%\newcommand{\Windows}{MS Windows$^{\textrm{\textregistered{}}}$}
-%\newcommand{\Linux}{Linux$^{\textrm{\textregistered{}}}$}
 \newcommand{\Matlab}{MATLAB}
 \newcommand{\Octave}{GNU Octave}
 \newcommand{\Windows}{MS Windows}

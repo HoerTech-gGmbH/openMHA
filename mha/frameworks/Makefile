@@ -1,6 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2013 2014 2015 2016 2017 2018 2019 2020 2021 HörTech gGmbH
-# Copyright © 2024 Hörzentrum Oldenburg gGmbH
+# Copyright © 2024 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ include ../../magic.mk
 # Compile git commit hash into executables.
 CXXFLAGS += $(GITCOMMITHASHCFLAGS)
 
-ifeq "x${BRANCH_NAME}" "xmaster" # If we are in a Jenkins build of branch master
+ifeq "x${GITHUB_EVENT_NAME}" "xrelease" # If we are in a GitHub Actions build for a release
 ifeq "x" "x$(findstring modified,$(GITCOMMITHASH))" # and if git is unmodified,
 # then this is is a relase build, do not output a non-release warning ...
 CXXFLAGS += -DNORELEASE_WARNING='""'

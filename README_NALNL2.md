@@ -15,23 +15,28 @@ commercial prescription rule "NAL NL2", the NAL-NL2.DLL is required and a
 command line wrapper that connects the DLL to our Matlab/Octave based fitting
 GUIs.
 
-Installers for this wrapper are provided for Windows and Linux.  These install
-the wrapper so that NAL NL2 can be used by the MHA fitting GUIs, mhagui_fitting
-and mhagui_fitting_offline.  The NAL NL2 DLL is not part of the wrapper and
-needs to be purchased from the National Acoustic Laboratories independently.
+This wrapper is available at
+[mha/tools/fitting/NAL-NL2/nalnl2wrapper.exe](mha/tools/fitting/NAL-NL2/nalnl2wrapper.exe)
+The wrapper is not part of the openMHA project. The NAL NL2 DLL is required for the
+wrapper to work and must be purchased from the National Acoustic Laboratories.
 
 ### Linux: 
-  1) Install closed-source MHA or openMHA as documented
-  2) sudo apt install nl2-wrapper
+  1) Create a directory /usr/share/nalnl2wrapper
+  2) Store file nalnl2wrapper.exe in directory /usr/share/nalnl2wrapper
   3) Store a licensed copy of NAL-NL2.dll in directory 
      /usr/share/nalnl2wrapper
+  4) `sudo dpkg --add-architecture i386`
+  5) `sudo apt update`
+  6) `sudo apt install wine32:i386`
 
 ### Windows:
-  1) Install closed-source MHA or openMHA as documented
-  2) Download and install
-     http://mha.hoertech.de/fitting/nalnl2wrapper-2023.08-installer.exe
+  1) Create a directory C:\Program Files\nalnl2wrapper
+  2) Store file nalnl2wrapper.exe in directory C:\Program Files\nalnl2wrapper
   3) Store a licensed copy of NAL-NL2.dll in directory 
      C:\Program Files\nalnl2wrapper\bin
+
+MHA fitting GUIs, mhagui_fitting and mhagui_fitting_offline now offer "NAL NL2"
+as a fitting rule option for dynamic compressors.
 
 Please check the NAL NL2 fitting that you apply before using it for your
 research. You can find how we compute the NAL NL2 insertion gains for openMHA

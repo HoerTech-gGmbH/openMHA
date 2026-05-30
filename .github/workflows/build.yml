@@ -17,7 +17,11 @@ name: openMHA Github Actions Build
 
 on:
   push:
+    branches:
+      - '**'
   pull_request:
+  release:
+    types: [created]
 
 env:
   MINGW_LIBLSL_REF: v1.17.7
@@ -29,24 +33,22 @@ jobs:
       matrix:
         include:
           # 1) Ubuntu 24.04
-          - name: ubuntu-24.04
+          - name: ubuntu-24.04-x64
             runs_on: ubuntu-24.04
             # Only one of the following containers can be non-empty
             job_container: "" # Job-level docker container
             step_container: "" # Step-level docker container
-            platform: linux
             shell: bash
             arch: amd64
             prefix: /usr
             
 
           # 2) Ubuntu 26.04
-          - name: ubuntu-26.04
+          - name: ubuntu-26.04-x64
             runs_on: ubuntu-latest
             # Only one of the following containers can be non-empty
             job_container: ubuntu:26.04 # Job-level docker container
             step_container: ""          # Step-level docker container
-            platform: linux
             shell: bash
             arch: amd64
             prefix: /usr
@@ -57,31 +59,28 @@ jobs:
             # Only one of the following containers can be non-empty
             job_container: ubuntu:26.04 # Job-level docker container
             step_container: ""          # Step-level docker container
-            platform: linux
             shell: bash
             arch: arm64
             prefix: /usr
 
           # 4) Ubuntu 26.04 ARMHF
-          - name: ubuntu-26.04-armhf
+          - name: ubuntu-26.04-arm32
             runs_on: ubuntu-24.04-arm
             # Only one of the following containers can be non-empty
             job_container: ""              # Job-level docker container
             step_container: "ubuntu:26.04" # Step-level docker container
             docker_platform: "linux/arm/v7"
             uname_m: armv7l
-            platform: linux
             shell: bash
             arch: armhf
             prefix: /usr
 
           # 5) Windows
-          - name: windows
+          - name: windows-x64
             runs_on: windows-latest
             # Only one of the following containers can be non-empty
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
-            platform: windows
             shell: msys2 {0}
             arch: x64
             msystem: UCRT64
@@ -94,7 +93,6 @@ jobs:
             # Only one of the following containers can be non-empty
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
-            platform: windows
             shell: msys2 {0}
             arch: arm64
             msystem: CLANGARM64
@@ -107,27 +105,24 @@ jobs:
             # Only one of the following containers can be non-empty
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
-            platform: macos
             shell: bash
             prefix: /opt/homebrew/Cellar/openmha/4.99.0
 
           # 8) macOS Intel (latest available Intel image)
-          - name: macos-intel
+          - name: macos-x64
             runs_on: macos-26-intel
             # Only one of the following containers can be non-empty
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
-            platform: macos
             shell: bash
             prefix: /usr/local/Cellar/openmha/4.99.0
 
           # 9) Ubuntu 22.04
-          - name: ubuntu-22.04
+          - name: ubuntu-22.04-x64
             runs_on: ubuntu-22.04
             # Only one of the following containers can be non-empty
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
-            platform: linux
             shell: bash
             arch: amd64
             prefix: /usr
@@ -138,7 +133,6 @@ jobs:
             # Only one of the following containers can be non-empty
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
-            platform: linux
             shell: bash
             arch: arm64
             prefix: /usr
@@ -189,7 +183,7 @@ jobs:
       # Linux: Dependencies
       # ---------------------------
       - name: Install dependencies (Linux)
-        if: matrix.platform == 'linux'
+        if: startsWith(matrix.name, 'ubuntu')
         run: |
           set -eux
 
@@ -202,7 +196,7 @@ jobs:
                        libboost-system-dev netcat-openbsd wget \
                        dpkg-dev lsb-release php-xml gnupg1 cmake
       - name: Install documentation build dependencies (Linux)
-        if: matrix.name == 'ubuntu-22.04' || matrix.name == 'ubuntu-26.04-when-we-have-a-real-runner-for-it'
+        if: matrix.name == 'ubuntu-22.04-x64' || matrix.name == 'ubuntu-26.04-when-we-have-a-real-runner-for-it-x64'
         run: |
           set -eux
           $D sudo apt-get update
@@ -213,7 +207,7 @@ jobs:
       # macOS: Dependencies
       # ---------------------------
       - name: Install dependencies (macOS)
-        if: matrix.platform == 'macos'
+        if: startsWith(matrix.name, 'macos')
         run: |
           set -eux
           brew update
@@ -255,7 +249,7 @@ jobs:
       # Windows: MSYS2 Setup & Dependencies
       # ---------------------------
       - name: Setup MSYS2
-        if: matrix.platform == 'windows'
+        if: startsWith(matrix.name, 'windows')
         uses: msys2/setup-msys2@v2
         with:
           msystem: ${{ matrix.msystem }}
@@ -291,27 +285,57 @@ jobs:
           $D git checkout .
 
       # ---------------------------
+      # Create the installers directories
+      # ---------------------------
+      # On Ubuntu, we collect our deb files and possibly some dependencies in
+      # the openmha-packages directory. Also, some Ubuntu version specific de-
+      # pendencies are collected in separate text files within this directory.
+      # For releases, we will create a zip file that includes all .deb files
+      # that end up in the "openmha-packages" directory during dependencies
+      # installation and build steps (with path "openmha-packages" stored in
+      # the .zip file). The zip file will not include the text files.
+      - name: Create installers directory for Ubuntu
+        if: startsWith(matrix.name, 'ubuntu')
+        run: |
+          set -eux
+          $D mkdir -p openmha-packages
+          $D touch openmha-packages/additional_openmha_dependencies.txt
+          $D touch openmha-packages/additional_libopenmha_dependencies.txt
+          $D touch openmha-packages/additional_libopenmha-dev_dependencies.txt
+          $D touch openmha-packages/additional_openmha-examples_dependencies.txt
+      # On Windows, we provide a zip file as an installer. Inside the zip file,
+      # all contained files are stored with a path that begins with directory
+      # "openmha".
+      - name: Create installation directory for Windows
+        if: startsWith(matrix.name, 'windows')
+        run: mkdir -p openmha
+      # We do not need an installer for Mac as the installation on Mac is done
+      # via Homebrew. We do not provide pre-compiled binaries.
+
+      # ---------------------------
       # Install Liblsl dependency
       # ---------------------------
       - name: Retrieve liblsl from dependencies repository on Ubuntu
-        if: startsWith(matrix.name, 'ubuntu-')
+        if: startsWith(matrix.name, 'ubuntu')
         uses: actions/checkout@v6
         with:
           repository: openmha/dependencies
           ref: main
           path: deps
       - name: Install liblsl on ubuntu
-        if: startsWith(matrix.name, 'ubuntu-')
+        if: startsWith(matrix.name, 'ubuntu')
         run: |
           set -eux
           lts=$(echo ${{ matrix.name }} | cut -d- -f-2)
           $D sudo apt-get install -y ./deps/liblsl/$lts/*_${{ matrix.arch }}.deb
+          $D cp deps/liblsl/$lts/*_${{ matrix.arch }}.deb openmha-packages/
+
       # On Windows, liblsl is not available as an msys2 package. Other sources
       # for precompiled binaries will become imcompatible when msys2 updates
       # the compilers. Best to compile here with caching to ensure the same
       # compiler version is used for both liblsl and openMHA.
       - name: Create cache key for liblsl build on Windows
-        if: matrix.platform == 'windows'
+        if: startsWith(matrix.name, 'windows')
         id: liblsl-cache-key
         env:
           COMPILERS: mingw-w64-clang-aarch64-clang mingw-w64-ucrt-x86_64-gcc
@@ -323,21 +347,21 @@ jobs:
                               done | cut -d" " -f 2 )
           echo "cache_key=liblsl-${{ matrix.msystem }}-${{ env.MINGW_LIBLSL_REF }}-${compiler_version}" >> $GITHUB_OUTPUT
       - name: Restore liblsl build cache on Windows
-        if: matrix.platform == 'windows'
+        if: startsWith(matrix.name, 'windows')
         uses: actions/cache@v5
         id: liblsl-cache
         with:
           path: liblsl/install
           key: ${{ steps.liblsl-cache-key.outputs.cache_key }}
       - name: Check out liblsl on Windows on cache miss
-        if: matrix.platform == 'windows' && steps.liblsl-cache.outputs.cache-hit != 'true'
+        if: startsWith(matrix.name, 'windows') && steps.liblsl-cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v6
         with:
           repository: sccn/liblsl
           ref: ${{ env.MINGW_LIBLSL_REF }}
           path: liblsl
       - name: Build liblsl on Windows
-        if: matrix.platform == 'windows' && steps.liblsl-cache.outputs.cache-hit != 'true'
+        if: startsWith(matrix.name, 'windows') && steps.liblsl-cache.outputs.cache-hit != 'true'
         run: |
           set -eux
           mkdir -p liblsl/build
@@ -358,16 +382,15 @@ jobs:
           ${PWD}/liblsl/install/bin/lsl_test_internal --order rand --wait-for-keypress never --durations yes
           ${PWD}/liblsl/install/bin/lsl_test_exported --wait-for-keypress never --durations yes
       - name: Copy liblsl files to MSYS2 directories on Windows
-        if: matrix.platform == 'windows'
+        if: startsWith(matrix.name, 'windows')
         run: |
           cp -rnv liblsl/install/* "${{ matrix.msys2_root }}"
-
 
       # ---------------------------
       # Install Libtorch dependency
       # ---------------------------
       - name: Install libtorch on ubuntu 22.04 amd64
-        if: matrix.name == 'ubuntu-22.04'
+        if: matrix.name == 'ubuntu-22.04-x64'
         run: |
           set -eux
           # Download libtorch libraries directly from pytorch download page.
@@ -400,14 +423,15 @@ jobs:
           set -eux
           # Install libtorch-dev from standard ubuntu repository when available.
           if [ "${{ matrix.arch }}" != "armhf" ]; then
-            sudo apt-get install -y libtorch-dev
+            $D sudo apt-get install -y libtorch-dev
+            $D dpkg -l libtorch* | grep ^ii | grep -v dev | awk '{print $2}' >> openmha-packages/additional_dependencies.txt
           fi
 
       # ---------------------------
       # Install Octave on Windows. The version from MSYS2 does not support Java.
       # ---------------------------
       - name: Install Octave on Windows and fix jack
-        if: matrix.platform == 'windows'
+        if: startsWith(matrix.name, 'windows')
         run: |
           set -eux
           OCTAVE_FILE="octave-11.1.0-w64.7z"
@@ -466,43 +490,114 @@ jobs:
       # Build debian packages
       # ---------------------------
       - name: Build Debian packages
-        if: startsWith(matrix.name, 'ubuntu-')
+        if: startsWith(matrix.name, 'ubuntu')
         run: |
           set -eux
           JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
           $D make -j"$JOBS" deb_openmha deb_libopenmha deb_libopenmha-dev deb_openmha-examples
-
-      - name: Upload Debian packages
-        if: startsWith(matrix.name, 'ubuntu-')
-        uses: actions/upload-artifact@v7
-        with:
-          name: openmha-debs-${{ matrix.name }}
-          path: |
-            *.deb
+          $D cp -v *.deb openmha-packages/
+          zip openmha-$(cat version)-${{ matrix.name }}.zip openmha-packages/*.deb
 
       # ---------------------------
       # Build zip package for Windows installation
       # ---------------------------
       - name: Build Windows zip package
-        if: startsWith(matrix.platform, 'windows')
+        if: startsWith(matrix.name, 'windows')
         run: |
           set -eux
-          make install_deps_windows MSYSTEM="${{ matrix.msystem }}" DESTDIR="$GITHUB_WORKSPACE/install"
-          cd install
-          zip -r ../openmha-${{ matrix.name }}.zip ./*
-      - name: Upload Windows zip package
-        if: startsWith(matrix.platform, 'windows')
+          make install_deps_windows MSYSTEM="${{ matrix.msystem }}" DESTDIR="$GITHUB_WORKSPACE/"
+          zip -r openmha-$(cat version)-${{ matrix.name }}.zip openmha
+
+      # ---------------------------
+      # Upload installers as artifacts and release assets for Linux and Windows
+      # ---------------------------
+      - name: Upload as artifacts
         uses: actions/upload-artifact@v7
+        if: startsWith(matrix.name, 'ubuntu') || startsWith(matrix.name, 'windows')
         with:
           name: openmha-zip-${{ matrix.name }}
           path: |
-            openmha-${{ matrix.name }}.zip
+            openmha-*-${{ matrix.name }}.zip
+            version
+      - name: Publish files to release
+        if: github.event_name == 'release' && (startsWith(matrix.name, 'ubuntu') || startsWith(matrix.name, 'windows'))
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            openmha-*-${{ matrix.name }}.zip
 
       - name: Stop step container
         if: always() && matrix.step_container != ''
         run: |
           docker rm -f build_env || true
 
+  add-documentation:
+    # Documentation pdf files are compiled via doxygen and pdflatex only on
+    # one of the matrix legs in job "build", because it would be a waste of
+    # resources to generate the same files on all matrix legs. In this job,
+    # we add the generated documentation pdf files to the build artifacts
+    # and release assets from all matrix legs.
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # We need to download the documentation pdf files and from each build
+      # matrix leg the openmha-*-${{ matrix.name }}.zip file. It is easiest to
+      # just download all artifacts in a single step.
+      - name: Download all artifacts
+        uses: actions/download-artifact@v7
+        with:
+          merge-multiple: true
+      - name: Add documentation to variants
+        run: |
+          set -eux
+
+          # Extract documentation pdf files from the artifact they are in.
+          src_zip=$(ls openmha-*-ubuntu-22.04-x64.zip)
+          unzip "$src_zip"
+          sudo dpkg-deb -R openmha-packages/openmha_*.deb pkg
+          sudo mv -v pkg/usr/share/doc/openmha/*.pdf ./
+          sudo rm -rvf pkg  openmha-packages
+          mkdir -p stash
+
+          # Add documentation pdf files to all linux openmha packages.
+          mv "$src_zip" stash/ # No need to update the pdfs in their source.
+          for zipfile in openmha-*-ubuntu*.zip
+          do
+            unzip "$zipfile"
+            sudo dpkg-deb -R openmha-packages/openmha_*.deb pkg
+            sudo cp -pv *.pdf pkg/usr/share/doc/openmha/
+            sudo dpkg-deb -Zxz --build pkg openmha-packages/openmha_*.deb
+            zip -u "$zipfile" openmha-packages/openmha_*.deb
+            sudo rm -rf pkg openmha-packages
+          done
+          mv "stash/$src_zip" .
+
+          # Add documentation pdf files to all windows openmha packages.
+          mkdir -p openmha/doc
+          sudo cp -pv *.pdf openmha/doc
+          for zipfile in openmha-*-windows*.zip
+          do
+            zip -u "$zipfile" openmha/doc/*.pdf
+          done
+          # Create a new zip file that includes only the documentation
+          zip openmha-$(cat version)-documentation.zip *.pdf
+      - name: Upload updated artifacts with documentation
+        uses: actions/upload-artifact@v7
+        with:
+          name: openmha-all-zips-with-documentation
+          path: |
+            openmha-*-ubuntu*.zip
+            openmha-*-windows*.zip
+            openmha-*-documentation.zip
+            version
+      - name: For releases, update release assets with documentation
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            openmha-*-ubuntu*.zip
+            openmha-*-windows*.zip
+            openmha-*-documentation.zip
 
   smoke-test:
     needs: build
@@ -511,14 +606,14 @@ jobs:
       matrix:
         include:
           # 1) Ubuntu 24.04
-          - name: ubuntu-24.04
+          - name: ubuntu-24.04-x64
             runs_on: ubuntu-24.04
             # Only one of the following containers can be non-empty
             job_container: "" # Job-level docker container
             step_container: "" # Step-level docker container
 
           # 2) Ubuntu 26.04
-          - name: ubuntu-26.04
+          - name: ubuntu-26.04-x64
             runs_on: ubuntu-latest
             # Only one of the following containers can be non-empty
             job_container: ubuntu:26.04 # Job-level docker container
@@ -532,7 +627,7 @@ jobs:
             step_container: ""          # Step-level docker container
 
           # 4) Ubuntu 26.04 ARMHF
-          - name: ubuntu-26.04-armhf
+          - name: ubuntu-26.04-arm32
             runs_on: ubuntu-24.04-arm
             # Only one of the following containers can be non-empty
             job_container: ""              # Job-level docker container
@@ -541,7 +636,7 @@ jobs:
             uname_m: armv7l
 
           # 5) Windows
-          - name: windows
+          - name: windows-x64
             runs_on: windows-latest
             # Only one of the following containers can be non-empty
             job_container: ""  # Job-level docker container
@@ -562,14 +657,14 @@ jobs:
             step_container: "" # Step-level docker container
 
           # 8) macOS Intel (latest available Intel image)
-          - name: macos-intel
+          - name: macos-x64
             runs_on: macos-26-intel
             # Only one of the following containers can be non-empty
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
 
           # 9) Ubuntu 22.04
-          - name: ubuntu-22.04
+          - name: ubuntu-22.04-x64
             runs_on: ubuntu-22.04
             # Only one of the following containers can be non-empty
             job_container: ""  # Job-level docker container
@@ -620,53 +715,34 @@ jobs:
           $D apt-get update
           $D apt-get install -y sudo
 
-      # ---------------------------
-      # Linux: smoke test
-      # ---------------------------
-      - name: Download and install openMHA Debian packages for smoke test (Linux)
-        if: startsWith(matrix.name, 'ubuntu')
-        uses: actions/download-artifact@v7
-        with:
-          name: openmha-debs-${{ matrix.name }}
-
-      - name: On Ubuntu 26.04 armhf, libasound2 is provided by libasound2t64
-        if: startsWith(matrix.name, 'ubuntu-26.04-armhf')
-        run: |
-          set -eux
-          $D sudo apt-get update
-          $D sudo apt-get install -y libasound2t64
-
-      - name: Install openMHA Debian packages for smoke test (Linux)
-        if: startsWith(matrix.name, 'ubuntu')
-        run: |
-          set -eux
-          $D sudo apt-get update
-          $D sudo apt-get install -y ./*.deb
-
-      - name: Run smoke test (Linux)
-        if: startsWith(matrix.name, 'ubuntu')
-        run: |
-          set -eux
-          $D which mha
-          $D mha "?" mhalib=wave2spec iolib=MHAIOFile cmd=quit
 
       # ---------------------------
-      # Windows: Install openMHA from zip package for smoke test  
+      # Download build artifacts for smoke test
       # ---------------------------
-      - name: Download zip package for smoke test (Windows)
-        if: startsWith(matrix.name, 'windows')
+      - name: Download build artifact for smoke test on Ubuntu and Windows
+        if: startsWith(matrix.name, 'ubuntu') || startsWith(matrix.name, 'windows')
         uses: actions/download-artifact@v7
         with:
           name: openmha-zip-${{ matrix.name }}
 
-      - name: Install openMHA from zip package for smoke test (Windows)
-        if: startsWith(matrix.name, 'windows')
+      # ---------------------------
+      # Smoke test
+      # ---------------------------
+      - name: Smoke test (Ubuntu)
+        if: startsWith(matrix.name, 'ubuntu')
         run: |
-          & "C:\Program Files\7-Zip\7z" x openmha-${{ matrix.name }}.zip -y -bb2
+          set -eux
+          $D sudo apt-get update
+          $D sudo apt-get install -y unzip
+          $D unzip openmha-*.zip
+          $D sudo apt-get install -y ./openmha-packages/*.deb
+          $D which mha
+          $D mha "?" mhalib=wave2spec iolib=MHAIOFile cmd=quit
 
-      - name: Run smoke test (Windows)
+      - name: Smoke test (Windows)
         if: startsWith(matrix.name, 'windows')
         run: |
+          & "C:\Program Files\7-Zip\7z" x openmha-*.zip -y -bb2
           & .\openmha\bin\mha.exe ? mhalib=wave2spec iolib=MHAIOFile cmd=quit
 
       # ---------------------------

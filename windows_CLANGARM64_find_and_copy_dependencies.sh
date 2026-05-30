@@ -28,7 +28,7 @@ then
     recursion=1
 fi
 echo "Recursion level: $recursion"
-if [ $recursion -gt 4 ]
+if [ $recursion -gt 6 ]
 then
     echo "Maximum recursion level reached, exiting."
     exit

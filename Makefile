@@ -177,6 +177,12 @@ coverage: unit-tests
 # make deb_openmha or make deb_openmha_debversion.
 # The version of the debian package is $(cat version)-$(lsb_release -rs).
 # If debversion was given, then this is appended to the version.
+# Some fields in the stored control files will be extended or added like this;
+# ALL OUR CONTROL FILES HAVE Depends: AS THEIR LAST LINE, WITH NO NEWLINE !!!
+# This Makefile rule first copies the control file, then appends individual
+# dependency entries, as they may differ from one Ubuntu release to the next,
+# or by target architecture, and then appends Architecture:, Package: and
+# Version: fields.
 deb_%:
 	echo "Called target $@. dollar-star is $*."
 	packageversion="$$(cat version)-$$(lsb_release -rs)$$(echo "$*"_ | cut -d_ -f2)" && \
@@ -188,6 +194,9 @@ deb_%:
 	"$(MAKE)" DESTDIR="debian_$$packagename/" "install_$$packagename" && \
 	mkdir -p "debian_$$packagename/DEBIAN" && \
 	cp "$$packagename.control" "debian_$$packagename/DEBIAN/control" && \
+	for d in $$(cat openmha-packages/additional_$${packagename}_dependencies.txt); \
+	do echo -n , $$d >> "debian_$$packagename/DEBIAN/control"; done && \
+	echo >> "debian_$$packagename/DEBIAN/control" && \
 	ARCH=$(shell dpkg-architecture --query DEB_BUILD_ARCH) && \
 	echo "Architecture: $$ARCH" >> "debian_$$packagename/DEBIAN/control" && \
 	echo "Package: $$packagename" >> "debian_$$packagename/DEBIAN/control" && \

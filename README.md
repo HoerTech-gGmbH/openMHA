@@ -58,9 +58,6 @@ sound card here: http://mahalia.openmha.org/.
 Please follow our getting-started guide:
 http://www.openmha.org/docs/openMHA_starting_guide.pdf
 
-Our user forum is found here:
-https://forum.openmha.org/
-
 ## Known issues
 ### macOS
 * There are some known issues with Octave under macOS.  The openMHA GUI may
@@ -71,9 +68,9 @@ It is possible to fit a dynamic compressor in openMHA with the
 commercial hearing aid prescription rules *DSLmio 5* and *NAL NL2*.
 
 The software libraries implementing these rules must be obtained from
-their respective authors.  The openMHA team provides wrappers around
-these libraries which for legal reasons are not distributed as part of
-openMHA but as optional extras.
+their respective vendors.  The openMHA team provides wrappers around
+these libraries. These wrappers are not part of openMHA but are
+optional extras.
 
 Please refer to files [README_NALNL2.md](README_NALNL2.md) and 
 [README_DSLmio5.md](README_DSLmio5.md) for more information.
