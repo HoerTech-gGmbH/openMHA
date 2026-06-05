@@ -211,8 +211,8 @@ interface and a TCP/IP based configuration interface. Different IO
 modules exist: For real-time signal processing, commonly the openMHA
 \emph{MHAIOJack} module is used, which
 provides an interface to the Jack Audio Connection Kit (JACK), the
-module \emph{MHAIOFile} provide audio file access and \emph{MHAIOTCP}
-TCP/IP-based signal exchange.
+module \emph{MHAIOFile} provides audio file access and \emph{MHAIOTCP}
+provides TCP/IP-based signal exchange.
 
 {\bf openMHA plugins} provide the audio signal processing capabilities
 and audio signal handling. Typically, one openMHA plugin implements
@@ -227,7 +227,7 @@ general-purpose signal processing.\\ As in most other plugin hosts,
 the audio signal in the openMHA is processed in fragments, i.e., in
 chunks of the input signal stream with a defined length. However,
 plugins are not restricted to propagate audio signal as fragments of
-audio samples in the time domain another option is to propagate the
+audio samples in the time domain. Another option is to propagate the
 audio signal in the short time Fourier transform (STFT) domain,
 i.e. as spectra of fragments of audio signal, so that not every plugin
 has to perform its own STFT analysis and synthesis. Since STFT
@@ -250,22 +250,24 @@ in section \ref{sec:ac_variables} of this manual.
 \begin{itemize}
 \item \large{{Operating System}}
   \begin{itemize}
-  \item \textcolor{orange}{\textbf{Linux:}} Ubuntu 20.04 or later, 64 bits
-  \item \textcolor{orange}{\textbf{Windows:}} Windows 10, 64 bits
-  \item \textcolor{orange}{\textbf{macOS:}} macOS Monterey (version 12) or later
+  \item \textcolor{orange}{\textbf{Linux:}} Ubuntu 22.04 or later
+  \item \textcolor{orange}{\textbf{Windows:}} Windows 11
+  \item \textcolor{orange}{\textbf{macOS:}} macOS with Homebrew installed
   \end{itemize}
 
 \item \large{{openMHA}}   \\
   \footnotesize{\url{https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md}}
-\item \large{{either Octave or Matlab}}
+\item \large{{either Octave plus OpenJDK, or Matlab}}
   \begin{itemize}
   \item \large{{Octave:}}
     \begin{itemize}
     \item \textcolor{orange}{\textbf{\large{Linux:}}} \\
-      $\rightarrow$ {\ttfamily sudo apt install octave-signal}
+      $\rightarrow$ {\ttfamily sudo apt install octave-signal default-jre-headless}
     \item \textcolor{orange}{\textbf{Windows:}} \\
-      \footnotesize{\url{%
-          https://www.gnu.org/software/octave/download.html}}
+      \footnotesize{Octave: \url{%
+          https://www.gnu.org/software/octave/download.html}} \\
+      \footnotesize{OpenJDK: e.g. "Temurin" from \url{%
+          https://adoptium.net/}}
     \item \textcolor{orange}{\textbf{macOS:}} \\
       $\rightarrow$ Automatically installed as a recommended dependency
       when installing openMHA via Homebrew.
@@ -294,23 +296,21 @@ If you have already installed openMHA on your system, make
 sure that you are using the latest version. \\
 \begin{itemize}
 \item \textcolor{orange}{\textbf{Windows}} \\
-  Repeat the installation process using the latest \textbf{Windows installer}.
+  Repeat the installation process using the \textbf{Windows zip installer}
+  for your system from the latest openMHA release on Github.
   The installation instructions can be found at
   \url{https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md}
 \item \textcolor{orange}{\textbf{macOS}} \\
-  When upgrading from openMHA 4.17.0 or earlier, you need to uninstall
-  the old version first. When upgrading from openMHA 4.18.0 or leater, you can
-  update via Homebrew: \\
+  Upgrade openMHA via Homebrew by executing the following commands in the terminal: \\
   {\ttfamily brew update} \\
   {\ttfamily brew upgrade} \\
   Please refer to the installation instructions which can be found at
   \url{https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md}
 \item \textcolor{orange}{\textbf{Linux}} \\
-  In Linux, all installed openMHA packages need to be updated.
-  For updating openMHA when a new release is available, execute: \\ 
-{\ttfamily sudo apt-get update} \\
-{\ttfamily sudo apt-get install openmha} \\
-This will upgrade all installed openmha packages to their latest version.
+  Repeat the installation process using the latest \textbf{Linux release files}
+  for your system from the latest openMHA release on Github.
+  The installation instructions can be found at
+  \url{https://github.com/HoerTech-gGmbH/openMHA/blob/master/INSTALLATION.md}
 \end{itemize}
 
 
