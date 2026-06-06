@@ -7,7 +7,7 @@
 
 DOI:[10.5281/zenodo.4569575](https://doi.org/10.5281/zenodo.4569575)
 
-Current release: 4.18.0 (2024-05-16)
+Current release: 4.18.1 (2026-06-06)
 
 ## Content of the openMHA
 

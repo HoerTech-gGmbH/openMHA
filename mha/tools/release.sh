@@ -102,10 +102,10 @@ sed -i -re "s/2[0-9]{3}-[0-9]{2}-[0-9]{2}/$(date +%Y-%m-%d)/g" README.md
 sed -i "s/$MAJOR_OLD\\.$MINOR_OLD\\.$POINT_OLD/$VER/g" version
 
 git commit -a -m"Increase version number to $VER"
-git clean -fdx . 2>/dev/null 1>/dev/null;
+git clean -ffdx . 2>/dev/null 1>/dev/null;
 echo "Testing regeneration of documentation..."
 # This will locally generate PDFs and pdf-$VER.zip.
-./configure 1>/dev/null && make -j9 doc 1>/dev/null 2>/dev/null
+./configure && make -j9 do
 printf "Documentation generated correctly? [yes/no]"
 ask_yes_no;
 
