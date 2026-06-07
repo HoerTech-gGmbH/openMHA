@@ -146,9 +146,11 @@ install_COPYING_%:
 		rm -f "$(abspath $(DESTDIR)$(PREFIX))/share/doc/$*/COPYING"; \
 		cp "COPYING" "$(abspath $(DESTDIR)$(PREFIX))/share/doc/$*/"; \
 	else \
+	  if [ "x$*" = "xopenmha" ]; then \
 		mkdir -p "$(abspath $(DESTDIR)$(PREFIX))$(INSTDIR_MISC)"; \
 		rm -f "$(abspath $(DESTDIR)$(PREFIX))$(INSTDIR_MISC)/COPYING"; \
 		cp "COPYING" "$(abspath $(DESTDIR)$(PREFIX))$(INSTDIR_MISC)/"; \
+	  fi \
 	fi
 
 # The following target performs a make install for Windows.
