@@ -44,9 +44,6 @@ config.mk:
 test: all
 	$(MAKE) -C mha/mhatest
 
-ifeq "$(WITH_LSL)" "yes"
-all: examples_with_Makefiles
-endif
 examples_with_Makefiles:
 	for e in 12 19 30; do $(MAKE) -C examples/"$$e"-* || exit 1; done
 
