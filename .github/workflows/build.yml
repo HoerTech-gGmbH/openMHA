@@ -476,6 +476,8 @@ jobs:
           JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
           $D echo make -j"$JOBS"
           $D make -j"$JOBS"
+          $D echo make -j"$JOBS" examples_with_Makefiles
+          $D make -j"$JOBS" examples_with_Makefiles
 
       # ---------------------------
       # Build: run tests
