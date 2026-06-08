@@ -476,8 +476,12 @@ jobs:
           JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
           $D echo make -j"$JOBS"
           $D make -j"$JOBS"
-          $D echo make -j"$JOBS" examples_with_Makefiles
-          $D make -j"$JOBS" examples_with_Makefiles
+      - name: Test if Makefiles in examples still work
+        run: |
+          $D make examples_with_Makefiles
+          $D rm -f examples/30-marker-streams/SendStringMarkers{,.exe}
+          $D rm -f examples/19-lsl-to-ac/send_lsl{,.exe}
+          $D rm -f examples/12-ac-to-lsl/receive_lsl{,.exe}
 
       # ---------------------------
       # Build: run tests
