@@ -23,6 +23,13 @@ include ../../magic.mk
 
 SUBDIRS = $(patsubst %/Makefile,%,$(wildcard */Makefile))
 
+# gtfb_simd uses x86-only SSE intrinsics (xmmintrin.h / __builtin_ia32_*) and
+# can only be compiled for Intel-compatible processors. Skip it on every other
+# architecture.
+ifeq "$(filter x86_64 i%86,$(ARCH))" ""
+SUBDIRS := $(filter-out gtfb_simd,$(SUBDIRS))
+endif
+
 include ../../rules.mk
 
 # Local Variables:
