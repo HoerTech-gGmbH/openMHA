@@ -29,6 +29,12 @@ SUBDIRS = $(patsubst %/Makefile,%,$(wildcard */Makefile))
 ifeq "$(filter x86_64 i%86,$(ARCH))" ""
 SUBDIRS := $(filter-out gtfb_simd,$(SUBDIRS))
 endif
+# rohBeam fails to build on PowerPC, where Eigen's AltiVec backend triggers
+# array-bounds warnings that are treated as errors. Exclude it there; all
+# other architectures, including ARM, build the plugin normally.
+ifneq "$(filter ppc% powerpc%,$(ARCH))" ""
+SUBDIRS := $(filter-out rohBeam,$(SUBDIRS))
+endif
 
 include ../../rules.mk
 
