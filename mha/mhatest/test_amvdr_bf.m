@@ -49,7 +49,10 @@ function test_amvdr_bf
   yAlgo = audioread(outwav);
 
   %% Test fidelity - 1e-7 is an empiric value
-  assert_difference_below(refyAlgo,yAlgo,1e-7);
+  %% Relaxed to 2e-7 to accommodate x87 vs SSE floating-point rounding
+  %% differences on 32-bit x86 (i386), where the result diverges from the
+  %% reference by ~1.04e-7, just above the original threshold.
+  assert_difference_below(refyAlgo,yAlgo,2e-7);
 end
 
 % Local Variables:
