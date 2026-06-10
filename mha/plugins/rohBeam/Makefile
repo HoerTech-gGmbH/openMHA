@@ -1,6 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2018 2019 2020 2021 HörTech gGmbH
-# Copyright © 2022 Hörzentrum gGmbH
+# Copyright © 2022 2026 Hörzentrum gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -28,6 +28,11 @@ include ../plugin.mk
 $(PLUGIN_AND_TEST_ARTIFACTS): CXXFLAGS += \
                                          -Wno-unknown-warning-option    \
                                          -Wno-duplicated-branches
+
+# rohBeam fails to build on PowerPC, where Eigen's AltiVec backend triggers
+# array-bounds warnings that are treated as errors. Exclude it there; all
+# other architectures, including ARM, build the plugin normally.
+EXCLUDE_FROM_POWERPC_COMPILATION = yes
 
 # Local Variables:
 # compile-command: "make"

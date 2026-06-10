@@ -32,16 +32,11 @@ dummy01:
 endif
 endif
 
-ifeq "$(EXCLUDE_FROM_ARM_COMPILATION)" "yes"
-ifeq "$(findstring arm, $(ARCH))" "arm"
-# this plugin cannot be compiled for ARM processors.
+ifeq "$(EXCLUDE_FROM_NONx86_COMPILATION)" "yes"
+ifeq "$(filter x86_64 i%86,$(ARCH))" ""
+# this plugin cannot be compiled for non-x86 processors.
 dummy02:
-	@echo "not compiling" $(PLUGINS) "since it cannot be compiled for ARM"
-endif
-ifeq "$(findstring aarch64, $(ARCH))" "aarch64"
-# this plugin cannot be compiled for ARM processors.
-dummy02:
-	@echo "not compiling" $(PLUGINS) "since it cannot be compiled for ARM"
+	@echo "not compiling" $(PLUGINS) "since it cannot be compiled for non-x86 processors"
 endif
 endif
 
@@ -171,6 +166,15 @@ dummy08:
 	@echo "not compiling" $(PLUGINS) "since it cannot be compiled for i686"
 endif
 endif
+
+ifeq "$(EXCLUDE_FROM_POWERPC_COMPILATION)" "yes"
+ifeq "$(filter ppc% powerpc%,$(ARCH))" ""
+# this plugin cannot be compiled for PowerPC processors.
+dummy09:
+	@echo "not compiling" $(PLUGINS) "since it cannot be compiled for PowerPC processors"
+endif
+endif
+
 
 include ../../../rules.mk
 

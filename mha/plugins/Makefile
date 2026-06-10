@@ -23,19 +23,6 @@ include ../../magic.mk
 
 SUBDIRS = $(patsubst %/Makefile,%,$(wildcard */Makefile))
 
-# gtfb_simd uses x86-only SSE intrinsics (xmmintrin.h / __builtin_ia32_*) and
-# can only be compiled for Intel-compatible processors. Skip it on every other
-# architecture.
-ifeq "$(filter x86_64 i%86,$(ARCH))" ""
-SUBDIRS := $(filter-out gtfb_simd,$(SUBDIRS))
-endif
-# rohBeam fails to build on PowerPC, where Eigen's AltiVec backend triggers
-# array-bounds warnings that are treated as errors. Exclude it there; all
-# other architectures, including ARM, build the plugin normally.
-ifneq "$(filter ppc% powerpc%,$(ARCH))" ""
-SUBDIRS := $(filter-out rohBeam,$(SUBDIRS))
-endif
-
 include ../../rules.mk
 
 # Local Variables:

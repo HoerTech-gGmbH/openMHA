@@ -1,5 +1,6 @@
 # This file is part of the HörTech Open Master Hearing Aid (openMHA)
 # Copyright © 2014 2018 2019 2020 HörTech gGmbH
+# Copyright © 2026 Hörzentrum Oldenburg gGmbH
 #
 # openMHA is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -13,7 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License, 
 # version 3 along with openMHA.  If not, see <http://www.gnu.org/licenses/>.
 
-EXCLUDE_FROM_ARM_COMPILATION = yes
+# gtfb_simd uses x86-only SSE intrinsics (xmmintrin.h / __builtin_ia32_*) and
+# can only be compiled for Intel-compatible processors. Skip it on every other
+# architecture.
+EXCLUDE_FROM_NONx86_COMPILATION = yes
 
 include ../plugin.mk
 
