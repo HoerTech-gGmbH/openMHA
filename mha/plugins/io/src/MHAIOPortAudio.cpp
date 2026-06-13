@@ -249,10 +249,21 @@ namespace MHAIOPortAudio {
       portaudio_stream = NULL;
       
       PaError err = Pa_Initialize();
-      if (err != paNoError)
+      if (err != paNoError) {
+        // Check if this is an "Unanticipated host error". If so, try to get more information about the error by calling Pa_GetLastHostErrorInfo() and include this information in the error message.
+        if (err == paUnanticipatedHostError) {
+          const PaHostErrorInfo* hostErrorInfo = Pa_GetLastHostErrorInfo();
+          PaHostApiTypeId hostApiType = hostErrorInfo->hostApiType; // Add the name of the host API to the error message
+          if (hostErrorInfo) {
+            throw MHA_Error(__FILE__,__LINE__,
+                            "Could not initialize portaudio: %s. Host error: %s (Host API: %d)",
+                            Pa_GetErrorText(err), hostErrorInfo->errorText, hostApiType);
+          }
+        }
         throw MHA_Error(__FILE__,__LINE__,
                         "Could not initialize portaudio: %s",
                         Pa_GetErrorText(err));
+      }
       device_info.fill_info();
       insert_member(device_info);
       insert_member(stream_info);

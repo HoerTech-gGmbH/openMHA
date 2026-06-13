@@ -45,9 +45,9 @@ jobs:
 
           # 2) Ubuntu 26.04
           - name: ubuntu-26.04-x64
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-26.04
             # Only one of the following containers can be non-empty
-            job_container: ubuntu:26.04 # Job-level docker container
+            job_container: ""           # Job-level docker container
             step_container: ""          # Step-level docker container
             shell: bash
             arch: amd64
@@ -55,9 +55,9 @@ jobs:
 
           # 3) Ubuntu 26.04 ARM64
           - name: ubuntu-26.04-arm64
-            runs_on: ubuntu-24.04-arm
+            runs_on: ubuntu-26.04-arm
             # Only one of the following containers can be non-empty
-            job_container: ubuntu:26.04 # Job-level docker container
+            job_container: ""           # Job-level docker container
             step_container: ""          # Step-level docker container
             shell: bash
             arch: arm64
@@ -65,7 +65,7 @@ jobs:
 
           # 4) Ubuntu 26.04 ARMHF
           - name: ubuntu-26.04-arm32
-            runs_on: ubuntu-24.04-arm
+            runs_on: ubuntu-26.04-arm
             # Only one of the following containers can be non-empty
             job_container: ""              # Job-level docker container
             step_container: "ubuntu:26.04" # Step-level docker container
@@ -195,13 +195,14 @@ jobs:
                        ruby-dev libboost-dev patchelf \
                        libboost-system-dev netcat-openbsd wget \
                        dpkg-dev lsb-release php-xml gnupg1 cmake
-      - name: Install documentation build dependencies (Linux)
-        if: matrix.name == 'ubuntu-22.04-x64' || matrix.name == 'ubuntu-26.04-when-we-have-a-real-runner-for-it-x64'
+      - name: Install documentation dependencies (Linux)
+        if: matrix.name == 'ubuntu-26.04-x64'
         run: |
           set -eux
           $D sudo apt-get update
           $D sudo apt-get install -y \
-                       doxygen fig2dev graphviz texlive texlive-latex-extra texlive-font-utils
+                       doxygen fig2dev graphviz texlive texlive-latex-extra \
+                       texlive-font-utils jackd2 alsa-utils pulseaudio
 
       # ---------------------------
       # macOS: Dependencies
@@ -501,7 +502,11 @@ jobs:
         run: |
           set -eux
           JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
-          $D make -j"$JOBS" deb_openmha deb_libopenmha deb_libopenmha-dev deb_openmha-examples
+          $D pulseaudio --start --daemonize=yes --exit-idle-time=-1 || true
+          $D make -j$JOBS deb_openmha deb_libopenmha deb_libopenmha-dev deb_openmha-examples
+      - name: Copy Debian packages to installer directory on Ubuntu
+        if: startsWith(matrix.name, 'ubuntu')
+        run: |
           $D cp -v *.deb openmha-packages/
           zip openmha-$(cat version)-${{ matrix.name }}.zip openmha-packages/*.deb
 
@@ -559,7 +564,7 @@ jobs:
           set -eux
 
           # Extract documentation pdf files from the artifact they are in.
-          src_zip=$(ls openmha-*-ubuntu-22.04-x64.zip)
+          src_zip=$(ls openmha-*-ubuntu-26.04-x64.zip)
           unzip "$src_zip"
           sudo dpkg-deb -R openmha-packages/openmha_*.deb pkg
           sudo mv -v pkg/usr/share/doc/openmha/*.pdf ./
@@ -621,21 +626,21 @@ jobs:
 
           # 2) Ubuntu 26.04
           - name: ubuntu-26.04-x64
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-26.04
             # Only one of the following containers can be non-empty
-            job_container: ubuntu:26.04 # Job-level docker container
+            job_container: ""           # Job-level docker container
             step_container: ""          # Step-level docker container
 
           # 3) Ubuntu 26.04 ARM64
           - name: ubuntu-26.04-arm64
-            runs_on: ubuntu-24.04-arm
+            runs_on: ubuntu-26.04-arm
             # Only one of the following containers can be non-empty
-            job_container: ubuntu:26.04 # Job-level docker container
+            job_container: ""           # Job-level docker container
             step_container: ""          # Step-level docker container
 
           # 4) Ubuntu 26.04 ARMHF
           - name: ubuntu-26.04-arm32
-            runs_on: ubuntu-24.04-arm
+            runs_on: ubuntu-26.04-arm
             # Only one of the following containers can be non-empty
             job_container: ""              # Job-level docker container
             step_container: "ubuntu:26.04" # Step-level docker container
