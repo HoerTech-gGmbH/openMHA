@@ -33,9 +33,10 @@ and need write access to store output.
 
 Install and update Homebrew. Instructions can be found at https://brew.sh.
 
-Install openMHA with the following command:
+Install openMHA and its dependency liblsl with the following commands:
 
 ```
+brew install labstreaminglayer/tap/lsl
 brew install openmha/tap/openmha
 ```
 

@@ -212,6 +212,7 @@ jobs:
           set -eux
           brew update
           brew tap labstreaminglayer/tap
+          brew trust --formula labstreaminglayer/tap/lsl
           brew install \
                        jack libsndfile pkgconfig portaudio liblo eigen pytorch \
                        lsl boost cmake openjdk octave gcc 2>&1 | \
@@ -760,11 +761,13 @@ jobs:
         run: |
           set -eux
           brew tap labstreaminglayer/tap
+          brew trust --formula labstreaminglayer/tap/lsl
           brew install lsl
           ls $(brew --prefix)/Frameworks/lsl.framework/Headers/*.h || true
           ls $(brew --prefix)/
 
           brew tap openmha/tap
+          brew trust --formula openmha/tap/openmha
           brew formula openmha || true
           brew --repo openmha/tap || true
 
