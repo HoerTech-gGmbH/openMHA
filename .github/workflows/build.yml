@@ -23,6 +23,7 @@ on:
   release:
     types: [created]
 
+permissions: {}
 env:
   MINGW_LIBLSL_REF: v1.17.7
 
