@@ -246,6 +246,8 @@ jobs:
       # Clone the repository after git has been installed in the container
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       # ---------------------------
       # Windows: MSYS2 Setup & Dependencies
@@ -324,6 +326,7 @@ jobs:
           repository: openmha/dependencies
           ref: main
           path: deps
+          persist-credentials: false
       - name: Install liblsl on ubuntu
         if: startsWith(matrix.name, 'ubuntu')
         run: |
