@@ -26,6 +26,7 @@ on:
 permissions: {}
 env:
   MINGW_LIBLSL_REF: v1.17.7
+  MINGW_LIBLSL_SHA: 64988c6a14b8dc3b3f270ece58eab4f480bfab43
 
 jobs:
   build:
@@ -40,7 +41,7 @@ jobs:
             job_container: "" # Job-level docker container
             step_container: "" # Step-level docker container
             shell: bash
-            arch: amd64
+            debarch: amd64
             prefix: /usr
             
 
@@ -51,7 +52,7 @@ jobs:
             job_container: ""           # Job-level docker container
             step_container: ""          # Step-level docker container
             shell: bash
-            arch: amd64
+            debarch: amd64
             prefix: /usr
 
           # 3) Ubuntu 26.04 ARM64
@@ -61,7 +62,7 @@ jobs:
             job_container: ""           # Job-level docker container
             step_container: ""          # Step-level docker container
             shell: bash
-            arch: arm64
+            debarch: arm64
             prefix: /usr
 
           # 4) Ubuntu 26.04 ARMHF
@@ -69,11 +70,12 @@ jobs:
             runs_on: ubuntu-26.04-arm
             # Only one of the following containers can be non-empty
             job_container: ""              # Job-level docker container
-            step_container: "ubuntu:26.04" # Step-level docker container
+            # Step-level docker container ubuntu:26.04 armhf, pinned to digest
+            step_container: "ubuntu@sha256:f3d28607ddd78734bb7f71f117f3c6706c666b8b76cbff7c9ff6e5718d46ff64"
             docker_platform: "linux/arm/v7"
             uname_m: armv7l
             shell: bash
-            arch: armhf
+            debarch: armhf
             prefix: /usr
 
           # 5) Windows
@@ -83,9 +85,7 @@ jobs:
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
             shell: msys2 {0}
-            arch: x64
             msystem: UCRT64
-            msys2_root: /ucrt64
             prefix: /openmha
 
           # 6) Windows ARM64
@@ -95,9 +95,7 @@ jobs:
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
             shell: msys2 {0}
-            arch: arm64
             msystem: CLANGARM64
-            msys2_root: /clangarm64
             prefix: /openmha
 
           # 7) macOS ARM (latest)
@@ -125,7 +123,7 @@ jobs:
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
             shell: bash
-            arch: amd64
+            debarch: amd64
             prefix: /usr
 
           # 10) Ubuntu 22.04 ARM64
@@ -135,7 +133,7 @@ jobs:
             job_container: ""  # Job-level docker container
             step_container: "" # Step-level docker container
             shell: bash
-            arch: arm64
+            debarch: arm64
             prefix: /usr
 
 
@@ -147,6 +145,13 @@ jobs:
     env:
       D: ${{ matrix.step_container != '' && 'docker exec build_env' || '' }}
       DEBIAN_FRONTEND: noninteractive
+      MATRIX_DEBARCH: ${{ matrix.debarch }}
+      MATRIX_DOCKER_PLATFORM: ${{ matrix.docker_platform }}
+      MATRIX_MSYSTEM: ${{ matrix.msystem }}
+      MATRIX_NAME: ${{ matrix.name }}
+      MATRIX_PREFIX: ${{ matrix.prefix }}
+      MATRIX_STEP_CONTAINER: ${{ matrix.step_container }}
+      MATRIX_UNAME_M: ${{ matrix.uname_m }}
 
     # Set container for whole job only if it's needed
     container: ${{ matrix.job_container != '' && matrix.job_container || null }}
@@ -156,14 +161,18 @@ jobs:
         if: matrix.step_container != ''
         run: |
           set -eux
-          docker create --name build_env --platform ${{ matrix.docker_platform }} -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" --env DEBIAN_FRONTEND=noninteractive ${{ matrix.step_container }} sleep 99999
+          if [[ ! "$MATRIX_UNAME_M" =~ ^[a-z0-9]+$ ]]; then
+            echo "Error: MATRIX_UNAME_M contains unexpected characters: $MATRIX_UNAME_M" 1>&2
+            exit 1
+          fi
+          docker create --name build_env --platform "$MATRIX_DOCKER_PLATFORM" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" --env DEBIAN_FRONTEND=noninteractive "$MATRIX_STEP_CONTAINER" sleep 99999
           docker start build_env
           hostarch=$($D uname -m)
           # Modify uname output for configure scripts
           $D mv /usr/bin/uname /usr/bin/uname.orig
           cat <<EOF >uname-wrapper.sh
           #!/bin/sh
-          /usr/bin/uname.orig "\$@" | sed -e s/$hostarch/${{ matrix.uname_m }}/
+          /usr/bin/uname.orig "\$@" | sed -e "s/$hostarch/$MATRIX_UNAME_M/"
           EOF
           docker cp uname-wrapper.sh build_env:/usr/bin/uname
           $D chown root:root /usr/bin/uname
@@ -246,7 +255,7 @@ jobs:
 
       # Clone the repository after git has been installed in the container
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -255,7 +264,7 @@ jobs:
       # ---------------------------
       - name: Setup MSYS2
         if: startsWith(matrix.name, 'windows')
-        uses: msys2/setup-msys2@v2
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2.32.0
         with:
           msystem: ${{ matrix.msystem }}
           update: true
@@ -322,7 +331,7 @@ jobs:
       # ---------------------------
       - name: Retrieve liblsl from dependencies repository on Ubuntu
         if: startsWith(matrix.name, 'ubuntu')
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: openmha/dependencies
           ref: main
@@ -332,9 +341,21 @@ jobs:
         if: startsWith(matrix.name, 'ubuntu')
         run: |
           set -eux
-          lts=$(echo ${{ matrix.name }} | cut -d- -f-2)
-          $D sudo apt-get install -y ./deps/liblsl/$lts/*_${{ matrix.arch }}.deb
-          $D cp deps/liblsl/$lts/*_${{ matrix.arch }}.deb openmha-packages/
+          case "$MATRIX_DEBARCH" in
+            amd64|arm64|armhf)
+              ;;
+            *)
+              echo "Error: Unexpected MATRIX_DEBARCH value: $MATRIX_DEBARCH" 1>&2
+              exit 1
+              ;;
+          esac
+          lts=$(echo "x-$MATRIX_NAME" | cut -d- -f2-3)
+          if [[ ! "$lts" =~ ^ubuntu-[234][02468]\.04$ ]]; then
+              echo "Error: Unexpected Ubuntu LTS release: $lts in matrix name: $MATRIX_NAME" 1>&2
+              exit 1
+          fi
+          $D sudo apt-get install -y ./deps/liblsl/"$lts"/*_"$MATRIX_DEBARCH".deb
+          $D cp deps/liblsl/"$lts"/*_"$MATRIX_DEBARCH".deb openmha-packages/
 
       # On Windows, liblsl is not available as an msys2 package. Other sources
       # for precompiled binaries will become imcompatible when msys2 updates
@@ -348,24 +369,27 @@ jobs:
         run: |
           compiler_version=$( for compiler in $COMPILERS; \
                               do pacman -Ss $compiler | \
-                                 grep -i "${{ matrix.msystem }}/$compiler .*installed.$" \
+                                 grep -i "$MATRIX_MSYSTEM/$compiler .*installed.$" \
                                  || true; \
                               done | cut -d" " -f 2 )
-          echo "cache_key=liblsl-${{ matrix.msystem }}-${{ env.MINGW_LIBLSL_REF }}-${compiler_version}" >> $GITHUB_OUTPUT
+          echo "cache_key=liblsl-$MATRIX_MSYSTEM-$MINGW_LIBLSL_REF-${compiler_version}" >> $GITHUB_OUTPUT
       - name: Restore liblsl build cache on Windows
-        if: startsWith(matrix.name, 'windows')
-        uses: actions/cache@v5
+        if: startsWith(matrix.name, 'windows') && github.event_name != 'release'
+        # Caching only for Windows, and it is disabled for release builds.
+        # zizmore: ignore[cache-poisoning] but zizmore still lists an error here.
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: liblsl-cache
         with:
           path: liblsl/install
           key: ${{ steps.liblsl-cache-key.outputs.cache_key }}
       - name: Check out liblsl on Windows on cache miss
         if: startsWith(matrix.name, 'windows') && steps.liblsl-cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: sccn/liblsl
-          ref: ${{ env.MINGW_LIBLSL_REF }}
+          ref: ${{ env.MINGW_LIBLSL_SHA }}
           path: liblsl
+          persist-credentials: false
       - name: Build liblsl on Windows
         if: startsWith(matrix.name, 'windows') && steps.liblsl-cache.outputs.cache-hit != 'true'
         run: |
@@ -376,8 +400,8 @@ jobs:
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_INSTALL_PREFIX="${PWD}/liblsl/install" \
                 -DLSL_UNITTESTS=ON \
-                -Dlslgitrevision=${{ env.MINGW_LIBLSL_REF }} \
-                -Dlslgitbranch=${{ env.MINGW_LIBLSL_REF }} \
+                    -Dlslgitrevision="$MINGW_LIBLSL_REF" \
+                    -Dlslgitbranch="$MINGW_LIBLSL_REF" \
                 -DLSL_OPTIMIZATIONS=OFF \
                 -G Ninja
           cmake --build liblsl/build --target install --config Release -j --verbose
@@ -390,7 +414,7 @@ jobs:
       - name: Copy liblsl files to MSYS2 directories on Windows
         if: startsWith(matrix.name, 'windows')
         run: |
-          cp -rnv liblsl/install/* "${{ matrix.msys2_root }}"
+          cp -rnv liblsl/install/* "/$MATRIX_MSYSTEM"
 
       # ---------------------------
       # Install Libtorch dependency
@@ -428,7 +452,7 @@ jobs:
         run: |
           set -eux
           # Install libtorch-dev from standard ubuntu repository when available.
-          if [ "${{ matrix.arch }}" != "armhf" ]; then
+          if [ "x$MATRIX_DEBARCH" != "xarmhf" ]; then
             $D sudo apt-get install -y libtorch-dev
             $D dpkg -l libtorch* | grep ^ii | grep -v dev | awk '{print $2}' >> openmha-packages/additional_dependencies.txt
           fi
@@ -450,8 +474,8 @@ jobs:
           # Add $PWD/octave-*/mingw64/bin to the end of PATH
           echo "PATH=$PATH:$PWD/octave-*/mingw64/bin" >> $GITHUB_ENV
           # Fix jack library name
-          if [ -f "${{ matrix.msys2_root }}/lib/libjack64.dll.a" ]; then
-            cp "${{ matrix.msys2_root }}/lib/libjack64.dll.a" "${{ matrix.msys2_root }}/lib/libjack.dll.a"
+          if [ -f "/$MATRIX_MSYSTEM/lib/libjack64.dll.a" ]; then
+            cp "/$MATRIX_MSYSTEM/lib/libjack64.dll.a" "/$MATRIX_MSYSTEM/lib/libjack.dll.a"
           fi
 
       # ---------------------------
@@ -462,11 +486,11 @@ jobs:
           set -eux
           $D uname -a
           $D uname -m
-          $D ./configure --prefix="${{ matrix.prefix }}"
+          $D ./configure --prefix="$MATRIX_PREFIX"
           $D grep SSE config.mk || true
         
       - name: Upload config.mk artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: openmha-build-config-${{ matrix.name }}
           path: |
@@ -512,7 +536,7 @@ jobs:
         if: startsWith(matrix.name, 'ubuntu')
         run: |
           $D cp -v *.deb openmha-packages/
-          zip openmha-$(cat version)-${{ matrix.name }}.zip openmha-packages/*.deb
+          zip openmha-$(cat version)-"$MATRIX_NAME".zip openmha-packages/*.deb
 
       # ---------------------------
       # Build zip package for Windows installation
@@ -521,26 +545,20 @@ jobs:
         if: startsWith(matrix.name, 'windows')
         run: |
           set -eux
-          make install_deps_windows MSYSTEM="${{ matrix.msystem }}" DESTDIR="$GITHUB_WORKSPACE/"
-          zip -r openmha-$(cat version)-${{ matrix.name }}.zip openmha
+          make install_deps_windows MSYSTEM="$MATRIX_MSYSTEM" DESTDIR="$GITHUB_WORKSPACE/"
+          zip -r openmha-$(cat version)-"$MATRIX_NAME".zip openmha
 
       # ---------------------------
       # Upload installers as artifacts and release assets for Linux and Windows
       # ---------------------------
       - name: Upload as artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: startsWith(matrix.name, 'ubuntu') || startsWith(matrix.name, 'windows')
         with:
           name: openmha-zip-${{ matrix.name }}
           path: |
             openmha-*-${{ matrix.name }}.zip
             version
-      - name: Publish files to release
-        if: github.event_name == 'release' && (startsWith(matrix.name, 'ubuntu') || startsWith(matrix.name, 'windows'))
-        uses: softprops/action-gh-release@v3
-        with:
-          files: |
-            openmha-*-${{ matrix.name }}.zip
 
       - name: Stop step container
         if: always() && matrix.step_container != ''
@@ -560,7 +578,7 @@ jobs:
       # matrix leg the openmha-*-${{ matrix.name }}.zip file. It is easiest to
       # just download all artifacts in a single step.
       - name: Download all artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           merge-multiple: true
       - name: Add documentation to variants
@@ -598,7 +616,7 @@ jobs:
           # Create a new zip file that includes only the documentation
           zip openmha-$(cat version)-documentation.zip *.pdf
       - name: Upload updated artifacts with documentation
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: openmha-all-zips-with-documentation
           path: |
@@ -606,14 +624,34 @@ jobs:
             openmha-*-windows*.zip
             openmha-*-documentation.zip
             version
-      - name: For releases, update release assets with documentation
-        if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v3
+
+  release-upload:
+    needs: add-documentation
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          files: |
-            openmha-*-ubuntu*.zip
-            openmha-*-windows*.zip
-            openmha-*-documentation.zip
+          persist-credentials: false
+      - name: Download artifacts with documentation
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: openmha-all-zips-with-documentation
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -eux
+          gh release upload "$RELEASE_TAG" \
+            openmha-*-ubuntu*.zip \
+            openmha-*-windows*.zip \
+            openmha-*-documentation.zip \
+            --clobber
 
   smoke-test:
     needs: build
@@ -705,16 +743,32 @@ jobs:
     steps:
       - name: Set up step container for Linux ARMHF smoke tests
         if: matrix.step_container != ''
+        env:
+          MATRIX_DOCKER_PLATFORM: ${{ matrix.docker_platform }}
+          MATRIX_STEP_CONTAINER: ${{ matrix.step_container }}
+          MATRIX_UNAME_M: ${{ matrix.uname_m }}
         run: |
           set -eux
-          docker create --name build_env --platform ${{ matrix.docker_platform }} -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" --env DEBIAN_FRONTEND=noninteractive ${{ matrix.step_container }} sleep 99999
+          if [[ ! "$MATRIX_DOCKER_PLATFORM" =~ ^[a-z0-9/]+$ ]]; then
+            echo "Error: MATRIX_DOCKER_PLATFORM contains unexpected characters: $MATRIX_DOCKER_PLATFORM" 1>&2
+            exit 1
+          fi
+          if [[ ! "$MATRIX_STEP_CONTAINER" =~ ^[a-z0-9@:/.-]+$ ]]; then
+            echo "Error: MATRIX_STEP_CONTAINER contains unexpected characters: $MATRIX_STEP_CONTAINER" 1>&2
+            exit 1
+          fi
+          if [[ ! "$MATRIX_UNAME_M" =~ ^[a-z0-9]+$ ]]; then
+            echo "Error: MATRIX_UNAME_M contains unexpected characters: $MATRIX_UNAME_M" 1>&2
+            exit 1
+          fi
+          docker create --name build_env --platform "$MATRIX_DOCKER_PLATFORM" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" --env DEBIAN_FRONTEND=noninteractive "$MATRIX_STEP_CONTAINER" sleep 99999
           docker start build_env
           hostarch=$($D uname -m)
           # Modify uname output for configure scripts
           $D mv /usr/bin/uname /usr/bin/uname.orig
           cat <<EOF >uname-wrapper.sh
           #!/bin/sh
-          /usr/bin/uname.orig "\$@" | sed -e s/$hostarch/${{ matrix.uname_m }}/
+          /usr/bin/uname.orig "\$@" | sed -e "s/$hostarch/$MATRIX_UNAME_M/"
           EOF
           docker cp uname-wrapper.sh build_env:/usr/bin/uname
           $D chown root:root /usr/bin/uname
@@ -737,7 +791,7 @@ jobs:
       # ---------------------------
       - name: Download build artifact for smoke test on Ubuntu and Windows
         if: startsWith(matrix.name, 'ubuntu') || startsWith(matrix.name, 'windows')
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: openmha-zip-${{ matrix.name }}
 
@@ -767,8 +821,21 @@ jobs:
       - name: Build openMHA formula for current openMHA commit
         if: startsWith(matrix.name, 'macos')
         shell: bash
+        env:
+          SOURCE_REPO: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
+          SOURCE_REVISION: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: |
           set -eux
+          if [[ ! "$SOURCE_REPO" =~  ^[A-Za-z0-9][A-Za-z0-9:_.-]*/[A-Za-z0-9][A-Za-z0-9:_.-]*$ ]]
+          then
+            echo "Error: Suspicious SOURCE_REPO name: $SOURCE_REPO" >&2
+            exit 1
+          fi
+          if [[ ! "$SOURCE_REVISION" =~ ^[A-Fa-f0-9]{40}$ ]]
+          then
+            echo "Error: Suspicious SOURCE_REVISION: $SOURCE_REVISION" >&2
+            exit 1
+          fi
           brew tap labstreaminglayer/tap
           brew trust --formula labstreaminglayer/tap/lsl || true
           brew install lsl
@@ -779,14 +846,6 @@ jobs:
           brew trust --formula openmha/tap/openmha || true
           brew formula openmha || true
           brew --repo openmha/tap || true
-
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            SOURCE_REPO='${{ github.event.pull_request.head.repo.full_name }}'
-            SOURCE_REVISION='${{ github.event.pull_request.head.sha }}'
-          else
-            SOURCE_REPO='${{ github.repository }}'
-            SOURCE_REVISION='${{ github.sha }}'
-          fi
 
           cat > $(brew formula openmha) <<EOF
           class Openmha < Formula
