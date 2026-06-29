@@ -103,8 +103,10 @@ mhadoc: images
 
 plugins: $(MHADISTS:=_plugins.pdf)
 
-%_plugin.list: 
-	echo $(PLUGIN_NAMES)"\n"$(IO_NAMES) | sort > $@
+%_plugin.list:
+	# Sort in the C locale so the plugin ordering - and therefore the
+	# generated plugins manual - does not depend on the build's locale.
+	echo $(PLUGIN_NAMES)"\n"$(IO_NAMES) | LC_ALL=C sort > $@
 
 %_plugin_section.tex: %_plugin.list
 	MHA_PARSER_PRECISION=5 LD_LIBRARY_PATH="$(LD_LIBRARY_PATH):$(MATLAB_LIBS)" MHA_LIBRARY_PATH="$(MHA_PLUGINDIRS)" ../frameworks/$(BUILD_DIR)/generatemhaplugindoc -o $@ -c subsection -p subsubsection `cat $<` 
