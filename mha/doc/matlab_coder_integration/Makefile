@@ -34,8 +34,8 @@ TEXINPUTS = ""
 	TEXINPUTS=$(TEXINPUTS) pdflatex $(PDFLATEX_FLAGS) $<
 
 clean:
-	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl *.ilg *.ind *.idx *.out \
-  $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf plug_*.tex
+	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl *.ilg *.ind *.idx *.out *-eps-converted-to.pdf \
+  $(MHANAME)_matlab_coder_integration.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf plug_*.tex
 
 $(MHANAME)_matlab_coder_integration: $(MHANAME)_matlab_coder_integration.tex ../openMHAdoxygen.sty $(wildcard *.tex)
 

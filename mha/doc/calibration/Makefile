@@ -34,7 +34,7 @@ all: $(MHANAME)_calibration_manual.pdf
 	TEXINPUTS=$(TEXINPUTS) pdflatex $(PDFLATEX_FLAGS) $<
 
 clean:
-	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl *.ilg *.ind *.idx *.out $(MHANAME)_calibration_manual.pdf
+	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl *.ilg *.ind *.idx *.out *-eps-converted-to.pdf $(MHANAME)_calibration_manual.pdf
 
 $(MHANAME)_calibration_manual.pdf: $(MHANAME)_calibration_manual.tex ../openMHAdoxygen.sty
 

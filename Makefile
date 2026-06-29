@@ -61,6 +61,8 @@ doc: mha/doc
 
 clean:
 	for m in $(MODULES) $(DOCMODULES); do $(MAKE) -C $$m clean; done
+	# Remove the manuals and the manuals archive copied here by the doc target.
+	rm -f openMHA_*.pdf pdf-*.zip
 
 ifeq "$(PLATFORM)" "Darwin"
 INSTALL_NAME_TOOL=install_name_tool
