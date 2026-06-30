@@ -20,6 +20,6 @@ __Plugin development guide and code documentation__
 
 
 Please ask your questions in our
-[open Master Hearing Aid Forum](https://forum.openmha.org/).
+[open Master Hearing Aid Forum](https://github.com/HoerTech-gGmbH/openMHA/discussions)(Github Discussions).
 
 Bugs can be reported via the [Github issue tracker](https://github.com/HoerTech-gGmbH/openMHA/issues). 
