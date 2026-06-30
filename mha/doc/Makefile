@@ -130,8 +130,17 @@ plugins: $(MHADISTS:=_plugins.pdf)
 	rm -f $*.{aux,dvi,log,toc,out,idx,ilg}
 
 clean:
-	rm -f $(MHADISTS:=_plugins.*) *~ $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf
+	rm -f $(MHADISTS:=_plugins.*) $(MHADISTS:=_plugin.list) *~ \
+	  $(MHANAME)_developer_manual.pdf $(MHANAME)_application_manual.pdf \
+	  $(MHANAME)_gui_manual.pdf $(MHANAME)_calibration_manual.pdf \
+	  $(MHANAME)_starting_guide.pdf $(MHANAME)_matlab_coder_integration.pdf
+	rm -Rf mhadoc
+	$(MAKE) -C images clean
+	$(MAKE) -C flowcharts clean
 	$(MAKE) -C user_manual clean
+	$(MAKE) -C calibration clean
+	$(MAKE) -C starting_guide clean
+	$(MAKE) -C matlab_coder_integration clean
 
 # Local Variables:
 # coding: utf-8-unix

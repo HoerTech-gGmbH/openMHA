@@ -164,6 +164,14 @@ $(BUILD_DIR)/libemx.is_installed: $(BUILD_DIR)/include/.directory $(BUILD_DIR)/l
 	cp -v libemx/src/types.h $(BUILD_DIR)/include/libemx_types.h
 	touch $@
 
+# libemx is built by the explicit rule above rather than via SUBDIRS, so the
+# generic clean target does not descend into it and would leave libemx's own
+# build directory behind. Clean it explicitly.
+clean: clean-libemx
+.PHONY: clean-libemx
+clean-libemx:
+	$(MAKE) -C libemx clean
+
 libxdf: $(BUILD_DIR)/libxdf.is_installed 
 
 $(BUILD_DIR)/libxdf.is_installed: $(BUILD_DIR)/include/.directory $(BUILD_DIR)/lib/.directory

@@ -34,7 +34,7 @@ TEXINPUTS = "./:../:./plugins/:../technical_report/:../flowcharts/fmt_eps/:../fl
 	TEXINPUTS=$(TEXINPUTS) pdflatex $(PDFLATEX_FLAGS) $<
 
 clean:
-	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl *.ilg *.ind *.idx *.out $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf plug_*.tex
+	rm -Rf *.log *.lot *.lof *.aux *.dep *.dvi *.toc *~ *.blg *.bbl *.ilg *.ind *.idx *.out *-eps-converted-to.pdf $(MHANAME)_starting_guide.pdf $(MHANAME)_application_manual.pdf $(MHANAME)_gui_manual.pdf plug_*.tex
 
 $(MHANAME)_starting_guide: $(MHANAME)_starting_guide.tex ../openMHAdoxygen.sty $(wildcard *.tex)
 
