@@ -1,5 +1,5 @@
 Section: contrib/sound
-Suggests: qjackctl
+Suggests: qjackctl, octave-signal, default-jre-headless
 Recommends: liblsl | liblsl2
 Maintainer: openMHA Packaging Team <packaging@openmha.org>
 Description: HoerTech openMHA
